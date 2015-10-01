@@ -2,7 +2,7 @@
 
 DENISE (subwavelength DEtail resolving Nonlinear Iterative SEismic inversion) is a 2D elastic full waveform inversion code.  
 The inversion problem is solved by a conjugate gradient method and the gradients are computed in the time domain with the adjoint method.  
-The forward modeling is done by a time domain finite difference scheme. The manual is included in the download archive or can be downloaded [here](doc/manual_DENISE.pdf)
+The forward modeling is done by a time domain finite difference scheme. The manual is included in the download archive or can be downloaded [here](https://git.scc.kit.edu/GPIAG-Software/DENISE/wikis/home)
 
 # Conditions for the Use of the Software
 
