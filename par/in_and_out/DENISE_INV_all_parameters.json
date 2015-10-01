@@ -1,0 +1,247 @@
+#-----------------------------------------------------------------
+#      JSON PARAMETER FILE FOR DENISE
+#-----------------------------------------------------------------
+# description:
+# description/name of the model: 2 layer example, model grid created by ../genmod/2layer.c
+#
+
+{
+"Domain Decomposition" : "comment",
+			"NPROCX" : "4",
+			"NPROCY" : "2",
+
+"FD order" : "comment",
+			"FDORDER" : "2",
+			"MAXRELERROR" : "0",
+
+"2-D Grid" : "comment",
+			"NX" : "500",
+			"NY" : "100",
+			"DH" : "0.2",
+
+"Time Stepping" : "comment",
+			"TIME" : "0.5",
+			"DT" : "5.0e-05",
+
+"Source" : "comment",
+			"QUELLART" : "4",
+			"QUELLART values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;Gaussian_deriv=5" : "comment",
+			"QUELLART values: Spike=6;from_SIGNAL_FILE_in_su_format=7;integral_of_SIN**3=8" : "comment",
+			"SIGNAL_FILE" : "./STF/stf.su",
+			
+			"QUELLTYP" : "3",
+			"QUELLTYP values (point_source): explosive=1;force_in_x=2;force_in_y=3;rotated_force=4" : "comment",
+			
+			"SRCREC" : "1",
+			"SRCREC values : read source positions from SOURCE_FILE=1, PLANE_WAVE=2" : "comment",
+			
+			"SOURCE_FILE" : "./source/sources.dat",
+			"RUN_MULTIPLE_SHOTS" : "1",
+			
+			"PLANE_WAVE_DEPTH" : "0.0",
+			"PHI" : "0.0",
+			"TS" : "0.032",
+
+"Model" : "comment",
+			"READMOD" : "0",
+			"MFILE" : "model/model_Test",
+
+"Free Surface" : "comment",
+			"FREE_SURF" : "1",
+
+"PML Boundary" : "comment",
+			"FW" : "20",
+			"DAMPING" : "600.0",
+			"FPML" : "31.25",
+			"BOUNDARY" : "0",
+			"npower" : "4.0",
+			"k_max_PML" : "8.0",
+
+"Receiver" : "comment",
+			"SEISMO" : "1",
+			"READREC" : "1",
+			"REC_FILE" : "./receiver/receiver.dat",
+			"REFRECX, REFRECY" : "0.0 , 0.0",
+			"XREC1, YREC1" : "6.0 , 0.2",
+			"XREC2, YREC2" : "93.0 , 0.2",
+			"NGEOPH" : "80",
+
+"Seismograms" : "comment",
+			"NDT" : "1",
+			"SEIS_FORMAT" : "1",
+			"SEIS_FILE_VX" : "su/DENISE_x.su",
+			"SEIS_FILE_VY" : "su/DENISE_y.su",
+			"SEIS_FILE_CURL" : "su/DENISE_rot.su",
+			"SEIS_FILE_DIV" : "su/DENISE_div.su",
+			"SEIS_FILE_P" : "su/DENISE_p.su",
+
+"Q-approximation" : "comment",
+			"L" : "0",
+			"FL1" : "50.0", 
+			"FL2" : "100.0",
+			"TAU" : "0.00001",
+			"F_REF" : "100.00",
+
+"Snapshots" : "comment",
+			"SNAP" : "0",
+			"TSNAP1" : "2.7e-3",
+			"TSNAP2" : "6.0",
+			"TSNAPINC" : "0.12",
+			"IDX" : "1",
+			"IDY" : "1",
+			"SNAP_FORMAT" : "3",
+			"SNAP_FILE" : "./snap/waveform_forward",
+			
+"Receiver array" : "comment",
+			"REC_ARRAY" : "0",
+			"REC_ARRAY_DEPTH" : "70.0",
+			"REC_ARRAY_DIST" : "40.0", 
+			"DRX" : "4",
+			
+"Monitoring the simulation" : "comment",
+			"LOG_FILE" : "log/2layer.log",
+			"LOG" : "1",
+
+"Checkpoints" : "comment",
+			"CHECKPTREAD" : "0",
+			"CHECKPTWRITE" : "0",
+			"CHECKPTFILE" : "tmp/checkpoint_fdveps",
+
+
+
+"General inversion parameters" : "comment",
+			"ITERMAX" : "10",
+			"DATA_DIR" : "su/measured_data/DENISE_real",
+			"INVMAT1" : "1",
+			"INVMAT" : "0",
+			"INVTYPE" : "2",
+			"QUELLTYPB" : "1",
+			"MISFIT_LOG_FILE" : "L2_LOG.dat",
+			"VELOCITY" : "0",
+			
+"Inversion for density" : "comment",
+			"INV_RHO_ITER" : "0",
+			
+"Inversion for Vp" : "comment",
+			"INV_VP_ITER" : "0",
+			
+"Inversion for Vs" : "comment",
+			"INV_VS_ITER" : "0",
+			
+"Minimum Vp/Vs-ratio" : "comment",
+			"VP_VS_RATIO" : "0.0",
+			
+"Limited update of model parameters in reference to the starting model" : "comment",
+			"S" : "0",
+			"S_VS" : "0.0",
+			"S_VP" : "0.0",
+			"S_RHO" : "0.0",			
+						
+"Output of inverted models" : "comment",
+			"INV_MODELFILE" : "model/modelTest",
+			"nfstart" : "1",
+			"nf" : "1",
+
+"Output of gradients" : "comment",
+			"JACOBIAN" : "jacobian/jacobian_Test",
+			"nfstart_jac" : "1",
+			"nf_jac" : "1",
+
+"Hessian and Gradient-Method" : "comment",
+			"HESSIAN" : "0",
+			"FC_HESSIAN" : "100",
+			"ORDER_HESSIAN" : "4",
+			"TSHIFT_back" : "0.0",
+			"GRAD_METHOD" : "1",
+
+"Gradient calculation" : "comment",
+			"LNORM" : "2",
+			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, normalized L2 norm=7, Envelope-based norm=8" : "comment",
+			"NORMALIZE" : "0",
+			"DTINV" : "2",
+			"WATERLEVEL_LNORM8" : "0.0",
+
+"Step length estimation" : "comment", 
+			"EPS_SCALE" : "0.01", 
+			"STEPMAX" : "4",
+			"SCALEFAC" : "4.0",
+			"TESTSHOT_START , TESTSHOT_END , TESTSHOT_INCR" : "1 , 2 , 1",
+
+"Termination of the programmme" : "comment",
+			"PRO" : "0.01",
+			
+"Minimum number of iteration per frequency" : "comment",
+			"MIN_ITER" : "0",
+			
+"Cosine taper" : "comment",
+			"TAPER" : "0",
+			"TAPERLENGTH" : "10",
+			
+"Definition of gradient taper geometry" : "comment",
+			"SWS_TAPER_GRAD_VERT" : "0",
+			"SWS_TAPER_GRAD_HOR" : "0",
+			"GRADT1 , GRADT2 , GRADT3 , GRADT4" : "5 , 15 , 490 , 500",
+			"SWS_TAPER_GRAD_SOURCES" : "0",
+			"SWS_TAPER_CIRCULAR_PER_SHOT" : "0",
+			"SRTSHAPE" : "1",
+			"SRTRADIUS" : "5.0",
+			"FILTSIZE" : "1",
+			"SWS_TAPER_FILE" : "0",
+			"SWS_TAPER_FILE_PER_SHOT" : "0",
+			"TAPER_FILE_NAME" : "taper.bin",
+			"TAPER_FILE_NAME_U" : "taper_u.bin",
+			"TAPER_FILE_NAME_RHO" : "taper_rho.bin",
+
+"Definition of smoothing (spatial filtering) of the gradients" : "comment",
+			"SPATFILTER" : "0",
+			"SPAT_FILT_SIZE" : "40",
+			"SPAT_FILT_1" : "1",
+			"SPAT_FILT_ITER" : "1",
+			
+"Definition of smoothing the gradients with a 2D-Gaussian filter" : "comment",
+                        "GRAD_FILTER" : "0",
+                        "FILT_SIZE_GRAD" : "5",
+			"GRAD_FILT_WAVELENGTH" : "0",
+			"A" : "0.0",
+
+"Upper and lower limits for model parameters" : "comment",
+			"VPUPPERLIM" : "3500",
+			"VPLOWERLIM" : "0",
+			"VSUPPERLIM" : "5000",
+			"VSLOWERLIM" : "0",
+			"RHOUPPERLIM" : "5000",
+			"RHOLOWERLIM" : "0",
+
+"Definition of smoothing the models vp and vs" : "comment",
+			"MODEL_FILTER" : "0",
+			"FILT_SIZE" : "5",
+
+"Definition of inversion for source time function" : "comment",
+			"INV_STF" : "0",
+			"PARA" : "fdlsq:tshift=0.0",
+			"N_STF" : "10",
+			"N_STF_START" : "1",
+			"TRKILL_STF" : "0",
+			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
+			
+"Frequency filtering during inversion" : "comment",
+			"TIME_FILT" : "0",
+			"F_HP" : "1",
+			"FC_START" : "10.0",
+			"FC_END" : "75.0",
+			"FC_INCR" : "10.0",
+			"ORDER" : "2",
+			"ZERO_PHASE" : "0",
+                        "FREQ_FILE" : "frequencies.dat",                       
+ 
+"Trace killing" : "comment",
+			"TRKILL" : "0",
+			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
+
+"Time windowing and damping" : "comment",
+			"TIMEWIN" : "0",
+			"PICKS_FILE" : "./picked_times/picks",
+			"TWLENGTH_PLUS" : "0.01",
+			"TWLENGTH_MINUS" : "0.01",
+			"GAMMA" : "100000",
+}

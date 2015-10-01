@@ -1,0 +1,75 @@
+#-----------------------------------------------------------------
+#      JSON PARAMETER FILE FOR DENISE
+#-----------------------------------------------------------------
+# description:
+# description/name of the model: 2 layer example, model grid created by ../genmod/2layer.c
+#
+
+{
+"Domain Decomposition" : "comment",
+			"NPROCX" : "4",
+			"NPROCY" : "2",
+
+"FD order" : "comment",
+			"FDORDER" : "2",
+			"MAXRELERROR" : "0",
+
+"2-D Grid" : "comment",
+			"NX" : "500",
+			"NY" : "100",
+			"DH" : "0.2",
+
+"Time Stepping" : "comment",
+			"TIME" : "0.5",
+			"DT" : "5.0e-05",
+
+"Source" : "comment",
+			"QUELLART" : "4",
+			"QUELLART values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;Gaussian_deriv=5" : "comment",
+			"QUELLART values: Spike=6;from_SIGNAL_FILE_in_su_format=7;integral_of_SIN**3=8" : "comment",
+			"SIGNAL_FILE" : "./ormsby.dat",
+			
+			"QUELLTYP" : "3",
+			"QUELLTYP values (point_source): explosive=1;force_in_x=2;force_in_y=3;rotated_force=4" : "comment",
+			
+			"SOURCE_FILE" : "./source/sources.dat",
+			"RUN_MULTIPLE_SHOTS" : "1",
+
+"Model" : "comment",
+			"READMOD" : "0",
+			"MFILE" : "model/model_Test",
+
+"Free Surface" : "comment",
+			"FREE_SURF" : "1",
+
+"PML Boundary" : "comment",
+			"FW" : "20",
+			"DAMPING" : "600.0",
+			"FPML" : "31.25",
+			"BOUNDARY" : "0",
+			"npower" : "4.0",
+			"k_max_PML" : "8.0",
+
+"Receiver" : "comment",
+			"SEISMO" : "1",
+			"READREC" : "1",
+			"REC_FILE" : "./receiver/receiver.dat",
+			"REFRECX, REFRECY" : "0.0 , 0.0",
+			"XREC1, YREC1" : "6.0 , 0.2",
+			"XREC2, YREC2" : "93.0 , 0.2",
+			"NGEOPH" : "80",
+
+"Seismograms" : "comment",
+			"SEIS_FORMAT" : "1",
+			"SEIS_FILE_VX" : "su/DENISE_x.su",
+			"SEIS_FILE_VY" : "su/DENISE_y.su",
+			"SEIS_FILE_CURL" : "su/DENISE_rot.su",
+			"SEIS_FILE_DIV" : "su/DENISE_div.su",
+			"SEIS_FILE_P" : "su/DENISE_p.su",
+
+
+
+"General inversion parameters" : "comment",
+			"INVMAT1" : "1",
+			"INVMAT" : "10",
+}

@@ -1,0 +1,248 @@
+%% LyX 1.5.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside,english,onecolumn]{book}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+% \geometry{a4paper,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{placeins}
+
+% figures
+\usepackage[pdftex]{graphicx}
+\usepackage[position=top,singlelinecheck=false]{subfig}
+
+% we are running pdflatex, so convert .eps files to .pdf
+\usepackage{epstopdf}
+\usepackage{tikz}
+\usepackage{amssymb}
+\IfFileExists{url.sty}{\usepackage{url}}
+                      {\newcommand{\url}{\texttt}}
+\usepackage[authoryear]{natbib}
+
+\usepackage{bibentry}
+\nobibliography*
+
+% \renewcommand{\familydefault}{\sfdefault}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\newcommand{\noun}[1]{\textsc{#1}}
+%% A simple dot to overcome graphicx limitations
+\newcommand{\lyxdot}{.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newenvironment{lyxcode}
+{\begin{list}{}{
+\setlength{\rightmargin}{\leftmargin}
+\setlength{\listparindent}{0pt}% needed for AMS classes
+\raggedright
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
+\normalfont\ttfamily}%
+ \item[]}
+{\end{list}}
+
+% figures
+\usepackage[dvips]{epsfig}
+\usepackage{wrapfig}
+
+% fonts
+\usepackage{times}
+
+% hyperlinks to sections and references
+\usepackage[colorlinks=true,
+            linkcolor=blue,
+            urlcolor=blue,
+            citecolor=blue,
+            pdftex,bookmarks=true,
+            bookmarksnumbered=true,
+            pdfpagemode=None,
+            pdfstartview=FitH,
+            pdfpagelayout=SinglePage,
+            pdfborder={0 0 0}]{hyperref}
+
+\newcommand{\urlwithparentheses}[1]{(\url{#1})}
+
+% biblio GJI
+\bibliographystyle{abbrvnat}
+
+% \newcommand{\toall}[1]{\textbf{*** All: #1 ***}}
+% \newcommand{\tojeroen}[1]{\textbf{*** Jeroen: #1 ***}}
+% \newcommand{\tobrian}[1]{\textbf{*** Brian: #1 ***}}
+% \newcommand{\tovala}[1]{\textbf{*** Vala: #1 ***}}
+% \newcommand{\tovalabrian}[1]{\textbf{*** Vala \& Brian: #1 ***}}
+% \newcommand{\tovalaqinya}[1]{\textbf{*** Vala \& Qinya: #1 ***}}
+% \newcommand{\toqinya}[1]{\textbf{*** Qinya: #1 ***}}
+% \newcommand{\tomin}[1]{\textbf{*** Min: #1 ***}}
+% \newcommand{\toalessia}[1]{\textbf{*** Alessia: #1 ***}}
+% \newcommand{\todimitri}[1]{\textbf{*** Dimitri: #1 ***}}
+
+\newcommand{\nexxi}{\mbox{\texttt{NEX\_XI\/}}}
+\newcommand{\nexeta}{\mbox{\texttt{NEX\_ETA\/}}}
+\newcommand{\nprocxi}{\mbox{\texttt{NPROC\_XI\/}}}
+\newcommand{\nproceta}{\mbox{\texttt{NPROC\_ETA\/}}}
+\newcommand{\nchunks}{\mbox{\texttt{NCHUNKS\/}}}
+
+\newcommand{\FIG}[1]{figure~\ref{#1}}
+
+\newcommand{\MB}[1]{{\mbox{\mathversion{bold}$#1$}}}
+
+\newcommand{\EQ}[2]{
+    \begin{equation}
+	\label{#1}
+        #2
+    \end{equation}
+}
+
+\newcommand{\ER}[1]{(\ref{#1})}
+
+\usepackage{babel}
+\makeatother
+
+\begin{document}
+
+\input{0_Title.tex}
+
+% \begin{center}
+% \thispagestyle{empty}%
+% \vspace*{-1.8truecm}
+% \noindent\makebox[\textwidth]{%
+% \noindent\includegraphics[width=0.83\paperwidth]{figures/DENISE-cover.png}
+% }
+% \end{center}
+
+\title{\textbf{DENISE}\\
+\textbf{User Manual}}
+
+\author{$\copyright$ Christian-Albrechts-Universit\"at Kiel (Germany) and\\
+Karlsruhe Institute of Technology (KIT) (Germany)\\
+Version 2.0
+}
+
+\date{\noindent \today}
+
+\maketitle
+
+\section*{Authors}
+
+The DENISE code was first developed by Daniel K\"ohn, Denise De Nil and Andr$\rm{\acute{e}}$ Kurzmann at the Christian-Albrechts-Universit\"at Kiel and TU Bergakademie Freiberg (Germany) from 2005 to 2009.\\
+\newline
+The forward code is based on the viscoelastic FD code fdveps (now SOFI2D) by \cite{bohlen:02}.\\
+\newline
+Different external libraries for timedomain filtering are used.\\ 
+The copyright of the source codes are held by different persons:\\
+\newline
+cseife.c, cseife.h, lib\_stfinv, lib\_aff, lib\_fourier:\\ 
+Copyright $\copyright$ 2005 by Thomas Forbriger (BFO Schiltach) \\
+\newline
+cseife\_deriv.c, cseife\_gauss.c, cseife\_rekfl.c, cseife\_rfk.c and cseife\_tides.c:\\
+Copyright $\copyright$ 1984 by Erhard Wielandt\\
+This algorithm was part of seife.f. A current version of seife.f can be obtained from http://www.software-for-seismometry.de/\\
+\newline 
+The Matlab implementation of a few SU routines, mainly used to read and write SU files are:\\
+Copyright $\copyright$ 2008, Signal Analysis and Imaging Group\\
+For more information: http://www-geo.phys.ualberta.ca/saig/SeismicLab\\
+Author: M.D.Sacchi\\
+\newline
+
+\noindent
+Since then it has been developed and maintained by a development team: in alphabetical order,\\
+\newline
+(up to 2014)\\
+Lisa Groos,\\
+Sven Heider,\\
+Martin Sch\"afer,\\
+\newline
+(since 2014) \\
+Laura Ga\ss ner,\\
+Tilman Metz,\\
+Niklas Thiel.\\
+% (add other developers here in the future).
+\newline
+
+\noindent
+This is the {"}Karlsruher{"} version of DENISE which in the last years has been developed mainly for the purpose of inverting shallow seismic wavefields. At the moment another focus is to adapt the code for the inversion of marine seismic data.
+
+\newpage
+
+%------------------------------------------------------------------------------------------------%
+\section*{Acknowledgments}
+%------------------------------------------------------------------------------------------------%
+
+We thank for constructive discussions and further code improvements:\\
+\newline
+Anna Przebindowska (Karlsruhe Institute of Technology), \\
+Olaf Hellwig (TU Bergakademie Freiberg), \\
+Dennis Wilken and Wolfgang Rabbel (Christian-Albrechts-Universit\"at Kiel).
+\newline
+
+The development of the code was suppported by the Christian-Albrechts-Universität Kiel, TU Bergakademie Freiberg, Deutsche Forschungsgemeinschaft (DFG), Bundesministerium für Bildung und Forschung (BMBF), the Wave Inversion Technology (WIT) Consortium and the Verbundnetz-Gas AG (VNG).
+
+The code was tested and optimized at the computing centres of Kiel University, TU Bergakademie Freiberg, TU Chemnitz, TU Dresden, the Karlsruhe Institute of Technology (KIT) and the Hochleistungsrechenzentrum Nord (HLRN 1+2). 
+
+%------------------------------------------------------------------------------------------------%
+\section*{Citation}
+%------------------------------------------------------------------------------------------------%
+
+If you use this code for your own research, please cite at least one article
+written by the developers of the package, for instance:\\
+\newline
+\bibentry{koehn:11}\\
+% \cite{koehn:11}\\
+% \newline
+% or\\
+% \newline
+
+% (XX add more references here)\\
+% \newline
+% and/or other articles from \urlwithparentheses{http://www.geophysik.uni-kiel.de/~dkoehn/publications.htm}
+% \newline
+% 
+% \noindent
+% The corresponding Bib\TeX{} entries may be found
+% in file \texttt{doc/USER\_MANUAL/thesis.bib}.
+
+
+% %------------------------------------------------------------------------------------------------%
+% 
+% \chapter*{Contact}
+% 
+% %------------------------------------------------------------------------------------------------%
+%
+% Please e-mail your feedback, questions, comments, and suggestions
+% to\\ Daniel K\"ohn \urlwithparentheses{dkoehn-AT-geophysik.uni-kiel.de}.
+
+\newpage{}
+
+\tableofcontents{}
+
+\input{1_Introduction}
+
+\input{2_Theoretical_Background}
+
+\input{3_Adjoint_Problem}
+
+\input{4_Source_Wavelet_Inversion}
+
+\input{5_Getting_Started}
+
+\input{6_Parameter_Definition}
+
+\input{7_Examples}
+
+\bibliography{thesis}
+
+%------------------------------------------------------------------------------------------------%
+
+\appendix
+
+\end{document}

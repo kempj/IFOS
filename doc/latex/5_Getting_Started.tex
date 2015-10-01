@@ -1,0 +1,229 @@
+%------------------------------------------------------------------------------------------------%
+
+\chapter{\label{cha:Getting-Started}Getting Started}
+
+%------------------------------------------------------------------------------------------------%
+
+In the following sections, we give a short description of the different modeling  parameters, options and how the program is used in a parallel MPI environment.
+
+\section{Requirements}
+The parallelization employs functions of the Message Passing Interface (MPI). MPI has to be installed when compiling and running the DENISE software. At least two implementations exist for Unix-based networks: OpenMPI and MPICH2. The LAM-MPI implementation is no longer supported by the developers. Currently all three implementation work with DENISE. OpenMPI and MPICH2 are MPI programming environments and development systems for heterogeneous computers on a network. With OpenMPI or MPICH2, a dedicated cluster or an existing network computing  infrastructure can act as one parallel computer solving one problem. The latest version of OpenMPI can be obtained from \href{http://www.open-mpi.org}{http://www.open-mpi.org}.% MPICH2 is available at \href{http://www.open-mpi.org}{http://www-unix.mcs.anl.gov/mpi/mpich}. LAM-MPI can be downloaded here: \href{http://www.lam-mpi.org}{http://www.lam-mpi.org}.
+
+
+\section{Installation}
+\label{installation}
+After unpacking the software package (e.g. by \textit{tar -zxvf DENISE.tgz}) and changing to the directory DENISE (\textit{cd DENISE})  you will find different subdirectories:
+
+\textbf{bin}\\
+This directory contains all executable programs, generally DENISE and snapmerge. These executables are generated using the command \textit{make $<$program$>$} (see below).
+
+\textbf{contrib}\\
+This directory contains external contributions to DENISE.
+
+\textbf{doc}\\
+This directory contains documentation on the software (this users guide) as well as some important papers in PDF format on which the software is based on (see above).
+
+\textbf{genmod}\\
+Contains the model and benchmark files for DENISE.
+
+\textbf{mfiles}\\
+Here some Matlab routines (m-files) are stored. These Matlab programs can be used to find optimal relaxation frequencies to approximate a constant Q (qapprox.m) or to plot Q as a function of frequency for certain relaxation frequencies and value of tau (qplot.m). It is necessary to have the Matlab Optimization Toolbox installed. For further details on the theory behind these algorithms we refer to the Phd thesis of T. Bohlen \cite{bohlen:98} and to the paper in which the so-called tau-method is described \cite{blanch:95}. The parameter tau is used in this software to define the level of attenuation.
+
+\textbf{par}\\
+Parameter files for DENISE modeling.
+
+\textbf{scripts}\\
+Here, you will find examples of script-files used to submit modeling jobs on cluster-computers.
+
+\textbf{src}\\
+This directory contains the complete source codes.  The following programs are available and may be compiled using make $<$program$>$.
+
+
+\section{Compilation of DENISE}\label{compexec}
+Before compiling the main program DENISE you have to compile the required additional libraries e.g. for timedomain filtering, the inversion for the correction filter for the unknown source time function and so on. In the DENISE/par directory simply use:
+\newline
+
+\textit{make}
+\newline
+
+% {\color{blue}{\begin{verbatim}
+% -bash-2.05b$:~/DENISE/par> make
+% \end{verbatim}}} 
+
+which should install the following libraries:
+
+{\color{blue}{\begin{verbatim}
+lib cseife
+lib stfinv
+lib aff
+lib fourier
+\end{verbatim}}}
+as well as the binary of DENISE itself.
+In contrib/Makefile\_var there were several environment variables which are necessary to compile the libraries successfully. Furthermore, it is necessary to preinstall FFTW - Fastest Fourier Transform in the West (\href{http://www.fftw.org/}{http://www.fftw.org/}). Please check the successful installation in the folder contrib/header.
+\newline
+  
+The source code of DENISE is located in the directory DENISE/src. To compile DENISE the name of the model function has to be entered in the src/MAKEFILE. Depending on your MPI environment (MPI distribution) you may need to modify the compiler options in src/Makefile. For a few typical platforms the compiler options are available in src/Makefile. It is often useful to enable a moderate level of optimization (typically -O3). The highest level of optimization -O4 can lead to a strong performance improvement. For example the optimization option -O4 of the hcc LAM compiler leads to a speedup of DENISE of approximately 30~\%. Eventhough keep in mind that -O4 can also lead to crashes and compilation errors, when used in combination with certain compilers. No other changes in the Makefile should be necessary. 
+{\color{blue}{\begin{verbatim}
+# Makefile for DENISE
+
+#--------------------------------------------------------
+# edit here:
+
+# source code for model generation
+
+MODEL_EL = half_space.c
+EXEC= ../bin
+
+
+# Compiler (LAM: CC=hcc, CRAY T3E: CC=cc)
+
+# ON Linux cluster running LAM (options for DENISE)
+#CC=hcc
+#LFLAGS=-lm -lmpi -lcseife 
+#CFLAGS=-O3 
+#SFLAGS=-L./../libcseife
+#IFLAGS=-I./../libcseife
+
+# On CRAY T3E
+# CC=cc
+
+# On MARWIN
+CC=mpicc
+LFLAGS=-lm -lcseife
+CFLAGS=-O3
+SFLAGS=-L./../libcseife
+IFLAGS=-I./../libcseife
+
+# On HLRN system
+#CC=mpcc
+#LFLAGS=-lm  
+
+# ALTIX
+#CC=icc
+#CFLAGS=-mp -O3 -ipo
+#LFLAGS=-lmpi -lm -i-static
+
+# On the workstations in Karlsruhe (GPI)
+CC=mpicc
+LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
+CFLAGS=-O3
+SFLAGS=-L./../libcseife -L./../contrib/bin
+IFLAGS=-I./../libcseife -I./../contrib/header
+
+# after this line, no further editing should be necessary
+# --------------------------------------------------------
+\end{verbatim}}} 
+
+The program snapmerge that is used to merge the snapshots (see below) can be compiled with ''make snapmerge'' in the directory /src. Since this is not a MPI program (no MPI functions are called) the MPI libraries are not required and any standard compiler (like gcc and cc) can be used to compile this program. The executables denise and snapmerge are located in the directory /bin. 
+
+\section{Running the program}\label{compexec1} 
+Each DENISE run reads the required parameters from a parameter file par/DENISE.json. A detailed description of the parameters are described in chapter \ref{Definition-parameters_json}. 
+The command to start a simulation on 8 processor with the lowest priority of -19 (in order to allow working on the a workstation while running a simulation) is as follows. Please note, that we assume you have navigated to the folder DENISE/par.
+\newline
+
+\textit{mpirun -np 8 nice -19 ../bin/denise DENISE.json }
+\newline
+
+% {\color{blue}{\begin{verbatim}
+% mpirun -np 8 nice -19 ../bin/denise DENISE.json 
+% \end{verbatim}}}
+
+It is often useful to save the standard output of the program for later reference. The screen output may be saved to DENISE.out using
+\newline
+
+\textit{mpirun -np 8 nice -19 ../bin/denise DENISE.json > DENISE.out}
+\newline
+
+% {\color{blue}{\begin{verbatim}
+% mpirun -np 8 nice -19 ../bin/denise DENISE.json > DENISE.out
+% \end{verbatim}}}
+
+\newpage
+
+After the output of geometry and model parameters the code starts the time stepping and displaying timing information:
+
+{\color{blue}{\begin{verbatim} 
+===============================================================================
+
+ MYID=0 *****  Starting simulation (forward model) for shot 1 of 1  ********** 
+
+===============================================================================
+
+ Number of samples (nts) in source file: 3462
+ Number of samples (nts) in source file: 3462
+ Message from function wavelet written by PE 0 
+ 1 source positions located in subdomain of PE 0 
+ have been assigned with a source signal. 
+
+ PE 0 outputs source time function in SU format to start/source_signal.0.su.shot1 
+ 
+ Computing timestep 1000 of 3462 
+
+ **Message from update_v (printed by PE 0):
+ Updating particle velocities ... finished (real time: 0.00 s).
+ particle velocity exchange between PEs ... finished (real time: 0.00 s).
+
+ **Message from update_s (printed by PE 0):
+ Updating stress components ... finished (real time: 0.00 s).
+ stress exchange between PEs ... finished (real time: 0.00 s).
+ total real time for timestep 1000 : 0.01 s.
+
+ Computing timestep 2000 of 3462 
+
+ **Message from update_v (printed by PE 0):
+ Updating particle velocities ... finished (real time: 0.00 s).
+ particle velocity exchange between PEs ... finished (real time: 0.00 s).
+
+ **Message from update_s (printed by PE 0):
+ Updating stress components ... finished (real time: 0.00 s).
+ stress exchange between PEs ... finished (real time: 0.00 s).
+ total real time for timestep 2000 : 0.01 s.
+
+ Computing timestep 3000 of 3462 
+
+ **Message from update_v (printed by PE 0):
+ Updating particle velocities ... finished (real time: 0.00 s).
+ particle velocity exchange between PEs ... finished (real time: 0.00 s).
+
+ **Message from update_s (printed by PE 0):
+ Updating stress components ... finished (real time: 0.00 s).
+ stress exchange between PEs ... finished (real time: 0.00 s).
+ total real time for timestep 3000 : 0.01 s.
+ PE 0 is writing 11 seismograms (vx) to
+         su/DENISE_US_x.su.shot1.it1 
+ PE 0 is writing 11 seismograms (vy) to
+         su/DENISE_US_y.su.shot1.it1 
+
+ **Info from main (written by PE 0): 
+ CPU time of program per PE: 17 seconds.
+ Total real time of program: 18.08 seconds.
+ Average times for 
+ velocity update:        0.003 seconds  
+ stress update:          0.002 seconds  
+ velocity exchange:      0.000 seconds  
+ stress exchange:        0.000 seconds  
+ timestep:       0.005 seconds 
+\end{verbatim}}}  
+
+\section{Postprocessing}  
+The wavefield snapshots can be merged using the program \textit{snapmerge}. The program snapmerge is not a MPI program. Therefore, it can be executed without MPI and the mpirun command. You can run snapmerge on any PC since a MPI environment (e.g. LAM) is not required. You may therefore copy the snapshot outputs of the different nodes to another non-MPI computer to merge the files together. \textit{snapmerge} reads the required information from the DENISE parameter file. Simply type
+\newline
+
+\textit{../bin/snapmerge DENISE.json  }
+\newline
+
+% {\color{blue}{\begin{verbatim}
+% -bash-2.05b$~/DENISE/par> ../bin/snapmerge DENISE.json  
+% \end{verbatim}}}
+
+Depending on the model size the merge process may take a few seconds or hours. For the simple block model it only takes a few seconds. The output should read like this:
+{\color{blue}{\begin{verbatim}
+ pressure (files: ./snap/test.bin.p.??? ).
+
+ writing merged snapshot file to  ./snap/test.bin.p
+ Opening snapshot files: ./snap/test.bin.p.???  ... finished.
+ Copying... ... finished.
+ Use
+ xmovie n1=100 n2=100 < ./snap/test.bin.p loop=1 label1=Y label2=X title=%g
+ to play movie.
+\end{verbatim}}} 

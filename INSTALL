@@ -1,0 +1,44 @@
+INSTALL for DENISE
+==================
+
+A detailed installation instruction is provided in the chapter 5 of the 
+documentation (manual_DENISE.pdf).
+
+Before compiling the main program DENISE you have to compile the required 
+additional libraries. In the DENISE/par directory simply use the shell script
+
+./compileLIBRARIES.sh
+
+which should install the following libraries:
+
+lib cseife
+lib stfinv
+lib aff
+lib fourier
+
+To compile the program DENISE you can use the shell script located in the
+Directory DENISE/par:
+
+./compileDENISE.sh
+
+-------------------------------------------
+
+There are several known dependencies:
+
+- GCC
+- OpenMPI
+- fftw3
+- fc2
+- fort77
+- stdc++
+- math library (libm.a)
+
+-------------------------------------------
+
+Systems/environments the code was already successfully build on:
+
+- Linux 2.6.31.14-0.6-desktop x86_64 
+
+-------------------------------------------
+
+ 

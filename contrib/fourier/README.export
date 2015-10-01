@@ -1,0 +1,27 @@
+this is <README>
+============================================================================
+fourier
+-------
+$Id$
+============================================================================
+
+This directory contains source code for the library fourier. It was exportet
+from TF_Software to DENISE. DENISE is hosted in the Trac-/svn-project
+FWI_elastic .
+
+
+
+See COPYING for copyright and license information.
+
+
+
+Exports:
+   Each time this source code is exported to DENISE the current version is
+   tagged. The directory containing the tagged version is named by the day 
+   of the export (yyyymmdd) and can be found in 
+   http://gpitrsvn.gpi.uni-karlsruhe.de/repos/TFSoftware/export/fourier.
+   
+   19/10/2011   First export of the version tagged in 20111019
+   01/02/2013   Export of version tagged in 20130201  
+   
+----- END OF README ----- 

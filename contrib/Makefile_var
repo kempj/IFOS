@@ -1,0 +1,12 @@
+# This is a file for environment variables used in Makefiles in aff fourier stfinv
+
+LOCINCLUDEDIR=../header
+
+LOCLIBDIR=../bin
+LOCBINDIR=../bin
+
+TF_WWWBASEDIR=$HOME/public_html/txt/cxx
+
+TF_BROWSER=firefox
+
+FC=/usr/bin/g77-3.3

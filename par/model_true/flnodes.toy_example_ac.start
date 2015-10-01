@@ -1,0 +1,10 @@
+#FLNODE
+#converted by MOCOX   V1.2 from final.mod.gremlin
+#    0.0000 1 0  6371.0000
+#	depth	    rho		vp
+#       in m        in g/cm^3   in km/s
+#4
+        0.0000      1.0200      1.4800
+      500.0000      1.0200      1.4800
+      500.0000      2.0010      1.5000
+     2000.0000      2.0010      2.5000

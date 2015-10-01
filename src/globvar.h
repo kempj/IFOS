@@ -1,0 +1,107 @@
+/*------------------------------------------------------------------------
+ *   globvar.h - global variables of viscoelastic FD programs   
+ *   last update 05/04/02 T. Bohlen
+ *
+ *  ----------------------------------------------------------------------*/
+
+/* definition of global variables used in the finite difference programs*/
+/* generally, for the names of the global variables uppercase letters are used */
+
+/* Add new variables also in exchange_par.c and read_par_json.c */
+
+float XS, YS, DH, TIME, DT, TS, DAMPING, PLANE_WAVE_DEPTH, PHI;
+float TSNAP1, TSNAP2, TSNAPINC, *FL, TAU, F_REF;
+float XREC1, XREC2, YREC1, YREC2;
+float REC_ARRAY_DEPTH, REC_ARRAY_DIST;
+float REFREC[4]={0.0, 0.0, 0.0, 0.0}, FPML;
+int   SEISMO, NDT, NGEOPH, NSRC=1, SEIS_FORMAT, FREE_SURF, READMOD, READREC, SRCREC, FW=0;
+int   NX, NY, NT, QUELLART, QUELLTYP, SNAP, SNAP_FORMAT, LOG, REC_ARRAY, RUN_MULTIPLE_SHOTS, NTRG;
+int   L, BOUNDARY, DC, DRX, NXG, NYG, IDX, IDY, CHECKPTREAD, CHECKPTWRITE, FDORDER, MAXRELERROR;
+char  SNAP_FILE[STRING_SIZE], SOURCE_FILE[STRING_SIZE], SIGNAL_FILE[STRING_SIZE];
+char  MFILE[STRING_SIZE], REC_FILE[STRING_SIZE], CHECKPTFILE[STRING_SIZE];
+char  SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE], LOG_FILE[STRING_SIZE];
+char  SEIS_FILE_CURL[STRING_SIZE], SEIS_FILE_DIV[STRING_SIZE], SEIS_FILE_P[STRING_SIZE];
+FILE *FP;
+
+/* Mpi-variables */
+int   NP, NPSP, NPROC, NPROCX, NPROCY, MYID, IENDX, IENDY;
+int   POS[3], INDEX[5];     
+const int TAG1=1,TAG2=2, TAG3=3, TAG4=4, TAG5=5,TAG6=6; 
+
+/* spatial adaptive Code variables*/
+int   check_id, cfgt_id, cfgt, jumpid;
+float DH1;
+
+/* TDFWI Code DENISE_elastic*/
+char JACOBIAN[STRING_SIZE], DATA_DIR[STRING_SIZE], FREQ_FILE[STRING_SIZE];
+int TAPER, TAPERLENGTH, INVTYPE;
+int GRADT1,GRADT2,GRADT3,GRADT4;
+int ITERMAX, REC1, REC2, INVMAT1, INVMAT, QUELLTYPB;
+int HESSIAN, GRAD_METHOD, ORDER_HESSIAN;
+float FC_HESSIAN, TSHIFT_back;
+int MODEL_FILTER, FILT_SIZE;
+float EPSILON, MUN, EPSILON_u, EPSILON_rho;
+
+int TESTSHOT_START, TESTSHOT_END, TESTSHOT_INCR, NO_OF_TESTSHOTS; 
+int SWS_TAPER_GRAD_VERT, SWS_TAPER_GRAD_HOR, SWS_TAPER_GRAD_SOURCES, SWS_TAPER_CIRCULAR_PER_SHOT, SRTSHAPE, FILTSIZE;
+int SWS_TAPER_FILE, SWS_TAPER_FILE_PER_SHOT;
+float SRTRADIUS;
+char TAPER_FILE_NAME[STRING_SIZE], TAPER_FILE_NAME_U[STRING_SIZE], TAPER_FILE_NAME_RHO[STRING_SIZE];
+
+int SPATFILTER, SPAT_FILT_SIZE, SPAT_FILT_1, SPAT_FILT_ITER;
+
+int INV_RHO_ITER, INV_VS_ITER, INV_VP_ITER;
+
+int MIN_ITER;
+
+char INV_MODELFILE[STRING_SIZE];
+int nfstart, nf;
+
+int nfstart_jac, nf_jac;
+
+float VPUPPERLIM, VPLOWERLIM, VSUPPERLIM, VSLOWERLIM, RHOUPPERLIM, RHOLOWERLIM;
+
+float npower, k_max_PML;
+
+int INV_STF, N_STF, N_STF_START;
+char PARA[STRING_SIZE];
+
+int TIME_FILT, ORDER, ZERO_PHASE;
+float FC_START, FC_END, FC_INCR, F_HP;
+
+int LNORM, DTINV;
+
+int STEPMAX;
+float EPS_SCALE, SCALEFAC;
+
+float PRO;
+
+/* trace kill variables */
+int TRKILL;
+char TRKILL_FILE[STRING_SIZE];
+
+/* trace kill STF variables */
+int TRKILL_STF;
+char TRKILL_FILE_STF[STRING_SIZE];
+
+int TIMEWIN, NORMALIZE;
+float TWLENGTH_PLUS, TWLENGTH_MINUS, GAMMA;
+char PICKS_FILE[STRING_SIZE];
+char MISFIT_LOG_FILE[STRING_SIZE]; 
+
+int GRAD_FILTER, FILT_SIZE_GRAD;
+
+int VELOCITY;
+
+float WATERLEVEL_LNORM8;
+
+float VP_VS_RATIO;
+
+int S;
+
+float S_VP, S_VS, S_RHO;
+
+int GRAD_FILT_WAVELENGTH;
+float A;
+
+int ACOUSTIC;
