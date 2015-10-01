@@ -15,7 +15,7 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 A PARTICULAR PURPOSE.   
 See the GNU General Public License for more details.
 
-You will receive a copy of the GNU General Public License along with the SOFI2D 
+You will receive a copy of the GNU General Public License along with the DENISE 
 download package. See file [COPYING](/COPYING) and/or [online](http://www.gnu.org/licenses/gpl-2.0.html)
 
 # Download and Newsletter
