@@ -30,8 +30,8 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 
 	/* declaration of global variables */
 	extern float DT, DH;
-	extern int SEIS_FORMAT, MYID, NT, QUELLART, TIME_FILT;
-	extern char  SEIS_FILE_VY[STRING_SIZE], PARA[STRING_SIZE], DATA_DIR[STRING_SIZE];
+	extern int SEIS_FORMAT, MYID, NT, QUELLART, TIME_FILT, TIMEWIN;
+	extern char  SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_P[STRING_SIZE], PARA[STRING_SIZE], DATA_DIR[STRING_SIZE];
 	extern int TRKILL_STF, NORMALIZE;
 	extern char TRKILL_FILE_STF[STRING_SIZE];
 	extern char SIGNAL_FILE[STRING_SIZE];
@@ -41,45 +41,50 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	char trace_kill_file[STRING_SIZE];	
 	FILE *ftracekill;
 	
+	float *picked_times=NULL;
+	
 	/* --------------- declaration of variables --------------- */
 	unsigned int nrec, nsamp, i, npairs;
 	float dt;
 	float xr=0.0, yr=0.0;
 	float XS=0.0, YS=0.0;
-	char conv_y[STRING_SIZE], qw[STRING_SIZE], conv_y_tmp[STRING_SIZE];
+	char conv_y[STRING_SIZE], qw[STRING_SIZE], conv_y_tmp[STRING_SIZE], obs_y_tmp[STRING_SIZE], mod_y_tmp[STRING_SIZE];
 	
 	/* variables for wavelet */
 	int nt, nts;
 	float tshift, amp=0.0, fc, tau, t, ts, ag;
 	float * wavelet, * stf_conv_wavelet, *psource=NULL;
+	
 	wavelet=vector(1,ns);
 	stf_conv_wavelet=vector(1,ns);
+	
+	if(TIMEWIN) picked_times = vector(1,ntr); /* declaration of variables for TIMEWIN */
 	
 	printf("\n================================================================================================\n\n");
 	printf("\n ***** Inversion of Source Time Function - shot: %d - it: %d ***** \n\n",ishot,iter);
 	
 	/* if TRKILL_STF==1 a trace killing is applied */
 	if(TRKILL_STF){
-	kill_tmp = imatrix(1,ntr_glob,1,nshots);
-	kill_vector = ivector(1,ntr_glob);
-
-	ftracekill=fopen(TRKILL_FILE_STF,"r");
-
-	if (ftracekill==NULL) err(" Trace kill file could not be opened!");
-
-	for(i=1;i<=ntr_glob;i++){
-		for(j=1;j<=nshots;j++){
-			fscanf(ftracekill,"%d",&kill_tmp[i][j]);
+		kill_tmp = imatrix(1,ntr_glob,1,nshots);
+		kill_vector = ivector(1,ntr_glob);
+		
+		ftracekill=fopen(TRKILL_FILE_STF,"r");
+		
+		if (ftracekill==NULL) err(" Trace kill file could not be opened!");
+		
+		for(i=1;i<=ntr_glob;i++){
+			for(j=1;j<=nshots;j++){
+				fscanf(ftracekill,"%d",&kill_tmp[i][j]);
+			}
 		}
-	}
-
-	fclose(ftracekill);
-
-	h=1;
-	for(i=1;i<=ntr_glob;i++){
-	   kill_vector[h] = kill_tmp[i][ishot];
-	   h++;
-	}
+		
+		fclose(ftracekill);
+		
+		h=1;
+		for(i=1;i<=ntr_glob;i++){
+		kill_vector[h] = kill_tmp[i][ishot];
+		h++;
+		}
 	} /* end if(TRKILL_STF)*/	
 	
 	if(TRKILL_STF){
@@ -92,17 +97,21 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 				sectionvy_obs[i][j]=0.0;
 						}
 				}	
-    		if(i==ntr_glob)printf(" ***** \n\n");
+		if(i==ntr_glob)printf(" ***** \n\n");
 		}
-	
-	}	
+	}
 	/* trace killing ends here */
+	
+	if(TIMEWIN==1){
+		time_window(sectionvy, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+		time_window(sectionvy_obs, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+	}
 	
 	/* NORMALIZE TRACES */
 	/*if(NORMALIZE==1){*/
 	normalize_data(sectionvy,ntr_glob,ns);
 	normalize_data(sectionvy_obs,ntr_glob,ns);
-	/*}*/		
+	/*}*/
 	
 	nrec=(unsigned int)ntr_glob;
 	nsamp=(unsigned int)ns;
@@ -113,8 +122,9 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	XS=srcpos[1][ishot];	
 	YS=srcpos[2][ishot];
 	
+	
 	/* TF Software: see libstfinv */
-		
+	
 	struct CTriples data;
 	data.n=nrec;
 	data.triples=(struct CWaveformTriple *)malloc(nrec*sizeof(struct CWaveformTriple));
@@ -146,20 +156,19 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	stf.sampling.dt=dt;
 	
 	
-	/*char para[]="fbd:tshift=0.0"; /* parameter string */
-	
 	initstfinvengine(data, stf, PARA);
-		
+	
 	runstfinvengine();
 	
 	/* END TF Software */
 	
+	
+	psource=vector(1,ns);
+	
 	if (QUELLART==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
 	if (QUELLART==7){
-		psource=vector(1,ns);
-		inseis_source_wavelet(psource,ns,ishot);}
-	
-	
+		inseis_source_wavelet(psource,ns,ishot);
+	}
 	
 	/* calculating wavelet SIN**3 for convoling with STF */
 	tshift=srcpos[4][ishot];
@@ -232,24 +241,28 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 		wavelet[nt]=amp;
 		
 	}/*  end of for (nt=1;nt<=ns;nt++) */	
-		
-		
-		
-		
+	
+	
 	/* convolving wavelet with STF */
 	conv_FD(wavelet,source_time_function,stf_conv_wavelet,ns);
 	
 	
-	/* --------------- writing out the convolved seismograms --------------- */
-	/*sprintf(conv_y_tmp,"%s.shot%d.conv",SEIS_FILE_VY,ishot);
-	printf(" PE %d is writing %d convolved seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,conv_y_tmp);
-	outseis_glob(fp,fopen(conv_y_tmp,"w"),1,sectionvy_conv,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);*/
-		
+// 	/* --------------- writing out the observed seismograms --------------- */
+// 	sprintf(obs_y_tmp,"%s.shot%d.obs",SEIS_FILE_P,ishot);
+// 	printf(" PE %d is writing %d observed seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,obs_y_tmp);
+// 	outseis_glob(fp,fopen(obs_y_tmp,"w"),1,sectionvy_obs,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);
+// 	
+// 	/* --------------- writing out the modelled seismograms --------------- */
+// 	sprintf(mod_y_tmp,"%s.shot%d.mod",SEIS_FILE_P,ishot);
+// 	printf(" PE %d is writing %d modelled seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,mod_y_tmp);
+// 	outseis_glob(fp,fopen(mod_y_tmp,"w"),1,sectionvy,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);
+	
+	
 	/* --------------- writing out the source time function --------------- */
-	if((TIME_FILT=1)||(TIME_FILT=2)){
-	sprintf(qw,"%s.shot%d_%dHz",SIGNAL_FILE,ishot,(int)FC);
-	printf(" PE %d is writing source time function for shot = %d to\n\t %s \n",MYID,ishot,qw);
-	outseis_vector(fp,fopen(qw,"w"),1,stf_conv_wavelet,recpos,recpos_loc,ntr,srcpos,0,ns,SEIS_FORMAT,ishot,0);
+	if((TIME_FILT==1)||(TIME_FILT==2)){
+		sprintf(qw,"%s.shot%d_%dHz",SIGNAL_FILE,ishot,(int)FC);
+		printf(" PE %d is writing source time function for shot = %d to\n\t %s \n",MYID,ishot,qw);
+		outseis_vector(fp,fopen(qw,"w"),1,stf_conv_wavelet,recpos,recpos_loc,ntr,srcpos,0,ns,SEIS_FORMAT,ishot,0);
 	}
 	
 	sprintf(qw,"%s.shot%d",SIGNAL_FILE,ishot);
@@ -259,8 +272,6 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	/*sprintf(conv_y_tmp,"%s.shot%d.forward",SEIS_FILE_VY,ishot);
 	printf(" PE %d is writing %d seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,conv_y_tmp);
 	outseis_glob(fp,fopen(conv_y_tmp,"w"),1,sectionvy,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);*/
-			
-				
 	
 	/*freestfinvengine();
 	free(data.triples);*/
@@ -269,10 +280,12 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	free_vector(stf_conv_wavelet,1,ns);
 	free_vector(psource,1,ns);
 	
+	/* free memory for time windowing and trace killing */
+	if(TIMEWIN==1) free_vector(picked_times,1,ntr);
+
 	/* free memory for trace killing */
 	if(TRKILL_STF){
-	free_imatrix(kill_tmp,1,ntr_glob,1,nshots);
-	free_ivector(kill_vector,1,ntr_glob);
+		free_imatrix(kill_tmp,1,ntr_glob,1,nshots);
+		free_ivector(kill_vector,1,ntr_glob);
 	}
 }
-

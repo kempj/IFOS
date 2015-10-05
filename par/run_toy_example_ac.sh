@@ -40,5 +40,7 @@ mpirun -np 4 nice -19 ../bin/denise in_and_out/toy_example/toy_example_ac_INV.js
 
 make clean
 
-# rm jacobian/toy_example/*.old.*.*
-# rm model/toy_example/*.bin.*.*
+rm jacobian/toy_example/*toy_example*.*.*.*
+rm model/*.bin.*.*
+rm model/toy_example/*.bin.*.*
+rm taper/*.bin.*.*

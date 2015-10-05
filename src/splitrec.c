@@ -24,8 +24,7 @@
  */
  
  #include "fd.h"
-int **splitrec(int **recpos,int *ntr_loc, int ntr, int *recswitch)
-{
+int **splitrec(int **recpos,int *ntr_loc, int ntr, int *recswitch){
 
 	extern int IENDX, IENDY, POS[4], REC1, REC2;
 
@@ -79,7 +78,7 @@ int **splitrec(int **recpos,int *ntr_loc, int ntr, int *recswitch)
 		fprintf(FP," %d \t %d \t %d\n",
 		    MYID,recpos_local[1][j],recpos_local[2][j]);
 */
-   	*ntr_loc=i;
+	*ntr_loc=i;
 	return recpos_local;
 
 }

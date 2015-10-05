@@ -186,15 +186,19 @@ void update_v_acoustic_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 		/* Backpropagation (sw==1) */
 		if(sw==1){
 		for (l=1;l<=nsrc;l++) {
-		    i=(int)srcpos_loc[1][l];
-		    j=(int)srcpos_loc[2][l];
+			i=(int)srcpos_loc[1][l];
+			j=(int)srcpos_loc[2][l];
 		    
-		    if(QUELLTYPB==1){vx[j][i] += signals[l][nt];    /* single force in x */
-		                     vy[j][i] += signals1[l][nt];}  /* + single force in y */
-
-		    if(QUELLTYPB==2){vy[j][i] += signals1[l][nt];}  /* single force in y */
-		    if(QUELLTYPB==3){vx[j][i] += signals[l][nt];}   /* single force in x */
-
+			if(QUELLTYPB==1){
+				vx[j][i] += signals[l][nt];   /* single force in x */
+				vy[j][i] += signals1[l][nt];  /* + single force in y */
+			}
+			
+			if(QUELLTYPB==2)
+				vy[j][i] += signals1[l][nt];  /* single force in y */
+			if(QUELLTYPB==3)
+				vx[j][i] += signals[l][nt];   /* single force in x */
+			
 		}}                         
 			
 	

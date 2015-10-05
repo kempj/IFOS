@@ -206,11 +206,11 @@ int main(int argc, char **argv){
 
 
 	if (SEISMO){
-	recpos=receiver(FP, &ntr);
-	recswitch = ivector(1,ntr);
-	recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
-	ntr_glob=ntr;
-	ntr=ntr_loc;
+		recpos=receiver(FP, &ntr);
+		recswitch = ivector(1,ntr);
+		recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
+		ntr_glob=ntr;
+		ntr=ntr_loc;
 	}
 
 	/* memory allocation for abort criterion*/
@@ -390,20 +390,19 @@ int main(int argc, char **argv){
 
 		if(!ACOUSTIC){
 			forward_prop_x =  f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-			forward_prop_y =  f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-
 			// forward_prop_x =  vector(1,nxnyi*(NTDTINV));
+			forward_prop_y =  f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
 			// forward_prop_y =  vector(1,nxnyi*(NTDTINV));
 		}else{
 			forward_prop_p =  f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
 		}
+		
 		gradg = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
 		gradp = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
 
 		forward_prop_rho_x =  f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-		forward_prop_rho_y =  f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-
 		// forward_prop_rho_x =  vector(1,nxnyi*(NTDTINV));
+		forward_prop_rho_y =  f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
 		// forward_prop_rho_y =  vector(1,nxnyi*(NTDTINV));
 
 		gradg_rho = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
@@ -414,7 +413,6 @@ int main(int argc, char **argv){
 
 		if(!ACOUSTIC){
 			forward_prop_u =  f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-
 			// forward_prop_u =  vector(1,nxnyi*(NTDTINV));
 
 			gradg_u = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
@@ -582,23 +580,23 @@ int main(int argc, char **argv){
 	}	
 
 	/* Memory for seismic data */
-	sectionvxdata=matrix(1,ntr,1,ns);
 	sectionread=matrix(1,ntr_glob,1,ns);
+	sectionvxdata=matrix(1,ntr,1,ns);
 	sectionvxdiff=matrix(1,ntr,1,ns);
-	sectionvydata=matrix(1,ntr,1,ns);
-	sectionpdata=matrix(1,ntr,1,ns);
-	sectionvydiff=matrix(1,ntr,1,ns);
-	sectionpdiff=matrix(1,ntr,1,ns);
 	sectionvxdiffold=matrix(1,ntr,1,ns);
+	sectionvydata=matrix(1,ntr,1,ns);
+	sectionvydiff=matrix(1,ntr,1,ns);
 	sectionvydiffold=matrix(1,ntr,1,ns);
+	sectionpdata=matrix(1,ntr,1,ns);
+	sectionpdiff=matrix(1,ntr,1,ns);
 	sectionpdiffold=matrix(1,ntr,1,ns);
 
-	if((INV_STF==1)||(TIME_FILT==1) || (TIME_FILT==2)){
+	if((INV_STF==1)||(TIME_FILT==1)||(TIME_FILT==2)){
 		/* Memory for inversion for source time function */
-		sectionvy_conv=matrix(1,ntr_glob,1,NT);
-		sectionvy_obs=matrix(1,ntr_glob,1,NT);
 		sectionvx_conv=matrix(1,ntr_glob,1,NT);
 		sectionvx_obs=matrix(1,ntr_glob,1,NT);
+		sectionvy_conv=matrix(1,ntr_glob,1,NT);
+		sectionvy_obs=matrix(1,ntr_glob,1,NT);
 		sectionp_conv=matrix(1,ntr_glob,1,NT);
 		sectionp_obs=matrix(1,ntr_glob,1,NT);
 		source_time_function = vector(1,NT);
@@ -1090,6 +1088,14 @@ int main(int argc, char **argv){
 						// 	    		imat++;
 									}
 									}
+								}else{
+									for (i=1;i<=NX;i=i+IDXI){ 
+									for (j=1;j<=NY;j=j+IDYI){
+										forward_prop_p[j][i][hin]=psp[j][i];
+									}
+									}
+								}
+								if(!ACOUSTIC){
 									for (i=1;i<=NX;i=i+IDXI){ 
 									for (j=1;j<=NY;j=j+IDYI){
 										if(VELOCITY==0){
@@ -1099,12 +1105,6 @@ int main(int argc, char **argv){
 											forward_prop_u[j][i][hin]=uxy[j][i];}
 						// 	    				forward_prop_u[imat2]=uxy[j][i];}
 						// 	    imat2++;	
-									}
-									}
-								}else{
-									for (i=1;i<=NX;i=i+IDXI){ 
-									for (j=1;j<=NY;j=j+IDYI){
-										forward_prop_p[j][i][hin]=psp[j][i];
 									}
 									}
 								}
@@ -1213,9 +1213,7 @@ int main(int argc, char **argv){
 							}
 						}
 						}
-					}
-
-					else{
+					}else{
 						if (INVMAT==0){
 						if((INV_STF==1)&&(iter==N_STF_START)){
 				
@@ -1395,7 +1393,7 @@ int main(int argc, char **argv){
 					}
 					}
 				}
-											
+				
 				
 				/*----------------------  loop over timesteps (forward model) ------------------*/
 
@@ -1515,7 +1513,7 @@ int main(int argc, char **argv){
 						//                  imat1++;                              
 							}
 							}
-
+							
 							if(!ACOUSTIC){
 								for (i=1;i<=NX;i=i+IDXI){
 								for (j=1;j<=NY;j=j+IDYI){
@@ -1533,6 +1531,14 @@ int main(int argc, char **argv){
 								// 	    imat++;
 								}
 								}
+							}else{
+								for (i=1;i<=NX;i=i+IDXI){
+								for (j=1;j<=NY;j=j+IDYI){
+									forward_prop_p[j][i][hin]=psp[j][i];
+								}
+								}
+							}
+							if(!ACOUSTIC){
 								for (i=1;i<=NX;i=i+IDXI){
 								for (j=1;j<=NY;j=j+IDYI){
 									if(VELOCITY==0){
@@ -1544,12 +1550,6 @@ int main(int argc, char **argv){
 								// 	    imat2++;
 								}
 								} 
-							}else{
-								for (i=1;i<=NX;i=i+IDXI){
-								for (j=1;j<=NY;j=j+IDYI){
-									forward_prop_p[j][i][hin]=psp[j][i];
-								}
-								}
 							}
 							hin++;
 							hin1=hin1+DTINV;
@@ -1902,26 +1902,26 @@ int main(int argc, char **argv){
 										surface_acoustic_PML(1, psp);
 								}
 							}
-
+							
 							if (MYID==0){
 								time6=MPI_Wtime();
 								time_av_s_update+=(time6-time5);
 								if (infoout)  fprintf(FP," stress exchange between PEs ...");
 							}
-
+							
 							/* stress exchange between PEs */
 							if(!ACOUSTIC)
 								exchange_s(psxx,psyy,psxy, bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, bufferbot_to_top, req_send, req_rec);
 							else
 								exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
-
-
+							
+							
 							if (MYID==0){
 								time7=MPI_Wtime();
 								time_av_s_exchange+=(time7-time6);
 								if (infoout)  fprintf(FP," finished (real time: %4.2f s).\n",time7-time6);
 							}
-
+							
 							/* calculate change of the source wavelet */
 							if ((nsrc_loc>0)&&(INV_STF==1)){
 								for (lq=1;lq<=nsrc_loc;lq++) {
@@ -1934,7 +1934,6 @@ int main(int argc, char **argv){
 										dsignals[ishot][invtimer] = (-psp[jq][lq])/2.0;
 								}
 							}
-
 							
 							/*if(nt==hin1){*/
 							if(DTINV_help[NT-nt+1]==1){
@@ -1945,13 +1944,13 @@ int main(int argc, char **argv){
 								if((HESSIAN==0)&&(INVMAT==0)){
 									for (i=1;i<=NX;i=i+IDXI){   
 									for (j=1;j<=NY;j=j+IDYI){ 
-													
+										
 										waveconv_rho_shot[j][i]+=(pvxp1[j][i]*forward_prop_rho_x[j][i][NTDTINV-hin+1])+(pvyp1[j][i]*forward_prop_rho_y[j][i][NTDTINV-hin+1]);
-								// 		   waveconv_rho_shot[j][i]+=(pvxp1[j][i]*forward_prop_rho_x[imat])+(pvyp1[j][i]*forward_prop_rho_y[imat]);
-								// 		   waveconv_shot[j][i]+= (forward_prop_x[imat]+forward_prop_y[imat])*(psxx[j][i]+psyy[j][i]);  
-
+										// waveconv_rho_shot[j][i]+=(pvxp1[j][i]*forward_prop_rho_x[imat])+(pvyp1[j][i]*forward_prop_rho_y[imat]);
+										
 										if(!ACOUSTIC){
 											waveconv_shot[j][i]+= (forward_prop_x[j][i][NTDTINV-hin+1]+forward_prop_y[j][i][NTDTINV-hin+1])*(psxx[j][i]+psyy[j][i]);
+											// waveconv_shot[j][i]+= (forward_prop_x[imat]+forward_prop_y[imat])*(psxx[j][i]+psyy[j][i]);  
 										}else{
 											waveconv_shot[j][i]+= (forward_prop_p[j][i][NTDTINV-hin+1])*(psp[j][i]);
 										}
@@ -1959,17 +1958,12 @@ int main(int argc, char **argv){
 										if(!ACOUSTIC){
 											muss = prho[j][i] * pu[j][i] * pu[j][i];
 											lamss = prho[j][i] * ppi[j][i] * ppi[j][i] - 2.0 * muss;
-													
+											
 											if(pu[j][i]>0.0){
-												waveconv_u_shot[j][i]+= ((1.0/(muss*muss))*(forward_prop_u[j][i][NTDTINV-hin+1] * psxy[j][i])) 
-														+ ((1.0/4.0) * ((forward_prop_x[j][i][NTDTINV-hin+1] + forward_prop_y[j][i][NTDTINV-hin+1]) * (psxx[j][i] + psyy[j][i])) / ((lamss+muss)*(lamss+muss)))  
-														+ ((1.0/4.0) * ((forward_prop_x[j][i][NTDTINV-hin+1] - forward_prop_y[j][i][NTDTINV-hin+1]) * (psxx[j][i] - psyy[j][i])) / (muss*muss));
+												waveconv_u_shot[j][i]+= ((1.0/(muss*muss))*(forward_prop_u[j][i][NTDTINV-hin+1] * psxy[j][i])) + ((1.0/4.0) * ((forward_prop_x[j][i][NTDTINV-hin+1] + forward_prop_y[j][i][NTDTINV-hin+1]) * (psxx[j][i] + psyy[j][i])) / ((lamss+muss)*(lamss+muss))) + ((1.0/4.0) * ((forward_prop_x[j][i][NTDTINV-hin+1] - forward_prop_y[j][i][NTDTINV-hin+1]) * (psxx[j][i] - psyy[j][i])) / (muss*muss));
+												// waveconv_u_shot[j][i]+= ((1.0/(muss*muss))*(forward_prop_u[imat] * psxy[j][i])) + ((1.0/4.0) * ((forward_prop_x[imat] + forward_prop_y[imat]) * (psxx[j][i] + psyy[j][i])) / ((lamss+muss)*(lamss+muss))) + ((1.0/4.0) * ((forward_prop_x[imat] - forward_prop_y[imat]) * (psxx[j][i] - psyy[j][i])) / (muss*muss));}
 											}
-									// 		   waveconv_u_shot[j][i]+= ((1.0/(muss*muss))*(forward_prop_u[imat] * psxy[j][i])) 
-									//                                   + ((1.0/4.0) * ((forward_prop_x[imat] + forward_prop_y[imat]) * (psxx[j][i] + psyy[j][i])) / ((lamss+muss)*(lamss+muss)))  
-									//                                   + ((1.0/4.0) * ((forward_prop_x[imat] - forward_prop_y[imat]) * (psxx[j][i] - psyy[j][i])) / (muss*muss));}
-									
-									// 		   imat++;
+											// imat++;
 										}
 									}
 									}
@@ -2005,9 +1999,9 @@ int main(int argc, char **argv){
 								time_av_timestep+=(time8-time3);
 								if (infoout)  fprintf(FP," total real time for timestep %d : %4.2f s.\n",nt,time8-time3);
 							}
-
+							
 						}/*--------------------  End  of loop over timesteps (backpropagation)----------*/
-
+						
 						/* output gradient for vp */
 						sprintf(jac,"%s_jacobian_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
 						FP4=fopen(jac,"wb");
@@ -2023,42 +2017,10 @@ int main(int argc, char **argv){
 						MPI_Barrier(MPI_COMM_WORLD); 
 						sprintf(jac,"%s_jacobian_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
 						remove(jac);
-
-// 						/* output forward_prop_p */
-// 						sprintf(jac,"%s_pressure_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
-// 						FP4=fopen(jac,"wb");
-// 						for (i=1;i<=NX;i=i+IDX){
-// 							for (j=1;j<=NY;j=j+IDY){
-// 								fwrite(&forward_prop_p[j][i][500],sizeof(float),1,FP4);
-// 							}
-// 						}
-// 						fclose(FP4);
-// 						MPI_Barrier(MPI_COMM_WORLD);
-// 						sprintf(jac,"%s_pressure_shot%i.bin",JACOBIAN,ishot);
-// 						if (MYID==0) mergemod(jac,3);
-// 						MPI_Barrier(MPI_COMM_WORLD); 
-// 						sprintf(jac,"%s_pressure_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
-// 						remove(jac);
-// 
-// 						/* output psp */
-// 						sprintf(jac,"%s_pressurenew_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
-// 						FP4=fopen(jac,"wb");
-// 						for (i=1;i<=NX;i=i+IDX){
-// 							for (j=1;j<=NY;j=j+IDY){
-// 								fwrite(&psp[j][i],sizeof(float),1,FP4);
-// 							}
-// 						}
-// 						fclose(FP4);
-// 						MPI_Barrier(MPI_COMM_WORLD);
-// 						sprintf(jac,"%s_pressurenew_shot%i.bin",JACOBIAN,ishot);
-// 						if (MYID==0) mergemod(jac,3);
-// 						MPI_Barrier(MPI_COMM_WORLD); 
-// 						sprintf(jac,"%s_pressurenew_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
-// 						remove(jac);
-
-
+						
+						
 						if(HESSIAN){
-
+							
 							/* calculate Hessian for lambda from autocorrelation of the jacobian */
 							/* ----------------------------------------------------------------- */
 							imat=1;
@@ -2235,7 +2197,6 @@ int main(int argc, char **argv){
 								
 								/* calculate Vp gradient */
 								waveconv_shot[j][i] = 2.0 * ppi[j][i] * prho[j][i] * waveconv_lam[j][i];
-// 								waveconv_shot[j][i] = waveconv_lam[j][i];
 							}
 							
 							if(INVMAT1==2){
@@ -2926,7 +2887,6 @@ int main(int argc, char **argv){
 			fprintf(FP," velocity exchange:  \t %5.3f seconds  \n",time_av_v_exchange);
 			fprintf(FP," stress exchange:  \t %5.3f seconds  \n",time_av_s_exchange);
 			fprintf(FP," timestep:  \t %5.3f seconds  \n",time_av_timestep);
-				
 		}
 
 
@@ -2940,32 +2900,34 @@ int main(int argc, char **argv){
 			/* abort criterion: if diff is smaller than pro (1% ?? is this reasonable?) than the inversion abort or switch to another frequency range*/
 			if((diff<=pro)&&(TIME_FILT==0)){
 				if(MYID==0){
-				printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
+					printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
 				}
-			break;
+				break;
 			}
 			
 			/* abort criterion: did not found a step length which decreases the misfit*/
 			if((step3==1)&&(TIME_FILT==0)){
 				if(MYID==0){
-				printf("\n Did not find a step length which decreases the misfit.\n");
+					printf("\n Did not find a step length which decreases the misfit.\n");
 				}
-			break;
+				break;
 			}
 			
 			if(((diff<=pro)&&(TIME_FILT==1))||((TIME_FILT==1)&&(step3==1))){
 				if(MYID==0){
 					if (diff<=pro){
-					printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);}
+						printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
+					}
 					if(step3==1){
-					printf("\n Did not find a step length which decreases the misfit.\n");}
+						printf("\n Did not find a step length which decreases the misfit.\n");
+					}
 				}
 				
 				if(FC==FC_END){
 					if(MYID==0){
-					printf("\n Reached the maximum frequency of %4.2f Hz \n",FC);
+						printf("\n Reached the maximum frequency of %4.2f Hz \n",FC);
 					}	
-				break;
+					break;
 				}
 				
 				FC=FC+FC_INCR;
@@ -2979,16 +2941,18 @@ int main(int argc, char **argv){
 			if(((diff<=pro)&&(TIME_FILT==2))||((TIME_FILT==2)&&(step3==1))){
 				if(MYID==0){
 					if (diff<=pro){
-					printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);}
+						printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
+					}
 					if(step3==1){
-					printf("\n Did not find a step length which decreases the misfit.\n");}
+						printf("\n Did not find a step length which decreases the misfit.\n");
+					}
 				}
 				
 				if(FREQ_NR==nfrq){
 					if(MYID==0){
-					printf("\n Finished at the maximum frequency of %4.2f Hz \n",FC);
+						printf("\n Finished at the maximum frequency of %4.2f Hz \n",FC);
 					}
-				break;
+					break;
 				}
 					
 				FREQ_NR=FREQ_NR+1;
@@ -3256,7 +3220,7 @@ int main(int argc, char **argv){
 		switch (SEISMO){
 			case 1 : /* particle velocities only */
 				free_matrix(sectionvx,1,ntr,1,ns);
-				free_matrix(sectionvy,1,ntr,1,ns);		
+				free_matrix(sectionvy,1,ntr,1,ns);
 				break;	
 			case 2 : /* pressure only */
 				free_matrix(sectionp,1,ntr,1,ns);
@@ -3272,7 +3236,7 @@ int main(int argc, char **argv){
 				free_matrix(sectionvy,1,ntr,1,ns);
 				free_matrix(sectionp,1,ntr,1,ns);
 				free_matrix(sectioncurl,1,ntr,1,ns);
-				free_matrix(sectiondiv,1,ntr,1,ns);		
+				free_matrix(sectiondiv,1,ntr,1,ns);
 				break;
 			case 5 : /* everything except curl and div */
 				free_matrix(sectionvx,1,ntr,1,ns);
@@ -3282,24 +3246,24 @@ int main(int argc, char **argv){
 		}
 	}
 
-	free_matrix(sectionvxdata,1,ntr,1,ns);
 	free_matrix(sectionread,1,ntr_glob,1,ns);
+	free_matrix(sectionvxdata,1,ntr,1,ns);
 	free_matrix(sectionvxdiff,1,ntr,1,ns);
+	free_matrix(sectionvxdiffold,1,ntr,1,ns);
 	free_matrix(sectionvydata,1,ntr,1,ns);
 	free_matrix(sectionvydiff,1,ntr,1,ns);
 	free_matrix(sectionvydiffold,1,ntr,1,ns);
-	free_matrix(sectionvxdiffold,1,ntr,1,ns);
 	free_matrix(sectionpdata,1,ntr,1,ns);
 	free_matrix(sectionpdiff,1,ntr,1,ns);
 	free_matrix(sectionpdiffold,1,ntr,1,ns);
 
 	if((INV_STF==1)||(TIME_FILT==1) || (TIME_FILT==2)) {
 		/* free memory for inversion of source time function */
-		free_matrix(sectionvy_conv,1,ntr_glob,1,NT);
 		free_matrix(sectionvx_conv,1,ntr_glob,1,NT);
-		free_matrix(sectionp_conv,1,ntr_glob,1,NT);
-		free_matrix(sectionvy_obs,1,ntr_glob,1,NT);
 		free_matrix(sectionvx_obs,1,ntr_glob,1,NT);
+		free_matrix(sectionvy_conv,1,ntr_glob,1,NT);
+		free_matrix(sectionvy_obs,1,ntr_glob,1,NT);
+		free_matrix(sectionp_conv,1,ntr_glob,1,NT);
 		free_matrix(sectionp_obs,1,ntr_glob,1,NT);
 		free_vector(source_time_function,1,NT);
 	}

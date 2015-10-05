@@ -92,7 +92,7 @@ void write_par(FILE *fp){
 	extern float S_VP, S_VS, S_RHO;
 	
 	extern int GRAD_FILT_WAVELENGTH;
-	extern int A;
+	extern float A;
 
 	/* definition of local variables */
 	int l;
@@ -401,12 +401,14 @@ void write_par(FILE *fp){
 	fprintf(fp,"\n");
 	fprintf(fp," Vp is inverted from iteration step %d on.\n",INV_VP_ITER);
 	
-	fprintf(fp,"\n");
-	fprintf(fp," Vs is inverted from iteration step %d on.\n\n\n",INV_VS_ITER);
+	if(!ACOUSTIC){
+		fprintf(fp,"\n");
+		fprintf(fp," Vs is inverted from iteration step %d on.\n\n\n",INV_VS_ITER);
+	}
 	
 	fprintf(fp,"\n");
 	fprintf(fp," Minimum Vp/Vs-ratio is set to %4.2f.\n",VP_VS_RATIO);
-	if(VP_VS_RATIO<1)fprintf(fp," which means that it is disregarded. \n\n\n",VP_VS_RATIO);
+	if(VP_VS_RATIO<1)fprintf(fp," which means that it is disregarded. \n\n\n");
 	
 	if(S==1){
 	fprintf(fp,"\n\n");

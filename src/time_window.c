@@ -25,91 +25,74 @@
 
 void time_window(float **sectiondata, float *picked_times, int iter, int ntr_glob, int **recpos_loc, int ntr, int ns, int ishot){
 
-/* declaration of variables */
-extern float DT;
-extern int REC1, REC2, MYID;
-extern float GAMMA, TWLENGTH_PLUS, TWLENGTH_MINUS;
-extern char PICKS_FILE[STRING_SIZE];
-int READ_PICKED_TIMES;
-char pickfile_char[STRING_SIZE];
-float time, dump, dump1, taper, taper1;
-float *pick_tmp;
-int i, j, h;
+	/* declaration of variables */
+	extern float DT;
+	extern int REC1, REC2, MYID;
+	extern float GAMMA, TWLENGTH_PLUS, TWLENGTH_MINUS;
+	extern char PICKS_FILE[STRING_SIZE];
+	int READ_PICKED_TIMES;
+	char pickfile_char[STRING_SIZE];
+	float time, dump, dump1, taper, taper1;
+	float *pick_tmp;
+	int i, j, h;
 
+	FILE *fptime;
 
-FILE *fptime;
+	READ_PICKED_TIMES=1; /*other options?*/
 
-READ_PICKED_TIMES=1;
+	/* read picked first arrival times */
+	if(READ_PICKED_TIMES==1){
+		pick_tmp = vector(1,ntr_glob);
+		
+		sprintf(pickfile_char,"%s_%i.dat",PICKS_FILE,ishot);
+		
+		fptime=fopen(pickfile_char,"r");
+		if (fptime == NULL) {
+			err(" picks_?.dat could not be opened !");
+		}
+		
+		for(i=1;i<=ntr_glob;i++){
+			fscanf(fptime,"%f",&dump);
+			pick_tmp[i] = dump;
+		}
+		
+		fclose(fptime);
+		
+		/* distribute picks on CPUs */
+		h=1;
+		for(i=1;i<=ntr;i++){
+			picked_times[h] = pick_tmp[recpos_loc[3][i]];
+			
+			/*printf("MYID IS: %i REC1 is= %i REC2 is %i\n",MYID, REC1, REC2);
+			printf("MYID= %i     pick_tmp[%i]= %f\n",MYID, i,pick_tmp[i]);*/
+			
+			h++;
+		}
+		
+		free_vector(pick_tmp,1,ntr_glob);
+		
+	} /* end of if(READTIMES==1) */
 
-/*GAMMA = 3.0;
-
-if(iter>10){GAMMA=2.0;}
-if(iter>20){GAMMA=1.0;}
-if(iter>30){GAMMA=0.3;}
-if(iter>80){GAMMA=0.1;}
-if(iter>40){GAMMA=0.066;}
-if(iter>50){GAMMA=0.0;}*/
-
-/*GAMMA		= 10000.0;
-TWLENGTH_PLUS  	= 0.01;
-TWLENGTH_MINUS 	= 0.01;*/
-
-
-/* read picked first arrival times */
-if(READ_PICKED_TIMES==1){
-
-pick_tmp = vector(1,ntr_glob);
-
-sprintf(pickfile_char,"%s_%i.dat",PICKS_FILE,ishot);
-
-fptime=fopen(pickfile_char,"r");
-if (fptime == NULL) {
-err(" picks_?.dat could not be opened !");
-}
-
-  for(i=1;i<=ntr_glob;i++){
-    fscanf(fptime,"%f",&dump);
-    pick_tmp[i] = dump;
-}
-
-fclose(fptime);
-
-/* distribute picks on CPUs */
-h=1;
-  for(i=1;i<=ntr;i++){
-
-    picked_times[h] = pick_tmp[recpos_loc[3][i]];
-/*printf("MYID IS: %i REC1 is= %i REC2 is %i\n",MYID, REC1, REC2);
-printf("MYID= %i     pick_tmp[%i]= %f\n",MYID, i,pick_tmp[i]);*/
-
-
-    h++;}
-
-free_vector(pick_tmp,1,ntr_glob);
-    
-} /* end of if(READTIMES==1) */
-
-/* calculate RMS */
-for(i=1;i<=ntr;i++){
-      for(j=2;j<=ns;j++){
-      
-         time = (float)(j * DT);
-         
-         dump = (time-picked_times[i]-TWLENGTH_PLUS);
-         taper = exp(-GAMMA*dump*dump);
-         
-         dump1 = (time-picked_times[i]+TWLENGTH_MINUS); 
-         taper1 = exp(-GAMMA*dump1*dump1);
-	 
-	 if(time>=picked_times[i]+TWLENGTH_PLUS){
-         sectiondata[i][j] = sectiondata[i][j] * taper;}
-         
-         if(time<=picked_times[i]-TWLENGTH_MINUS){
-         sectiondata[i][j] = sectiondata[i][j] * taper1;}
-         
-         sectiondata[i][j] = sectiondata[i][j];
-         
-      }     
-}
+	for(i=1;i<=ntr;i++){
+	for(j=2;j<=ns;j++){
+	
+		time = (float)(j * DT);
+		
+		dump = (time-picked_times[i]-TWLENGTH_PLUS);
+		taper = exp(-GAMMA*dump*dump);
+		
+		dump1 = (time-picked_times[i]+TWLENGTH_MINUS); 
+		taper1 = exp(-GAMMA*dump1*dump1);
+		
+		if(time>=picked_times[i]+TWLENGTH_PLUS){
+		sectiondata[i][j] = sectiondata[i][j] * taper;}
+		
+		if(time<=picked_times[i]-TWLENGTH_MINUS){
+		sectiondata[i][j] = sectiondata[i][j] * taper1;}
+		
+		sectiondata[i][j] = sectiondata[i][j];
+		
+	}     
+	}
 
 } /* end of function time_window.c */

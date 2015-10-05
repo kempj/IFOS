@@ -76,7 +76,7 @@
 			"TAU" : "0.0966",
 
 "General inversion parameters" : "comment",
-			"ITERMAX" : "1",
+			"ITERMAX" : "100",
 			"DATA_DIR" : "su/measured_data/toy_example_ac",
 			"INVMAT1" : "1",
 			"INVMAT" : "0",
@@ -124,10 +124,9 @@
 			"SRTRADIUS" : "3.0",
 			"FILTSIZE" : "1",
 			"SWS_TAPER_FILE" : "1",
-			"TAPER_FILE_NAME" : "taper.bin",
-			"TAPER_FILE_NAME_U" : "taper_u.bin",
-			"TAPER_FILE_NAME_RHO" : "taper_rho.bin",
-
+			"TAPER_FILE_NAME" : "taper/taper.bin",
+			"TAPER_FILE_NAME_U" : "taper/taper_u.bin",
+			"TAPER_FILE_NAME_RHO" : "taper/taper_rho.bin",
 
 "Upper and lower limits for model parameters" : "comment",
 			"VPUPPERLIM" : "5000",
@@ -156,4 +155,16 @@
 			"FC_END" : "70.0",
 			"FC_INCR" : "10.0",
 			"ORDER" : "4",
+			"ZERO_PHASE" : "1",    
+			
+"Trace killing" : "comment",
+			"TRKILL" : "0",
+			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
+			
+"Time windowing and damping" : "comment",
+			"TIMEWIN" : "0",
+			"PICKS_FILE" : "./picked_times/PickedTimes",
+			"TWLENGTH_PLUS" : "4.0",
+			"TWLENGTH_MINUS" : "0.01",
+			"GAMMA" : "100000",
 }

@@ -70,10 +70,10 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 		sprintf(data,"%s_p.su.shot%d",DATA_DIR,comp);
 	}
 	
-	
 	/*printf("%s\n",data);*/
 	
 	fpdata = fopen(data,"r");
+	if (fpdata==NULL) err(" Seismograms for inversion were not found ");
 
 	/* declaration of local variables */
 	int i,j;
@@ -93,9 +93,6 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 				dump=tr.data[j];
 				section[tracl1][j+1]=dump;
 			}
-			  
-			
 		}
-
 	fclose(fpdata);
 }

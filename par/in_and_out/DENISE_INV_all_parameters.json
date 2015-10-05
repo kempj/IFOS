@@ -32,15 +32,11 @@
 			"QUELLTYP" : "3",
 			"QUELLTYP values (point_source): explosive=1;force_in_x=2;force_in_y=3;rotated_force=4" : "comment",
 			
-			"SRCREC" : "1",
-			"SRCREC values : read source positions from SOURCE_FILE=1, PLANE_WAVE=2" : "comment",
-			
 			"SOURCE_FILE" : "./source/sources.dat",
 			"RUN_MULTIPLE_SHOTS" : "1",
-			
-			"PLANE_WAVE_DEPTH" : "0.0",
-			"PHI" : "0.0",
-			"TS" : "0.032",
+
+"Acoustic Computation" : "comment",
+			"ACOUSTIC" : "1",
 
 "Model" : "comment",
 			"READMOD" : "0",
@@ -91,22 +87,10 @@
 			"IDY" : "1",
 			"SNAP_FORMAT" : "3",
 			"SNAP_FILE" : "./snap/waveform_forward",
-			
-"Receiver array" : "comment",
-			"REC_ARRAY" : "0",
-			"REC_ARRAY_DEPTH" : "70.0",
-			"REC_ARRAY_DIST" : "40.0", 
-			"DRX" : "4",
-			
+
 "Monitoring the simulation" : "comment",
 			"LOG_FILE" : "log/2layer.log",
 			"LOG" : "1",
-
-"Checkpoints" : "comment",
-			"CHECKPTREAD" : "0",
-			"CHECKPTWRITE" : "0",
-			"CHECKPTFILE" : "tmp/checkpoint_fdveps",
-
 
 
 "General inversion parameters" : "comment",
@@ -114,7 +98,6 @@
 			"DATA_DIR" : "su/measured_data/DENISE_real",
 			"INVMAT1" : "1",
 			"INVMAT" : "0",
-			"INVTYPE" : "2",
 			"QUELLTYPB" : "1",
 			"MISFIT_LOG_FILE" : "L2_LOG.dat",
 			"VELOCITY" : "0",
@@ -172,10 +155,6 @@
 			
 "Minimum number of iteration per frequency" : "comment",
 			"MIN_ITER" : "0",
-			
-"Cosine taper" : "comment",
-			"TAPER" : "0",
-			"TAPERLENGTH" : "10",
 			
 "Definition of gradient taper geometry" : "comment",
 			"SWS_TAPER_GRAD_VERT" : "0",

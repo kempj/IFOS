@@ -69,7 +69,7 @@ void exchange_par(void){
 	extern int STEPMAX;
 	extern float EPS_SCALE, SCALEFAC;
 	extern float PRO;
-	extern int TRKILL;
+	extern int TRKILL, TRKILL_STF;
 	extern char TRKILL_FILE[STRING_SIZE], TRKILL_FILE_STF[STRING_SIZE];
 	extern int TIMEWIN, NORMALIZE;
 	extern float TWLENGTH_PLUS, TWLENGTH_MINUS, GAMMA;
@@ -191,8 +191,8 @@ void exchange_par(void){
         idum[17]  = REC_ARRAY;                                                                         
         idum[18]  = SRCREC;                                                                                 
         idum[19]  = IDX;                                                                                 
-        idum[20]  = IDY;                                                                                 
-        idum[21]  = 0;                                                                                 
+        idum[20]  = IDY;                                                                           
+        idum[21]  = TRKILL_STF;                                                                        
         idum[22]  = 0;                                                                                 
         idum[23]  = SNAP_FORMAT;                                                                       
         idum[24]  = SEISMO;                                                                            
@@ -426,7 +426,7 @@ void exchange_par(void){
 	SRCREC = idum[18];
 	IDX = idum[19];
 	IDY = idum[20];
-	
+	TRKILL_STF=idum[21];
 	
 	SNAP_FORMAT = idum[23];
 	SEISMO = idum[24];
