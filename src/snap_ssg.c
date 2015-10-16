@@ -49,7 +49,7 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 	float amp, vyx, vxy, vxx, vyy, dhi;
 	float **divfield, **curlfield;
 	char snapfile_x[STRING_SIZE], snapfile_y[STRING_SIZE], snapfile_div[STRING_SIZE];
-	char snapfile_rot[STRING_SIZE], snapfile_p[STRING_SIZE], ext[8], wm[1];
+	char snapfile_rot[STRING_SIZE], snapfile_p[STRING_SIZE], ext[8], wm[2];
 	FILE *fpx1, *fpy1, *fpx2, *fpy2;
 
 	extern float DH, DT;
