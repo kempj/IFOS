@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: seriestest.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 17/12/2002
  * 
@@ -39,7 +39,7 @@
 #define AFF_SERIESTEST_CC_VERSION \
   "AFF_SERIESTEST_CC   V1.2"
 #define AFF_SERIESTEST_CC_CVSID \
-  "$Id: seriestest.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include <aff/series.h>
 #include <aff/dump.h>

@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvfourier.h 4968 2013-02-01 13:58:05Z lrehor $
  * \author Thomas Forbriger
  * \date 08/05/2011
  * 
@@ -30,6 +29,7 @@
  * REVISIONS and CHANGES 
  *  - 08/05/2011   V1.0   Thomas Forbriger
  *  - 30/09/2011   V1.1   implemented handling of additional time series pairs
+ *  - 14/10/2015   V1.2   new end-user usage functions
  * 
  * ============================================================================
  */
@@ -38,9 +38,7 @@
 #ifndef STFINV_STFINVFOURIER_H_VERSION
 
 #define STFINV_STFINVFOURIER_H_VERSION \
-  "STFINV_STFINVFOURIER_H   V1.1"
-#define STFINV_STFINVFOURIER_H_CVSID \
-  "$Id: stfinvfourier.h 4968 2013-02-01 13:58:05Z lrehor $"
+  "STFINV_STFINVFOURIER_H   V1.2"
 
 #include <stfinv/stfinvbase.h>
 #include <aff/array.h>
@@ -114,6 +112,10 @@ namespace stfinv {
       virtual void help(std::ostream& os=std::cout) const;
       //! \brief print online help
       static void classhelp(std::ostream& os=std::cout);
+      //! \brief print detailed description
+      virtual void usage(std::ostream& os=std::cout) const;
+      //! \brief print detailed description
+      static void classusage(std::ostream& os=std::cout);
       //! \brief return name of engine
       virtual const char* name() const;
     protected:

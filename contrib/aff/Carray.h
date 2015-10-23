@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: Carray.h 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 14/05/2011
  * 
@@ -40,7 +40,7 @@
 #define AFF_CARRAY_H_VERSION \
   "AFF_CARRAY_H   V1.0   "
 #define AFF_CARRAY_H_CVSID \
-  "$Id: Carray.h 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 #include<aff/array.h>
 #include<aff/lib/checkedcast.h>

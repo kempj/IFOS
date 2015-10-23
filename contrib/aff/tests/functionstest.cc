@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: functionstest.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 20/03/2005
  * 
@@ -36,7 +36,7 @@
 #define FUNCTIONSTEST_VERSION \
   "FUNCTIONSTEST   V1.1   test function templates"
 #define FUNCTIONSTEST_CVSID \
-  "$Id: functionstest.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include <iostream>
 #include <aff/dump.h>

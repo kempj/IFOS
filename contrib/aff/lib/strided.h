@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: strided.h 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -71,7 +71,7 @@
 #define AFF_STRIDED_H_VERSION \
   "AFF_STRIDED_H   V1.8"
 #define AFF_STRIDED_H_CVSID \
-  "$Id: strided.h 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 #include<aff/lib/types.h>
 #include<aff/lib/simplearray.h>

@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: simplearray.h 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -46,7 +46,7 @@
 #define AFF_SIMPLEARRAY_H_VERSION \
   "AFF_SIMPLEARRAY_H   V1.4"
 #define AFF_SIMPLEARRAY_H_CVSID \
-  "$Id: simplearray.h 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 #include<aff/lib/types.h>
 #include<aff/lib/rawarfun.h>

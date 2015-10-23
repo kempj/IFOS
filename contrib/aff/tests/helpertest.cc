@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: helpertest.cc 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 23/12/2002
  * 
@@ -49,7 +49,7 @@
 #define AFF_HELPERTEST_CC_VERSION \
   "AFF_HELPERTEST_CC   V1.4"
 #define AFF_HELPERTEST_CC_CVSID \
-  "$Id: helpertest.cc 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 /*! \example tests/helpertest.cc
  *

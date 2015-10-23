@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvbase.h 4968 2013-02-01 13:58:05Z lrehor $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -31,6 +30,7 @@
  * REVISIONS and CHANGES 
  *  - 06/05/2011   V1.0   Thomas Forbriger
  *  - 30/09/2011   V1.1   implemented handling of additional time series pairs
+ *  - 14/10/2015   V1.2   new end-user usage functions
  * 
  * ============================================================================
  */
@@ -39,9 +39,7 @@
 #ifndef STFINV_STFINVBASE_H_VERSION
 
 #define STFINV_STFINVBASE_H_VERSION \
-  "STFINV_STFINVBASE_H   V1.1"
-#define STFINV_STFINVBASE_H_CVSID \
-  "$Id: stfinvbase.h 4968 2013-02-01 13:58:05Z lrehor $"
+  "STFINV_STFINVBASE_H   V1.2"
 
 #include<stfinv/waveformheader.h>
 #include<stfinv/parameterhandler.h>
@@ -185,8 +183,23 @@ namespace stfinv {
    * See STFBaseEngine::parameter() and STFBaseEngine::parameterisset()
    * for a description on how parameters are handled within engine classes.
    *
+   * \par Data
+   *  - recordings are understood as recorded waveforms.
+   *    The number of available traces is returned by nreceivers()
+   *  - synthetics are understood as synthetic waveforms generated with a
+   *    generic source time function.
+   *    For each trace of recordings there must be a matching trace of
+   *    synthetics and vice versa.
+   *  - convolvedsynthetics are produced from synthetics as a result of the
+   *    application of the source wavelet correction filter.
+   *  - series are additional synthetic time series, not used to construct the
+   *    source-wavelet correction filter. The number of additional series
+   *    traces is returned by npairs().
+   *  - convolvedseries are produced from series as a result of the
+   *    application of the source wavelet correction filter.
+   *
    * \sa
-   * \ref sec_page_design_initialization
+   * \ref page_i_subsec_design_initialization
    *
    * \todo
    * The base class should provide a "log to file" option such that applied
@@ -215,7 +228,7 @@ namespace stfinv {
       virtual ~STFBaseEngine() { }
 
       /*! \name Basic interface for users
-       * \sa \ref main_sec_users
+       * \sa \ref page_users
        */
       //@{
       //! \brief Start engine and return reference to source correction filter.
@@ -226,10 +239,14 @@ namespace stfinv {
       }
       //! \brief print online help
       virtual void help(std::ostream& os=std::cout) const;
+      //! \brief print detailed description
+      virtual void usage(std::ostream& os=std::cout) const;
       //! \brief return name of engine
       virtual const char* name() const;
       //! \brief print online help
       static void classhelp(std::ostream& os=std::cout);
+      //! \brief print detailed description
+      static void classusage(std::ostream& os=std::cout);
       //@}
         
       /*! \name Shape query functions
@@ -285,6 +302,9 @@ namespace stfinv {
       //! \brief return weight for signal at receiver i
       double weight(const unsigned int& i) const 
       { return(Mweights(i)); }
+      //! \brief return weights array
+      aff::Series<double> weights() const 
+      { return(Mweights); }
       //@}
 
     private:
@@ -293,7 +313,7 @@ namespace stfinv {
       //@{
       //! \brief initialize base class
       void initialize(const std::string& parameters);
-      //! \brief parse parameters in Mparameters
+      //! \brief parse parameters and store them in Mparamap
       void parseparameters(std::string parameters);
       //! \brief Check consistency of data members.
       void checkconsistency() const;

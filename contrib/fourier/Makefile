@@ -1,13 +1,13 @@
 # this is <Makefile>
 # ----------------------------------------------------------------------------
-# $Id: Makefile 4966 2013-02-01 13:46:50Z lrehor $
+# $Id$
 # 
 # Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 # 
 # Fourier coefficients library
 #
 # ----
-# This program is free software; you can redistribute it and/or modify
+# libfourier is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version. 
@@ -22,13 +22,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ----
 #
-# provide Fourier coefficients of filter responses etc.
+# Fourier library: Operations in the Fourier domain
+# =================================================
 #
-# this library makes use of libaff
-# libaff must be installed first
+# Please have a look at the README file coming along with the source code in
+# this directory for further notes regarding provided functionality,
+# prerequisites and installation.
 # 
 # REVISIONS and CHANGES 
-#    07/11/2002   V1.0   Thomas Forbriger
+#    07/11/2002   V1.0   Thomas Forbriger (thof)
 #    05/01/2003   V1.1   uuuhhhhhh
 #                        had to resolve a specific problem: my library
 #                        procuded object files for Fortran code with the same
@@ -49,6 +51,7 @@
 #                          C++ object files
 #    17/01/2011   V1.8   distinguish library creation and installation
 #    29/01/2013   V1.9   added tarball rules
+#    26/01/2014          (thof): no longer strip comments from header files
 # 
 # ============================================================================
 #
@@ -72,7 +75,8 @@ $(LOCLIBDIR)/%: install-include %
 
 #----------------------------------------------------------------------
 
-flist: Makefile $(wildcard *.f *.inc *.h *.cc *.c README *.cfg) COPYING
+flist: Makefile $(wildcard *.f *.inc *.h *.cc *.c README *.cfg) COPYING \
+	$(DOXYTXT)
 	echo $^ | tr ' ' '\n' | sort > $@
 
 .PHONY: edit
@@ -80,11 +84,10 @@ edit: flist; vim $<
 
 .PHONY: clean
 clean:
-	-/bin/rm -fv *.o *.bak *.doc *.o77 flist *.of2c
+	-/bin/rm -fv *.o *.bak *.o77 flist *.of2c
 	-find . -name \*.bak | xargs --no-run-if-empty /bin/rm -v
 	-find . -name \*.o | xargs --no-run-if-empty /bin/rm -v
 	-find . -name \*.d | xargs --no-run-if-empty /bin/rm -v
-	-find . -name \*.h.strip | xargs --no-run-if-empty /bin/rm -v
 	-/bin/rm -vf flist *.o install-include *.xxx junk* *.a *.so
 
 # ============================================================================
@@ -141,36 +144,6 @@ libfourier.a: $(LIBOBS)
 	$(RANLIB) $@
 
 # ============================================================================
-#     
-# A note on header files:
-# We extensively comment class declarations within the header files. The
-# reduce compilation time when using the library code, comments will be
-# stripped from the header files that are exportet. These stripped versions
-# are placed in the source code path with name *.h.strip and will be linked to
-# INCINSTALLPATH with name *.h.
-#
-# Although comment stripping could be done by perl with an elaborate regular
-# expression, we prefer the remcmmnt command by Jari Laaksonen. You can find
-# the code at 
-#   http://www.eti.pg.gda.pl/KATEDRY/kecs/lab-cpp/snippets/
-# If it is not available to you, you should set TF_REMCMMNT=cat (see below)
-# 
-# ============================================================================
-#
-# environment variables
-# ---------------------
-#
-# You will like to set the following environment variables:
-#
-# LOCINCLUDEDIR         Defines the path where header files will be copied for
-#                       usage in your own projects. You will pass this path to
-#                       the precompiler with the -I option.
-# LOCLIBDIR             Defines the path where the binary library will be
-#                       placed.
-# TF_WWWBASEDIR         Defines the path to your personal homepage. That's the
-#                       place where doxygen output will be written too (see
-#                       below).
-
 # files
 # -----
 
@@ -185,28 +158,17 @@ SRC=fcommand.cc filters.cc polesnzeroes.cc fftwaff.cc error.cc fftwaffar.cc
 TESTS=$(wildcard tests/*.cc)
 # whereever we find a README, we will use it
 README=$(shell find . -name README) 
+# the frame of doxygen documentation is palced in text files 
+DOXYTXT=$(shell find . -name doxygen\*.txt) 
 
 # place where we will copy header files
 INCINSTALLPATH=$(LOCINCLUDEDIR)/fourier
 # place where we will copy the binary library
 LIBINSTALLPATH=$(LOCLIBDIR)
 
-# name of headers with comments stripped off (these are linked to your include
-# directory)
-STRIPHEADER=$(addsuffix .strip,$(notdir $(HEADERS)))
 # name of installed (exported) header files (these are the names in your
 # include directory)
 INSTHEADER=$(addprefix $(INCINSTALLPATH)/,$(filter-out ./tests/%,$(HEADERS)))
-
-# if defined, empty lines are kept in comment-stripped headers
-# to synchronize line numbers (necessary during library debugging)
-EMPTYPRINT=1
-#EMPTYPRINT=0
-
-# define this to be cat in case you do not have remcmmnt available
-ifndef TF_REMCMMNT
-TF_REMCMMNT=cat
-endif
 
 # compiler and preprocessor flags
 FLAGS=
@@ -242,33 +204,11 @@ include $(patsubst %.cc,%.d,$(SRC))
 #======================================================================
 # header files
 # ------------
-#
-# Since we extensively document the class structures within the header files,
-# these should be stripped for the production version (otherwise the compiler
-# has to scan all comments on each compile). Stripping is done by the rule
-# below and is controlled by the variables TF_REMCMMNT and EMPTYPRINT (see
-# above).
-
-# comment stripping
-# -----------------
-
-# awk rule assumes that the first non-comment line starts with '#'
-# and that the first (copyright) comment end with pattern "^ */"
-%.h.strip: %.h
-	awk 'BEGIN {hot=1;} /^ \*\// { if (hot) { hot=2; print; next;} }\
-        /^#/ { hot=0; } \
-        { if (hot==2) { print ""; } else if (hot) { print; } }' $< > $@
-	$(TF_REMCMMNT) $< | awk 'BEGIN {hot=0;} \
-        /^ *$$/ { if ((hot) && ($(EMPTYPRINT))) { print ""; } next; } \
-        /^#/ { hot=1; } { if (hot) print; }' >> $@
-
-#----------------------------------------------------------------------
-.PRECIOUS: %.h.strip
       
-$(INCINSTALLPATH)/%.h: %.h.strip
-	mkdir -vp $(dir $@)
-	-rm -fv $@
-	/bin/cp -vpd $< $@
+$(INCINSTALLPATH)/%.h: %.h
+	@mkdir -vp $(dir $@)
+	-@rm -fv $@
+	@/bin/cp -vpd $< $@
 
 # install header files
 .PHONY: install-include
@@ -330,7 +270,7 @@ DOXYWWWPATH=$(TF_WWWBASEDIR)/libfourier
 
 doxyclean: ;/bin/rm -rfv $(DOXYWWWPATH) doxydoc.xxx
 
-DOXYSRC=$(README) $(HEADERS) $(SRC) 
+DOXYSRC=$(DOXYTXT) $(HEADERS) $(SRC) 
 
 # create doxygen intermediate configuration
 PWD=$(shell env pwd)
@@ -368,14 +308,6 @@ fullpackage: $(TF_MAKEPKG)
         PACKAGEEXPORT="trunk/src/libs/libfourier:src" \
         PACKAGETARGETS="src:install: src:doc:" \
         PACKAGELIBS="libaff"
-.PHONY: srcpackage
-srcpackage: $(TF_MAKEPKG)
-	$(MAKE) -f $< \
-        PACKAGE=libfourier \
-	  PACKAGESRCONLY=yes \
-        PACKAGEEXPORT="trunk/src/libs/libfourier:src" \
-        PACKAGETARGETS="src:install: src:doc:" \
-        PACKAGELIBS="-"
 endif
 
 # ----- END OF Makefile ----- 

@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: sqrsum.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 13/06/2007
  * 
@@ -39,7 +39,7 @@
 #define AFF_SQRSUM_H_VERSION \
   "AFF_SQRSUM_H   V1.0   "
 #define AFF_SQRSUM_H_CVSID \
-  "$Id: sqrsum.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 
 #include<aff/lib/collector.h>

@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvfdleastsquares.cc 4164 2011-10-04 09:00:57Z tforb $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -31,18 +30,20 @@
  * REVISIONS and CHANGES 
  *  - 06/05/2011   V1.0   Thomas Forbriger
  *  - 04/10/2011   V1.1   renamed engine
+ *  - 14/10/2015   V1.2   new end-user usage functions
  * 
  * ============================================================================
  */
 #define STFINV_STFINVFDLEASTSQUARES_CC_VERSION \
-  "STFINV_STFINVFDLEASTSQUARES_CC   V1.1"
-#define STFINV_STFINVFDLEASTSQUARES_CC_CVSID \
-  "$Id: stfinvfdleastsquares.cc 4164 2011-10-04 09:00:57Z tforb $"
+  "STFINV_STFINVFDLEASTSQUARES_CC   V1.2"
 
 #include <iostream>
 #include <aff/functions/sqrsum.h>
 #include <stfinv/stfinvfdleastsquares.h>
+#include <stfinv/stfinvfdleastsquares_summary_usage.h>
+#include <stfinv/stfinvfdleastsquares_description_usage.h>
 #include <stfinv/debug.h>
+#include <stfinv/tools.h>
 
 namespace stfinv {
 
@@ -57,6 +58,13 @@ namespace stfinv {
   {
     STFEngineFDLeastSquares::classhelp(os);
   } // void STFEngineFDLeastSquares::help(std::ostream& os) const
+
+  /*----------------------------------------------------------------------*/
+
+  void STFEngineFDLeastSquares::usage(std::ostream& os) const
+  {
+    STFEngineFDLeastSquares::classusage(os);
+  } // void STFEngineFDLeastSquares::usage(std::ostream& os) const
 
   /*----------------------------------------------------------------------*/
 
@@ -82,18 +90,21 @@ namespace stfinv {
 
   void STFEngineFDLeastSquares::classhelp(std::ostream& os)
   {
-    os << "class STFEngineFDLeastSquares (" 
-      << STFEngineFDLeastSquares::ID << ")\n";
-    os << STFEngineFDLeastSquares::description << "\n" << std::endl;
-    os << "This engine calculates a least squares fit in the Fourier\n"
-      << "domain. A waterlevel as a fraction of the signal energy of the\n"
-      << "input synthetics is applied. If per receiver scaling is\n"
-      << "selected, the receivers will be weighted in the deconvolution.\n";
-    os << "Options and parameters:\n"
-      << "waterlevel=l  waterlevel to be applied for regularization."
-      << std::endl;
-    Tbase::classhelp(os);
+    os << stfinvfdleastsquares_summary_usage;
+    os << std::endl;
+    stfinv::tools::report_engine_ID<STFEngineFDLeastSquares>(os);
   } // void STFEngineFDLeastSquares::classhelp(std::ostream& os)
+
+  /*----------------------------------------------------------------------*/
+
+  void STFEngineFDLeastSquares::classusage(std::ostream& os)
+  {
+    os << stfinvfdleastsquares_description_usage;
+    os << std::endl;
+    Tbase::classusage(os);
+    os << std::endl;
+    stfinv::tools::report_engine_ID<STFEngineFDLeastSquares>(os);
+  } // void STFEngineFDLeastSquares::classusage(std::ostream& os)
 
   /*----------------------------------------------------------------------*/
 

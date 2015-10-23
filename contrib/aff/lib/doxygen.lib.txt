@@ -1,9 +1,9 @@
-/*! \file libaff/lib/README
+/*! \file libaff/lib/doxygen.lib.txt
  * \brief Some more specific or more advanced topics
  *
  * ----------------------------------------------------------------------------
  *
- * $Id: README 4964 2013-02-01 13:27:42Z lrehor $
+ * $Id$
  * 
  * Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
  *
@@ -39,6 +39,8 @@
  *                        - doxygen now reads Fortran and f2c generated code
  *  - 28/12/2002   V1.3   (thof)
  *                        - new term for containers of const elements
+ *  - 12/06/2013   V1.4   (thof)
+ *                        - renamed file
  * 
  * ============================================================================
  */
@@ -390,4 +392,4 @@ Aspects to consider:
 \subsection sec_fortran_f77procsp tests/f77procs.P
   \verbinclude tests/f77procs.P
 */
-// ----- END OF README ----- 
+// ----- END OF doxygen.lib.txt ----- 

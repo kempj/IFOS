@@ -1,9 +1,9 @@
-/*! \file README.changelog
+/*! \file doxygen.changelog.txt
  * \brief ChangeLog for C++ containers for numbers (libaff)
  *
  * ----------------------------------------------------------------------------
  *
- * $Id: README.changelog 4964 2013-02-01 13:27:42Z lrehor $
+ * $Id$
  * 
  * Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
  * 
@@ -31,13 +31,14 @@
  * 
  * REVISIONS and CHANGES 
  *  - 17/12/2002   V1.0   Thomas Forbriger 
+ *  - 12/06/2013   V1.1   renamed file
  * 
  * ============================================================================
  */
 
 /*! \page page_changelog ChangeLog (AFF)
 
-  $Id: README.changelog 4964 2013-02-01 13:27:42Z lrehor $
+  $Id$
 
   \sa \ref page_project_status
 
@@ -290,7 +291,7 @@
 
 /*! \page page_project_status Project status (AFF)
 
-  $Id: README.changelog 4964 2013-02-01 13:27:42Z lrehor $
+  $Id$
 
   \sa \ref page_changelog
 
@@ -521,4 +522,4 @@
   </TABLE>
 */
 
-// ----- END OF README.changelog ----- 
+// ----- END OF doxygen.changelog.txt ----- 

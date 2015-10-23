@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: checkedcast.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 03/01/2003
  * 
@@ -41,7 +41,7 @@
 #define AFF_CHECKEDCAST_H_VERSION \
   "AFF_CHECKEDCAST_H   V1.0"
 #define AFF_CHECKEDCAST_H_CVSID \
-  "$Id: checkedcast.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 namespace aff {
 namespace util {

@@ -3,8 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinv.cc 4968 2013-02-01 13:58:05Z lrehor $
- *
  * ----
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,13 +31,12 @@
  *  - 30/09/2011   V1.1   implemented handling of additional time series pairs
  *  - 05/10/2011   V1.2   correction: initstfinvenginewithpairs was named
  *                        incorrectly initstfinvenginepairs
+ *  - 14/10/2015   V1.3   new end-user usage functions
  * 
  * ============================================================================
  */
 #define STFINV_STFINV_C_VERSION \
-  "STFINV_STFINV_C   V1.2"
-#define STFINV_STFINV_C_CVSID \
-  "$Id: stfinv.cc 4968 2013-02-01 13:58:05Z lrehor $"
+  "STFINV_STFINV_C   V1.3"
 
 #include <stfinv/stfinv.h>
 #include <stfinv/error.h>
@@ -168,10 +165,24 @@ void freestfinvengine()
 
 /*----------------------------------------------------------------------*/
 
+void printengines()
+{
+  stfinv::engines();
+} // void printengines()
+
+/*----------------------------------------------------------------------*/
+
 void printhelp()
 {
-  stfinv::STFEngine::help();
   stfinv::help();
 } // void printhelp()
+
+/*----------------------------------------------------------------------*/
+
+void printusage(char* id)
+{
+  std::string selectid(id);
+  stfinv::usage(selectid);
+} // void printhelp(age(char* id)
 
 /* ----- END OF stfinv.cc ----- */

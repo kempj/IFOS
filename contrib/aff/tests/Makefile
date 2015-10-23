@@ -1,6 +1,5 @@
 # this is <Makefile>
 # ----------------------------------------------------------------------------
-# $Id: Makefile 4964 2013-02-01 13:27:42Z lrehor $
 # 
 # Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 # 
@@ -29,9 +28,20 @@
 #    06/12/2002   V1.0   Thomas Forbriger (copied from libcontxx)
 #    17/12/2002   V1.1   introduced seriestest
 #    22/12/2002   V1.2   started interface test to Fortran 77
+#    12/01/2014   V1.3   use FFLAGS instead of FCFLAGS conforming to GNU make
+#                        default rules
 # 
 # ============================================================================
 #
+
+CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
+CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
+
+$(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR LOCBINDIR)
+$(call CHECKVARS,TF_LINK_FORTRAN)
+
+# ----------------------------------------------------------------------
+ 
 CPPFLAGS=-I$(LOCINCLUDEDIR) 
 LDFLAGS=-L$(LOCLIBDIR) 
 
@@ -73,7 +83,6 @@ $(addsuffix .run,$(EXECUTABLES)): %.run: %; $< $(ARG); rm -fv $< $<.o
 #
 # Fortran 77 interface test
 # -------------------------
-FC=g77
 F2C=f2c
 
 %.f2c.o: %.f f77common.inc
@@ -82,7 +91,7 @@ F2C=f2c
 	/bin/rm -fv $(<:.f=.c)
 
 %.o: %.f f77common.inc
-	$(FC) -o $@ -c $< $(FCFLAGS) $(FLAGS)
+	$(FC) -o $@ -c $< $(FFLAGS) $(FLAGS)
 
 %.code: %.f f77common.inc
 	$(F2C) -C++ -f -u $<
@@ -103,7 +112,7 @@ f2ctest: f77test.o f77procs.f2c.o f77interface.o
 	$(CXX) -o $@ $^ $(LDFLAGS) -laff -lf2c -lm
 
 f77test: f77test.o f77procs.o f77interface.o
-	$(CXX) -o $@ $^ $(LDFLAGS) -laff -lg2c -lm
+	$(CXX) -o $@ $^ $(LDFLAGS) -laff $(TF_LINK_FORTRAN) -lm
 
 #======================================================================
 # test illegal conditions

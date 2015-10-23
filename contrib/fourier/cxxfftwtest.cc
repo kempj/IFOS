@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: cxxfftwtest.cc 4966 2013-02-01 13:46:50Z lrehor $
+ * $Id$
  * \author Thomas Forbriger
  * \date 12/09/2007
  * 
@@ -12,7 +12,7 @@
  * Copyright (c) 2007 by Thomas Forbriger (BFO Schiltach) 
  *
  * ----
- * This program is free software; you can redistribute it and/or modify
+ * libfourier is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version. 
@@ -36,7 +36,7 @@
 #define CXXFFTWTEST_VERSION \
   "CXXFFTWTEST   V1.1   a small test program for fftw when called from C++"
 #define CXXFFTWTEST_CVSID \
-  "$Id: cxxfftwtest.cc 4966 2013-02-01 13:46:50Z lrehor $"
+  "$Id$"
 
 #include <iostream>
 #include <tfxx/commandline.h>

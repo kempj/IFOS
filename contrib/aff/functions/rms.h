@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: rms.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 20/03/2005
  * 
@@ -41,7 +41,7 @@
 #define AFF_RMS_H_VERSION \
   "AFF_RMS_H   V1.2"
 #define AFF_RMS_H_CVSID \
-  "$Id: rms.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<cmath>
 #include<aff/lib/collector.h>

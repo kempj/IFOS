@@ -1,27 +1,41 @@
 this is <README>
 ============================================================================
-cseife
-------
+SEIFE --- seismic waveform filters
+----------------------------------
 $Id$
 ============================================================================
 
-This directory contains source code for the library cseife. It was exportet
-from TF_Software to DENISE. DENISE is hosted in the Trac-/svn-project
-FWI_elastic (http://gpitrsvn.gpi.uni-karlsruhe.de/repos/FWI_elastic/DENISE). 
+For compilation instructions see README.1st in the root directory of the tar-ball or
+http://gpitrsvn.gpi.uni-karlsruhe.de:8000/TFSoftware/wiki/docs/installation
+
+libseife is a collection of Fortran 77 functions and subroutines for time
+series analysis and digital filters. It is a full-grown signal processing
+toolbox. A C API to the Fortran 77 code is provided as well.
+
+This library contains code which was extracted from the program seife.f
+by Erhard Wielandt. The original version was written in 1984 at ETH Zurich.
+The code can be obtained through
+http://www.software-for-seismometry.de/
+
+The code from seife.f was extracted to a library by Wolfgang Friederich in
+1996. The current version of libseife is a an extended code collection based
+on the abovementioned code. 
+
+Installation
+------------
+environment variables:
+  LOCLIBDIR           defines location of binary libraries
+  LOCINCLUDEDIR       defines location of C header files (prototypes)
+
+Fortran version:      libseife.a
+C version:            libcseife.a
+
+make all              installs headers and binary libraries
+
+Dependencies
+------------
+  external dependencies: -
+  internal dependencies: -
 
 
-
-See COPYING for copyright and license information.   
-
-
-Exports:
-   Each time this source code is exported to DENISE the current version is
-   tagged. The directory containing the tagged version is named by the day 
-   of the export (yyyymmdd) and can be found in 
-   http://gpitrsvn.gpi.uni-karlsruhe.de/repos/TFSoftware/export/cseife.
-   
-   10/06/2011   First export of the version tagged in 20110610
-   01/02/2013   Export of version tagged in 20130201
-  
-   
 ----- END OF README ----- 

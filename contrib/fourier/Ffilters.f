@@ -1,13 +1,13 @@
 c this is <filters.f>
 c ----------------------------------------------------------------------------
-c   ($Id: Ffilters.f 4966 2013-02-01 13:46:50Z lrehor $)
+c   ($Id$)
 c
 c Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 c
 c ready made filters
 c
 c ----
-c This program is free software; you can redistribute it and/or modify
+c libfourier is free software; you can redistribute it and/or modify
 c it under the terms of the GNU General Public License as published by
 c the Free Software Foundation; either version 2 of the License, or
 c (at your option) any later version. 
@@ -34,7 +34,7 @@ c
 c print library code revision
 c
 cE
-      print *,'$Id: Ffilters.f 4966 2013-02-01 13:46:50Z lrehor $'
+      print *,'$Id$'
       return
       end
 c

@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: parameterhandler.cc 3926 2011-05-10 18:54:17Z tforb $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -34,9 +33,7 @@
  * ============================================================================
  */
 #define STFINV_PARAMETERHANDLER_CC_VERSION \
-  "STFINV_PARAMETERHANDLER_CC   V1.0   "
-#define STFINV_PARAMETERHANDLER_CC_CVSID \
-  "$Id: parameterhandler.cc 3926 2011-05-10 18:54:17Z tforb $"
+  "STFINV_PARAMETERHANDLER_CC   V1.0"
 
 #include <algorithm>
 #include <stfinv/parameterhandler.h>

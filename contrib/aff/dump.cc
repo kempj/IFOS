@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: dump.cc 3117 2010-08-12 12:07:25Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 12/12/2002
  * 
@@ -41,7 +41,7 @@
 #define AFF_DUMP_CC_VERSION \
   "AFF_DUMP_CC   V1.1"
 #define AFF_DUMP_CC_CVSID \
-  "$Id: dump.cc 3117 2010-08-12 12:07:25Z tforb $"
+  "$Id$"
 
 #include <aff/lib/dump_strided.h>
 #include <aff/lib/error.h>

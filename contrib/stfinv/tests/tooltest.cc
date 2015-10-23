@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: tooltest.cc 3924 2011-05-09 14:52:03Z tforb $
  * \author Thomas Forbriger
  * \date 07/05/2011
  * 
@@ -35,8 +34,6 @@
  */
 #define TOOLTEST_VERSION \
   "TOOLTEST   V1.0   test internal tools"
-#define TOOLTEST_CVSID \
-  "$Id: tooltest.cc 3924 2011-05-09 14:52:03Z tforb $"
 
 #include <iostream>
 #include <algorithm>

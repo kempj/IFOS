@@ -7,7 +7,7 @@
  * This algorithm was part of seife.f. A current version of seife.f can be
  * obtained from http://www.software-for-seismometry.de/
  * 
- * $Id: cseife_gauss.c 4961 2013-02-01 12:52:09Z lrehor $
+ * $Id$
  *
  * ----
  * This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 #define TF_CSEIFE_GAUSS_C_VERSION \
   "TF_CSEIFE_GAUSS_C   V1.1"
 #define TF_CSEIFE_GAUSS_C_CVSID \
-  "$Id: cseife_gauss.c 4961 2013-02-01 12:52:09Z lrehor $"
+  "$Id$"
 
 #include <cseife.h>
 #include <stdio.h>

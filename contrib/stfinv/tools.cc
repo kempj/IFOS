@@ -4,7 +4,6 @@
  * \ingroup tools
  * ----------------------------------------------------------------------------
  * 
- * $Id: tools.cc 4027 2011-06-24 17:27:50Z tforb $
  * \author Thomas Forbriger
  * \date 28/05/2011
  * 
@@ -35,9 +34,7 @@
  * ============================================================================
  */
 #define STFINV_TOOLS_CC_VERSION \
-  "STFINV_TOOLS_CC   V1.0   "
-#define STFINV_TOOLS_CC_CVSID \
-  "$Id: tools.cc 4027 2011-06-24 17:27:50Z tforb $"
+  "STFINV_TOOLS_CC   V1.0"
 
 #include <cmath>
 #include <stfinv/tools.h>

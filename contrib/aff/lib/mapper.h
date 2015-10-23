@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: mapper.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 20/03/2005
  * 
@@ -39,7 +39,7 @@
 #define AFF_MAPPER_H_VERSION \
   "AFF_MAPPER_H   V1.0   "
 #define AFF_MAPPER_H_CVSID \
-  "$Id: mapper.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<aff/iterator.h>
 

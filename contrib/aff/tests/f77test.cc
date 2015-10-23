@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: f77test.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 22/12/2002
  * 
@@ -65,7 +65,7 @@
 #define AFF_F77TEST_CC_VERSION \
   "AFF_F77TEST_CC   V1.2"
 #define AFF_F77TEST_CC_CVSID \
-  "$Id: f77test.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include <aff/array.h>
 #include <aff/fortranshape.h>

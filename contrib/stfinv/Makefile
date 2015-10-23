@@ -1,6 +1,5 @@
 # this is <Makefile>
 # ----------------------------------------------------------------------------
-# $Id: Makefile 4968 2013-02-01 13:58:05Z lrehor $
 # 
 # Copyright (c) 2011 by Thomas Forbriger (BFO Schiltach) 
 # 
@@ -26,7 +25,8 @@
 # required in addition to libstfinv.
 # 
 # REVISIONS and CHANGES 
-#    05/05/2011   V1.0   Thomas Forbriger
+#    05/05/2011   V1.0   Thomas Forbriger (thof)
+#    03/02/2014 thof:	 do not strip comments from header files
 #
 # ============================================================================
 #
@@ -48,6 +48,33 @@ $(LOCLIBDIR)/%: install-include %
 	/bin/mv -fv $(word 2,$^) $(LOCLIBDIR)
 
 # ============================================================================
+# select groups of files 
+# they are used for editing and to create object file lists and dependencies
+
+# whereever we find a README, we will use it
+README=$(filter-out %.bak,$(shell find . -name README\*))
+# the frame of doxygen documentation is palced in text files
+DOXYTXT=$(shell find . -name doxygen\*.txt)
+# C++ and C source code
+SOURCEFILES=$(filter-out %usage.h, $(filter-out %usage.cc, \
+		$(wildcard *.h *.cc *.c tests/*.cc tests/*.c tests/*.inp) \
+	    $(wildcard test*/src/*.c) \
+	    $(wildcard test*/src/*.h) \
+	    $(wildcard test*/src/LEGAL*h)))
+# LaTeX formatted documentation
+DOCFILES=$(wildcard doc/*.tex doc/Makefile)
+# end-user usage information
+USAGEFILES=$(wildcard usage/*usage.txt)
+# editional files to be edited
+EDITFILES=Makefile $(README) \
+	    $(DOXYTXT) $(DOCFILES) $(USAGEFILES) \
+	    $(SOURCEFILES) \
+	    $(wildcard *.cfg) \
+	    $(wildcard test*/src/Makefile) \
+	    COPYING
+# ============================================================================
+# check for settings expected in the environment
+# ----------------------------------------------
 #
 CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
 CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
@@ -56,9 +83,14 @@ CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
 $(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR LOCBINDIR)
 $(call CHECKVARS,TF_BROWSER TF_WWWBASEDIR)
 
-LIBHEADERS=$(filter-out none,$(wildcard *.h))
+# ======================================================================
+#
+LIBHEADERS=$(filter-out none,$(wildcard *.h)) \
+	     $(patsubst usage/%.txt,%.h,$(USAGEFILES))
 
-LIBCCSRC=$(filter-out none,$(wildcard *.cc))
+LIBCCSRC=$(filter-out none,$(wildcard *.cc)) \
+	   $(patsubst usage/%.txt,%.cc,$(USAGEFILES))
+
 LIBCSRC=$(filter-out none,$(wildcard *.c))
 
 TESTHEADERS=$(wildcard tests/*.h)
@@ -72,40 +104,37 @@ TESTCBIN=$(patsubst tests/%.c,%,$(TESTCSRC))
 INCINSTALLPATH=$(LOCINCLUDEDIR)/stfinv
 LIBINSTALLPATH=$(LOCLIBDIR)
 
-# name of headers with comments stripped off
-STRIPHEADER=$(addsuffix .strip,$(notdir $(LIBHEADERS)))
 # name of installed (exported) header files
 INSTHEADER=$(addprefix $(INCINSTALLPATH)/,$(notdir $(LIBHEADERS)))
 
-# if defined, empty lines are kept in stripped comment headers
-# to synchronize line numbers
-EMPTYPRINT=1
-#EMPTYPRINT=0
-
-# define this to be cat in case you do not have remcmmnt available
-ifndef TF_REMCMMNT
-TF_REMCMMNT=cat
-endif
 
 #
-# general part
-# ------------
-#
+# compiler flags
+# --------------
 
 FLAGS=
 FLAGS+=-fPIC $(MYFLAGS)
 CXXFLAGS+=-Wall $(FLAGS)
 LDFLAGS+=-L$(LOCLIBDIR)
 CPPFLAGS+=-I$(LOCINCLUDEDIR) $(FLAGS)
+# 
+# source code editing and directory clean-up
+# ------------------------------------------
 
-EDITFILES=Makefile README $(wildcard *.cfg *.h *.cc *.c tests/*.cc tests/*.c) \
-	    test_libstfinv/README test_libstfinv/Test_libstfinv.inp \
-	    $(wildcard test_libstfinv/src/*.c) \
-	    $(wildcard test_libstfinv/src/*.h) \
-	    test_libstfinv/src/Makefile COPYING
-
-flist: $(EDITFILES) 
-	echo $^ | tr ' ' '\n' | sort > $@
+flist: $(EDITFILES) $(TF_EDIT)
+	echo $(filter-out $(DOCFILES) $(SOURCEFILES) \
+	  $(USAGEFILES),$(EDITFILES)) \
+	  | tr ' ' '\n' | sort > $@
+	echo '----' >> $@
+	echo $(filter-out test%,$(SOURCEFILES)) | tr ' ' '\n' | sort >> $@
+	echo '----' >> $@
+	echo $(USAGEFILES) | tr ' ' '\n' | sort >> $@
+	echo '----' >> $@
+	echo $(filter test%,$(SOURCEFILES)) | tr ' ' '\n' | sort >> $@
+	echo '----' >> $@
+	echo $(DOCFILES) | tr ' ' '\n' | sort >> $@
+	echo '----' >> $@
+	echo $(TF_EDIT) | tr ' ' '\n' | sort >> $@
 
 .PHONY: edit
 edit: flist; vim $<
@@ -116,8 +145,9 @@ clean: ;
 	-find . -name \*.o | xargs --no-run-if-empty /bin/rm -v
 	-find . -name \*.d | xargs --no-run-if-empty /bin/rm -v
 	-find . -name \*.hd | xargs --no-run-if-empty /bin/rm -v
-	-find . -name \*.strip | xargs --no-run-if-empty /bin/rm -v
 	-/bin/rm -vf flist *.a *.so *.xxx $(TESTCBIN) $(TESTCCBIN)
+	-/bin/rm -fv $(patsubst %.txt,%.h,$(USAGEFILES))
+	-/bin/rm -fv $(patsubst %.txt,%.cc,$(USAGEFILES))
 
 #======================================================================
 # pattern rules
@@ -148,25 +178,8 @@ libstfinv.a: $(patsubst %.cc,%.o,$(LIBCCSRC)) \
 	ranlib $@
 
 #----------------------------------------------------------------------
-# comment stripping
 
-%.hd: %.h; echo $(notdir $<.strip): $< > $@
-
-include $(patsubst %.h,%.hd,$(LIBHEADERS) $(TESTHEADERS))
-
-# first awk rule assumes that the first non-comment line starts with '#'
-# and that the first (copyright) comment end with pattern "^ */"
-%.h.strip:
-	awk 'BEGIN {hot=1;} /^ \*\// { if (hot) { hot=2; print; next;} }\
-        /^#/ { hot=0; } \
-        { if (hot==2) { print ""; } else if (hot) { print; } }' $< > $@
-	$(TF_REMCMMNT) $< | awk 'BEGIN {hot=0;} \
-        /^ *$$/ { if ((hot) && ($(EMPTYPRINT))) { print; } next; } \
-        /^#/ { hot=1; } { if (hot) print; }' >> $@
-
-#----------------------------------------------------------------------
-
-$(INCINSTALLPATH)/%.h: %.h.strip
+$(INCINSTALLPATH)/%.h: %.h
 	mkdir -p $(INCINSTALLPATH)
 	-rm -fv $@
 	/bin/cp -vpd $< $@
@@ -186,6 +199,36 @@ reinstall:
 	$(MAKE) clean
 	$(MAKE) clean-include
 	$(MAKE) install
+
+
+# ======================================================================
+# source code generators
+# ======================
+#
+# description and online texts
+# ----------------------------
+#  The following rules convert ordinary ASCII text files into C++ source code,
+#  providing functions to output usage information (online help)
+#
+#  Such text files use names with the pattern *usage.txt
+#  Automatically generated source code is excluded from editing and versioning
+#
+%usage.cc %usage.h: usage/%usage.txt
+	echo "// DO NOT EDIT: this file is automatically derived from $<" \
+	  > $(patsubst usage/%.txt,%.h,$<)
+	echo "extern char $(patsubst usage/%.txt,%,$<)[];" \
+	  >> $(patsubst usage/%.txt,%.h,$<)
+	echo "// DO NOT EDIT: this file is automatically derived from $<" \
+	  > $(patsubst usage/%.txt,%.cc,$<)
+	echo "#include \"$(patsubst usage/%.txt,%.h,$<)\"" \
+	  >> $(patsubst usage/%.txt,%.cc,$<)
+	echo "char $(patsubst usage/%.txt,%,$<)[]=" \
+	  >> $(patsubst usage/%.txt,%.cc,$<)
+	echo "{" >> $(patsubst usage/%.txt,%.cc,$<)
+	cat $< | egrep -v '^#' | sed -e 's/\\/\\\\/g' | sed -e 's/"/\\"/g' \
+	  | sed -e 's/$$/\\n"/' | sed -e 's/^/  "/'\
+	  >> $(patsubst usage/%.txt,%.cc,$<)
+	echo "};" >> $(patsubst usage/%.txt,%.cc,$<)
 
 #======================================================================
 # documentation part
@@ -214,15 +257,9 @@ DOXYWWWPATH=$(TF_WWWBASEDIR)/libstfinv
 
 doxyclean: ;/bin/rm -rfv $(DOXYWWWPATH) doxydoc.xxx
 
-onlinehelp.xxx: onlinehelp
-	echo '/*! \page page_help Online help texts' > $@
-	echo '\verbatim' >> $@
-	./$< -help 2>&1 >> $@ 2>&1
-	echo '\endverbatim' >> $@
-	echo '*/' >> $@
-
-DOXYSRC=$(LIBCCSRC) $(LIBCSRC) $(LIBHEADERS) README $(TESTCCSRC) $(TESTCSRC) \
-  onlinehelp.xxx Makefile
+DOXYSRC=$(DOXYTXT) $(LIBCCSRC) $(LIBCSRC) $(LIBHEADERS)\
+	  $(TESTCCSRC) $(TESTCSRC) \
+        Makefile
 
 PWD=$(shell env pwd)
 # create doxygen intermediate configuration
@@ -241,35 +278,6 @@ doxydoc: $(DOXYWWWPATH)/html/index.html
 
 doxyview: $(DOXYWWWPATH)/html/index.html
 	$(TF_BROWSER) file:$< &
-
-#======================================================================
-# create package
-# --------------
-# is delegated to Makefile.packages
-ifdef TF_MAKEPKG
-.PHONY: package
-package: $(TF_MAKEPKG)
-	$(MAKE) -f $< \
-	  PACKAGE=libstfinv \
-	  PACKAGEEXPORT="trunk/src/libs/libstfinv:src" \
-	  PACKAGETARGETS="src:all:" \
-	  PACKAGELIBS="-"
-.PHONY: srcpackage
-srcpackage: $(TF_MAKEPKG)
-	$(MAKE) -f $< \
-	  PACKAGE=libstfinv \
-	  PACKAGESRCONLY=yes \
-	  PACKAGEEXPORT="trunk/src/libs/libstfinv:src" \
-	  PACKAGETARGETS="src:all:" \
-	  PACKAGELIBS="-"
-.PHONY: fullpackage
-fullpackage: $(TF_MAKEPKG)
-	$(MAKE) -f $< \
-	  PACKAGE=libstfinvwithlibs \
-	  PACKAGEEXPORT="trunk/src/libs/libstfinv:src" \
-	  PACKAGETARGETS="src:all:" \
-	  PACKAGELIBS="libaff libfourier"
-endif
 
 #======================================================================
 # test code

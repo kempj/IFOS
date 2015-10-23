@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: histo.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 28/04/2005
  * 
@@ -39,7 +39,7 @@
 #define AFF_HISTO_H_VERSION \
   "AFF_HISTO_H   V1.0   "
 #define AFF_HISTO_H_CVSID \
-  "$Id: histo.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 
 #include<aff/lib/collector.h>
