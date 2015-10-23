@@ -2,24 +2,22 @@ INSTALL for DENISE
 ==================
 
 A detailed installation instruction is provided in the chapter 5 of the 
-documentation (manual_DENISE.pdf).
+documentation (DENISE/doc/manual_DENISE.pdf). If the manual is not compiled,
+please use the script DENISE/doc/compile_LaTeX_manual.sh
 
-Before compiling the main program DENISE you have to compile the required 
-additional libraries. In the DENISE/par directory simply use the shell script
+To compile DENISE a MAKEFILE is available in the DENISE/par directory. To
+use the MAKEFILE type
 
-./compileLIBRARIES.sh
+make
 
-which should install the following libraries:
+in the DENISE/par directory. The MAKEFILE compiles the additional libaries
 
 lib cseife
 lib stfinv
 lib aff
 lib fourier
 
-To compile the program DENISE you can use the shell script located in the
-Directory DENISE/par:
-
-./compileDENISE.sh
+before compiling the main program DENISE.
 
 -------------------------------------------
 
