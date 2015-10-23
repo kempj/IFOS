@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: rawarfun.h 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -50,7 +50,7 @@
 #define AFF_RAWARFUN_H_VERSION \
   "AFF_RAWARFUN_H   V1.3"
 #define AFF_RAWARFUN_H_CVSID \
-  "$Id: rawarfun.h 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 #include<aff/lib/types.h>
  

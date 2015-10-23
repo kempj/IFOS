@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: binarray.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 01/05/2002
  * 
@@ -44,7 +44,7 @@
 #define TF_BINARRAY_CC_VERSION \
   "TF_BINARRAY_CC   V1.1   "
 #define TF_BINARRAY_CC_CVSID \
-  "$Id: binarray.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<complex>
 

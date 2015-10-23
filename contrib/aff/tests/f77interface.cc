@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: f77interface.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 23/12/2002
  * 
@@ -42,7 +42,7 @@
 #define AFF_F77INTERFACE_CC_VERSION \
   "AFF_F77INTERFACE_CC   V1.2"
 #define AFF_F77INTERFACE_CC_CVSID \
-  "$Id: f77interface.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 // include assertions
 #include<aff/lib/error.h>

@@ -1,6 +1,6 @@
 c this is <f77common.inc>
 c ----------------------------------------------------------------------------
-c   ($Id: f77common.inc 3084 2010-08-10 16:01:03Z tforb $)
+c   ($Id$)
 c
 c Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 c

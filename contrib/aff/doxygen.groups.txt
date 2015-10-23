@@ -1,9 +1,9 @@
-/*! \file libaff/README.groups
+/*! \file libaff/doxygen.groups.txt
  * \brief groups in libaff
  *
  * ----------------------------------------------------------------------------
  *
- * $Id: README.groups 4964 2013-02-01 13:27:42Z lrehor $
+ * $Id$
  * 
  * Copyright (c) 2011 by Thomas Forbriger (BFO)
  *
@@ -27,6 +27,7 @@
  * 
  * REVISIONS and CHANGES 
  *  - 15/05/2011   V1.0   Thomas Forbriger
+ *  - 12/06/2013   V1.1   renamed file
  * 
 
   \todo
@@ -132,4 +133,4 @@
 
 /*======================================================================*/
 
-// ----- END OF README.groups ----- 
+// ----- END OF doxygen.groups.txt ----- 

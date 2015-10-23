@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: types.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -42,7 +42,7 @@
 #define AFF_TYPES_H_VERSION \
   "AFF_TYPES_H   V1.0   "
 #define AFF_TYPES_H_CVSID \
-  "$Id: types.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include <cstddef>
  

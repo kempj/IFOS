@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: onlinehelp.cc 3924 2011-05-09 14:52:03Z tforb $
  * \author Thomas Forbriger
  * \date 09/05/2011
  * 
@@ -30,13 +29,12 @@
  * 
  * REVISIONS and CHANGES 
  *  - 09/05/2011   V1.0   Thomas Forbriger
+ *  - 14/10/2015   V1.1   address new end-user usage functions
  * 
  * ============================================================================
  */
 #define ONLINEHELP_VERSION \
-  "ONLINEHELP   V1.0   print online help"
-#define ONLINEHELP_CVSID \
-  "$Id: onlinehelp.cc 3924 2011-05-09 14:52:03Z tforb $"
+  "ONLINEHELP   V1.1   print online help"
 
 #include <iostream>
 #include <tfxx/commandline.h>
@@ -46,6 +44,9 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+bool selectprocedure;
+std::string procedure_id;
+
 int main(int iargc, char* argv[])
 {
 
@@ -53,14 +54,16 @@ int main(int iargc, char* argv[])
   char usage_text[]=
   {
     ONLINEHELP_VERSION "\n"
-    "usage: onlinehelp" "\n"
+    "usage: onlinehelp [-procedure p] [usage]" "\n"
     "   or: onlinehelp --help|-h" "\n"
   };
 
   // define full help text
   char help_text[]=
   {
-    ONLINEHELP_CVSID
+    "usage        any non-empty parameter lets the program output\n"
+    "             the usage summary of libstfinv\n"
+    "-procedure p prints the detailed description of procedure \"p\"\n"
   };
 
   // define commandline options
@@ -71,6 +74,8 @@ int main(int iargc, char* argv[])
     {"help",arg_no,"-"},
     // 1: verbose mode
     {"v",arg_no,"-"},
+    // 2: verbose mode
+    {"procedure",arg_yes,"-"},
     {NULL}
   };
 
@@ -78,7 +83,7 @@ int main(int iargc, char* argv[])
   if (iargc<2) 
   {
     cerr << usage_text << endl;
-    stfinv::STFEngine::help(cerr);
+    stfinv::engines(cout);
     exit(0);
   }
 
@@ -88,34 +93,23 @@ int main(int iargc, char* argv[])
   // help requested? print full help text...
   if (cmdline.optset(0))
   {
-    cerr << usage_text << endl;
+    cerr << usage_text << endl << endl;
     cerr << help_text << endl;
-    stfinv::STFEngine::help(cerr);
-    stfinv::help(cerr);
+    stfinv::engines(cout);
     exit(0);
   }
 
-  // dummy operation: print option settings
-  for (int iopt=0; iopt<2; iopt++)
-  {
-    cout << "option: '" << options[iopt].opt_string << "'" << endl;
-    if (cmdline.optset(iopt)) {  cout << "  option was set"; }
-    else { cout << "option was not set"; }
-    cout << endl;
-    cout << "  argument (string): '" << cmdline.string_arg(iopt) << "'" << endl;
-    cout << "     argument (int): '" << cmdline.int_arg(iopt) << "'" << endl;
-    cout << "    argument (long): '" << cmdline.long_arg(iopt) << "'" << endl;
-    cout << "   argument (float): '" << cmdline.float_arg(iopt) << "'" << endl;
-    cout << "  argument (double): '" << cmdline.double_arg(iopt) << "'" << endl;
-    cout << "    argument (bool): '";
-    if (cmdline.bool_arg(iopt))
-    { cout << "true"; } else { cout << "false"; }
-    cout << "'" << endl;
-  }
-  while (cmdline.extra()) { cout << cmdline.next() << endl; }
+  selectprocedure=cmdline.optset(2);
+  procedure_id=cmdline.string_arg(2);
 
-  // dummy operation: print rest of command line
-  while (cmdline.extra()) { cout << cmdline.next() << endl; }
+  if (selectprocedure)
+  {
+    stfinv::usage(procedure_id, cout);
+  }
+  else
+  {
+    stfinv::help(cout);
+  }
 }
 
 /* ----- END OF onlinehelp.cc ----- */

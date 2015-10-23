@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvnormalize.h 4968 2013-02-01 13:58:05Z lrehor $
  * \author Thomas Forbriger
  * \date 08/05/2011
  * 
@@ -40,8 +39,6 @@
 
 #define STFINV_STFINVNORMALIZE_H_VERSION \
   "STFINV_STFINVNORMALIZE_H   V1.1"
-#define STFINV_STFINVNORMALIZE_H_CVSID \
-  "$Id: stfinvnormalize.h 4968 2013-02-01 13:58:05Z lrehor $"
 
 #include<stfinv/stfinvfourier.h>
 
@@ -70,6 +67,7 @@ namespace stfinv {
    *   \f$f_l\f$ and receiver \f$k\f$ at offset \f$r_k\f$ and
    * - \f$s_{lk}\f$ is the Fourier coefficient of the corresponding
    *   synthetics.
+   *
    * Then we seek a source correction filter with Fourier coefficients
    * \f$q_l\f$ such that
    * \f[
@@ -84,6 +82,45 @@ namespace stfinv {
    *   =
    *   \sum\limits_{k}\Im(\ln(s_{lk}\,q_l))
    *   \quad\forall\, l.
+   * \f]
+   *
+   * Actually we will apply weights \f$w_k\f$ to data from different offsets
+   * \f$r_k\f$ such that
+   * \f[
+   *   \sum\limits_{k}\left|w_k\,d_{lk}\right|^2
+   *   =
+   *   \sum\limits_{k}\left|w_k\,s_{lk}\,q_l\right|^2
+   *   \quad\forall\, l
+   * \f]
+   * and
+   * \f[
+   *   \sum\limits_{k}w_k\,\Im(\ln(d_{lk}))
+   *   =
+   *   \sum\limits_{k}w_k\,\Im(\ln(s_{lk}\,q_l))
+   *   \quad\forall\, l.
+   * \f]
+   * Additionally we will apply a waterlevel \f$\epsilon^2\f$, such that
+   * Fourier coefficients for which the average weighted energy of the
+   * synthetics is smaller than a fraction \f$\epsilon^2\f$ of the total
+   * average energy of the synthetics, will be damped.
+   *
+   * These conditions are satisfied by
+   * \f[
+   *   q_l=A_l\,e^{i\Phi_{l}}
+   * \f]
+   * with
+   * \f[
+   *   A_l=\sqrt{\frac{\sum\limits_{k}\left|w_k\,d_{lk}\right|^2}{
+   *     \sum\limits_{k}\left|w_k\,s_{lk}\right|^{2}
+   *     +
+   *     \frac{\epsilon^2}{N_{f}}\,\sum\limits_{k}\sum\limits_{l=0}^{N_{f}-1}
+   *     \left|w_k\,s_{lk}\right|^2}}
+   * \f]
+   * and
+   * \f[
+   *   \Phi_{l}=\frac{\sum\limits_{k}w_{k}\left(
+   *             \Im\left(\ln(d_{lk})\right)-\Im\left(\ln(s_{lk})\right)
+   *          \right)}{\sum\limits_k w_{k}}
    * \f]
    */
   class STFEngineNormalize: public stfinv::STFFourierDomainEngine {
@@ -117,6 +154,8 @@ namespace stfinv {
 
       // member data
     private:
+      //! \brief waterlevel
+      double Mwaterlevel;
   }; // class STFEngineNormalize
 
 } // namespace stfinv

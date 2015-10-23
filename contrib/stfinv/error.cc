@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: error.cc 3907 2011-05-05 16:20:59Z tforb $
  * \author Thomas Forbriger
  * \date 05/05/2011
  * 
@@ -34,9 +33,7 @@
  * ============================================================================
  */
 #define STFINV_ERROR_CC_VERSION \
-  "STFINV_ERROR_CC   V1.0   "
-#define STFINV_ERROR_CC_CVSID \
-  "$Id: error.cc 3907 2011-05-05 16:20:59Z tforb $"
+  "STFINV_ERROR_CC   V1.0"
 
 #include <iostream>
 #include <stfinv/error.h>

@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: operatortest.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 10/02/2004
  * 
@@ -36,7 +36,7 @@
 #define OPERATORTEST_VERSION \
   "OPERATORTEST   V1.1   test operator functions"
 #define OPERATORTEST_CVSID \
-  "$Id: operatortest.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include <iostream>
 #include <complex>

@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: fftwaff.h 4966 2013-02-01 13:46:50Z lrehor $
+ * $Id$
  * \author Thomas Forbriger
  * \date 11/07/2006
  * 
@@ -12,7 +12,7 @@
  * link with -lrfftw -lfftw -lm -laff
  *
  * ----
- * This program is free software; you can redistribute it and/or modify
+ * libfourier is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version. 
@@ -76,7 +76,7 @@
 #define TF_FFTWAFF_H_VERSION \
   "TF_FFTWAFF_H   V1.3"
 #define TF_FFTWAFF_H_CVSID \
-  "$Id: fftwaff.h 4966 2013-02-01 13:46:50Z lrehor $"
+  "$Id$"
 
 #include<complex>
 #ifdef FFTWFALLBACK

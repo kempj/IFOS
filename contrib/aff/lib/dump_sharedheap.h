@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: dump_sharedheap.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 19/12/2002
  * 
@@ -46,7 +46,7 @@
 #define AFF_DUMP_SHAREDHEAP_H_VERSION \
   "AFF_DUMP_SHAREDHEAP_H   V1.2"
 #define AFF_DUMP_SHAREDHEAP_H_CVSID \
-  "$Id: dump_sharedheap.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<iostream>
 #include<aff/lib/sharedheap.h>

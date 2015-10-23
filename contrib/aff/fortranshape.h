@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: fortranshape.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 23/12/2002
  * 
@@ -47,7 +47,7 @@
 #define AFF_FORTRANSHAPE_H_VERSION \
   "AFF_FORTRANSHAPE_H   V1.2"
 #define AFF_FORTRANSHAPE_H_CVSID \
-  "$Id: fortranshape.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<aff/array.h>
 #include<aff/lib/checkedcast.h>

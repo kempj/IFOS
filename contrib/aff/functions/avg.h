@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: avg.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 20/03/2005
  * 
@@ -40,7 +40,7 @@
 #define AFF_AVG_H_VERSION \
   "AFF_AVG_H   V1.1   "
 #define AFF_AVG_H_CVSID \
-  "$Id: avg.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 
 #include<aff/lib/collector.h>

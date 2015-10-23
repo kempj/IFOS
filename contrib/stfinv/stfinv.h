@@ -4,7 +4,6 @@
  * \ingroup cinterface
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinv.h 4968 2013-02-01 13:58:05Z lrehor $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -34,6 +33,7 @@
  *  - 28/06/2011   V1.1   requires extern declaration for C++ since binary
  *                        code is compiled by C++ compiler, not C compiler
  *  - 30/09/2011   V1.2   implemented handling of additional time series pairs
+ *  - 14/10/2015   V1.3   new end-user usage functions
  * 
  * ============================================================================
  */
@@ -42,9 +42,7 @@
 #ifndef STFINV_STFINV__H_VERSION
 
 #define STFINV_STFINV__H_VERSION \
-  "STFINV_STFINV__H   V1.2"
-#define STFINV_STFINV__H_CVSID \
-  "$Id: stfinv.h 4968 2013-02-01 13:58:05Z lrehor $"
+  "STFINV_STFINV__H   V1.3"
 
 #include <stfinv/waveformheader.h>
 
@@ -219,7 +217,7 @@ struct CPairs {
  * \param parameters
  *   Parameters to select one of the engines as well as to control the engines
  *   are passed in a character sequence.
- *   See also \ref main_subsec_parameters
+ *   See also \ref page_eu_subsec_parameters
  */
 void initstfinvengine(struct CTriples triples,
                       struct CWaveform stf,
@@ -259,7 +257,7 @@ void initstfinvengine(struct CTriples triples,
  * \param parameters
  *   Parameters to select one of the engines as well as to control the engines
  *   are passed in a character sequence.
- *   See also \ref main_subsec_parameters
+ *   See also \ref page_eu_subsec_parameters
  */
 void initstfinvenginewithpairs(struct CTriples triples,
                                struct CWaveform stf,
@@ -278,11 +276,25 @@ void runstfinvengine();
  */
 void freestfinvengine();
 
-/*! \brief Print online help to stdout
+/*! \brief List procedures (engines) on stdout
+ *
+ * \ingroup cinterface
+ */
+void printengines();
+
+/*! \brief Print usage summary to stdout
  *
  * \ingroup cinterface
  */
 void printhelp();
+
+/*! \brief Print detailed description for engine "id" to stdout
+ *
+ * \param id character string selecting a specific engine
+ *
+ * \ingroup cinterface
+ */
+void printusage(char* id);
 
 #ifdef __cplusplus
 } // extern "C"

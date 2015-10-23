@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: strided.cc 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -60,7 +60,7 @@
 #define AFF_STRIDED_CC_VERSION \
   "AFF_STRIDED_DEF_H   V1.8"
 #define AFF_STRIDED_CC_CVSID \
-  "$Id: strided.cc 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 #include<aff/lib/strided.h>
 #include<aff/lib/error.h>

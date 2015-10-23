@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: cseife.h 4961 2013-02-01 12:52:09Z lrehor $
+ * $Id$
  * \author Thomas Forbriger
  * \date 14/01/2005
  * 
@@ -41,7 +41,7 @@
 #define TF_CSEIFE_H_VERSION \
   "TF_CSEIFE_H   V1.2"
 #define TF_CSEIFE_H_CVSID \
-  "$Id: cseife.h 4961 2013-02-01 12:52:09Z lrehor $"
+  "$Id$"
 
 #define SEIFE_EXIT_FAILURE 1
 

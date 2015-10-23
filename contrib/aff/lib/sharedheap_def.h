@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: sharedheap_def.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -58,7 +58,7 @@
 #define AFF_SHAREDHEAP_DEF_H_VERSION \
   "AFF_SHAREDHEAP_DEF_H   V1.4"
 #define AFF_SHAREDHEAP_DEF_H_CVSID \
-  "$Id: sharedheap_def.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 namespace aff {
 

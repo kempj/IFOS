@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: f77proto.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 22/12/2002
  * 
@@ -44,7 +44,7 @@
 #define AFF_F77PROTO_H_VERSION \
   "AFF_F77PROTO_H   V1.1"
 #define AFF_F77PROTO_H_CVSID \
-  "$Id: f77proto.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<aff/array.h>
 

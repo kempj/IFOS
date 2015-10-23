@@ -4,7 +4,6 @@
  * \ingroup tools
  * ----------------------------------------------------------------------------
  * 
- * $Id: tools.h 4027 2011-06-24 17:27:50Z tforb $
  * \author Thomas Forbriger
  * \date 28/05/2011
  * 
@@ -31,6 +30,7 @@
  * 
  * REVISIONS and CHANGES 
  *  - 28/05/2011   V1.0   Thomas Forbriger
+ *  - 15/10/2015   V1.1   new report function (report_engine)
  * 
  * ============================================================================
  */
@@ -39,9 +39,9 @@
 #ifndef STFINV_TOOLS_H_VERSION
 
 #define STFINV_TOOLS_H_VERSION \
-  "STFINV_TOOLS_H   V1.0   "
-#define STFINV_TOOLS_H_CVSID \
-  "$Id: tools.h 4027 2011-06-24 17:27:50Z tforb $"
+  "STFINV_TOOLS_H   V1.1"
+
+#include<iostream>
 
 namespace stfinv {
 
@@ -56,6 +56,38 @@ namespace stfinv {
      *         \p eps
      */
     bool sameineps(const double &a, const double& b, const double& eps=1.e-8);
+
+/* ---------------------------------------------------------------------- */
+
+    /*! \brief report engine identifier
+     * \ingroup tools
+     * \param C class to report ID and oneline description
+     * \param os output stream to send output to
+     */
+    template<class C>
+      void report_engine(std::ostream& os)
+      {
+        os << "  ID: ";
+        os.width(10); 
+        os.setf(std::ios_base::left);
+        os << C::ID;
+        os.width(0);
+        os << " (" << C::description << ")" << std::endl;
+      } // void report_engine(std::ostream& os)
+
+/* ---------------------------------------------------------------------- */
+
+    /*! \brief report engine identifier with heading
+     * \ingroup tools
+     * \param C class to report ID and oneline description
+     * \param os output stream to send output to
+     */
+    template<class C>
+      void report_engine_ID(std::ostream& os)
+      {
+        os << "Identifier to selected this procedure:" << std::endl;
+        report_engine<C>(os);
+      } // void report_engine_ID(std::ostream& os)
     
   } // namespace tools
 

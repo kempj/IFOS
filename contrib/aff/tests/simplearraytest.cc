@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: simplearraytest.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 25/05/2002
  * 
@@ -39,7 +39,7 @@
 #define AFF_SIMPLEARRAYTEST_CC_VERSION \
   "AFF_SIMPLEARRAYTEST_CC   V1.4"
 #define AFF_SIMPLEARRAYTEST_CC_CVSID \
-  "$Id: simplearraytest.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 /*! \example tests/simplearraytest.cc
  *

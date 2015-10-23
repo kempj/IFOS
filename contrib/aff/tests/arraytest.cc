@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: arraytest.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 09/06/2002
  * 
@@ -59,7 +59,7 @@
 #define AFF_ARRAYTEST_CC_VERSION \
   "AFF_ARRAYTEST_CC   V1.3"
 #define AFF_ARRAYTEST_CC_CVSID \
-  "$Id: arraytest.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #define CONT_INDEXCHECK
 

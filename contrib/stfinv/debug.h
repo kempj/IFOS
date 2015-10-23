@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: debug.h 4008 2011-06-21 21:14:34Z tforb $
  * \author Thomas Forbriger
  * \date 05/05/2011
  * 
@@ -38,9 +37,7 @@
 #ifndef STFINV_DEBUG_H_VERSION
 
 #define STFINV_DEBUG_H_VERSION \
-  "STFINV_DEBUG_H   V1.0   "
-#define STFINV_DEBUG_H_CVSID \
-  "$Id: debug.h 4008 2011-06-21 21:14:34Z tforb $"
+  "STFINV_DEBUG_H   V1.0"
 
 /*! \brief produce debug output
  * \ingroup misc_h

@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: array.h 4004 2011-06-21 19:28:23Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -136,7 +136,7 @@
 #define AFF_ARRAY_H_VERSION \
   "AFF_ARRAY_H   V1.2"
 #define AFF_ARRAY_H_CVSID \
-  "$Id: array.h 4004 2011-06-21 19:28:23Z tforb $"
+  "$Id$"
 
 #include <aff/lib/sharedheap.h>
 #include <aff/lib/strided.h>

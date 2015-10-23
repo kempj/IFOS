@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: deepcopy.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 29/12/2002
  * 
@@ -49,7 +49,7 @@
 #define AFF_DEEPCOPY_H_VERSION \
   "AFF_DEEPCOPY_H   V1.2"
 #define AFF_DEEPCOPY_H_CVSID \
-  "$Id: deepcopy.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 namespace aff {
 

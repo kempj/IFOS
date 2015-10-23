@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: fouriertools.h 3915 2011-05-06 22:04:25Z tforb $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -38,9 +37,7 @@
 #ifndef STFINV_FOURIERTOOLS_H_VERSION
 
 #define STFINV_FOURIERTOOLS_H_VERSION \
-  "STFINV_FOURIERTOOLS_H   V1.0   "
-#define STFINV_FOURIERTOOLS_H_CVSID \
-  "$Id: fouriertools.h 3915 2011-05-06 22:04:25Z tforb $"
+  "STFINV_FOURIERTOOLS_H   V1.0"
 
 namespace stfinv {
 

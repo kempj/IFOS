@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: error.h 3973 2011-05-28 14:40:41Z tforb $
  * \author Thomas Forbriger
  * \date 05/05/2011
  * 
@@ -39,15 +38,10 @@
 
 #define STFINV_ERROR_H_VERSION \
   "STFINV_ERROR_H   V1.0"
-#define STFINV_ERROR_H_CVSID \
-  "$Id: error.h 3973 2011-05-28 14:40:41Z tforb $"
 
 #include <iostream>
 
 namespace stfinv {
-
-/*! \defgroup group_error Error handling module
- */
 
   /*! \brief Base class for exceptions
    *

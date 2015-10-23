@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: cseife.c 4961 2013-02-01 12:52:09Z lrehor $
+ * $Id$
  *
  * ----
  * This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 #define TF_CSEIFE_C_VERSION \
   "TF_CSEIFE_C   V1.2"
 #define TF_CSEIFE_C_CVSID \
-  "$Id: cseife.c 4961 2013-02-01 12:52:09Z lrehor $"
+  "$Id$"
 
 #include <cseife.h>
 #include <stdio.h>

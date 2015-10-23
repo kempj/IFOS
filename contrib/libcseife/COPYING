@@ -2,13 +2,14 @@ this is <COPYING>
 ============================================================================
 libseife
 --------
-$Id: COPYING 4961 2013-02-01 12:52:09Z lrehor $
+$Id$
 ============================================================================
 
 The source code in this directory is part of libseife which compiles to
 libseifa. and libcseife.a
 
 Copyright (C) 1984 by Erhard Wielandt
+Copyright (C) 1996 by Wolfgang Friederich
 Copyright (C) 2013 by Thomas Forbriger 
 
 ----

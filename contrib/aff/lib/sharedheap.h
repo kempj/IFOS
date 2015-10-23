@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: sharedheap.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -69,7 +69,7 @@
 #define AFF_SHAREDHEAP_H_VERSION \
   "AFF_SHAREDHEAP_H   V1.8"
 #define AFF_SHAREDHEAP_H_CVSID \
-  "$Id: sharedheap.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<new>
 #include<aff/lib/error.h>

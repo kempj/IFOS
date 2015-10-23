@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: parameterhandler.h 3973 2011-05-28 14:40:41Z tforb $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -38,9 +37,7 @@
 #ifndef STFINV_PARAMETERHANDLER_H_VERSION
 
 #define STFINV_PARAMETERHANDLER_H_VERSION \
-  "STFINV_PARAMETERHANDLER_H   V1.0   "
-#define STFINV_PARAMETERHANDLER_H_CVSID \
-  "$Id: parameterhandler.h 3973 2011-05-28 14:40:41Z tforb $"
+  "STFINV_PARAMETERHANDLER_H   V1.0"
 
 #include <string>
 #include <map>
