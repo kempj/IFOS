@@ -5,8 +5,11 @@ LOCINCLUDEDIR=../header
 LOCLIBDIR=../bin
 LOCBINDIR=../bin
 
-TF_WWWBASEDIR=$HOME/public_html/txt/cxx
+TF_WWWBASEDIR=$(HOME)/public_html/txt/cxx
 
 TF_BROWSER=firefox
 
+# set Fortran compiler if not yet set in environment
+ifndef FC
 FC=/usr/bin/g77-3.3
+endif
