@@ -71,13 +71,16 @@
 #
 # You will find the installed library header files in $(LOCINCLUDEDIR)/aff
 
+include ../Makefile_var
+
+
 .PHONY: all
 all: install doc
 
 .PHONY: doc
 doc: doxydoc
 
-LIBRARIES=libaff.a libaff.so
+LIBRARIES=libaff.a
 
 .PHONY: install
 install: $(addprefix $(LOCLIBDIR)/,$(LIBRARIES))
