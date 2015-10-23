@@ -1,0 +1,30 @@
+this is <README>
+============================================================================
+stfinv
+------
+$Id$
+============================================================================
+
+This directory contains source code for the library stfinv. It was exportet
+from TF_Software to DENISE. DENISE is hosted in the Trac-/svn-project
+FWI_elastic (http://gpitrsvn.gpi.uni-karlsruhe.de/repos/FWI_elastic/DENISE).
+
+
+
+The copyright of the source code is held by: 
+
+Copyright (c) 2011 by Thomas Forbriger (BFO, Schiltach)
+
+
+
+
+Exports:
+   Each time this source code is exported to DENISE the current version is
+   tagged. The directory containing the tagged version is named by the day 
+   of the export (yyyymmdd) and can be found in 
+   http://gpitrsvn.gpi.uni-karlsruhe.de/repos/TFSoftware/export/stfinv.
+   
+   19/10/2011   First export of the version tagged in 20111019
+   01/02/2013   Export of version tagged in 20130201
+   
+----- END OF README ----- 

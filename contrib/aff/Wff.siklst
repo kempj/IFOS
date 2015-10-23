@@ -1,0 +1,15 @@
+#
+# SIK Auswahl fuer FF library
+#
+*.c *.h *.f ?akefile *.inc *.cc *.tcc
+#
+# when working with m4
+*.m4 *.fpp
+#
+README*
+#
+# there are CVS working directories
+CVS
+#
+# doxygen configuration
+*.cfg
