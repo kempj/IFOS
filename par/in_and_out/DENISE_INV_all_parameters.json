@@ -200,6 +200,7 @@
 			"PARA" : "fdlsq:tshift=0.0",
 			"N_STF" : "10",
 			"N_STF_START" : "1",
+			"TAPER_STF" : "0",
 			"TRKILL_STF" : "0",
 			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
 			
@@ -219,6 +220,7 @@
 
 "Time windowing and damping" : "comment",
 			"TIMEWIN" : "0",
+			"TW_IND" : "0",
 			"PICKS_FILE" : "./picked_times/picks",
 			"TWLENGTH_PLUS" : "0.01",
 			"TWLENGTH_MINUS" : "0.01",

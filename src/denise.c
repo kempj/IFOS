@@ -50,40 +50,38 @@ int main(int argc, char **argv){
 	char *buff_addr, ext[10], *fileinp;
 	char wave_forward[225], wave_recipro[225], wave_conv[225], jac[225], jac2[225], jacsum[225], dwavelet[225], vyf[STRING_SIZE];
 
-	double time1, time2, time3, time4, time5, time6, time7, time8,
-		time_av_v_update=0.0, time_av_s_update=0.0, time_av_v_exchange=0.0, 
-		time_av_s_exchange=0.0, time_av_timestep=0.0;
-		
+	double time1, time2, time3, time4, time5, time6, time7, time8, time_av_v_update=0.0, time_av_s_update=0.0, time_av_v_exchange=0.0, time_av_s_exchange=0.0, time_av_timestep=0.0;
+	
 	float L2, L2sum, L2_all_shots, L2sum_all_shots, *L2t, alphanomsum, alphanom, alphadenomsum, alphadenom, scaleamp ,sdummy, lamr; 
 	int sum_killed_traces=0, sum_killed_traces_testshots=0, killed_traces=0, killed_traces_testshots=0;
 	int *ptr_killed_traces=&killed_traces, *ptr_killed_traces_testshots=&killed_traces_testshots;
 
-	float energy, energy_sum, energy_all_shots, energy_sum_all_shots;	
+	float energy, energy_sum, energy_all_shots, energy_sum_all_shots;
 
-	float  **  psxx, **  psxy, **  psyy, **psp, ** ux, ** uy, ** uxy, ** uyx, ** Vp0, ** uttx, ** utty, ** Vs0, ** Rho0;
-	float  **  pvx, **  pvy, **waveconv, **waveconv_lam, **waveconv_mu, **waveconv_rho, **waveconv_rho_s, **waveconv_u, **waveconvtmp, **wcpart, **wavejac;
-	float **waveconv_shot, **waveconv_u_shot, **waveconv_rho_shot;
-	float  **  pvxp1, **  pvyp1, **  pvxm1, **  pvym1;
-	float ** gradg, ** gradp,** gradg_rho, ** gradp_rho, ** gradg_u, ** gradp_u;
-	float  **  prho,**  prhonp1, **prip=NULL, **prjp=NULL, **pripnp1=NULL, **prjpnp1=NULL, **  ppi, **  pu, **  punp1, **  puipjp, **  ppinp1;
-	float  **  vpmat, ***forward_prop_x, ***forward_prop_y, ***forward_prop_rho_x, ***forward_prop_u, ***forward_prop_rho_y, ***forward_prop_p;
+	float  ** psxx, **  psxy, ** psyy, **psp, ** ux, ** uy, ** uxy, ** uyx, ** Vp0, ** uttx, ** utty, ** Vs0, ** Rho0;
+	float  ** pvx,  **  pvy,  ** waveconv, **waveconv_lam, **waveconv_mu, **waveconv_rho, **waveconv_rho_s, **waveconv_u, **waveconvtmp, **wcpart, **wavejac;
+	float  ** waveconv_shot,  ** waveconv_u_shot, **waveconv_rho_shot;
+	float  ** pvxp1, ** pvyp1, ** pvxm1, ** pvym1;
+	float  ** gradg, ** gradp, ** gradg_rho, ** gradp_rho, ** gradg_u, ** gradp_u;
+	float  ** prho,  ** prhonp1, ** prip=NULL, **prjp=NULL, **pripnp1=NULL, **prjpnp1=NULL, **  ppi, **  pu, **  punp1, **  puipjp, **  ppinp1;
+	float  ** vpmat, ***forward_prop_x, ***forward_prop_y, ***forward_prop_rho_x, ***forward_prop_u, ***forward_prop_rho_y, ***forward_prop_p;
 
-	float  ** sectionvx=NULL, ** sectionvy=NULL, ** sectionp=NULL, ** sectionpnp1=NULL,
-		** sectioncurl=NULL, ** sectiondiv=NULL, ** sectionvxdata=NULL, ** sectionvxdiff=NULL, ** sectionvxdiffold=NULL, ** sectionvydiffold=NULL, ** sectionpdata=NULL, ** sectionpdiff=NULL, ** sectionpdiffold=NULL,
-		** sectionvydiff=NULL, ** sectionvydata=NULL, ** sectionpn=NULL, ** sectionread=NULL, ** sectionvy_conv=NULL, ** sectionvy_obs=NULL, ** sectionvx_conv=NULL,** sectionvx_obs=NULL,
-		** sectionp_conv=NULL,** sectionp_obs=NULL, * source_time_function=NULL;
+	float  	** sectionvx=NULL, ** sectionvy=NULL, ** sectionp=NULL, ** sectionpnp1=NULL, ** sectioncurl=NULL, ** sectiondiv=NULL, ** sectionvxdata=NULL, ** sectionvxdiff=NULL, ** sectionvxdiffold=NULL,
+		** sectionvydiffold=NULL, ** sectionpdata=NULL, ** sectionpdiff=NULL, ** sectionpdiffold=NULL, ** sectionvydiff=NULL, ** sectionvydata=NULL, ** sectionpn=NULL, ** sectionread=NULL,
+		** sectionvy_conv=NULL, ** sectionvy_obs=NULL, ** sectionvx_conv=NULL,** sectionvx_obs=NULL, ** sectionp_conv=NULL,** sectionp_obs=NULL, * source_time_function=NULL;
+		
 	float  **  absorb_coeff, ** taper_coeff, * epst1, * epst2,  * epst3, * picked_times;
 	float  ** srcpos=NULL, **srcpos_loc=NULL, ** srcpos1=NULL, **srcpos_loc_back=NULL, ** signals=NULL, ** signals_rec=NULL, *hc=NULL, ** dsignals=NULL;
 	int   ** recpos=NULL, ** recpos_loc=NULL;
-	/*int   ** tracekill=NULL, TRKILL, DTRKILL;*/
+	
 	int * DTINV_help;
 	
 	float ** bufferlef_to_rig,  ** bufferrig_to_lef, ** buffertop_to_bot, ** bufferbot_to_top; 
 
 	/* PML variables */
-	float * d_x, * K_x, * alpha_prime_x, * a_x, * b_x, * d_x_half, * K_x_half, * alpha_prime_x_half, * a_x_half, * b_x_half, * d_y, * K_y, * alpha_prime_y, * a_y, * b_y, * d_y_half, * K_y_half, * alpha_prime_y_half, * a_y_half, * b_y_half;
-	float ** psi_sxx_x, ** psi_syy_y, ** psi_sxy_y, ** psi_sxy_x, ** psi_vxx, ** psi_vyy, ** psi_vxy, ** psi_vyx, ** psi_vxxs;
-
+	float 	* d_x, * K_x, * alpha_prime_x, * a_x, * b_x, * d_x_half, * K_x_half, * alpha_prime_x_half, * a_x_half, * b_x_half,
+		* d_y, * K_y, * alpha_prime_y, * a_y, * b_y, * d_y_half, * K_y_half, * alpha_prime_y_half, * a_y_half, * b_y_half;
+	float 	** psi_sxx_x, ** psi_syy_y, ** psi_sxy_y, ** psi_sxy_x, ** psi_vxx, ** psi_vyy, ** psi_vxy, ** psi_vyx, ** psi_vxxs;
 
 	/* Variables for viscoelastic modeling */
 	float **ptaus=NULL, **ptaup=NULL, *etaip=NULL, *etajm=NULL, *peta=NULL, **ptausipjp=NULL, **fipjp=NULL, ***dip=NULL, *bip=NULL, *bjm=NULL;

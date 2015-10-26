@@ -141,6 +141,7 @@ DENISE= \
 	timedomain_filt.c \
 	timedomain_filt_vector.c \
 	time_window.c \
+	time_window_glob.c \
 	util.c \
 	wavelet.c \
 	wavelet_stf.c \

@@ -35,10 +35,8 @@ float energy_dummy, intseis;
 int umax=0, h;
 float intseis_sd;
 float **intseis_sectiondata=NULL;
-float *picked_times=NULL;
 
 intseis_sectiondata = matrix(1,ntr,1,ns); /* declaration of variables for integration */
-if(TIMEWIN) picked_times = vector(1,ntr); /* declaration of variables for TIMEWIN */
 
 /*extern int MYID;*/
 
@@ -93,7 +91,7 @@ for(i=1;i<=ntr;i++){
 }
 
 /* TIME WINDOWING */
-if(TIMEWIN==1) time_window(intseis_sectiondata, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+if(TIMEWIN==1) time_window(intseis_sectiondata, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
 
 /* NORMALIZE TRACES */
 if(NORMALIZE==1) normalize_data(intseis_sectiondata,ntr,ns);
@@ -116,8 +114,7 @@ energy_dummy=energy;
 /* free memory for integrated seismogram */
 free_matrix(intseis_sectiondata,1,ntr,1,ns);
 
-/* free memory for time windowing and trace killing */
-if(TIMEWIN==1) free_vector(picked_times,1,ntr);
+/* free memory for trace killing */
 if(TRKILL==1){
 free_imatrix(kill_tmp,1,ntr_glob,1,nsrc_glob);
 free_ivector(kill_vector,1,ntr);}

@@ -80,7 +80,9 @@ void read_par_json(FILE *fp, char *fileinp){
 	extern int TRKILL_STF;
 	extern char TRKILL_FILE_STF[STRING_SIZE];
 
-	extern int TIMEWIN, NORMALIZE;
+	extern int TAPER_STF;
+
+	extern int TIMEWIN, NORMALIZE, TW_IND;
 	extern float TWLENGTH_PLUS, TWLENGTH_MINUS, GAMMA;
 	extern char PICKS_FILE[STRING_SIZE];
 	
@@ -660,6 +662,10 @@ void read_par_json(FILE *fp, char *fileinp){
 					}
 				}
 				
+				/* Taper STF */
+				if (get_int_from_objectlist("TAPER_STF",number_readobjects,&TAPER_STF,varname_list, value_list)){
+					TAPER_STF=0;
+					fprintf(fp,"Variable TAPER_STF is set to default value %d.\n",TAPER_STF);}
 				
 				/* Frequency filtering during inversion */
 				if (get_int_from_objectlist("TIME_FILT",number_readobjects,&TIME_FILT,varname_list, value_list)){
@@ -746,6 +752,9 @@ void read_par_json(FILE *fp, char *fileinp){
 					fprintf(fp,"Variable TIMEWIN is set to default value %d.\n",TIMEWIN);}
 				else {
 					if (TIMEWIN==1){
+						if (get_int_from_objectlist("TW_IND",number_readobjects,&TW_IND,varname_list, value_list)){
+							TW_IND=0;
+							fprintf(fp,"Variable TW_IND is set to default value %d.\n",TW_IND);}
 						if (get_string_from_objectlist("PICKS_FILE",number_readobjects,PICKS_FILE,varname_list, value_list))
 							err("Variable PICKS_FILE could not be retrieved from the json input file!");
 						if (get_float_from_objectlist("TWLENGTH_PLUS",number_readobjects,&TWLENGTH_PLUS,varname_list, value_list))

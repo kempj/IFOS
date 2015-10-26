@@ -71,7 +71,8 @@ void exchange_par(void){
 	extern float PRO;
 	extern int TRKILL, TRKILL_STF;
 	extern char TRKILL_FILE[STRING_SIZE], TRKILL_FILE_STF[STRING_SIZE];
-	extern int TIMEWIN, NORMALIZE;
+	extern int TAPER_STF;
+	extern int TIMEWIN, NORMALIZE, TW_IND;
 	extern float TWLENGTH_PLUS, TWLENGTH_MINUS, GAMMA;
 	extern char PICKS_FILE[STRING_SIZE];
 	extern char MISFIT_LOG_FILE[STRING_SIZE];
@@ -289,6 +290,9 @@ void exchange_par(void){
 	
 	idum[91]  = ACOUSTIC;
 	
+	idum[92]  = TW_IND;
+	
+	idum[93]  = TAPER_STF;
 	
 	} /** if (MYID == 0) **/
 	
@@ -524,6 +528,10 @@ void exchange_par(void){
 	GRAD_FILT_WAVELENGTH = idum[90];
 	  
 	ACOUSTIC = idum[91];
+	  
+	TW_IND = idum[92];
+	
+	TAPER_STF = idum[93];
 	
 	MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
 

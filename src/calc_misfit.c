@@ -35,7 +35,6 @@ float l2;
 int umax=0, h;
 float abs_section, abs_sectiondata;
 float intseis_s, intseis_sd;
-float *picked_times=NULL;
 float **intseis_section=NULL, **intseis_sectiondata=NULL;
 float **intseis_sectiondata_envelope=NULL, **intseis_section_envelope=NULL;
 if(LNORM==8){
@@ -44,7 +43,6 @@ if(LNORM==8){
 	}
 intseis_section = matrix(1,ntr,1,ns);  /* declaration of variables for integration */
 intseis_sectiondata = matrix(1,ntr,1,ns);
-if(TIMEWIN) picked_times = vector(1,ntr); /* declaration of variables for TIMEWIN */
 
 /* TRACE KILLING */
 int ** kill_tmp, *kill_vector;	/* declaration of variables for trace killing */
@@ -98,8 +96,8 @@ for(i=1;i<=ntr;i++){
 
 /* TIME WINDOWING */
 if(TIMEWIN==1){
-time_window(intseis_section, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
-time_window(intseis_sectiondata, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+time_window(intseis_section, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+time_window(intseis_sectiondata, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
 }
 
 /* NORMALIZE TRACES */
@@ -158,8 +156,8 @@ l2=L2;
 free_matrix(intseis_section,1,ntr,1,ns);
 free_matrix(intseis_sectiondata,1,ntr,1,ns);
 
-/* free memory for time windowing and trace killing */
-if(TIMEWIN==1) free_vector(picked_times,1,ntr);
+/* free memory for trace killing */
+
 if(TRKILL==1){
 free_imatrix(kill_tmp,1,ntr_glob,1,nsrc_glob);
 free_ivector(kill_vector,1,ntr);}

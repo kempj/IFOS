@@ -195,7 +195,7 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 
 void  inseis_source_wavelet(float *section, int ns, int ishot);
 
-void  taper(float **sectionpdiff, int ntr, int ns);
+void  taper(float *section, int ns, float fc);
 
 void  output_source_signal(FILE *fp, float **signals, int ns, int seis_form);
 
@@ -303,7 +303,8 @@ float *etajm, float *peta, float * hc, float * K_x, float * a_x, float * b_x, fl
 void  timedomain_filt(float ** data, float fc, int order, int ntr, int ns, int method);
 void  timedomain_filt_vector(float * data, float fc, int order, int ntr, int ns, int method);
 
-void time_window(float **sectiondata, float * picked_times, int iter, int ntr_glob, int **recpos_loc, int ntr, int ns, int ishot);
+void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, int ntr, int ns, int ishot);
+void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int ishot);
 
 void prepare_update_s(float *etajm, float *etaip, float *peta, float **fipjp, float **pu,
 float **puipjp, float **ppi, float **prho, float **ptaus, float **ptaup,

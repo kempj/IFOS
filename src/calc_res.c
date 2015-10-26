@@ -35,7 +35,6 @@ int Lcount,i,j,invtime,k,h, umax=0;
 float l2;
 float abs_section, abs_sectiondata, sectiondata_mult_section;
 float intseis_s, intseis_sd;
-float *picked_times=NULL;
 float **intseis_section=NULL, **intseis_sectiondata=NULL;
 float **intseis_sectiondata_envelope=NULL, **intseis_section_envelope=NULL, **intseis_section_hilbert=NULL, **dummy_1=NULL, **dummy_2=NULL;
 
@@ -49,7 +48,6 @@ if(LNORM==8){
 
 intseis_section = matrix(1,ntr,1,ns);  /* declaration of variables for integration */
 intseis_sectiondata = matrix(1,ntr,1,ns);
-if(TIMEWIN) picked_times = vector(1,ntr); /* declaration of variables for TIMEWIN */
 
 /* sectiondiff will be set to zero */
 umax=ntr*ns;
@@ -111,8 +109,8 @@ for(i=1;i<=ntr;i++){
 
 /* TIME WINDOWING */
 if(TIMEWIN==1){
-	time_window(intseis_section, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
-	time_window(intseis_sectiondata, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+	time_window(intseis_section, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+	time_window(intseis_sectiondata, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
 }
 
 /* NORMALIZE TRACES */
@@ -238,15 +236,9 @@ for(i=1;i<=ntr;i++){
 
 l2=L2;
 
-// taper(sectiondiff,ntr,ns);
-/* printf("\n MYID = %i   IN CALC_RES: L2 = %10.12f \n",MYID,l2); */
-
 /* free memory for integrated seismograms */
 free_matrix(intseis_section,1,ntr,1,ns);
 free_matrix(intseis_sectiondata,1,ntr,1,ns);
-
-/* free memory for time windowing and trace killing */
-if(TIMEWIN==1) free_vector(picked_times,1,ntr);
 
 if(TRKILL==1){
 	free_imatrix(kill_tmp,1,ntr_glob,1,nsrc_glob);

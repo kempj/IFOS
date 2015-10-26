@@ -124,9 +124,9 @@
 			"SRTRADIUS" : "3.0",
 			"FILTSIZE" : "1",
 			"SWS_TAPER_FILE" : "1",
-			"TAPER_FILE_NAME" : "taper/taper.bin",
-			"TAPER_FILE_NAME_U" : "taper/taper_u.bin",
-			"TAPER_FILE_NAME_RHO" : "taper/taper_rho.bin",
+			"TAPER_FILE_NAME" : "taper/taper_te_ac.bin",
+			"TAPER_FILE_NAME_U" : "taper/taper_te_ac_u.bin",
+			"TAPER_FILE_NAME_RHO" : "taper/taper_te_ac_rho.bin",
 
 "Upper and lower limits for model parameters" : "comment",
 			"VPUPPERLIM" : "5000",
@@ -145,6 +145,7 @@
 			"PARA" : "fdlsq:tshift=0.0",
 			"N_STF" : "10",
 			"N_STF_START" : "1",
+			"TAPER_STF" : "1",
 			"TRKILL_STF" : "0",
 			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
 			

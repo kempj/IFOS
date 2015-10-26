@@ -1,4 +1,4 @@
-/*-----------------------------------------------------------------------------------------
+ /*-----------------------------------------------------------------------------------------
  * Copyright (C) 2013  For the list of authors, see file AUTHORS.
  *
  * This file is part of DENISE.
@@ -23,7 +23,7 @@
  *  ----------------------------------------------------------------------*/
 #include "fd.h"
 
-void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, int ntr, int ns, int ishot){
+void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int ishot){
 
 	/* declaration of variables */
 	extern float DT;
@@ -32,21 +32,19 @@ void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, 
 	extern char PICKS_FILE[STRING_SIZE];
 	char pickfile_char[STRING_SIZE];
 	float time, dump, dump1, dump2, dump3, taper, taper1;
-	float *pick_tmp, **pick_tmp_m;
-	int i, j, h;
-
-	float *picked_times=NULL, **picked_times_m=NULL;
+	int i, j;
+	
+	float **picked_times_m=NULL;
+	float *picked_times=NULL;
 	
 	FILE *fptime;
-
-	if(TW_IND){
-		picked_times_m = matrix(1,3,1,ntr_glob);
-		pick_tmp_m = matrix(1,3,1,ntr_glob);
-	}else{
-		picked_times = vector(1,ntr_glob);
-		pick_tmp = vector(1,ntr_glob);
-	}
 	
+	if(TW_IND)
+		picked_times_m = matrix(1,3,1,ntr_glob);
+	else
+		picked_times = vector(1,ntr_glob);
+	
+	/* read picked first arrival times */
 	sprintf(pickfile_char,"%s_%i.dat",PICKS_FILE,ishot);
 	
 	fptime=fopen(pickfile_char,"r");
@@ -54,48 +52,24 @@ void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, 
 		err(" picks_?.dat could not be opened !");
 	}
 	
-	
 	if(TW_IND){
 		for(i=1;i<=ntr_glob;i++){
 			fscanf(fptime,"%f%f%f",&dump,&dump2,&dump3);
-			pick_tmp_m[1][i] = dump;
-			pick_tmp_m[2][i] = dump2;
-			pick_tmp_m[3][i] = dump3;
+			picked_times_m[1][i] = dump;
+			picked_times_m[2][i] = dump2;
+			picked_times_m[3][i] = dump3;
 		}
 	}else{
 		for(i=1;i<=ntr_glob;i++){
 			fscanf(fptime,"%f",&dump);
-			pick_tmp[i] = dump;
+			picked_times[i] = dump;
 		}
 	}
 	
 	fclose(fptime);
 	
-	/* distribute picks on CPUs */
-	h=1;
 	if(TW_IND){
-		for(i=1;i<=ntr;i++){
-			picked_times_m[1][h] = pick_tmp_m[1][recpos_loc[3][i]];
-			picked_times_m[2][h] = pick_tmp_m[2][recpos_loc[3][i]];
-			picked_times_m[3][h] = pick_tmp_m[3][recpos_loc[3][i]];
-			
-			h++;
-		}
-	}else{
-		for(i=1;i<=ntr;i++){
-			picked_times[h] = pick_tmp[recpos_loc[3][i]];
-			
-			h++;
-		}
-	}
-	
-	if(TW_IND)
-		free_matrix(pick_tmp_m,1,3,1,ntr_glob);
-	else
-		free_vector(pick_tmp,1,ntr_glob);
-	
-	if(TW_IND){
-		for(i=1;i<=ntr;i++){
+		for(i=1;i<=ntr_glob;i++){
 		for(j=2;j<=ns;j++){
 		
 			time = (float)(j * DT);
@@ -117,7 +91,7 @@ void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, 
 		}
 		}
 	}else{
-		for(i=1;i<=ntr;i++){
+		for(i=1;i<=ntr_glob;i++){
 		for(j=2;j<=ns;j++){
 		
 			time = (float)(j * DT);
@@ -136,7 +110,7 @@ void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, 
 			
 			sectiondata[i][j] = sectiondata[i][j];
 			
-		}     
+		}
 		}
 	}
 	
@@ -145,4 +119,4 @@ void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, 
 	else
 		free_vector(picked_times,1,ntr_glob);
 	
-} /* end of function time_window.c */
+} /* end of function time_window_glob.c */
