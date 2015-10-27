@@ -44,7 +44,7 @@ void model_acoustic(float **rho, float **pi){
 	
 	float *fldepth, *flrho, *flvp, *fltaper;
 	
-	nd = FDORDER/2 + 1;
+	nd = FDORDER/2;
 	
 	/*read FL nodes from File*/
 	nodes=5;

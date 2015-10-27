@@ -154,7 +154,7 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 		fpx2=fopen(snapfile_div,wm);
 		fpy2=fopen(snapfile_rot,wm);
 		
-		nd = FDORDER/2+1;
+		nd = FDORDER/2;
 		curlfield  =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
 
 
