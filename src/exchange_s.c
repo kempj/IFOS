@@ -39,7 +39,7 @@ void exchange_s(float ** sxx, float ** syy,
 	int i, j, fdo, fdo3, n, l;
 
 
-	fdo = FDORDER/2 + 1;
+	fdo = FDORDER/2;
 	fdo3 = 2*fdo;
 	
 	
@@ -125,10 +125,10 @@ void exchange_s(float ** sxx, float ** syy,
 	for (j=1;j<=NY;j++){
 		/* storage of left edge of local volume into buffer */
 		n = 1;
-		for (l=1;l<fdo-1;l++) {
+		for (l=1;l<=fdo-1;l++) {
 			bufferlef_to_rig[j][n++] =  sxy[j][l];
 		}
-		for (l=1;l<fdo;l++) {
+		for (l=1;l<=fdo;l++) {
 			bufferlef_to_rig[j][n++] =  sxx[j][l];
 		}
 	}
@@ -138,10 +138,10 @@ void exchange_s(float ** sxx, float ** syy,
 	for (j=1;j<=NY;j++){
 		/* storage of right edge of local volume into buffer */
 		n = 1;
-		for (l=1;l<fdo;l++) {
+		for (l=1;l<=fdo;l++) {
 			bufferrig_to_lef[j][n++] =  sxy[j][NX-l+1];
 		}
-		for (l=1;l<fdo-1;l++) {
+		for (l=1;l<=fdo-1;l++) {
 			bufferrig_to_lef[j][n++] =  sxx[j][NX-l+1];
 		}
 	}	
@@ -178,10 +178,10 @@ void exchange_s(float ** sxx, float ** syy,
 	if ((BOUNDARY) || (POS[1]!=NPROCX-1))	/* no boundary exchange at right edge of global grid */
 	for (j=1;j<=NY;j++){
 		n = 1;
-		for (l=1;l<fdo-1;l++) {
+		for (l=1;l<=fdo-1;l++) {
 			sxy[j][NX+l] = bufferlef_to_rig[j][n++];
 		}
-		for (l=1;l<fdo;l++) {
+		for (l=1;l<=fdo;l++) {
 			sxx[j][NX+l] = bufferlef_to_rig[j][n++];
 		}
 	}
@@ -189,10 +189,10 @@ void exchange_s(float ** sxx, float ** syy,
 	if ((BOUNDARY) || (POS[1]!=0))	/* no boundary exchange at left edge of global grid */
 	for (j=1;j<=NY;j++){
 		n = 1;
-		for (l=1;l<fdo;l++) {
+		for (l=1;l<=fdo;l++) {
 			sxy[j][1-l] = bufferrig_to_lef[j][n++];
 		}
-		for (l=1;l<fdo-1;l++) {
+		for (l=1;l<=fdo-1;l++) {
 			sxx[j][1-l] = bufferrig_to_lef[j][n++];
 		}
 	}

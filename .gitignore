@@ -12,6 +12,11 @@ manual_DENISE.pdf
 *.bin*
 *.su*
 LOG_FILE.*
+*.vp*
+*.vs*
+*.rho*
+*.div*
+*.rot*
 
 ### C ###
 # Object files
@@ -325,25 +330,3 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
-
-
-### CMake ###
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Makefile
-cmake_install.cmake
-install_manifest.txt
-
-
-### premake-gmake ###
-Makefile
-*.make
-obj/
-
-*.vp*
-*.vs*
-*.rho*
-*.div*
-*.rot*
-

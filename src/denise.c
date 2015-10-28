@@ -76,7 +76,7 @@ int main(int argc, char **argv){
 	
 	int * DTINV_help;
 	
-	float ** bufferlef_to_rig,  ** bufferrig_to_lef, ** buffertop_to_bot, ** bufferbot_to_top; 
+	float ** bufferlef_to_rig,  ** bufferrig_to_lef, ** buffertop_to_bot, ** bufferbot_to_top, ** p_bufferlef_to_rig,  ** p_bufferrig_to_lef, ** p_buffertop_to_bot, ** p_bufferbot_to_top; 
 
 	/* PML variables */
 	float 	* d_x, * K_x, * alpha_prime_x, * a_x, * b_x, * d_x_half, * K_x_half, * alpha_prime_x_half, * a_x_half, * b_x_half,
@@ -249,7 +249,7 @@ int main(int argc, char **argv){
 	fac1=(NX+FDORDER)*(NY+FDORDER);
 	fac2=sizeof(float)*pow(2.0,-20.0);
 
-	nd = FDORDER/2 + 1;
+	nd = FDORDER/2;
 	fdo3 = 2*nd;
 
 	if (L){
@@ -519,6 +519,15 @@ int main(int argc, char **argv){
 	bufferrig_to_lef = matrix(1,NY,1,fdo3);
 	buffertop_to_bot = matrix(1,NX,1,fdo3);
 	bufferbot_to_top = matrix(1,NX,1,fdo3);
+	
+	/* In exchange_p for acousic simulation only one variable (sp) will be exchanged, 
+	therfore not fdo3=2*nd but 1*nd is enough buffer*/
+	if (ACOUSTIC) {
+	p_bufferlef_to_rig = matrix(1,NY,1,nd);
+        p_bufferrig_to_lef = matrix(1,NY,1,nd);
+        p_buffertop_to_bot = matrix(1,NX,1,nd);
+        p_bufferbot_to_top = matrix(1,NX,1,nd);
+	}
 
 	switch (SEISMO){
 		case 1 : /* particle velocities only */
@@ -1061,7 +1070,7 @@ int main(int argc, char **argv){
 						if(!ACOUSTIC)
 							exchange_s(psxx,psyy,psxy,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
 						else
-							exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
+							exchange_p(psp,p_bufferlef_to_rig, p_bufferrig_to_lef,p_buffertop_to_bot,p_bufferbot_to_top,req_send, req_rec);
 
 
 						if (MYID==0){
@@ -1511,7 +1520,7 @@ int main(int argc, char **argv){
 					if(!ACOUSTIC)
 						exchange_s(psxx,psyy,psxy, bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, bufferbot_to_top, req_send, req_rec);
 					else
-						exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
+						exchange_p(psp,p_bufferlef_to_rig, p_bufferrig_to_lef,p_buffertop_to_bot, p_bufferbot_to_top,req_send, req_rec);
 
 				
 					if (MYID==0){
@@ -1945,7 +1954,7 @@ int main(int argc, char **argv){
 							if(!ACOUSTIC)
 								exchange_s(psxx,psyy,psxy, bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, bufferbot_to_top, req_send, req_rec);
 							else
-								exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
+								exchange_p(psp,p_bufferlef_to_rig, p_bufferrig_to_lef,p_buffertop_to_bot, p_bufferbot_to_top,req_send, req_rec);
 							
 							
 							if (MYID==0){
@@ -2650,7 +2659,7 @@ int main(int argc, char **argv){
 							if(!ACOUSTIC)
 								exchange_s(psxx,psyy,psxy, bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, bufferbot_to_top, req_send, req_rec);
 							else
-								exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
+								exchange_p(psp,p_bufferlef_to_rig, p_bufferrig_to_lef,p_buffertop_to_bot, p_bufferbot_to_top,req_send, req_rec);
 
 							if (MYID==0){
 								time7=MPI_Wtime();
@@ -3231,6 +3240,13 @@ int main(int argc, char **argv){
 	free_matrix(bufferrig_to_lef,1,NY,1,fdo3);
 	free_matrix(buffertop_to_bot,1,NX,1,fdo3);
 	free_matrix(bufferbot_to_top,1,NX,1,fdo3);
+	
+	if (ACOUSTIC) {
+	free_matrix(p_bufferlef_to_rig,1,NY,1,nd);
+        free_matrix(p_bufferrig_to_lef,1,NY,1,nd);
+        free_matrix(p_buffertop_to_bot,1,NX,1,nd);
+        free_matrix(p_bufferbot_to_top,1,NX,1,nd);
+	}
 
 	switch (SEISMO){
 		case 1 : /* particle velocities only */

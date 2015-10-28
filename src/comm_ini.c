@@ -39,7 +39,7 @@ MPI_Request *req_send, MPI_Request *req_rec){
 	/* comunication initialisation for persistent communication */
 
 	
-	fdo2 = 2*(FDORDER/2 + 1);
+	fdo2 = 2*(FDORDER/2);
 	
 
 	/* buffer arrays are copied into local buffers using buffered send (bsend),

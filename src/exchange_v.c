@@ -38,7 +38,7 @@ void exchange_v(float ** vx, float ** vy,
 	MPI_Status  status;
 	int i, j, fdo, fdo3, n, l;
 
-	fdo = FDORDER/2 + 1;
+	fdo = FDORDER/2;
 	fdo3 = 2*fdo;
 
 	/* top - bottom */
@@ -127,10 +127,10 @@ void exchange_v(float ** vx, float ** vy,
 	for (j=1;j<=NY;j++){
 		/* storage of left edge of local volume into buffer */
 		n = 1;
-		for (l=1;l<fdo;l++) {
+		for (l=1;l<=fdo;l++) {
 			bufferlef_to_rig[j][n++] =  vy[j][l];
 		}
-		for (l=1;l<fdo-1;l++) {
+		for (l=1;l<=fdo-1;l++) {
 			bufferlef_to_rig[j][n++] =  vx[j][l];
 		}
 	}
@@ -141,10 +141,10 @@ void exchange_v(float ** vx, float ** vy,
 	for (j=1;j<=NY;j++){
 		/* storage of right edge of local volume into buffer */
 		n = 1;
-		for (l=1;l<fdo-1;l++) {
+		for (l=1;l<=fdo-1;l++) {
 			bufferrig_to_lef[j][n++] =  vy[j][NX-l+1];
 		}
-		for (l=1;l<fdo;l++) {
+		for (l=1;l<=fdo;l++) {
 			bufferrig_to_lef[j][n++] =  vx[j][NX-l+1];
 		}
 	}
@@ -179,10 +179,10 @@ void exchange_v(float ** vx, float ** vy,
 	if ((BOUNDARY) || (POS[1]!=NPROCX-1))	/* no boundary exchange at right edge of global grid */
 	for (j=1;j<=NY;j++){
 		n = 1;
-		for (l=1;l<fdo;l++) {
+		for (l=1;l<=fdo;l++) {
 			vy[j][NX+l] = bufferlef_to_rig[j][n++];
 		}
-		for (l=1;l<fdo-1;l++) {
+		for (l=1;l<=fdo-1;l++) {
 			vx[j][NX+l] = bufferlef_to_rig[j][n++];
 		}
 	}
@@ -191,10 +191,10 @@ void exchange_v(float ** vx, float ** vy,
 	if ((BOUNDARY) || (POS[1]!=0))	/* no boundary exchange at left edge of global grid */
 	for (j=1;j<=NY;j++){
 		n = 1;
-		for (l=1;l<fdo-1;l++) {
+		for (l=1;l<=fdo-1;l++) {
 			vy[j][1-l] = bufferrig_to_lef[j][n++];
 		}
-		for (l=1;l<fdo;l++) {
+		for (l=1;l<=fdo;l++) {
 			vx[j][1-l] = bufferrig_to_lef[j][n++];
 		}
 	}

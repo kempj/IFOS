@@ -58,7 +58,7 @@
 "Receiver" : "comment",
 			"SEISMO" : "5",
 			"READREC" : "1",
-			"REC_FILE" : "./receiver/rec_toy_example_ac_PML.dat",
+			"REC_FILE" : "./receiver/rec_toy_example_ac.dat",
 			"REFRECX, REFRECY" : "0.0 , 0.0",
 
 "Seismograms" : "comment",
