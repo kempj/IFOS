@@ -148,26 +148,20 @@ void LBFGS1(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, 
 double LU_decomp(double  **A, double *x, double *b,int n);
 
 float minimum_m(float **mat, int nx, int ny);
+
 float maximum_m(float **mat, int nx, int ny);
 
-
-void model(float  **  rho, float **  pi, float **  u, 
-float **  taus, float **  taup, float *  eta);
+void model(float  **  rho, float **  pi, float **  u, float **  taus, float **  taup, float *  eta);
 
 void model_elastic(float  **  rho, float **  pi, float **  u);
 
-void model_ani(float  **  rho, float **  c11, float **  c15, float **  c13, 
-float **  c35, float **  c33, float **  c55, 
-float **  taus, float **  taup, float *  eta);
+void model_ani(float  **  rho, float **  c11, float **  c15, float **  c13, float **  c35, float **  c33, float **  c55, float **  taus, float **  taup, float *  eta);
 
-void matcopy(float ** prho, float ** ppi, float ** pu, float ** ptaup,
-float ** ptaus);
+void matcopy(float ** prho, float ** ppi, float ** pu, float ** ptaup, float ** ptaus);
 
 void matcopy_elastic(float ** prho, float ** ppi, float ** pu);
 
-void matcopy_ani(float ** rho, float **  c11, float **  c15, float **  c13, 
-float **  c35, float **  c33, float **  c55, float ** taus,
-float ** taup);
+void matcopy_ani(float ** rho, float **  c11, float **  c15, float **  c13, float **  c35, float **  c33, float **  c55, float ** taus, float ** taup);
 
 void max_grad(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_u, float  **  rho, float **  pi, float **  u);
 			  
@@ -231,8 +225,7 @@ float **  vx, float ** vy, float ** sxx, float ** syy, float ** sxy);
 
 void read_par_json(FILE *fp, char *fileinp);
 
-void readmod(float  **  rho, float **  pi, float **  u, 
-float **  taus, float **  taup, float *  eta);
+void readmod(float  **  rho, float **  pi, float **  u, float **  taus, float **  taup, float *  eta);
 
 void readmod_elastic(float  **  rho, float **  pi, float **  u);
 
@@ -498,7 +491,6 @@ void zero(float *A, int u_max);
 void normalize_data(float **data, int ntr, int ns);
 
 /* functions for acoustic modelling */
-
 void model_acoustic(float  **  rho, float **  pi);
 void readmod_acoustic(float  **  rho, float **  pi);
 void matcopy_acoustic(float ** prho, float ** ppi);
@@ -506,22 +498,31 @@ void zero_fdveps_ac(int ny1, int ny2, int nx1, int nx2, float ** vx, float ** vy
 		    float ** psi_sxx_x, float ** psi_sxy_x, float ** psi_vxx, float ** psi_vyx,
 		    float ** psi_syy_y, float ** psi_sxy_y, float ** psi_vyy, float ** psi_vxy, float ** psi_vxxs);
 
-void update_v_acoustic_PML(int nx1, int nx2, int ny1, int ny2, int nt,
-float **  vx, float **  vxp1, float **  vxm1, float ** vy, float **  vyp1, float **  vym1,  
-float ** sp, float  **rip, float **rjp, float **  srcpos_loc, float ** signals, float ** signals1, int nsrc, float ** absorb_coeff,
-float *hc, int infoout,int sw, float * K_x_half, float * a_x_half, float * b_x_half,
-float * K_y_half, float * a_y_half, float * b_y_half,
-float ** psi_sxx_x, float ** psi_syy_y);
+void update_v_acoustic_PML(int nx1, int nx2, int ny1, int ny2, int nt, float ** vx, float ** vxp1, float ** vxm1, float ** vy, float **  vyp1, float **  vym1,
+			   float ** sp, float  **rip, float **rjp, float ** srcpos_loc, float ** signals, float ** signals1, int nsrc, float ** absorb_coeff, float *hc, int infoout, int sw, 
+			   float * K_x_half, float * a_x_half, float * b_x_half, float * K_y_half, float * a_y_half, float * b_y_half, float ** psi_sxx_x, float ** psi_syy_y);
 
-void update_p_PML(int nx1, int nx2, int ny1, int ny2,
-float **  vx, float **   vy, float **  sp, float ** pi, float ** absorb_coeff, float **rho, float *hc, int infoout,
-float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
-float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,
-float ** psi_vxx, float ** psi_vyy, float ** psi_vxy, float ** psi_vyx);
+void update_p_PML(int nx1, int nx2, int ny1, int ny2, float ** vx, float ** vy, float ** sp, float ** pi, float ** absorb_coeff, float **rho, float *hc, int infoout,
+		  float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
+		  float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,
+		  float ** psi_vxx, float ** psi_vyy, float ** psi_vxy, float ** psi_vyx);
 
 void surface_acoustic_PML(int ndepth, float ** sp);
 
-void exchange_p(float ** sp, float ** bufferlef_to_rig, float ** bufferrig_to_lef, 
-float ** buffertop_to_bot, float ** bufferbot_to_top,
-MPI_Request * req_send, MPI_Request * req_rec);
+void exchange_p(float ** sp, float ** bufferlef_to_rig, float ** bufferrig_to_lef, float ** buffertop_to_bot, float ** bufferbot_to_top, MPI_Request * req_send, MPI_Request * req_rec);
 
+/* functions for viscoacoustic modelling */
+void model_viscac(float  **  rho, float **  pi, float **  taup, float *  eta);
+void readmod_viscac(float  **  rho, float **  pi, float **  taup, float *  eta);
+void matcopy_viscac(float ** prho, float ** ppi, float ** taup);
+
+void prepare_update_p(float *etajm, float *peta, float **ppi, float **prho, float **ptaup, float **g, float *bjm, float *cjm, float ***e);
+
+void zero_fdveps_viscac(int ny1, int ny2, int nx1, int nx2, float ** vx, float ** vy, float ** sp, float ** vxp1, float ** vyp1,
+			float ** psi_sxx_x, float ** psi_sxy_x, float ** psi_vxx, float ** psi_vyx, float ** psi_syy_y, float ** psi_sxy_y, float ** psi_vyy, float ** psi_vxy, float ** psi_vxxs, float ***pp);
+
+void update_p_visc_PML(int nx1, int nx2, int ny1, int ny2, float ** vx, float ** vy, float ** sp, float ** pi, float **rho, float *hc, int infoout,
+		       float ***p, float **g, float *bjm, float *cjm, float ***e,  
+		       float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
+		       float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,
+		       float ** psi_vxx, float ** psi_vyy, float ** psi_vxy, float ** psi_vyx);

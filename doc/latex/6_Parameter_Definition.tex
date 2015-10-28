@@ -248,7 +248,7 @@ In these files, each material parameter value must be saved as 32 bit (4 byte) n
 \textit{ximage n1=$<$NY$>$ $<$ model/test.vp} .
 \newline
 
-It is also possible to read Qp, and Qs grid files to allow for spatial variable attenuation. For this you must  uncomment a few lines in \texttt{src/readmod.c} and generate the corresponding binary files.
+It is also possible to read Qp, and Qs grid files to allow for spatial variable attenuation. If no models are provided, the value TAU is used to generate Q-Models (see section \ref{q_approx}).
 
 If READMOD=0 the model is generated ''on the fly'' by DENISE, i.e. it is generated internally before the time loop starts. See \texttt{genmod/1D\_linear\_gradient\_el.c} for an example function that generates a simple model with a linear vertical gradient ''on the fly''. If READMOD=0 this function is called in \texttt{src/denise.c} and therefore must be specified in \texttt{src/Makefile} (at the top of \texttt{src/Makefile}, see section \ref{compexec}). If you change this file, for example to change the model structure, you need to re-compile DENISE by changing to the src directory and ''make denise''.
 
@@ -342,8 +342,10 @@ Default values are:
 If SEISMO$>$0 seismograms recorded at the receiver positions are written to the corresponding output files. The sampling rate of the seismograms is NDT*DT seconds. In case of a small
 time step interval and a high number of time steps, it might be useful to choose a high NDT in order to avoid a unnecessary detailed sampling of the seismograms and consequently large files of seismogram data. Possible output formats of the seismograms are SU, ASCII and BINARY. It is recommended to use SU format for saving the seismograms. The main advantage of this format is that the time step interval (NDT*DT) and the acquisition geometry (shot and receiver locations) are stored in the corresponding SU header words. Also additional header words like offset are set by DENISE. This format thus facilitates a further visualization and processing of the synthetic seismograms. Note, however, that SU cannot handle sampling rates smaller than 1.0e-6 seconds and the number of samples is limited to about 32.000. In such cases, you should increase the sampling rate by increasing NDT. If this is impossible (for example because the Nyquist criterion is violated) you must choose a different output format (ASCII or binary).
 
+\newpage
 
 \section{Q-approximation}
+\label{q_approx}
 {\color{blue}{\begin{verbatim}
 "Q-approximation",
 			"L" : "0",
@@ -724,6 +726,7 @@ With VP\_VS\_RATIO = 1.5 (e.g.) it is possible to ensure a minimum Vp/Vs ratio d
 {\color{blue}{\begin{verbatim}
 "Time windowing and damping" : "comment",
 			"TIMEWIN" : "0",
+			"TW_IND" : "0",
 			"PICKS_FILE" : "./picked_times/picks"
 			"TWLENGTH_PLUS" : "0.01",
 			"TWLENGTH_MINUS" : "0.01",
@@ -736,7 +739,7 @@ Default values are:
 \end{verbatim}}}
 
 To apply time windowing in a time series the paramter TIMEWIN must set to 1. A automatic picker routine is not integrated at the moment. The point in time (picked time) for each source must be specified in seperate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources in (SRCREC) must be equal to the number of files. Each file must contain the picked times for every receiver.\
-The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually.
+The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually. When usig TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time, time window length plus and time window length minus. In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored.
 
 
 \section{Source wavelet inversion}
@@ -749,6 +752,7 @@ it is necessary to design a filter which minimizes the misfit to the field recor
 			"PARA" : "fdlsq:tshift=0.0",
 			"N_STF" : "10",
 			"N_STF_START" : "1",
+			"TAPER_STF" : "0",
 			"TRKILL_STF" : "0", 
 			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
 \end{verbatim}}}
@@ -769,7 +773,9 @@ Examples for the parameter PARA are:
       \textit{fdlsq:exp=1.4:pow2}
 
 \end{itemize}
-N\_STF is the increment between the iteration steps. N\_STF\_START defines at which iterationstep the inversion for STF should start. This parameter has to be set at least to 1 NOT(!) 0. With TRKILL\_STF = 1 it is possible to apply a trace killing for the estimation of the source wavelet correction filter.
+N\_STF is the increment between the iteration steps. N\_STF\_START defines at which iterationstep the inversion for STF should start. This parameter has to be set at least to 1 NOT(!) 0.
+When using TAPER\_STF = 1, the source signal is tapered. See \texttt{src/taper.c} for the taper definition.
+With TRKILL\_STF = 1 it is possible to apply a trace killing for the estimation of the source wavelet correction filter.
 \newline
 
 Please note: If you additionally switch on frequency filtering during the inversion (TIME\_FILT=1 or TIME\_FILT=2), the parameters N\_STF and N\_STF\_START will be ignored. But the optimal source time function will be inverted for the first iteration and after every change of the frequency range.

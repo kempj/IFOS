@@ -7,8 +7,9 @@
 
 #MODEL = hh.c
 MODEL = ../genmod/1D_linear_gradient_visc.c
-MODEL_AC = ../genmod/1D_linear_gradient_ac.c
 MODEL_EL = ../genmod/1D_linear_gradient_el.c
+MODEL_AC = ../genmod/1D_linear_gradient_ac.c
+MODEL_VAC = ../genmod/1D_linear_gradient_viscac.c
 EXEC= ../bin
 
 # Compiler (LAM: CC=hcc, CRAY T3E: CC=cc)
@@ -82,7 +83,9 @@ DENISE= \
 	update_v_PML.c \
 	update_v_acoustic_PML.c \
 	prepare_update_s.c \
+	prepare_update_p.c \
 	update_p_PML.c \
+	update_p_visc_PML.c \
 	update_s_elastic_ssg.c \
 	update_s_elastic_PML.c \
 	update_s_visc_PML.c \
@@ -101,11 +104,13 @@ DENISE= \
 	LBFGS1.c \
 	smooth.c \
 	$(MODEL) \
-	$(MODEL_AC) \
 	$(MODEL_EL) \
+	$(MODEL_AC) \
+	$(MODEL_VAC) \
 	matcopy.c \
 	matcopy_elastic.c \
 	matcopy_acoustic.c \
+	matcopy_viscac.c \
 	mergemod.c \
 	max_grad.c \
 	note.c \
@@ -123,6 +128,7 @@ DENISE= \
 	readmod.c \
 	readmod_elastic.c \
 	readmod_acoustic.c \
+	readmod_viscac.c \
     	receiver.c \
 	rd_sour.c \
 	saveseis.c \
@@ -151,6 +157,7 @@ DENISE= \
 	zero_fdveps.c \
 	zero_fdveps_ac.c \
 	zero_fdveps_visc.c \
+	zero_fdveps_viscac.c \
 	calc_envelope.c \
 	calc_hilbert.c \
         filter_frequencies.c

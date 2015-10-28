@@ -387,8 +387,6 @@ void read_par_json(FILE *fp, char *fileinp){
 		else if(ACOUSTIC==1){
 			FDORDER=2;
 			fprintf(fp,"For acoustic modelling only FDORDER=%d possible.\n",FDORDER);
-			if(L)
-				err("No viscoacoustic modelling implemented yet");
 		} else if(ACOUSTIC>1) err("Only ACOUSTIC=0 ((visco-)elastic Modelling and Inversion) or ACOUSTIC=1 (acoustic Modelling and Inversion) possible");
 
 		
