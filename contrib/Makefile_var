@@ -15,17 +15,10 @@
 #
 # Its purpose is to set make variables which are expected by vendor Makefiles.
 #
-# The current file itself expects a variable CONTRIBDIR, which defines the
-# directory where Makefile_var is located.
-#
 # ============================================================================
 
-# define make functions to test variable settings
-CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
-CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
-
-# check for required variables
-$(call CHECKVARS,CONTRIBDIR)
+# extract relative path to contrib with respect of including Makefile
+CONTRIBDIR:=$(dir $(lastword $(MAKEFILE_LIST)))
 
 # ----------------------------------------------------------------------------
 # set values required by vendor Makefiles
