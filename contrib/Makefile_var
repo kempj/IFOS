@@ -32,7 +32,7 @@ TF_WWWBASEDIR=$(CONTRIBDIR)/doc
 TF_BROWSER=firefox
 
 # set Fortran compiler if not yet set in environment
-ifndef FC
+ifeq "$(origin FC)" "default"
 FC=/usr/bin/g77-3.3
 endif
 
