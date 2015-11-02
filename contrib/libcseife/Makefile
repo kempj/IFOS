@@ -53,7 +53,7 @@ all: install doc
 .PHONY: doc
 doc: 
 
-LIBRARIES=libcseife.a libseife.a
+LIBRARIES=libcseife.a
 
 .PHONY: install
 install: $(addprefix $(LOCLIBDIR)/,$(LIBRARIES))

@@ -63,9 +63,9 @@ include $(CONTRIBDIR)/Makefile_var
 all: install doc
 
 .PHONY: doc
-doc: doxydoc libfourier.doc
+doc: doxydoc
 
-LIBRARIES=libfourier.a libfourierxx.a
+LIBRARIES=libfourierxx.a
 #shared: libfourierxx.so
 
 .PHONY: install
