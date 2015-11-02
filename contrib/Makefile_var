@@ -18,7 +18,7 @@
 # ============================================================================
 
 # extract relative path to contrib with respect of including Makefile
-CONTRIBDIR:=$(dir $(lastword $(MAKEFILE_LIST)))
+CONTRIBDIR:=$(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 
 # ----------------------------------------------------------------------------
 # set values required by vendor Makefiles
@@ -27,7 +27,7 @@ LOCINCLUDEDIR=$(CONTRIBDIR)/header
 LOCLIBDIR=$(CONTRIBDIR)/bin
 LOCBINDIR=$(CONTRIBDIR)/bin
 
-TF_WWWBASEDIR=$(HOME)/public_html/txt/cxx
+TF_WWWBASEDIR=$(CONTRIBDIR)/doc
 
 TF_BROWSER=firefox
 
