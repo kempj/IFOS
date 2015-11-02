@@ -1,3 +1,4 @@
+*.P
 f77common_com.c
 f2ctest
 f77test

@@ -24,6 +24,9 @@
 #--------------------------------------------------------
 # edit here:
 
+CONTRIBDIR=../../..
+include $(CONTRIBDIR)/Makefile_var
+
 
 CC=gcc
 

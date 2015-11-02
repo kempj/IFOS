@@ -33,6 +33,8 @@
 # 
 # ============================================================================
 #
+CONTRIBDIR=../..
+include $(CONTRIBDIR)/Makefile_var
 
 CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
 CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))

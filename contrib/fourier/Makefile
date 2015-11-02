@@ -56,7 +56,8 @@
 # ============================================================================
 #
 
-include ../Makefile_var
+CONTRIBDIR=..
+include $(CONTRIBDIR)/Makefile_var
 
 .PHONY: all
 all: install doc

@@ -1,9 +1,38 @@
-# This is a file for environment variables used in Makefiles in aff fourier stfinv
+# this is <Makefile_var>
+# ----------------------------------------------------------------------------
+# 
+# Copyright (c) 2015 by Thomas Forbriger (BFO Schiltach) 
+# 
+# set variables expected by vendor Makefiles
+# 
+# REVISIONS and CHANGES 
+#    02/11/2015   V1.0   Thomas Forbriger
+# 
+# ============================================================================
+#
+# This file is included (via make include statement) by Makefiles in
+# aff, fourier, stfinv, and libcseife
+#
+# Its purpose is to set make variables which are expected by vendor Makefiles.
+#
+# The current file itself expects a variable CONTRIBDIR, which defines the
+# directory where Makefile_var is located.
+#
+# ============================================================================
 
-LOCINCLUDEDIR=../header
+# define make functions to test variable settings
+CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
+CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
 
-LOCLIBDIR=../bin
-LOCBINDIR=../bin
+# check for required variables
+$(call CHECKVARS,CONTRIBDIR)
+
+# ----------------------------------------------------------------------------
+# set values required by vendor Makefiles
+LOCINCLUDEDIR=$(CONTRIBDIR)/header
+
+LOCLIBDIR=$(CONTRIBDIR)/bin
+LOCBINDIR=$(CONTRIBDIR)/bin
 
 TF_WWWBASEDIR=$(HOME)/public_html/txt/cxx
 
@@ -13,3 +42,5 @@ TF_BROWSER=firefox
 ifndef FC
 FC=/usr/bin/g77-3.3
 endif
+
+# ----- END OF Makefile_var ----- 
