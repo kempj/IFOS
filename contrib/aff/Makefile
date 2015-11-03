@@ -118,9 +118,8 @@ CPPFLAGS=$(addprefix -I,$(LOCINCLUDEDIR) $(subst :, ,$(SERVERINCLUDEDIR))) \
 # -------
 
 # files which are to be edited
-flist: Makefile tests/Makefile doxydoc.cfg $(README) COPYING \
-       $(HEADERS) $(SRC) $(TESTS) $(wildcard doxy*.cfg) $(DOXYTXT) \
-       tests/f77common.inc tests/f77procs.f $(TF_EDIT)
+flist: Makefile doxydoc.cfg $(README) COPYING \
+       $(HEADERS) $(SRC) $(TESTS) $(wildcard doxy*.cfg) $(DOXYTXT) 
 	echo $(filter-out lib/% tests/%,$^) | tr ' ' '\n' | sort > $@
 	echo $(filter lib/%,$^) | tr ' ' '\n' | sort >> $@
 	echo $(filter tests/%,$^) | tr ' ' '\n' | sort >> $@
@@ -138,7 +137,6 @@ clean: ;
 	-find . -name \*.o | xargs --no-run-if-empty /bin/rm -v
 	-find . -name \*.d | xargs --no-run-if-empty /bin/rm -v
 	-/bin/rm -vf flist *.o install-include *.xxx junk* *.a *.so
-	cd tests; $(MAKE) clean
 
 #======================================================================
 # library part
@@ -228,9 +226,7 @@ DOXYWWWPATH=$(TF_WWWBASEDIR)/libaff
 
 doxyclean: ;/bin/rm -rfv $(TF_WWWBASEDIR)/libaff doxydoc.xxx
 
-DOXYSRC=$(DOXYTXT) $(HEADERS) $(SRC) \
-  tests/f77procs.P tests/f77procs.f \
-  tests/f77common.inc tests/f77common_com.P
+DOXYSRC=$(DOXYTXT) $(HEADERS) $(SRC) 
 
 # create doxygen intermediate configuration
 PWD=$(shell env pwd)
@@ -261,36 +257,6 @@ kdocview: kdoc; $(TF_BROWSER) file:$(KDOCDIR)/index.html &
 	
 showsections: $(README)
 	egrep -n '\\subsection|\\section|\\page' $^
-
-#======================================================================
-# delegate test targets
-# ---------------------
-
-tests/%.P: 
-	cd tests; echo "#############################"; $(MAKE) $(notdir $@)
-
-tests/f2ctest: tests/f77test.cc install-include libaff.a
-	cd tests; echo "#############################"; $(MAKE) $(notdir $@)
-
-tests/%: tests/%.cc install-include libaff.a
-	cd tests; echo "#############################"; $(MAKE) $(notdir $@)
-
-tests/bin%: tests/bin%.cc install-include libaff.a
-	cd tests; echo "#############################"; $(MAKE) $(notdir $@)
-
-tests/%.run: tests/%
-	echo "#############################"
-	$< $(ARG)
-	/bin/rm -fv $< $<.o
-
-# after each modification to the library this target should be used
-compile-tests: \
-  tests/shapetest.run \
-  tests/reprtest.run \
-  tests/arraytest.run \
-  tests/operatortest.run \
-  tests/helpertest.run \
-  tests/f77test.run 
 
 #======================================================================
 # create package
