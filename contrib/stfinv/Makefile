@@ -280,13 +280,4 @@ doxydoc: $(DOXYWWWPATH)/html/index.html
 doxyview: $(DOXYWWWPATH)/html/index.html
 	$(TF_BROWSER) file:$< &
 
-#======================================================================
-# test code
-# ---------
-
-$(TESTCCBIN): %: tests/%.o libstfinv.a
-	$(CXX) $(FLAGS) -o $@ $^ -I$(LOCINCLUDEDIR) \
-        -ltfxx -lfourierxx -lfftw3 -laff \
-        -L$(LOCLIBDIR)
-
 # ----- END OF Makefile ----- 
