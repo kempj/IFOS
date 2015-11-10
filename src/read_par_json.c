@@ -384,10 +384,6 @@ void read_par_json(FILE *fp, char *fileinp){
 		if (get_int_from_objectlist("ACOUSTIC",number_readobjects,&ACOUSTIC,varname_list, value_list)){
 			ACOUSTIC=0;
 			fprintf(fp,"Variable ACOUSTIC is set to default value %d.\n",ACOUSTIC);}
-		else if(ACOUSTIC==1){
-			FDORDER=2;
-			fprintf(fp,"For acoustic modelling only FDORDER=%d possible.\n",FDORDER);
-		} else if(ACOUSTIC>1) err("Only ACOUSTIC=0 ((visco-)elastic Modelling and Inversion) or ACOUSTIC=1 (acoustic Modelling and Inversion) possible");
 
 		
 		/*=================================
@@ -482,8 +478,10 @@ void read_par_json(FILE *fp, char *fileinp){
 				if (SWS_TAPER_FILE==1){
 					if (get_string_from_objectlist("TAPER_FILE_NAME",number_readobjects,TAPER_FILE_NAME,varname_list, value_list))
 							err("Variable TAPER_FILE_NAME could not be retrieved from the json input file!");
-					if (get_string_from_objectlist("TAPER_FILE_NAME_U",number_readobjects,TAPER_FILE_NAME_U,varname_list, value_list))
-							err("Variable TAPER_FILE_NAME_U could not be retrieved from the json input file!");
+					if(!ACOUSTIC){
+						if (get_string_from_objectlist("TAPER_FILE_NAME_U",number_readobjects,TAPER_FILE_NAME_U,varname_list, value_list))
+								err("Variable TAPER_FILE_NAME_U could not be retrieved from the json input file!");
+					}
 					if (get_string_from_objectlist("TAPER_FILE_NAME_RHO",number_readobjects,TAPER_FILE_NAME_RHO,varname_list, value_list))
 							err("Variable TAPER_FILE_NAME_RHO could not be retrieved from the json input file!");}
 				if (get_int_from_objectlist("SWS_TAPER_FILE_PER_SHOT",number_readobjects,&SWS_TAPER_FILE_PER_SHOT,varname_list, value_list)){
@@ -646,24 +644,23 @@ void read_par_json(FILE *fp, char *fileinp){
 					}
 				}
 				
-				
-				
-				
-				/* Trace killing STF */
-				if (get_int_from_objectlist("TRKILL_STF",number_readobjects,&TRKILL_STF,varname_list, value_list)){
-					TRKILL_STF=0;
-					fprintf(fp,"Variable TRKILL_STF is set to default value %d.\n",TRKILL_STF);}
-				else {
-					if (TRKILL_STF==1) {
-						if (get_string_from_objectlist("TRKILL_FILE_STF",number_readobjects,TRKILL_FILE_STF,varname_list, value_list))
-							err("Variable TRKILL_FILE_STF could not be retrieved from the json input file!");
+				if(INV_STF){
+					/* Trace killing STF */
+					if (get_int_from_objectlist("TRKILL_STF",number_readobjects,&TRKILL_STF,varname_list, value_list)){
+						TRKILL_STF=0;
+						fprintf(fp,"Variable TRKILL_STF is set to default value %d.\n",TRKILL_STF);}
+					else {
+						if (TRKILL_STF==1) {
+							if (get_string_from_objectlist("TRKILL_FILE_STF",number_readobjects,TRKILL_FILE_STF,varname_list, value_list))
+								err("Variable TRKILL_FILE_STF could not be retrieved from the json input file!");
+						}
 					}
+					
+					/* Taper STF */
+					if (get_int_from_objectlist("TAPER_STF",number_readobjects,&TAPER_STF,varname_list, value_list)){
+						TAPER_STF=0;
+						fprintf(fp,"Variable TAPER_STF is set to default value %d.\n",TAPER_STF);}
 				}
-				
-				/* Taper STF */
-				if (get_int_from_objectlist("TAPER_STF",number_readobjects,&TAPER_STF,varname_list, value_list)){
-					TAPER_STF=0;
-					fprintf(fp,"Variable TAPER_STF is set to default value %d.\n",TAPER_STF);}
 				
 				/* Frequency filtering during inversion */
 				if (get_int_from_objectlist("TIME_FILT",number_readobjects,&TIME_FILT,varname_list, value_list)){
