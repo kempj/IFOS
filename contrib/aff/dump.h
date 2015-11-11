@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: dump.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 12/12/2002
  * 
@@ -53,7 +53,7 @@
 #define AFF_DUMP_H_VERSION \
   "AFF_DUMP_H   V1.3"
 #define TF_DUMP_H_CVSID \
-  "$Id: dump.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 /*! \defgroup group_helpers Debug functions
  */

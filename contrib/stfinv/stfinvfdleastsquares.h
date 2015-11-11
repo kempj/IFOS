@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvfdleastsquares.h 4968 2013-02-01 13:58:05Z lrehor $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -32,6 +31,7 @@
  *  - 06/05/2011   V1.0   Thomas Forbriger
  *  - 30/09/2011   V1.1   implemented handling of additional time series pairs
  *  - 04/10/2011   V1.2   renamed engine
+ *  - 14/10/2015   V1.3   new end-user usage functions
  * 
  * ============================================================================
  */
@@ -40,9 +40,7 @@
 #ifndef STFINV_STFINVFDLEASTSQUARES_H_VERSION
 
 #define STFINV_STFINVFDLEASTSQUARES_H_VERSION \
-  "STFINV_STFINVFDLEASTSQUARES_H   V1.2"
-#define STFINV_STFINVFDLEASTSQUARES_H_CVSID \
-  "$Id: stfinvfdleastsquares.h 4968 2013-02-01 13:58:05Z lrehor $"
+  "STFINV_STFINVFDLEASTSQUARES_H   V1.3"
 
 #include<stfinv/stfinvfourier.h>
 
@@ -249,6 +247,10 @@ namespace stfinv {
       virtual void help(std::ostream& os=std::cout) const;
       //! \brief print online help
       static void classhelp(std::ostream& os=std::cout);
+      //! \brief print detailed description
+      virtual void usage(std::ostream& os=std::cout) const;
+      //! \brief print detailed description
+      static void classusage(std::ostream& os=std::cout);
       //! \brief return name of engine
       virtual const char* name() const;
     private:

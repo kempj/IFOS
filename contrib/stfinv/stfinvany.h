@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvany.h 4968 2013-02-01 13:58:05Z lrehor $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -31,6 +30,7 @@
  * REVISIONS and CHANGES 
  *  - 06/05/2011   V1.0   Thomas Forbriger
  *  - 30/09/2011   V1.1   implemented handling of additional time series pairs
+ *  - 14/10/2015   V1.2   new end-user usage functions
  * 
  * ============================================================================
  */
@@ -39,9 +39,7 @@
 #ifndef STFINV_STFINVANY_H_VERSION
 
 #define STFINV_STFINVANY_H_VERSION \
-  "STFINV_STFINVANY_H   V1.1"
-#define STFINV_STFINVANY_H_CVSID \
-  "$Id: stfinvany.h 4968 2013-02-01 13:58:05Z lrehor $"
+  "STFINV_STFINVANY_H   V1.2"
 
 #include<stfinv/stfinvbase.h>
 
@@ -55,6 +53,9 @@ namespace stfinv {
    * abstract base class stfinv::STFBaseEngine except that the first prefix
    * (up to the first colon) in the parameter string is understood to identify
    * the selected engine.
+   *
+   * It serves as a kind of handle to provide user selectable engines to
+   * application programs.
    */
   class STFEngine {
     public:
@@ -74,7 +75,7 @@ namespace stfinv {
        * \param parameters
        *   Parameters to select one of the engines as well as to control the
        *   engines are passed in a character sequence.
-       *   See also \ref main_subsec_parameters
+       *   See also \ref page_eu_subsec_parameters
        */
       STFEngine(const stfinv::Tvectoroftriples& triples,
                 const stfinv::Waveform& stf,
@@ -107,7 +108,7 @@ namespace stfinv {
        * \param parameters
        *   Parameters to select one of the engines as well as to control the
        *   engines are passed in a character sequence.
-       *   See also \ref main_subsec_parameters
+       *   See also \ref page_eu_subsec_parameters
        */
       STFEngine(const stfinv::Tvectoroftriples& triples,
                 const stfinv::Waveform& stf,
@@ -119,8 +120,16 @@ namespace stfinv {
       stfinv::STFBaseEngine& STFBaseEngine() { return (*Mengine); }
       //! \brief Start engine and return source correction filter.
       stfinv::Waveform run() { return(Mengine->run()); }
-      //! \brief List engines currently recognized
+      //! \brief List procedures (engines) currently recognized
+      static void engines(std::ostream& os=std::cout);
+      //! \brief List engines currently recognized and print summary
       static void help(std::ostream& os=std::cout);
+      /*! \brief Print detailed usage description.
+       *
+       * \param id ID of procedure (engine) to be described.
+       * \param os stream to send output to
+       */
+      static void usage(const std::string& id, std::ostream& os=std::cout);
     private:
       //! \brief initialize engine.
       void initialize(const stfinv::Tvectoroftriples& triples,
@@ -133,10 +142,26 @@ namespace stfinv {
 
   /*----------------------------------------------------------------------*/
 
-  /*! print online help of the whole implemented system of engines
+  /*! print list available procedures (engines)
    * \ingroup cxxinterface
+   *
+   * Just delegates to STFEngine::engines()
+   */
+  void engines(std::ostream& os=std::cout);
+
+  /*! print print usage summary
+   * \ingroup cxxinterface
+   *
+   * Just delegates to STFEngine::help()
    */
   void help(std::ostream& os=std::cout);
+
+  /*! print print detailed description for selected engine
+   * \ingroup cxxinterface
+   *
+   * Just delegates to STFEngine::usage()
+   */
+  void usage(const std::string& id, std::ostream& os=std::cout);
 
 } // namespace stfinv
 

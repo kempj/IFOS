@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: shaper.h 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -54,7 +54,7 @@
 #define AFF_SHAPER_H_VERSION \
   "AFF_SHAPER_H   V1.6"
 #define AFF_SHAPER_H_CVSID \
-  "$Id: shaper.h 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 #include<aff/lib/strided.h>
 #include<aff/lib/error.h>

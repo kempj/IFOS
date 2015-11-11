@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stridedstepper.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -51,7 +51,7 @@
 #define AFF_STRIDEDSTEPPER_H_VERSION \
   "AFF_STRIDEDSTEPPER,H_H   V1.3"
 #define AFF_STRIDEDSTEPPER_H_CVSID \
-  "$Id: stridedstepper.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<aff/lib/strided.h>
 

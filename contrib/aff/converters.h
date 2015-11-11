@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: converters.h 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 15/05/2011
  * 
@@ -40,7 +40,7 @@
 #define AFF_CONVERTERS_H_VERSION \
   "AFF_CONVERTERS_H   V1.0   "
 #define AFF_CONVERTERS_H_CVSID \
-  "$Id: converters.h 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 #include<aff/array.h>
 #include<aff/series.h>

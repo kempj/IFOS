@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvfourier.cc 4968 2013-02-01 13:58:05Z lrehor $
  * \author Thomas Forbriger
  * \date 08/05/2011
  * 
@@ -32,16 +31,17 @@
  *  - 08/05/2011   V1.0   Thomas Forbriger
  *  - 30/09/2011   V1.1   implemented handling of additional time series pairs
  *  - 04/10/2011   V1.2   correction in debug message
+ *  - 14/10/2015   V1.3   new end-user usage functions
  * 
  * ============================================================================
  */
 #define STFINV_STFINVFOURIER_CC_VERSION \
-  "STFINV_STFINVFOURIER_CC   V1.2"
-#define STFINV_STFINVFOURIER_CC_CVSID \
-  "$Id: stfinvfourier.cc 4968 2013-02-01 13:58:05Z lrehor $"
+  "STFINV_STFINVFOURIER_CC   V1.3"
 
 #include <sstream>
 #include <stfinv/stfinvfourier.h>
+#include <stfinv/stfinvfourier_summary_usage.h>
+#include <stfinv/stfinvfourier_description_usage.h>
 #include <stfinv/debug.h>
 #include <aff/subarray.h>
 #include <aff/slice.h>
@@ -103,6 +103,13 @@ namespace stfinv {
     STFFourierDomainEngine::classhelp(os);
   } // void STFFourierDomainEngine::help(std::ostream& os) const
 
+  /*----------------------------------------------------------------------*/
+
+  void STFFourierDomainEngine::usage(std::ostream& os) const
+  {
+    STFFourierDomainEngine::classusage(os);
+  } // void STFFourierDomainEngine::usage(std::ostream& os) const
+
 
   /*----------------------------------------------------------------------*/
 
@@ -110,6 +117,7 @@ namespace stfinv {
   {
     return("STFFourierDomainEngine");
   } //  const char const* STFFourierDomainEngine::name() const
+
   /*----------------------------------------------------------------------*/
 
   /*! \brief online help text giving information on options
@@ -119,20 +127,22 @@ namespace stfinv {
    */
   void STFFourierDomainEngine::classhelp(std::ostream& os)
   {
-    os << "Options and parameters in common for Fourier engines:\n"
-      << "fpad=f       padding factor (default: 1.5)\n"
-      << "fpow2        use power of two\n"
-      << "fdiv=d       use integer multiple of d\n"
-      << "tshift=d     delay source correction filter wavelet by \"d\"\n"
-      << "             seconds in order to expose acausal parts\n"
-      << "These options define the number of samples N used for the FFT.\n"
-      << "This should be larger than the number of samples M in the\n"
-      << "original series to avoid wrap-around. N=M*f at least. If fpow2\n"
-      << "is set, N will be the next power of 2 larger than M*f. Else if\n"
-      << "fdiv is set, N will be the next integer multiple of d larger\n"
-      << "than M*f." << std::endl;
-    Tbase::classhelp(os);
+    os << stfinvfourier_summary_usage;
   } // void STFFourierDomainEngine::classhelp(std::ostream& os)
+
+  /*----------------------------------------------------------------------*/
+
+  /*! \brief online help text giving information on options
+   *
+   * This must be kept synchronous with the options used by
+   * STFFourierDomainEngine::initialize()
+   */
+  void STFFourierDomainEngine::classusage(std::ostream& os)
+  {
+    os << stfinvfourier_description_usage;
+    os << std::endl;
+    Tbase::classusage(os);
+  } // void STFFourierDomainEngine::classusage(std::ostream& os)
 
   /*----------------------------------------------------------------------*/
 

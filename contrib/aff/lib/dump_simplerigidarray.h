@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: dump_simplerigidarray.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 19/12/2002
  * 
@@ -41,7 +41,7 @@
 #define AFF_DUMP_SIMPLERIGIDARRAY_H_VERSION \
   "AFF_DUMP_SIMPLERIGIDARRAY_H   V1.0   "
 #define AFF_DUMP_SIMPLERIGIDARRAY_H_CVSID \
-  "$Id: dump_simplerigidarray.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<iostream>
 #include<aff/lib/simplearray.h>

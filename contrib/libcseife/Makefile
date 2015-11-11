@@ -1,10 +1,12 @@
 # this is <Makefile>
 # ----------------------------------------------------------------------------
-#   ($Id: Makefile 4961 2013-02-01 12:52:09Z lrehor $)
+#   ($Id$)
 # 
 # 25/10/2000 by Thomas Forbriger (IMGF Frankfurt)
 # 
 # libseife Makefile
+# 
+# seife: seismic waveform filters
 #
 # ----
 # This program is free software; you can redistribute it and/or modify
@@ -22,25 +24,11 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ----
 #
-# This library contains code which was extracted from the program seife.f
-# by Erhard Wielandt. The original version was written in 1984 at ETH Zurich.
-# The code can be obtained through 
-# http://www.software-for-seismometry.de/
+# Please have a look at the README file coming along with the source code in
+# this directory for further notes regarding provided functionality,
+# prerequisites and installation.
 #
-# The frontpage of http://www.software-for-seismometry.de/ tells (Jan. 2013):
-#
-#   Welcome to Erhard Wielandt's website for free seismological software
-#
-#   This website offers free software for practical use, especially for the
-#   design, calibration, and testing of seismographs. It also contains
-#   educational software and other material used in courses and workshops on
-#   seismometry. Special problems of seismometry and theoretical seismology are
-#   treated in the 'misc. texts'.
-#   If you are interested in software, please start from the software overview. 
-#
-# The code from seife.f was extracted to a library by Wolfgang Friederich in
-# 1996. The current version of libseife is a an extended code collection based
-# on the abovementioned code.
+#=============================================================================
 # 
 # REVISIONS and CHANGES
 #    25/10/2000   V1.0   Thomas Forbriger
@@ -52,11 +40,12 @@
 #    15/11/2010   V1.4   do not use fdep.sh
 #    17/11/2010   V1.5   libseifemon.a is out of use
 #    17/01/2011   V1.6   distinguish library creation and installation
-#    10/06/2011   V1.7   preparing Makefile for export of cseife to  
-#                        the DENISE code by Lisa Rehor
 # 
 # ============================================================================
 # 
+
+CONTRIBDIR=..
+include $(CONTRIBDIR)/Makefile_var
 
 .PHONY: all
 all: install doc
@@ -67,46 +56,86 @@ doc:
 LIBRARIES=libcseife.a
 
 .PHONY: install
-install: 
-	$(MAKE) $(LIBRARIES)
+install: $(addprefix $(LOCLIBDIR)/,$(LIBRARIES))
+$(LOCLIBDIR)/%: install-include %
+	mkdir -pv $(LOCLIBDIR)
+	/bin/mv -fv $(word 2,$^) $(LOCLIBDIR)
 	 
 # ============================================================================
 
+CHECKVAR=$(if $($(1)),,$(error ERROR: missing variable $(1)))
+CHECKVARS=$(foreach var,$(1),$(call CHECKVAR,$(var)))
+
+$(call CHECKVARS,LOCINCLUDEDIR LOCLIBDIR)
+
+#----------------------------------------------------------------------
+
 CLIBSRC=$(wildcard cseife*.c)
 HEADERS=$(shell find . -name \*.h)
+INCINSTALLPATH=$(LOCINCLUDEDIR)
+LIBINSTALLPATH=$(LOCLIBDIR)
+# name of installed (exported) header files
+INSTHEADER=$(addprefix $(INCINSTALLPATH)/,$(notdir $(HEADERS)))
 
 .PHONY: clean edit
 clean:
 	-find . -name \*.d | xargs --no-run-if-empty /bin/rm -v
 	-find . -name \*.o | xargs --no-run-if-empty /bin/rm -v
 	-find . -name \*.bak | xargs --no-run-if-empty /bin/rm -v
+	-find . -name \*.o77 | xargs --no-run-if-empty /bin/rm -v
 	-/bin/rm -fv flist
-	-/bin/rm -fv *.a
+	-/bin/rm -fv install-include *.a
 
 edit: flist ; vim flist
-flist: $(wildcard Makefile *.c *.h) COPYING
+flist: $(wildcard subs/*.f *.f Makefile *.c *.h subs/*.inc) COPYING \
+  $(TF_EDIT) README
 	echo $^ | tr ' ' '\n' | sort > $@
 
 AR=ar
 AS=as
 RANLIB=ranlib
-CC=mpicc
 
 FLAGS += $(MYFLAGS)
 CFLAGS += -O3 -Wall $(FLAGS)
-CPPFLAGS=$(addprefix -I,.) \
+FFLAGS += -ff2c -Wall -ffixed-line-length-0 -fno-backslash -Isubs $(FLAGS)
+LDFLAGS+=$(addprefix -L,$(LOCLIBDIR) $(subst :, ,$(SERVERLIBDIR)))
+CPPFLAGS+=$(addprefix -I,$(LOCINCLUDEDIR) $(subst :, ,$(SERVERINCLUDEDIR))) \
   $(FLAGS)
 
+SUBS=$(patsubst %.f,%.o,$(wildcard subs/*.f))
+
+%.o: %.f
+	$(FC) -O2 -o $@ -c $< $(FFLAGS)
 .c.o:
 	$(CC) $(CFLAGS) $< -c $(CPPFLAGS)
 
+#======================================================================
+# Fortran include dependencies
+%.d: %.f
+	echo $<: $(addprefix subs/,$(shell cat $< | egrep '^ +include' | cut -f 2 -d \' | sort | uniq)) > $@
+include $(patsubst %.f,%.d,$(wildcard subs/*.f))
+
+#======================================================================
+
+$(INCINSTALLPATH)/%.h: %.h
+	mkdir -p $(INCINSTALLPATH)
+	-rm -fv $@
+	/bin/cp -vpd $< $@
+
+.PHONY: install-include
+install-include: $(INSTHEADER)
 
 #======================================================================
 # reinstall target
 # is necessary in case of header file problems (e.g. remcmmnt not installed)
+.PHONY: clean-include
+clean-include: 
+	/bin/rm -fv $(INSTHEADER)
+
 .PHONY: reinstall
 reinstall:
 	$(MAKE) clean
+	$(MAKE) clean-include
 	$(MAKE) install
 
 #======================================================================
@@ -126,10 +155,24 @@ reinstall:
 include $(patsubst %.c,%.d,$(CLIBSRC))
 
 libcseife.a: $(patsubst %.c,%.o,$(CLIBSRC))
+libseife.a: $(SUBS)
 
-libcseife.a: 
+libcseife.a libseife.a: 
 	$(AR) rcv $@ $^
 	$(RANLIB) $@
 
+#======================================================================
+# create package
+# --------------
+# is delegated to Makefile.packages
+ifdef TF_MAKEPKG
+.PHONY: package
+package: $(TF_MAKEPKG)
+	$(MAKE) -f $< \
+	  PACKAGE=libseife \
+	  PACKAGEEXPORT="trunk/src/libs/libseife:src" \
+	  PACKAGETARGETS="src:all:" \
+	  PACKAGELIBS="-"
+endif
 # 
 # ----- END OF Makefile ----- 

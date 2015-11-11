@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: series.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 17/12/2002
  * 
@@ -85,7 +85,7 @@
 #define AFF_SERIES_H_VERSION \
   "AFF_SERIES_H   V1.12"
 #define AFF_SERIES_H_CVSID \
-  "$Id: series.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include <aff/lib/sharedheap.h>
 #include <aff/lib/linearshape.h>

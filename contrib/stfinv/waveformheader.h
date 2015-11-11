@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: waveformheader.h 4023 2011-06-24 14:18:04Z tforb $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -38,9 +37,7 @@
 #ifndef STFINV_WAVEFORMHEADER_H_VERSION
 
 #define STFINV_WAVEFORMHEADER_H_VERSION \
-  "STFINV_WAVEFORMHEADER_H   V1.0   "
-#define STFINV_WAVEFORMHEADER_H_CVSID \
-  "$Id: waveformheader.h 4023 2011-06-24 14:18:04Z tforb $"
+  "STFINV_WAVEFORMHEADER_H   V1.0"
 
 #ifdef __cplusplus
 extern "C" {

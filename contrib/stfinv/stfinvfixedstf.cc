@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvfixedstf.cc 3986 2011-05-29 16:01:09Z tforb $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -34,9 +33,7 @@
  * ============================================================================
  */
 #define STFINV_STFINVFIXEDSTF_CC_VERSION \
-  "STFINV_STFINVFIXEDSTF_CC   V1.0   "
-#define STFINV_STFINVFIXEDSTF_CC_CVSID \
-  "$Id: stfinvfixedstf.cc 3986 2011-05-29 16:01:09Z tforb $"
+  "STFINV_STFINVFIXEDSTF_CC   V1.0"
 
 #include <stfinv/stfinvfixedstf.h>
 

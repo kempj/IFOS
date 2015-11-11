@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: linearshape.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 23/12/2003
  * 
@@ -48,7 +48,7 @@
 #define AFF_LINEARSHAPE_H_VERSION \
   "AFF_LINEARSHAPE_H   V1.4"
 #define AFF_LINEARSHAPE_H_CVSID \
-  "$Id: linearshape.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 namespace aff {
 

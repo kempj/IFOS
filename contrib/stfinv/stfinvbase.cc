@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvbase.cc 4161 2011-10-01 08:00:43Z tforb $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -31,21 +30,26 @@
  * REVISIONS and CHANGES 
  *  - 06/05/2011   V1.0   Thomas Forbriger
  *  - 30/09/2011   V1.1   implemented handling of additional time series pairs
+ *  - 14/10/2015   V1.2   new end-user usage functions
  * 
  * ============================================================================
  */
 #define STFINV_STFINVBASE_CC_VERSION \
-  "STFINV_STFINVBASE_CC   V1.1"
-#define STFINV_STFINVBASE_CC_CVSID \
-  "$Id: stfinvbase.cc 4161 2011-10-01 08:00:43Z tforb $"
+  "STFINV_STFINVBASE_CC   V1.2"
 
 #include <sstream>
 #include <cmath>
 #include <stfinv/stfinvbase.h>
+#include <stfinv/stfinvbase_summary_usage.h>
+#include <stfinv/stfinvbase_description_usage.h>
 #include <stfinv/debug.h>
 
 namespace stfinv {
 
+  /*!
+   * Constructor stores all references to time series data passed by the
+   * caller.
+   */
   STFBaseEngine::STFBaseEngine(const stfinv::Tvectoroftriples& triples,
                                const stfinv::Waveform& stf,
                                const stfinv::Tvectorofpairs& pairs,
@@ -58,6 +62,10 @@ namespace stfinv {
 
   /*----------------------------------------------------------------------*/
 
+  /*!
+   * Constructor stores all references to time series data passed by the
+   * caller.
+   */
   STFBaseEngine::STFBaseEngine(const stfinv::Tvectoroftriples& triples,
                                const stfinv::Waveform& stf,
                                const std::string& parameters)
@@ -69,6 +77,17 @@ namespace stfinv {
 
   /*----------------------------------------------------------------------*/
 
+  /*!
+   * -# The STFBaseEngine::initialize() function parses the parameter string.
+   *    Parsed values are stored in Mparamap.
+   * -# Extract settings for parameters:
+   *     - DEBUG: set debug output level
+   *     - verbose: activate verbose output
+   *     - exp: set power-law exponent and store weights in member data Mweights
+   * -# Check consistency of data
+   * -# Align index ranges of aff::Series objects such that the first element
+   *    (sample) has index zero
+   */
   void STFBaseEngine::initialize(const std::string& parameters)
   {
     this->parseparameters(parameters);
@@ -130,6 +149,13 @@ namespace stfinv {
 
   /*----------------------------------------------------------------------*/
 
+  /*!
+   * Check consistency of time series data passed to the STFBaseEngine
+   * with respect to
+   *  -# number of samples
+   *  -# sampling interval
+   *
+   */
   void STFBaseEngine::checkconsistency() const
   {
     const unsigned int& n=Mstf.sampling.n;
@@ -186,18 +212,32 @@ namespace stfinv {
 
   void STFBaseEngine::classhelp(std::ostream& os) 
   {
-    os << "Options and parameters in common for all engines:\n"
-      << "verbose       produce verbose output (if implemented)\n"
-      << "DEBUG=l       produce debug output with level l\n"
-      << "exp=k         apply offset dependent weights to signals\n"
-      << "If implemented in the engine in use then setting the parameter\n"
-      << "exp=k will give a weight factor of ((r/1m)**k) to each signal\n"
-      << "in order to compensate the decrease in signal energy." 
-      << std::endl;
+    os << stfinvbase_summary_usage;
   } // void STFBaseEngine::classhelp(std::ostream& os)
 
   /*----------------------------------------------------------------------*/
 
+  void STFBaseEngine::usage(std::ostream& os) const
+  {
+    STFBaseEngine::classusage(os);
+  } // void STFBaseEngine::usage(std::ostream& os) const
+
+  /*----------------------------------------------------------------------*/
+
+  void STFBaseEngine::classusage(std::ostream& os) 
+  {
+    os << stfinvbase_description_usage;
+  } // void STFBaseEngine::classusage(std::ostream& os)
+
+  /*----------------------------------------------------------------------*/
+
+  /*!
+   * Pass the parameter string (as usually passed along the chain of
+   * constructors to the constructor and initialize() function of
+   * STFBaseEngine).
+   * The values are stored in the member data
+   * STFBaseEngine::Mparamap
+   */
   void STFBaseEngine::parseparameters(std::string parameters) 
   {
     while (parameters.length()>0)

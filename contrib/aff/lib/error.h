@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: error.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 27/11/2002
  * 
@@ -50,7 +50,7 @@
 #define AFF_ERROR_H_VERSION \
   "AFF_ERROR_H   V1.2"
 #define AFF_ERROR_H_CVSID \
-  "$Id: error.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<aff/lib/types.h>
 

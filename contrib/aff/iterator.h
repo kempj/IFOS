@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: iterator.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \since 08/12/2002
  * 
@@ -55,7 +55,7 @@
 #define AFF_ITERATOR_H_VERSION \
   "AFF_ITERATOR_H   V1.4"
 #define AFF_ITERATOR_H_CVSID \
-  "$Id: iterator.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<aff/lib/types.h>
 

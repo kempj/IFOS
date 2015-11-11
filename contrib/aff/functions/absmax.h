@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: absmax.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 09/03/2010
  * 
@@ -40,7 +40,7 @@
 #define AFF_ABSMAX_H_VERSION \
   "AFF_ABSMAX_H   V1.0   "
 #define AFF_ABSMAX_H_CVSID \
-  "$Id: absmax.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<aff/lib/collector.h>
 

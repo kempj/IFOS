@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: subarray.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 19/12/2002
  * 
@@ -50,7 +50,7 @@
 #define AFF_SUBARRAY_H_VERSION \
   "AFF_SUBARRAY_H   V1.3"
 #define AFF_SUBARRAY_H_CVSID \
-  "$Id: subarray.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<aff/array.h>
 

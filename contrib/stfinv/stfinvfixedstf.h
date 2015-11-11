@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvfixedstf.h 3985 2011-05-29 15:43:24Z tforb $
  * \author Thomas Forbriger
  * \date 06/05/2011
  * 
@@ -38,9 +37,7 @@
 #ifndef STFINV_STFINVFIXEDSTF_H_VERSION
 
 #define STFINV_STFINVFIXEDSTF_H_VERSION \
-  "STFINV_STFINVFIXEDSTF_H   V1.0   "
-#define STFINV_STFINVFIXEDSTF_H_CVSID \
-  "$Id: stfinvfixedstf.h 3985 2011-05-29 15:43:24Z tforb $"
+  "STFINV_STFINVFIXEDSTF_H   V1.0"
 
 #include<stfinv/stfinvfourier.h>
 

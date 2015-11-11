@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: dump_macros.h 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 19/12/2002
  * 
@@ -54,7 +54,7 @@
 #define AFF_DUMP_MACROS_H_VERSION \
   "AFF_DUMP_MACROS_H   V1.2"
 #define AFF_DUMP_MACROS_H_CVSID \
-  "$Id: dump_macros.h 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include<iostream>
 

@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: arrayoperators.h 3957 2011-05-16 14:46:43Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 10/02/2004
  * 
@@ -39,7 +39,7 @@
 #define AFF_ARRAYOPERATORS_H_VERSION \
   "AFF_ARRAYOPERATORS_H   V1.0   "
 #define AFF_ARRAYOPERATORS_H_CVSID \
-  "$Id: arrayoperators.h 3957 2011-05-16 14:46:43Z tforb $"
+  "$Id$"
 
 #include<aff/array.h>
 

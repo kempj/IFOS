@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: seriesstepper.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 20/12/2002
  * 
@@ -35,7 +35,7 @@
 #define AFF_SERIESSTEPPER_CC_VERSION \
   "AFF_SERIESSTEPPER_CC   V1.0"
 #define AFF_SERIESSTEPPER_CC_CVSID \
-  "$Id: seriesstepper.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include <aff/series.h>
 

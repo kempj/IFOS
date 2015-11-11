@@ -3,7 +3,7 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: fortranshape.cc 3084 2010-08-10 16:01:03Z tforb $
+ * $Id$
  * \author Thomas Forbriger
  * \date 23/12/2002
  * 
@@ -35,7 +35,7 @@
 #define AFF_FORTRANSHAPE_CC_VERSION \
   "AFF_FORTRANSHAPE_CC   V1.0   "
 #define AFF_FORTRANSHAPE_CC_CVSID \
-  "$Id: fortranshape.cc 3084 2010-08-10 16:01:03Z tforb $"
+  "$Id$"
 
 #include <aff/fortranshape.h>
 #include <aff/lib/error.h>

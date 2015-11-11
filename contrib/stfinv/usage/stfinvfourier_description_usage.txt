@@ -1,0 +1,25 @@
+# this is <stfinvfourier_description_usage.txt>
+# ----------------------------------------------------------------------------
+#
+# Procedures in the Fourier domain
+# --------------------------------
+Options and parameters in common for procedures in the Fourier domain:
+  fpow2        use power of two for number of coefficients
+  fdiv=d       use integer multiple of d for number of coefficients
+  fpad=f       padding factor
+  tshift=d     delay source correction filter wavelet by d (in seconds)
+               in order to expose acausal components
+
+These options define the number of samples N used for the FFT (Fast Fourier
+Transform). This number N should be larger than the number of samples M in the
+original input time series to avoid wrap-around. If fpow2 is set, N will be
+the next power of 2 larger than M*f. Else if fdiv is set, N will be the next
+integer multiple of d larger than M*f.
+
+The derived correction filter in some cases can contain acausal components.
+This means that the impulse response is non-zero for negative time values.
+Since by definition, the impulse response is output for the time interval of
+the input data, these acausal components can remain unnoticed. The option
+tshift can be used to shift the impulse response as obtained by inverse FFT in
+order to expose acausal components.
+# ----- END OF stfinvfourier_description_usage.txt ----- 

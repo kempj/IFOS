@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id: stfinvidentity.h 3986 2011-05-29 16:01:09Z tforb $
  * \author Thomas Forbriger
  * \date 07/05/2011
  * 
@@ -30,6 +29,7 @@
  * 
  * REVISIONS and CHANGES 
  *  - 07/05/2011   V1.0   Thomas Forbriger
+ *  - 14/10/2015   V1.1   new end-user usage functions
  * 
  * ============================================================================
  */
@@ -38,9 +38,7 @@
 #ifndef STFINV_STFINVIDENTITY_H_VERSION
 
 #define STFINV_STFINVIDENTITY_H_VERSION \
-  "STFINV_STFINVIDENTITY_H   V1.0   "
-#define STFINV_STFINVIDENTITY_H_CVSID \
-  "$Id: stfinvidentity.h 3986 2011-05-29 16:01:09Z tforb $"
+  "STFINV_STFINVIDENTITY_H   V1.1"
 
 #include<stfinv/stfinvbase.h>
 
@@ -71,6 +69,15 @@ namespace stfinv {
         : Tbase(triples, stf, parameters),
         Mscaleenergy(false)
       { this->initialize(); }
+      /*! \brief Constructor.
+       */
+      STFEngineIdentity(const stfinv::Tvectoroftriples& triples,
+                        const stfinv::Waveform& stf,
+                        const stfinv::Tvectorofpairs& pairs,
+                        const std::string& parameters)
+        : Tbase(triples, stf, pairs, parameters), 
+        Mscaleenergy(false)
+      { this->initialize(); }
       //! \brief abstract base requires virtual destructor
       virtual ~STFEngineIdentity() { }
       //! \brief Start engine 
@@ -79,6 +86,10 @@ namespace stfinv {
       virtual void help(std::ostream& os=std::cout) const;
       //! \brief print online help
       static void classhelp(std::ostream& os=std::cout);
+      //! \brief print detailed description
+      virtual void usage(std::ostream& os=std::cout) const;
+      //! \brief print detailed description
+      static void classusage(std::ostream& os=std::cout);
       //! \brief return name of engine
       virtual const char* name() const;
     private:
