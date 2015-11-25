@@ -23,11 +23,9 @@ before compiling the main program DENISE.
 
 There are several known dependencies:
 
-- GCC
-- OpenMPI
+- GCC / ICC
+- OpenMPI / Intel MPF
 - fftw3
-- fc2
-- fort77
 - stdc++
 - math library (libm.a)
 
@@ -36,7 +34,6 @@ There are several known dependencies:
 Systems/environments the code was already successfully build on:
 
 - Linux 2.6.31.14-0.6-desktop x86_64 
+- MacOSX 10.11.1 with OpenMPI 1.10.0 and gcc-Version 5.1.0
 
 -------------------------------------------
-
- 
