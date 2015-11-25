@@ -12,31 +12,26 @@ MODEL_AC = ../genmod/1D_linear_gradient_ac.c
 MODEL_VAC = ../genmod/1D_linear_gradient_viscac.c
 EXEC= ../bin
 
-# Compiler (LAM: CC=hcc, CRAY T3E: CC=cc)
+# Description:
+# CC = Compiler
+# LFLAGS = Linker flag
+# CFLAGS = Compiler flag
 
-# ON Linux cluster running LAM
-#CC=hcc
-#LFLAGS=-lm -lmpi 
-#CFLAGS=-Wall -O4 
-
-# On CRAY T3E
-# CC=cc
-
-# On CHIC
-CC=mpicc
+# LINUX with OpenMPI / IntelMPI and INTEL Compiler
+# Use icc whenever possible, this will be much faster than gcc
+CC=mpiicc
 LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
 CFLAGS=-O3
 SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
 IFLAGS=-I./../contrib/libcseife -I./../contrib/header -I.
 
-# On HLRN system
-#CC=mpcc
-#LFLAGS=-lm  
+# LINUX with OpenMPI / IntelMPI and GCC Compiler
+#CC=mpicc
+#LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
+#CFLAGS=-O3
+#SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
+#IFLAGS=-I./../contrib/libcseife -I./../contrib/header -I.
 
-# ALTIX
-#CC=icc
-#CFLAGS=-mp -O3 -ipo
-#LFLAGS=-lmpi -lm -i-static
 
 # after this line, no further editing should be necessary
 # --------------------------------------------------------
