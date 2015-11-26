@@ -36,7 +36,7 @@
 			"RUN_MULTIPLE_SHOTS" : "1",
 
 "Acoustic Computation" : "comment",
-			"ACOUSTIC" : "1",
+			"ACOUSTIC" : "0",
 
 "Model" : "comment",
 			"READMOD" : "0",

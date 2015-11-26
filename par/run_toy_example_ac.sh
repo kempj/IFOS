@@ -43,4 +43,4 @@ make clean
 rm jacobian/toy_example/*toy_example*.*.*.*
 rm model/*.bin.*.*
 rm model/toy_example/*.bin.*.*
-rm taper/*.bin.*.*
+rm *.bin.*.*

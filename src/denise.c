@@ -71,7 +71,7 @@ int main(int argc, char **argv){
 		** sectionvy_conv=NULL, ** sectionvy_obs=NULL, ** sectionvx_conv=NULL,** sectionvx_obs=NULL, ** sectionp_conv=NULL,** sectionp_obs=NULL, * source_time_function=NULL;
 		
 	float  **  absorb_coeff, ** taper_coeff, * epst1, * epst2,  * epst3, * picked_times;
-	float  ** srcpos=NULL, **srcpos_loc=NULL, ** srcpos1=NULL, **srcpos_loc_back=NULL, ** signals=NULL, ** signals_rec=NULL, *hc=NULL, ** dsignals=NULL;
+	float  ** srcpos=NULL, **srcpos_loc=NULL, ** srcpos1=NULL, **srcpos_loc_back=NULL, ** signals=NULL, ** signals_rec=NULL, *hc=NULL;
 	int   ** recpos=NULL, ** recpos_loc=NULL;
 	
 	int * DTINV_help;
@@ -700,9 +700,6 @@ int main(int argc, char **argv){
 		case 2: FC_EXT=filter_frequencies(&nfrq); FC=FC_EXT[FREQ_NR]; break;
 	}
 
-	if (INV_STF==1)
-		dsignals=fmatrix(1,nsrc,1,NT);
-
 	QUELLART_OLD = QUELLART;
 
 	for(iter=1;iter<=ITERMAX;iter++){  /* fullwaveform iteration loop */	
@@ -946,23 +943,7 @@ int main(int argc, char **argv){
 					signals=NULL;
 					signals=wavelet(srcpos_loc,nsrc_loc,ishot);
 					
-					if((iter>1)&&(nsrc_loc>0)&&(INV_STF==1)){
-						/* find maximum of dsignals */
-						sig_max = 0.0;     
-
-						for(iq=1;iq<=NT;iq++){
-
-						if(fabs(dsignals[ishot][iq])>sig_max){
-							sig_max = fabs(dsignals[ishot][iq]);
-							}
-						}   
-
-						/* update wavelet */
-						for(iq=1;iq<=NT;iq++){
-							signals[1][iq] -= 0.05 * (dsignals[ishot][iq]/sig_max);
-						} 
-					}
-
+					
 					/* initialize wavefield with zero */
 					if (L){
 						if(!ACOUSTIC)
@@ -994,7 +975,6 @@ int main(int argc, char **argv){
 					for (nt=1;nt<=NT;nt++){
 						
 						/* Check if simulation is still stable */
-						/*if (isnan(pvy[NY/2][NX/2])) err(" Simulation is unstable !");*/
 						if (isnan(pvy[NY/2][NX/2])) {
 							fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
 							err(" Simulation is unstable !");}
@@ -1353,25 +1333,8 @@ int main(int argc, char **argv){
 				}
 				
 				MPI_Barrier(MPI_COMM_WORLD);
-
-				if((iter>1)&&(nsrc_loc>0)&&(INV_STF==1)){
-
-					/* find maximum of dsignals */
-					sig_max = 0.0;     
-
-					for(iq=1;iq<=NT;iq++){
-						if(fabs(dsignals[ishot][iq])>sig_max){
-						sig_max = fabs(dsignals[ishot][iq]);
-						}
-					}   
-
-					/* update wavelet */
-					for(iq=1;iq<=NT;iq++){
-						signals[1][iq] -= 0.05 * (dsignals[ishot][iq]/sig_max);
-					}
-				}
-
-
+				
+				
 				/* initialize wavefield with zero */
 				if (L){
 					if(!ACOUSTIC)
@@ -1444,7 +1407,6 @@ int main(int argc, char **argv){
 				for (nt=1;nt<=NT;nt++){     
 						
 					/* Check if simulation is still stable */
-					/*if (isnan(pvy[NY/2][NX/2])) err(" Simulation is unstable !");*/
 					if (isnan(pvy[NY/2][NX/2])) {
 						fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
 						err(" Simulation is unstable !");
@@ -1872,7 +1834,6 @@ int main(int argc, char **argv){
 						for (nt=1;nt<=NT;nt++){     
 
 							/* Check if simulation is still stable */
-							/*if (isnan(pvy[NY/2][NX/2])) err(" Simulation is unstable !");*/
 							if (isnan(pvy[NY/2][NX/2])) {
 								fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
 								err(" Simulation is unstable !");
@@ -1963,18 +1924,6 @@ int main(int argc, char **argv){
 								if (infoout)  fprintf(FP," finished (real time: %4.2f s).\n",time7-time6);
 							}
 							
-							/* calculate change of the source wavelet */
-							if ((nsrc_loc>0)&&(INV_STF==1)){
-								for (lq=1;lq<=nsrc_loc;lq++) {
-									iq=(int)srcpos_loc[1][lq];
-									jq=(int)srcpos_loc[2][lq];
-									
-									if(!ACOUSTIC)
-										dsignals[ishot][invtimer] = (-psxx[jq][lq]-psyy[jq][lq])/2.0;
-									else
-										dsignals[ishot][invtimer] = (-psp[jq][lq])/2.0;
-								}
-							}
 							
 							/*if(nt==hin1){*/
 							if(DTINV_help[NT-nt+1]==1){
@@ -2587,7 +2536,9 @@ int main(int argc, char **argv){
 						for (nt=1;nt<=NT;nt++){
 								
 							/* Check if simulation is still stable */
-							if (isnan(pvy[NY/2][NX/2])) err(" Simulation is unstable !");
+							if (isnan(pvy[NY/2][NX/2])) {
+								fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
+								err(" Simulation is unstable !");}
 
 							infoout = !(nt%10000);
 
@@ -3351,7 +3302,6 @@ int main(int argc, char **argv){
 
 	if (nsrc_loc>0){	
 		free_matrix(signals,1,nsrc_loc,1,NT);
-		if(INV_STF==1) free_matrix(dsignals,1,nsrc_loc,1,NT);
 		free_matrix(srcpos_loc,1,8,1,nsrc_loc);
 		free_matrix(srcpos_loc_back,1,6,1,nsrc_loc);
 	}

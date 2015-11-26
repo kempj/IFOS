@@ -29,26 +29,17 @@ void  inseis_source_wavelet(float *section, int ns, int ishot){
 	extern int MYID;
 	extern char SIGNAL_FILE[STRING_SIZE];
 	
+	/* declaration of local variables */
+	int j;
+	float dump;
+	segy tr;
 	char data[STRING_SIZE];
 	FILE *fpdata;
-	
-	
-	
-	
-	
-	extern float  TIME, DH, DT, REFREC[4];
-        
-	
-        
+	        
 	sprintf(data,"%s.shot%d",SIGNAL_FILE,ishot);
 	
 	fpdata = fopen(data,"r");
-
-	
-	/* declaration of local variables */
-	int i,j;
-	segy tr;
-	float dump;
+	if (fpdata==NULL) err(" Source wavelet not found ");
 
 	/* SEGY (without file-header) */
 	fread(&tr,240,1,fpdata);

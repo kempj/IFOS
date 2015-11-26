@@ -243,7 +243,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	conv_FD(wavelet,source_time_function,stf_conv_wavelet,ns);
 	
 	if(TAPER_STF)
-		taper(stf_conv_wavelet, ns, FC);
+		taper(stf_conv_wavelet, ns, fc);
 	
 // 	/* --------------- writing out the observed seismograms --------------- */
 // 	sprintf(obs_y_tmp,"%s.shot%d.obs",SEIS_FILE_P,ishot);

@@ -32,6 +32,7 @@ void model_acoustic(float **rho, float **pi){
 	extern char MFILE[STRING_SIZE];
 	extern char INV_MODELFILE[STRING_SIZE];
 	extern char TAPER_FILE_NAME[STRING_SIZE], TAPER_FILE_NAME_RHO[STRING_SIZE];
+	extern int SWS_TAPER_FILE;
 
 	/* local variables */
 	float piv, vp, rhov, taperv, **taper;
@@ -54,81 +55,80 @@ void model_acoustic(float **rho, float **pi){
 	flvp=vector(1,nodes);
 	fltaper=vector(1,nodes);
 	
-	taper=matrix(-nd+1,NY+nd,-nd+1,NX+nd);
+	if(SWS_TAPER_FILE) taper=matrix(-nd+1,NY+nd,-nd+1,NX+nd);
 	
 	flfile=fopen("model_true/flnodes.toy_example_ac.start","r");
 	if (flfile==NULL) err(" FL-file could not be opened !");
 	
-	
+	/* Read parameters */
 	for (l=1;l<=nodes;l++){
 		fgets(cline,255,flfile);
 		if (cline[0]!='#'){
 			sscanf(cline,"%f%f%f%f",&fldepth[l], &flrho[l], &flvp[l], &fltaper[l]);
 		}
 		else l=l-1;
-	
 	}
 	
+	/* Print parameters */
 	if(MYID==0){
-	printf(" ------------------------------------------------------------------ \n\n");
-	printf(" Information of FL nodes: \n\n");
-	printf(" \t depth \t vp \n\n");
-	
-	for (l=1;l<=nodes;l++){
-	printf(" \t %f \t %f\n\n",fldepth[l],flvp[l]);
+		printf(" ------------------------------------------------------------------ \n\n");
+		printf(" Information of FL nodes: \n\n");
+		printf(" \t depth \t vp \n\n");
+		
+		for (l=1;l<=nodes;l++){
+			printf(" \t %f \t %f\n\n",fldepth[l],flvp[l]);
+		}
+		printf(" ------------------------------------------------------------------ \n\n");
 	}
-	printf(" ------------------------------------------------------------------ \n\n");
-	}
 	
-	/* loop over global grid */
-		for (i=1;i<=NXG;i++){
-			for (l=1;l<nodes;l++){
-				if (fldepth[l]==fldepth[l+1]){
-					if ((i==1) && (MYID==0)){
-					printf("depth: %f m: double node\n",fldepth[l]);}}
-				else{
-					for (j=(int)(fldepth[l]/DH)+1;j<=(int)(fldepth[l+1]/DH);j++){
-						
-						vp=0.0;
-						
-						vp=(DH*(j-1)-fldepth[l])*(flvp[l+1]-flvp[l])/(fldepth[l+1]-fldepth[l])+flvp[l];
-						vp=vp*1000.0;
-						
-						piv=vp;
-						
-						/* only the PE which belongs to the current global gridpoint 
-						is saving model parameters in his local arrays */
-						if ((POS[1]==((i-1)/NX)) && 
-						(POS[2]==((j-1)/NY))){
+	/* loop over global grid - vp */
+	for (i=1;i<=NXG;i++){
+		for (l=1;l<nodes;l++){
+			if (fldepth[l]==fldepth[l+1]){
+				if ((i==1) && (MYID==0)){
+					printf("depth: %f m: double node\n",fldepth[l]);
+				}
+			}else{
+				for (j=(int)(fldepth[l]/DH)+1;j<=(int)(fldepth[l+1]/DH);j++){
+					
+					vp=0.0;
+					
+					vp=(DH*(j-1)-fldepth[l])*(flvp[l+1]-flvp[l])/(fldepth[l+1]-fldepth[l])+flvp[l];
+					vp=vp*1000.0;
+					
+					piv=vp;
+					
+					/* only the PE which belongs to the current global gridpoint 
+					is saving model parameters in his local arrays */
+					if ((POS[1]==((i-1)/NX)) && (POS[2]==((j-1)/NY))){
 						ii=i-POS[1]*NX;
 						jj=j-POS[2]*NY;
 						
 						pi[jj][ii]=piv;
-						}
 					}
 				}
 			}
+		}
+		for (j=(int)(fldepth[nodes]/DH)+1;j<=NYG;j++){
 			
-			for (j=(int)(fldepth[nodes]/DH)+1;j<=NYG;j++){
-			  
-				vp=0.0;
-				vp=flvp[nodes]*1000.0;
-				
-				piv=vp;
+			vp=0.0;
+			vp=flvp[nodes]*1000.0;
+			
+			piv=vp;
 
-				/* only the PE which belongs to the current global gridpoint 
-				  		is saving model parameters in his local arrays */
-						if ((POS[1]==((i-1)/NX)) && 
-				    		(POS[2]==((j-1)/NY))){
-						ii=i-POS[1]*NX;
-						jj=j-POS[2]*NY;
+			/* only the PE which belongs to the current global gridpoint 
+			is saving model parameters in his local arrays */
+			if ((POS[1]==((i-1)/NX)) && (POS[2]==((j-1)/NY))){
+				ii=i-POS[1]*NX;
+				jj=j-POS[2]*NY;
 
-						pi[jj][ii]=piv;
-						}
+				pi[jj][ii]=piv;
 			}
 		}
+	}
 		
 	/* loop over global grid - taper */
+	if(SWS_TAPER_FILE){
 		for (i=1;i<=NXG;i++){
 			for (l=1;l<nodes;l++){
 				if (fldepth[l]==fldepth[l+1]){
@@ -155,7 +155,7 @@ void model_acoustic(float **rho, float **pi){
 			}
 			
 			for (j=(int)(fldepth[nodes]/DH)+1;j<=NYG;j++){
-			  
+				
 				taperv=0.0;
 				taperv=fltaper[nodes];
 				
@@ -170,6 +170,7 @@ void model_acoustic(float **rho, float **pi){
 						}
 			}
 		}
+	}
 		
 	free_vector(fldepth,1,nodes);
 	free_vector(flrho,1,nodes);
@@ -178,7 +179,7 @@ void model_acoustic(float **rho, float **pi){
 	
 	
 	/**************************************************/
-	/* creation of density models */
+	/* creation of density models from true model */
 	/**************************************************/
 	
 	/*read FL nodes from File*/
@@ -189,6 +190,7 @@ void model_acoustic(float **rho, float **pi){
 	flfile=fopen("model_true/flnodes.toy_example_ac","r");
 	if (flfile==NULL) err(" FL-file could not be opened !");
 	
+	/* Read parameters */
 	for (l=1;l<=nodes;l++){
 		fgets(cline,255,flfile);
 		if (cline[0]!='#'){
@@ -197,19 +199,19 @@ void model_acoustic(float **rho, float **pi){
 		else l=l-1;
 	}
 	
-	
+	/* Print parameters */	
 	if(MYID==0){
-	printf(" ------------------------------------------------------------------ \n\n");
-	printf(" Information of FL nodes: \n\n");
-	printf(" \t depth \t vp \t rho \n\n");
-	
-	for (l=1;l<=nodes;l++){
-	printf(" \t %f \t %f \t %f \n\n",fldepth[l],flvp[l],flrho[l]);
+		printf(" ------------------------------------------------------------------ \n\n");
+		printf(" Information of FL nodes: \n\n");
+		printf(" \t depth \t vp \t rho \n\n");
+		
+		for (l=1;l<=nodes;l++){
+			printf(" \t %f \t %f \t %f \n\n",fldepth[l],flvp[l],flrho[l]);
+		}
+		printf(" ------------------------------------------------------------------ \n\n");
 	}
-	printf(" ------------------------------------------------------------------ \n\n");
-	}
 	
-	/* loop over global grid */
+	/* loop over global grid - density */
 	for (i=1;i<=NXG;i++){
 		for (l=1;l<nodes;l++){
 			if (fldepth[l]==fldepth[l+1]){
@@ -275,22 +277,24 @@ void model_acoustic(float **rho, float **pi){
 	sprintf(modfile,"%s_vp_it0.bin.%i%i",INV_MODELFILE,POS[1],POS[2]);
 	remove(modfile);
 	
-	sprintf(modfile,"%s",TAPER_FILE_NAME);
-	writemod(modfile,taper,3);
-	MPI_Barrier(MPI_COMM_WORLD);
-	if (MYID==0) mergemod(modfile,3);
-	MPI_Barrier(MPI_COMM_WORLD); 
-	sprintf(modfile,"%s.%i%i",TAPER_FILE_NAME,POS[1],POS[2]);
-	remove(modfile);
+	if(SWS_TAPER_FILE){
+		sprintf(modfile,"%s",TAPER_FILE_NAME);
+		writemod(modfile,taper,3);
+		MPI_Barrier(MPI_COMM_WORLD);
+		if (MYID==0) mergemod(modfile,3);
+		MPI_Barrier(MPI_COMM_WORLD); 
+		sprintf(modfile,"%s.%i%i",TAPER_FILE_NAME,POS[1],POS[2]);
+		remove(modfile);
+		
+		sprintf(modfile,"%s",TAPER_FILE_NAME_RHO);
+		writemod(modfile,taper,3);
+		MPI_Barrier(MPI_COMM_WORLD);
+		if (MYID==0) mergemod(modfile,3);
+		MPI_Barrier(MPI_COMM_WORLD); 
+		sprintf(modfile,"%s.%i%i",TAPER_FILE_NAME_RHO,POS[1],POS[2]);
+		remove(modfile);
+	}
 	
-	sprintf(modfile,"%s",TAPER_FILE_NAME_RHO);
-	writemod(modfile,taper,3);
-	MPI_Barrier(MPI_COMM_WORLD);
-	if (MYID==0) mergemod(modfile,3);
-	MPI_Barrier(MPI_COMM_WORLD); 
-	sprintf(modfile,"%s.%i%i",TAPER_FILE_NAME_RHO,POS[1],POS[2]);
-	remove(modfile);
-	
-	free_matrix(taper,-nd+1,NY+nd,-nd+1,NX+nd);
+	if(SWS_TAPER_FILE) free_matrix(taper,-nd+1,NY+nd,-nd+1,NX+nd);
 	
 }
