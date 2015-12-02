@@ -919,20 +919,6 @@ int main(int argc, char **argv){
     
     MPI_Barrier(MPI_COMM_WORLD);
     
-    if (CHECKPTREAD){
-        if (MYID==0){
-            time3=MPI_Wtime();
-            fprintf(FP," Reading wavefield from check-point file %s \n",CHECKPTFILE);
-        }
-        
-        read_checkpoint(-1, NX+2, -1, NY+2, pvx, pvy, psxx, psyy, psxy);
-        MPI_Barrier(MPI_COMM_WORLD);
-        if (MYID==0){
-            time4=MPI_Wtime();
-            fprintf(FP," finished (real time: %4.2f s).\n",time4-time3);
-        }
-    }
-    
     /* comunication initialisation for persistent communication */
     /*comm_ini(bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, bufferbot_to_top, req_send, req_rec);*/
     
@@ -1340,7 +1326,7 @@ int main(int argc, char **argv){
                                 }
                                 
                                 /* explosive source */
-                                if ((!CHECKPTREAD)&&(QUELLTYP==1))
+                                if ((QUELLTYP==1))
                                     psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                                 
                                 if ((FREE_SURF) && (POS[2]==0)){
@@ -1828,7 +1814,7 @@ int main(int argc, char **argv){
                             
                             
                             /* explosive source */
-                            if ((!CHECKPTREAD)&&(QUELLTYP==1)&&(WAVETYPE==1||WAVETYPE==3))
+                            if ((QUELLTYP==1)&&(WAVETYPE==1||WAVETYPE==3))
                                 psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                             
                             /* apply free surface */
@@ -2308,7 +2294,7 @@ int main(int argc, char **argv){
                                     }
                                     
                                     /* explosive source */
-                                    if ((!CHECKPTREAD)&&(QUELLTYPB==4))
+                                    if ((QUELLTYPB==4))
                                         psource(nt,psxx,psyy,psp,srcpos_loc_back,sectionpdiff,ntr1,1);
                                     
                                     if ((FREE_SURF) && (POS[2]==0)){
@@ -3389,7 +3375,7 @@ int main(int argc, char **argv){
                             }
                             
                             /* explosive source */
-                            if ((!CHECKPTREAD)&&(QUELLTYP==1))
+                            if ((QUELLTYP==1))
                                 psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                             
                             if ((FREE_SURF) && (POS[2]==0)){
@@ -3915,20 +3901,7 @@ int main(int argc, char **argv){
     /*----------- End fullwaveform iteration loop ----------------------------------*/
     /*------------------------------------------------------------------------------*/
     
-    /* Checkpointing to resume FWI */
-    if (CHECKPTWRITE){
-        if (MYID==0){
-            time3=MPI_Wtime();
-            fprintf(FP," Saving wavefield to check-point file %s \n",CHECKPTFILE);
-        }
-        
-        save_checkpoint(-1, NX+2, -1, NY+2, pvx, pvy, psxx, psyy, psxy);
-        MPI_Barrier(MPI_COMM_WORLD);
-        if (MYID==0){
-            time4=MPI_Wtime();
-            fprintf(FP," finished (real time: %4.2f s).\n",time4-time3);
-        }
-    }
+
     /* ====================================== */
     /* ====== deallocation of memory =========*/
     /* ====================================== */

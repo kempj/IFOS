@@ -38,10 +38,10 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int SNAPSHOT_START,SNAPSHOT_END,SNAPSHOT_INCR;
     extern char  MFILE[STRING_SIZE], SIGNAL_FILE[STRING_SIZE], SIGNAL_FILE_SH[STRING_SIZE], LOG_FILE[STRING_SIZE];
     extern char SNAP_FILE[STRING_SIZE], SOURCE_FILE[STRING_SIZE], REC_FILE[STRING_SIZE];
-    extern char SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_VZ[STRING_SIZE], CHECKPTFILE[STRING_SIZE];
+    extern char SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_VZ[STRING_SIZE];
     extern char SEIS_FILE_CURL[STRING_SIZE], SEIS_FILE_DIV[STRING_SIZE], SEIS_FILE_P[STRING_SIZE];
     extern char JACOBIAN[STRING_SIZE],DATA_DIR[STRING_SIZE],FREQ_FILE[STRING_SIZE];
-    extern int  NPROCX, NPROCY, MYID, IDX, IDY, CHECKPTREAD, CHECKPTWRITE;
+    extern int  NPROCX, NPROCY, MYID, IDX, IDY;
     extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, QUELLTYPB;
     extern int  GRAD_METHOD;
     extern float TSHIFT_back;
@@ -368,16 +368,6 @@ void read_par_json(FILE *fp, char *fileinp){
         }
         if (get_string_from_objectlist("MFILE",number_readobjects,MFILE,varname_list, value_list))
             err("Variable MFILE could not be retrieved from the json input file!");
-        if (get_int_from_objectlist("CHECKPTREAD",number_readobjects,&CHECKPTREAD,varname_list, value_list)){
-            CHECKPTREAD=0;
-            fprintf(fp,"Variable CHECKPTREAD is set to default value %d.\n",CHECKPTREAD);}
-        if (get_int_from_objectlist("CHECKPTWRITE",number_readobjects,&CHECKPTWRITE,varname_list, value_list)){
-            CHECKPTWRITE=0;
-            fprintf(fp,"Variable CHECKPTWRITE is set to default value %d.\n",CHECKPTWRITE);}
-        if (get_string_from_objectlist("LOG_FILE",number_readobjects,LOG_FILE,varname_list, value_list)){
-            sprintf(LOG_FILE,"log/LOG_FILE");}
-        if (get_string_from_objectlist("CHECKPTFILE",number_readobjects,CHECKPTFILE,varname_list, value_list)){
-            sprintf(CHECKPTFILE,"tmp/checkpoint_fdveps");}
         if (get_int_from_objectlist("READMOD",number_readobjects,&READMOD,varname_list, value_list))
             err("Variable READMOD could not be retrieved from the json input file!");
         
@@ -983,28 +973,6 @@ void read_par_json(FILE *fp, char *fileinp){
             }
         }
         
-        /* checkpoint file */
-        if (CHECKPTREAD || CHECKPTWRITE)
-        {
-            if (access(CHECKPTFILE,0) != 0)
-            {
-                fprintf(fp, "\n==================================================================\n");
-                fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
-                fprintf(fp, "        The checkpoint file does not exist!\n");
-                fprintf(fp, "        File name: <%s>", CHECKPTFILE);
-                fprintf(fp, "\n==================================================================\n");
-                fserr = 1;
-            }
-            else if (access(CHECKPTFILE,6) != 0)
-            {
-                fprintf(fp, "\n==================================================================\n");
-                fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
-                fprintf(fp, "        The checkpoint file does not have read and/or write access!\n");
-                fprintf(fp, "        File name: <%s>", CHECKPTFILE);
-                fprintf(fp, "\n==================================================================\n");
-                fserr = 1;
-            }
-        }
         
         /* trace kill file */
         if (TRKILL == 1)

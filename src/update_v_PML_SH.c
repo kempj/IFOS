@@ -39,7 +39,7 @@ void update_v_PML_SH(int nx1, int nx2, int ny1, int ny2, int nt,
     float sxz_x, syz_y;
     extern float DT, DH;
     double time1, time2;
-    extern int MYID, QUELLTYP, QUELLTYPB, CHECKPTREAD, FDORDER;
+    extern int MYID, QUELLTYP, QUELLTYPB, FDORDER;
     extern int FDORDER, INVMAT1;
     extern int FREE_SURF, BOUNDARY, FW;
     extern int NPROCX, NPROCY, POS[3];

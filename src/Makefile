@@ -120,7 +120,6 @@ DENISE= \
 	PML_pro.c \
 	readdsk.c \
 	read_par_json.c \
-	read_checkpoint.c\
 	readmod.c \
 	readmod_elastic.c \
 	readmod_acoustic.c \
@@ -130,7 +129,6 @@ DENISE= \
     apply_workflow.c \
 	saveseis.c \
 	saveseis_glob.c \
-	save_checkpoint.c\
 	sources.c \
 	solvelin.c \
 	spat_filt.c \
