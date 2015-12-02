@@ -180,7 +180,7 @@ $(call CHECKVAR,INCINSTALLPATH)
 $(INCINSTALLPATH)/%.h: %.h
 	@mkdir -vp $(dir $@)
 	-@rm -fv $@
-	@/bin/cp -vpd $< $@
+	@/bin/cp -vp $< $@
 
 # install header files
 .PHONY: install-include

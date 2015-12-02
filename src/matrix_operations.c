@@ -55,9 +55,8 @@ float global_maximum(float ** gradiant_1) {
     int i, j;
     float max=0.0,max1=0.0;
     extern int NX, NY;
-    for (i=1;i<=NX;i++){
-        for (j=1;j<=NY;j++){
-            
+    for (j=1;j<=NY;j++){
+        for (i=1;i<=NX;i++){
             if((i*j == 1) || (max == 0.0)) {
                 max = fabs(gradiant_1[j][i]);
             } else {
@@ -84,8 +83,8 @@ float average_matrix(float ** matrix){
     float buf1=0, buf2=0;
     float average;
     
-    for (i=1;i<=NX;i=i+IDX){
-        for (j=1;j<=NY;j=j+IDY){
+    for (j=1;j<=NY;j=j+IDY){
+        for (i=1;i<=NX;i=i+IDX){
             local_sum+=matrix[j][i];
         }
     }
@@ -111,8 +110,8 @@ float matrix_product(float ** matrix1, float **matrix2) {
     float buf1=0, buf2=0;
     int i,j;
     
-    for (i=1;i<=NX;i=i+IDX){
-        for (j=1;j<=NY;j=j+IDY){
+    for (j=1;j<=NY;j=j+IDY){
+        for (i=1;i<=NX;i=i+IDX){
             local_sum+=(matrix1[j][i]*matrix2[j][i]);
         }
     }

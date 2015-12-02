@@ -83,8 +83,8 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
     pimax = 0.0;
     gradmax = 0.0;
     
-    for (i=1;i<=NX;i++){
-        for (j=1;j<=NY;j++){
+    for (j=1;j<=NY;j++){
+        for (i=1;i<=NX;i++){
             
             Zp = pi[j][i];
             
@@ -105,8 +105,8 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
         umax = 0.0;
         gradmax_u = 0.0;
         
-        for (i=1;i<=NX;i++){
-            for (j=1;j<=NY;j++){
+        for (j=1;j<=NY;j++){
+            for (i=1;i<=NX;i++){
                 
                 Zs = u[j][i];
                 
@@ -127,8 +127,8 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
     rhomax = 0.0;
     gradmax_rho = 0.0;
     
-    for (i=1;i<=NX;i++){
-        for (j=1;j<=NY;j++){
+    for (j=1;j<=NY;j++){
+        for (i=1;i<=NX;i++){
             
             if(rho[j][i]>rhomax){rhomax=rho[j][i];}
             

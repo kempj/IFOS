@@ -183,7 +183,7 @@ libstfinv.a: $(patsubst %.cc,%.o,$(LIBCCSRC)) \
 $(INCINSTALLPATH)/%.h: %.h
 	mkdir -p $(INCINSTALLPATH)
 	-rm -fv $@
-	/bin/cp -vpd $< $@
+	/bin/cp -vp $< $@
 
 .PHONY: install-include
 install-include: $(INSTHEADER)

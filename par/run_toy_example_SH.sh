@@ -35,4 +35,4 @@ make denise MODEL=../genmod/toy_example_start.c
 
 # starting DENISE
 #lamboot
-mpirun -np 4 ../bin/denise in_and_out/toy_example/toy_example_INV.json | tee in_and_out/toy_example/toy_example_INV.out
+mpirun -np 4 ../bin/denise in_and_out/toy_example/toy_example_INV_SH.json | tee in_and_out/toy_example/toy_example_INV_SH.out

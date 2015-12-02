@@ -112,7 +112,7 @@
 			"EPRECOND_ITER" : "0",
 
 "Workflow" : "comment",
-			"USE_WORKFLOW" : "1",
+			"USE_WORKFLOW" : "0",
 			"FILE_WORKFLOW" : "workflow.txt",
 			
 "Inversion for density" : "comment",

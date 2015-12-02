@@ -51,9 +51,9 @@ void max_grad(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_
 	/* find maximum of Zp and gradient waveconv */
 	pimax = 0.0;
 	gradmax = 0.0;
-	
+
+    for (j=1;j<=NY;j++){
 	    for (i=1;i<=NX;i++){
-		for (j=1;j<=NY;j++){
 		
 		Zp = sqrt((pi[j][i] + 2.0 * u[j][i])*rho[j][i]);
 		
@@ -75,8 +75,8 @@ void max_grad(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_
 	umax = 0.0;
 	gradmax_u = 0.0;
 	
-	for (i=1;i<=NX;i++){
-		for (j=1;j<=NY;j++){
+    for (j=1;j<=NY;j++){
+        for (i=1;i<=NX;i++){
 		
 		Zs = sqrt(u[j][i]*rho[j][i]);
 		
@@ -101,8 +101,8 @@ void max_grad(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_
 	rhomax = 0.0;
 	gradmax_rho = 0.0;
 	
-	for (i=1;i<=NX;i++){
-		for (j=1;j<=NY;j++){
+    for (j=1;j<=NY;j++){
+        for (i=1;i<=NX;i++){
 		
 		if(rho[j][i]>rhomax){rhomax=rho[j][i];}
 		
@@ -165,8 +165,8 @@ void max_grad(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_
         /* apply scaling factors */
 	/* --------------------- */
 	
-	for (i=1;i<=NX;i++){
-		for (j=1;j<=NY;j++){
+    for (j=1;j<=NY;j++){
+        for (i=1;i<=NX;i++){
 		
 		waveconv[j][i] = EPSILON * waveconv[j][i];
 		waveconv_u[j][i] = EPSILON_u * waveconv_u[j][i];

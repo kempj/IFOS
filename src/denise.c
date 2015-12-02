@@ -1045,8 +1045,8 @@ int main(int argc, char **argv){
                 if(iter==1){
                     
                     /* Calculationg material parameters according to INVMAT1 */
-                    for (i=1;i<=NX;i=i+IDX){
-                        for (j=1;j<=NY;j=j+IDY){
+                    for (j=1;j<=NY;j=j+IDY){
+                        for (i=1;i<=NX;i=i+IDX){
                             
                             if(INVMAT1==1){
                                 
@@ -1075,54 +1075,14 @@ int main(int argc, char **argv){
                         }
                     }
                     
-                    /* ----------------------------- */
-                    /* calculate Covariance matrices */
-                    /* ----------------------------- */
-                    
-                    Lcount = 1;
-                    Vp_avg = 0.0;
-                    if(!ACOUSTIC) Vs_avg = 0.0;
-                    rho_avg = 0.0;
-                    
-                    for (i=1;i<=NX;i=i+IDX){
-                        for (j=1;j<=NY;j=j+IDY){
-                            
-                            /* calculate average Vp, Vs */
-                            Vp_avg+=ppi[j][i];
-                            if(!ACOUSTIC)  Vs_avg+=pu[j][i];
-                            /* calculate average rho */
-                            rho_avg+=prho[j][i];
-                            
-                            Lcount++;
-                        }
-                    }
-                    
-                    /* calculate average Vp, Vs and rho of all CPUs*/
-                    Lcountsum = 0.0;
-                    MPI_Allreduce(&Lcount,&Lcountsum,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
-                    Lcount=Lcountsum;
-                    
-                    Vp_sum = 0.0;
-                    MPI_Allreduce(&Vp_avg,&Vp_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    Vp_avg=Vp_sum;
-                    
-                    if(!ACOUSTIC){
-                        Vs_sum = 0.0;
-                        MPI_Allreduce(&Vs_avg,&Vs_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                        Vs_avg=Vs_sum;
-                    }
-                    
-                    rho_sum = 0.0;
-                    MPI_Allreduce(&rho_avg,&rho_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    rho_avg=rho_sum;
-                    
-                    Vp_avg /=Lcount;
-                    if(!ACOUSTIC) Vs_avg /=Lcount;
-                    rho_avg /=Lcount;
-                    
+                    /* Get average values from material parameters */
+                    Vp_avg=average_matrix(ppi);
+                    rho_avg=average_matrix(prho);
+                    if(!ACOUSTIC) Vs_avg=average_matrix(pu);
+        
                     if(!ACOUSTIC) if(VERBOSE) printf("MYID = %d \t Vp_avg = %e \t Vs_avg = %e \t rho_avg = %e \n ",MYID,Vp_avg,Vs_avg,rho_avg);
                     else if(VERBOSE) printf("MYID = %d \t Vp_avg = %e \t rho_avg = %e \n ",MYID,Vp_avg,rho_avg);
-                    
+
                     C_vp = Vp_avg*Vp_avg;
                     if(!ACOUSTIC) C_vs = Vs_avg*Vs_avg;
                     C_rho = rho_avg*rho_avg;
@@ -1154,24 +1114,11 @@ int main(int argc, char **argv){
                 /* initialize waveconv matrix*/
                 if(WAVETYPE==1||WAVETYPE==3){
                     if(INVMAT==0){
-                        for (i=1;i<=NX;i=i+IDX){
-                            for (j=1;j<=NY;j=j+IDY){
-                                waveconv[j][i]=0.0;
-                            }
-                        }
-                        
-                        if(!ACOUSTIC){
+                        for (j=1;j<=NY;j=j+IDY){
                             for (i=1;i<=NX;i=i+IDX){
-                                for (j=1;j<=NY;j=j+IDY){
-                                    waveconv_u[j][i]=0.0;
-                                }
-                            }
-                        }
-                        
-                        for (i=1;i<=NX;i=i+IDX){
-                            for (j=1;j<=NY;j=j+IDY){
+                                waveconv[j][i]=0.0;
                                 waveconv_rho[j][i]=0.0;
-                                
+                                if(!ACOUSTIC) waveconv_u[j][i]=0.0;
                             }
                         }
                     }
@@ -1179,8 +1126,8 @@ int main(int argc, char **argv){
                 /* initialize waveconv matrix*/
                 if(WAVETYPE==2||WAVETYPE==3){
                     if(INVMAT==0){
-                        for (i=1;i<=NX;i=i+IDX){
-                            for (j=1;j<=NY;j=j+IDY){
+                        for (j=1;j<=NY;j=j+IDY){
+                            for (i=1;i<=NX;i=i+IDX){
                                 waveconv_rho_z[j][i]=0.0;
                                 waveconv_u_z[j][i]=0.0;
                                 
@@ -1190,8 +1137,8 @@ int main(int argc, char **argv){
                 }
                 
                 if((EPRECOND>0)&&(EPRECOND_ITER==iter||(EPRECOND_ITER==0))){
-                    for(i=1;i<=NX;i=i+IDX){
-                        for(j=1;j<=NY;j=j+IDY){
+                    for (j=1;j<=NY;j=j+IDY){
+                        for (i=1;i<=NX;i=i+IDX){
                             if(WAVETYPE==1||WAVETYPE==3) We_sum[j][i]=0.0;
                             if(WAVETYPE==2||WAVETYPE==3) We_sum_SH[j][i]=0.0;
                         }
@@ -1371,8 +1318,8 @@ int main(int argc, char **argv){
                                 if(nt==hin1){
                                     
                                     if(INVMAT==0){
-                                        for (i=1;i<=NX;i=i+IDXI){
-                                            for (j=1;j<=NY;j=j+IDYI){
+                                        for (j=1;j<=NY;j=j+IDYI){
+                                            for (i=1;i<=NX;i=i+IDXI){
                                                 forward_prop_rho_x[j][i][hin]=pvxp1[j][i];
                                                 forward_prop_rho_y[j][i][hin]=pvyp1[j][i];
                                             }
@@ -1380,37 +1327,30 @@ int main(int argc, char **argv){
                                         
                                         /* save snapshots from forward model */
                                         if(!ACOUSTIC){
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
+                                            for (j=1;j<=NY;j=j+IDYI){
+                                                for (i=1;i<=NX;i=i+IDXI){
                                                     if(VELOCITY==0){
                                                         forward_prop_x[j][i][hin]=psxx[j][i];
                                                         forward_prop_y[j][i][hin]=psyy[j][i];
                                                     } else {
                                                         forward_prop_x[j][i][hin]=ux[j][i];
                                                         forward_prop_y[j][i][hin]=uy[j][i];}
-                                                    // 	    				forward_prop_x[imat]=ux[j][i];
-                                                    // 	    				forward_prop_y[imat]=uy[j][i];}
-                                                    
-                                                    // 	    		imat++;
                                                 }
                                             }
                                         }else{
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
+                                            for (j=1;j<=NY;j=j+IDYI){
+                                                for (i=1;i<=NX;i=i+IDXI){
                                                     forward_prop_p[j][i][hin]=psp[j][i];
                                                 }
                                             }
                                         }
                                         if(!ACOUSTIC){
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
+                                            for (j=1;j<=NY;j=j+IDYI){
+                                                for (i=1;i<=NX;i=i+IDXI){
                                                     if(VELOCITY==0){
                                                         forward_prop_u[j][i][hin]=psxy[j][i];}
-                                                    // 	    				forward_prop_u[imat2]=psxy[j][i];}
                                                     else{
                                                         forward_prop_u[j][i][hin]=uxy[j][i];}
-                                                    // 	    				forward_prop_u[imat2]=uxy[j][i];}
-                                                    // 	    imat2++;
                                                 }
                                             }
                                         }
@@ -1673,15 +1613,15 @@ int main(int argc, char **argv){
                         /*initialize gradient matrices for each shot with zeros PSV*/
                         if(WAVETYPE==1 || WAVETYPE==3) {
                             if(INVMAT==0){
-                                for(i=1;i<=NX;i=i+IDX){
-                                    for(j=1;j<=NY;j=j+IDY){
+                                for(j=1;j<=NY;j=j+IDY){
+                                    for(i=1;i<=NX;i=i+IDX){
                                         waveconv_shot[j][i]=0.0;
                                         waveconv_rho_shot[j][i]=0.0;
                                     }
                                 }
                                 if(!ACOUSTIC){
-                                    for(i=1;i<=NX;i=i+IDX){
-                                        for(j=1;j<=NY;j=j+IDY){
+                                    for(j=1;j<=NY;j=j+IDY){
+                                        for(i=1;i<=NX;i=i+IDX){
                                             waveconv_u_shot[j][i]=0.0;
                                         }
                                     }
@@ -1691,8 +1631,8 @@ int main(int argc, char **argv){
                         /*initialize gradient matrices for each shot with zeros SH*/
                         if(WAVETYPE==2 || WAVETYPE==3){
                             if(INVMAT==0){
-                                for(i=1;i<=NX;i=i+IDX){
-                                    for(j=1;j<=NY;j=j+IDY){
+                                for(j=1;j<=NY;j=j+IDY){
+                                    for(i=1;i<=NX;i=i+IDX){
                                         waveconv_rho_shot_z[j][i]=0.0;
                                         waveconv_u_shot_z[j][i]=0.0;
                                     }
@@ -1702,8 +1642,8 @@ int main(int argc, char **argv){
                         }
                         
                         if((EPRECOND==1)||(EPRECOND==3)&&(EPRECOND_ITER==iter||(EPRECOND_ITER==0))){
-                            for(i=1;i<=NX;i=i+IDX){
-                                for(j=1;j<=NY;j=j+IDY){
+                            for(j=1;j<=NY;j=j+IDY){
+                                for(i=1;i<=NX;i=i+IDX){
                                     if(WAVETYPE==1 || WAVETYPE==3){
                                         Ws[j][i]=0.0;
                                         Wr[j][i]=0.0;
@@ -1858,7 +1798,6 @@ int main(int argc, char **argv){
                             /* store amplitudes at receivers in section-arrays */
                             if (SEISMO){
                                 seismo_ssg(nt, ntr, recpos_loc, sectionvx, sectionvy,sectionvz, sectionp, sectioncurl, sectiondiv, pvx, pvy,pvz, psxx, psyy, psp, ppi, pu, hc);
-                                /*lsamp+=NDT;*/
                             }
                             
                             /* save snapshots from forward model */
@@ -1866,16 +1805,16 @@ int main(int argc, char **argv){
                                 if(INVMAT==0){
                                     
                                     if(WAVETYPE==1||WAVETYPE==3){
-                                        for (i=1;i<=NX;i=i+IDXI){
-                                            for (j=1;j<=NY;j=j+IDYI){
+                                        for (j=1;j<=NY;j=j+IDYI){
+                                            for (i=1;i<=NX;i=i+IDXI){
                                                 forward_prop_rho_x[j][i][hin]=pvxp1[j][i];
                                                 forward_prop_rho_y[j][i][hin]=pvyp1[j][i];
                                             }
                                         }
                                         
                                         if(!ACOUSTIC){
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
+                                            for (j=1;j<=NY;j=j+IDYI){
+                                                for (i=1;i<=NX;i=i+IDXI){
                                                     if(VELOCITY==0){
                                                         forward_prop_x[j][i][hin]=psxx[j][i];
                                                         forward_prop_y[j][i][hin]=psyy[j][i];
@@ -1885,8 +1824,8 @@ int main(int argc, char **argv){
                                                     }
                                                 }
                                             }
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
+                                            for (j=1;j<=NY;j=j+IDYI){
+                                                for (i=1;i<=NX;i=i+IDXI){
                                                     if(VELOCITY==0){
                                                         forward_prop_u[j][i][hin]=psxy[j][i];
                                                     }else{
@@ -1895,23 +1834,23 @@ int main(int argc, char **argv){
                                                 }
                                             }
                                         }else{
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
+                                            for (j=1;j<=NY;j=j+IDYI){
+                                                for (i=1;i<=NX;i=i+IDXI){
                                                     forward_prop_p[j][i][hin]=psp[j][i];
                                                 }
                                             }
                                         }
                                     }
                                     if(WAVETYPE==2||WAVETYPE==3){
-                                        for (i=1;i<=NX;i=i+IDXI){
-                                            for (j=1;j<=NY;j=j+IDYI){
+                                        for (j=1;j<=NY;j=j+IDYI){
+                                            for (i=1;i<=NX;i=i+IDXI){
                                                 forward_prop_rho_z[j][i][hin]=pvzp1[j][i];
                                             }
                                         }
                                         
                                         if(!ACOUSTIC){
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
+                                            for (j=1;j<=NY;j=j+IDYI){
+                                                for (i=1;i<=NX;i=i+IDXI){
                                                     if(VELOCITY==0){
                                                         forward_prop_z_xz[j][i][hin]=psxz[j][i];
                                                         forward_prop_z_yz[j][i][hin]=psyz[j][i];
@@ -1953,6 +1892,7 @@ int main(int argc, char **argv){
                             
                             
                         }
+
                         /*------------------------------------------------------------------------------*/
                         /*--------------------  End  of loop over timesteps (forward model) ------------*/
                         /*------------------------------------------------------------------------------*/
@@ -2120,13 +2060,11 @@ int main(int argc, char **argv){
                                     if(swstestshot==1){energy=calc_energy(sectionvzdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);}
                                     L2_all_shots=calc_misfit(sectionvzdata,sectionvz,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
                                     energy_all_shots=calc_energy(sectionvzdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
-                                    /*fprintf(FP,"Energy vydata for PE %d:   %f\n\n", MYID,energy);	*/
                                 }
                                 
                                 // Tracekill
                                 if (TRKILL){
                                     count_killed_traces(ntr,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,ptr_killed_traces,ptr_killed_traces_testshots);
-                                    /*printf("Shot %d: MYID%d: killed_traces_testshots=%d, killed_traces=%d\n",ishot,MYID,killed_traces_testshots,killed_traces);*/
                                 }
                                 
                                 if((ishot==itestshot)&&(ishot<=TESTSHOT_END)){
@@ -2148,9 +2086,8 @@ int main(int argc, char **argv){
                                         saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,-1);
                                     }
                                 }
-                            } /* end HESSIAN != 1 */
+                            }
                             
-
                             
                             /*----------------------------------------------------------------------------------*/
                             /* ------ start loop over shots at receiver positions (backward model) ------------ */
@@ -2265,8 +2202,6 @@ int main(int argc, char **argv){
                                         if (infoout)  fprintf(FP," finished (real time: %4.2f s).\n",time5-time4);
                                     }
                                     
-                                    /*update_s_elastic_hc(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp,absorb_coeff, prho, hc, infoout);*/
-                                    
                                     if (L) {
                                         /* viscoelastic */
                                         if (WAVETYPE==1 || WAVETYPE==3) {
@@ -2347,8 +2282,8 @@ int main(int argc, char **argv){
                                         imat=((nxnyi*(NTDTINV)) - hin*nxnyi)+1;
                                         
                                         if((INVMAT==0)){
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
+                                            for (j=1;j<=NY;j=j+IDYI){
+                                                for (i=1;i<=NX;i=i+IDXI){
                                                     
                                                     if (WAVETYPE==1 || WAVETYPE==3) {
                                                         waveconv_rho_shot[j][i]+=(pvxp1[j][i]*forward_prop_rho_x[j][i][NTDTINV-hin+1])+(pvyp1[j][i]*forward_prop_rho_y[j][i][NTDTINV-hin+1]);
@@ -2441,8 +2376,8 @@ int main(int argc, char **argv){
                                 }
                                 
                                 /* calculate complete gradient */
-                                for (i=1;i<=NX;i=i+IDX){
-                                    for (j=1;j<=NY;j=j+IDY){
+                                for (j=1;j<=NY;j=j+IDY){
+                                    for (i=1;i<=NX;i=i+IDX){
                                         
                                         waveconv_lam[j][i] = - DT * waveconv_shot[j][i];
                                         
@@ -2482,8 +2417,8 @@ int main(int argc, char **argv){
                                 }
                                 
                                 /* calculate complete gradient */
-                                for (i=1;i<=NX;i=i+IDX){
-                                    for (j=1;j<=NY;j=j+IDY){
+                                for (j=1;j<=NY;j=j+IDY){
+                                    for (i=1;i<=NX;i=i+IDX){
                                         
                                         /* calculate mu gradient */
                                         waveconv_mu[j][i] = - DT * waveconv_u_shot[j][i];
@@ -2516,8 +2451,8 @@ int main(int argc, char **argv){
                                 }
                                 
                                 /* calculate complete gradient */
-                                for (i=1;i<=NX;i=i+IDX){
-                                    for (j=1;j<=NY;j=j+IDY){
+                                for (j=1;j<=NY;j=j+IDY){
+                                    for (i=1;i<=NX;i=i+IDX){
                                         
                                         /* calculate mu gradient */
                                         waveconv_mu_z[j][i] = - DT * waveconv_u_shot_z[j][i];
@@ -2547,8 +2482,8 @@ int main(int argc, char **argv){
                                 }
                                 
                                 /* calculate complete gradient */
-                                for (i=1;i<=NX;i=i+IDX){
-                                    for (j=1;j<=NY;j=j+IDY){
+                                for (j=1;j<=NY;j=j+IDY){
+                                    for (i=1;i<=NX;i=i+IDX){
                                         
                                         /* calculate density gradient rho' */
                                         waveconv_rho_s[j][i]= - DT * waveconv_rho_shot[j][i];
@@ -2583,8 +2518,8 @@ int main(int argc, char **argv){
                                 }
                                 
                                 /* calculate complete gradient */
-                                for (i=1;i<=NX;i=i+IDX){
-                                    for (j=1;j<=NY;j=j+IDY){
+                                for (j=1;j<=NY;j=j+IDY){
+                                    for (i=1;i<=NX;i=i+IDX){
                                         
                                         /* calculate density gradient rho' */
                                         waveconv_rho_s_z[j][i]= - DT * waveconv_rho_shot_z[j][i];
@@ -2624,8 +2559,8 @@ int main(int argc, char **argv){
                                     
                                     if(EPRECOND_PER_SHOT){
                                         fprintf(FP,"\n Applying approx. Hessian for shot %i. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
-                                        for(i=1;i<=NX;i=i+IDX){
-                                            for(j=1;j<=NY;j=j+IDY){
+                                        for (j=1;j<=NY;j=j+IDY){
+                                            for (i=1;i<=NX;i=i+IDX){
                                                 
                                                 if(WAVETYPE==1 || WAVETYPE==3) {
                                                     We[j][i]=We[j][i]/We_max;
@@ -2642,8 +2577,8 @@ int main(int argc, char **argv){
                                         }
                                     }
                                     
-                                    for(i=1;i<=NX;i=i+IDX){
-                                        for(j=1;j<=NY;j=j+IDY){
+                                    for (j=1;j<=NY;j=j+IDY){
+                                        for (i=1;i<=NX;i=i+IDX){
                                             if(WAVETYPE==1 || WAVETYPE==3) We_sum[j][i]+=1.0/We[j][i];
                                             if(WAVETYPE==2 || WAVETYPE==3) We_sum_SH[j][i]+=1.0/We_SH[j][i];
                                         }
@@ -2709,8 +2644,8 @@ int main(int argc, char **argv){
                             /* Summing up the gradient for all shots PSV */
                             /* ----------------------------------------- */
                             if (WAVETYPE==1 || WAVETYPE==3) {
-                                for(i=1;i<=NX;i=i+IDX){
-                                    for(j=1;j<=NY;j=j+IDY){
+                                for (j=1;j<=NY;j=j+IDY){
+                                    for (i=1;i<=NX;i=i+IDX){
                                         waveconv[j][i] += waveconv_shot[j][i];
                                         if(!ACOUSTIC){
                                             waveconv_u[j][i] += waveconv_u_shot[j][i];
@@ -2724,15 +2659,15 @@ int main(int argc, char **argv){
                             /* Summing up the gradient for all shots SH */
                             /* ----------------------------------------- */
                             if (WAVETYPE==2 || WAVETYPE==3) {
-                                for(i=1;i<=NX;i=i+IDX){
-                                    for(j=1;j<=NY;j=j+IDY){
+                                for (j=1;j<=NY;j=j+IDY){
+                                    for (i=1;i<=NX;i=i+IDX){
                                         waveconv_u_z[j][i] += waveconv_u_shot_z[j][i];
                                         waveconv_rho_z[j][i] += waveconv_rho_shot_z[j][i];
                                     }
                                 }
                             }
                             
-                        } /* end of invtype == 1*/
+                        }
                         
                     }
                     
@@ -2754,8 +2689,8 @@ int main(int argc, char **argv){
                         
                         if (WAVETYPE==1 || WAVETYPE==3) {
                             We_sum_max1=global_maximum(We_sum);
-                            for(i=1;i<=NX;i=i+IDX){
-                                for(j=1;j<=NY;j=j+IDY){
+                            for (j=1;j<=NY;j=j+IDY){
+                                for (i=1;i<=NX;i=i+IDX){
                                     We_sum[j][i]=We_sum[j][i]/We_sum_max1;
                                     waveconv[j][i] = waveconv[j][i]*We_sum[j][i]/C_vp;
                                     waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i]/C_vs;
@@ -2766,8 +2701,8 @@ int main(int argc, char **argv){
                         
                         if (WAVETYPE==2 || WAVETYPE==3) {
                             We_sum_max1=global_maximum(We_sum_SH);
-                            for(i=1;i<=NX;i=i+IDX){
-                                for(j=1;j<=NY;j=j+IDY){
+                            for (j=1;j<=NY;j=j+IDY){
+                                for (i=1;i<=NX;i=i+IDX){
                                     We_sum_SH[j][i]=We_sum_SH[j][i]/We_sum_max1;
                                     waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i]/C_vs;
                                     waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i]/C_rho;
@@ -2791,8 +2726,8 @@ int main(int argc, char **argv){
                 /*  Set gradient to zero if no inversion     */
                 /* ----------------------------------------- */
                 if (WAVETYPE==1 || WAVETYPE==3) {
-                    for(i=1;i<=NX;i=i+IDX){
-                        for(j=1;j<=NY;j=j+IDY){
+                    for (j=1;j<=NY;j=j+IDY){
+                        for (i=1;i<=NX;i=i+IDX){
                             if (iter<INV_VP_ITER) waveconv[j][i] = 0.0;
                             if (iter<INV_VS_ITER) waveconv_u[j][i] = 0.0;
                             if (iter<INV_RHO_ITER) waveconv_rho[j][i] = 0.0;
@@ -2800,8 +2735,8 @@ int main(int argc, char **argv){
                     }
                 }
                 if (WAVETYPE==2 || WAVETYPE==3) {
-                    for(i=1;i<=NX;i=i+IDX){
-                        for(j=1;j<=NY;j=j+IDY){
+                    for (j=1;j<=NY;j=j+IDY){
+                        for (i=1;i<=NX;i=i+IDX){
                             if (iter<INV_VS_ITER) waveconv_u_z[j][i] = 0.0;
                             if (iter<INV_RHO_ITER) waveconv_rho_z[j][i] = 0.0;
                         }
@@ -2963,8 +2898,8 @@ int main(int argc, char **argv){
                     if(GRAD_FILTER==1){smooth(waveconv_rho,3,1,Vs_avg,FC);}
                     
                     if(WOLFE_CONDITION) {
-                        for(i=1;i<=NX;i=i+IDX){
-                            for(j=1;j<=NY;j=j+IDY){
+                        for (j=1;j<=NY;j=j+IDY){
+                            for (i=1;i<=NX;i=i+IDX){
                                 if(WAVETYPE!=2) waveconv_old[j][i]=waveconv[j][i];
                                 waveconv_u_old[j][i] = waveconv_u[j][i];
                                 waveconv_rho_old[j][i] = waveconv_rho[j][i];
@@ -2984,8 +2919,8 @@ int main(int argc, char **argv){
                 }
                 
                 if(WOLFE_CONDITION) {
-                    for(i=1;i<=NX;i=i+IDX){
-                        for(j=1;j<=NY;j=j+IDY){
+                    for (j=1;j<=NY;j=j+IDY){
+                        for (i=1;i<=NX;i=i+IDX){
                             if(WAVETYPE!=2) waveconv_up[j][i]=waveconv[j][i];
                             waveconv_u_up[j][i] = waveconv_u[j][i];
                             waveconv_rho_up[j][i] = waveconv_rho[j][i];
@@ -3080,8 +3015,8 @@ int main(int argc, char **argv){
             if(WOLFE_TRY_OLD_STEPLENGTH) alpha_SL_old=alpha_SL;
             
             /* Not sure if this is needed */
-            for(i=1;i<=NX;i=i+IDX){
-                for(j=1;j<=NY;j=j+IDY){
+            for (j=1;j<=NY;j=j+IDY){
+                for (i=1;i<=NX;i=i+IDX){
                     prho[j][i]=prhonp1[j][i];
                     if(WAVETYPE!=2)  ppi[j][i]=ppinp1[j][i];
                     pu[j][i]=punp1[j][i];

@@ -48,19 +48,19 @@ float ** joint_inversion_grad ( float ** gradiant_1,float ** gradiant_2, float a
     extern int NPROCX, NPROCY, MYID;
     extern FILE *FP;
     
-
+    
     switch (joint_type) {
         case 1:
-        /* joint_type=1: Normalize both and take the arithmetic mean */
-        max1=global_maximum(gradiant_1);
-        max2=global_maximum(gradiant_2);
-        for (i=1;i<=NX;i++){
+            /* joint_type=1: Normalize both and take the arithmetic mean */
+            max1=global_maximum(gradiant_1);
+            max2=global_maximum(gradiant_2);
             for (j=1;j<=NY;j++){
-                gradiant_1[j][i]=((1-alpha)*gradiant_1[j][i]/max1+alpha*gradiant_2[j][i]/max2);
+                for (i=1;i<=NX;i++){
+                    gradiant_1[j][i]=((1-alpha)*gradiant_1[j][i]/max1+alpha*gradiant_2[j][i]/max2);
+                }
             }
-        }
-        joint_gradiant=gradiant_1;
-        break;
+            joint_gradiant=gradiant_1;
+            break;
     }
     return joint_gradiant;
 };

@@ -17,8 +17,8 @@ void eprecond1(float ** We, float ** Ws, float ** Wr){
     
     if(EPRECOND==1){
         /* calculate energy weighting */
-        for (i=1;i<=NX;i=i+IDX){
-            for (j=1;j<=NY;j=j+IDY){
+        for (j=1;j<=NY;j=j+IDY){
+            for (i=1;i<=NX;i=i+IDX){
                 
                 We[j][i]=sqrt(Ws[j][i]*Wr[j][i]); /* energy weighted source and receiver contribution */
                 
@@ -33,8 +33,8 @@ void eprecond1(float ** We, float ** Ws, float ** Wr){
     
     if(EPRECOND==3){
         /* Forward wavefield + approximation of the receiver Greens function (Plessix and Mulder, 2004) */
-        for (i=1;i<=NX;i=i+IDX){
-            for (j=1;j<=NY;j=j+IDY){
+        for (j=1;j<=NY;j=j+IDY){
+            for (i=1;i<=NX;i=i+IDX){
                 
                 /* calculate global coordinates */
                 ii=i+POS[1]*NX;
@@ -57,8 +57,8 @@ void eprecond1(float ** We, float ** Ws, float ** Wr){
     /* estimate maximum of We */
     MPI_Allreduce(&maxWetmp,&maxWe,1,MPI_FLOAT,MPI_MAX,MPI_COMM_WORLD);
     /* regularize energy weighting to avoid divison by zero */
-    for (i=1;i<=NX;i=i+IDX){
-        for (j=1;j<=NY;j=j+IDY){
+    for (j=1;j<=NY;j=j+IDY){
+        for (i=1;i<=NX;i=i+IDX){
             
             We[j][i] = We[j][i] + (EPSILON_WE*maxWe);
             
