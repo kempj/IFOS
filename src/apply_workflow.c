@@ -38,6 +38,7 @@ void apply_workflow(float ** workflow,int workflow_lines,int workflow_line_curre
     extern float JOINT_INVERSION_PSV_SH_ALPHA_RHO;
     extern int EPRECOND;
     extern float EPSILON_WE;
+    extern int GRAD_METHOD;
     
     /******************/
     /* Apply Workflow */
@@ -119,7 +120,7 @@ void apply_workflow(float ** workflow,int workflow_lines,int workflow_line_curre
     EPRECOND=workflow[workflow_line_current][11];
     EPSILON_WE=workflow[workflow_line_current][12];
     
-    if(*LBFGS_iter_start==*iter){
+    if(*LBFGS_iter_start==*iter && GRAD_METHOD==2){
         if(MYID==0)printf("\n L-BFGS will be used from iteration %d on.",*LBFGS_iter_start+1);
     }
 }

@@ -587,7 +587,7 @@ If NORMALIZE is set to 1, the synthetic data and the measured data will be norma
 
 To reduce the memory requirements during an inversion one can define that only every DTINV time sample is used for the calculation of the gradients. To set this parameter appropriately one has to keep in mind the Nyquist criterion to avoid aliasing effects.
 
-
+\newpage
 \section{Step length estimation}
 {\color{blue}{\begin{verbatim}
 "Step length estimation" : "comment", 
@@ -608,8 +608,9 @@ For a better definition of the parabola the improved line search is now trying t
 
 EPS\_SCALE += EPS\_SCALE/SCALEFAC.\\
 
-If a corresponding value epst(3) can be found after STEPMAX forward modellings, DENISE can fit a parabola through the 3 points (L2t(i),epst(i)) and estimates an optimum step length at the minimum of the parabola. If the L2-value L2t(3) after STEPMAX forward models is still smaller than L2t(2) the optimum steplength estimated by parabolic fitting will be not larger than epst(3).
+If a corresponding value epst(3) can be found after STEPMAX forward modellings, DENISE can fit a parabola through the 3 points (L2t(i),epst(i)) and estimates an optimum step length at the minimum of the parabola. If the L2-value L2t(3) after STEPMAX forward models is still smaller than L2t(2) the optimum steplength estimated by parabolic fitting will be not larger than epst(3).\\
 
+Please note: This step length search is only available wenn PCG method (GRAD\_METHOD==1) is used and will be automatically selected. 
 \newpage
 
 

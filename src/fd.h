@@ -186,7 +186,7 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 
 void  inseis_source_wavelet(float *section, int ns, int ishot);
 
-void  taper(float **sectionpdiff, int ntr, int ns);
+void  taper(float *section, int ns, float fc);
 
 void  output_source_signal(FILE *fp, float **signals, int ns, int seis_form);
 

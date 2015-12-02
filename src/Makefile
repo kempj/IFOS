@@ -165,6 +165,7 @@ DENISE= \
     matcopy_viscac.c \
     prepare_update_p.c \
     readmod_viscac.c \
+    time_window_glob.c \
         filter_frequencies.c
 	
 SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)
