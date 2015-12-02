@@ -151,13 +151,6 @@
 			"nfstart_jac" : "1",
 			"nf_jac" : "1",
 
-"Hessian and Gradient-Method" : "comment",
-			"HESSIAN" : "0",
-			"FC_HESSIAN" : "100",
-			"ORDER_HESSIAN" : "4",
-			"TSHIFT_back" : "0.0",
-
-
 "Gradient calculation" : "comment",
 			"LNORM" : "2",
 			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, normalized L2 norm=7, Envelope-based norm=8" : "comment",
