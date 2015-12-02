@@ -45,8 +45,8 @@ void exchange_par(void){
     extern int RUN_MULTIPLE_SHOTS, TAPERLENGTH, INVTYPE;
     extern int NPROC, NPROCX, NPROCY, MYID, IDX, IDY, CHECKPTREAD, CHECKPTWRITE;
     extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, QUELLTYPB;
-    extern int HESSIAN, GRAD_METHOD, ORDER_HESSIAN;
-    extern float FC_HESSIAN, TSHIFT_back;
+    extern int GRAD_METHOD;
+    extern float TSHIFT_back;
     extern int MODEL_FILTER, FILT_SIZE;
     extern int FILT_SIZE_GRAD, GRAD_FILTER;
     
@@ -164,9 +164,7 @@ void exchange_par(void){
         
         fdum[39]  = npower;
         fdum[40]  = k_max_PML;
-        
-        fdum[41]  = FC_HESSIAN;
-        
+
         fdum[42]  = FC_START;
         fdum[43]  = FC_END;
         fdum[44]  = FC_INCR;
@@ -271,13 +269,10 @@ void exchange_par(void){
         idum[61]  = nfstart_jac;
         idum[62]  = nf_jac;
         idum[63]  = SWS_TAPER_FILE;
-        idum[64]  = HESSIAN;
         idum[65]  = GRAD_METHOD;
         
         idum[66]  = MODEL_FILTER;
         idum[67]  = FILT_SIZE;
-        
-        idum[68]  = ORDER_HESSIAN;
         
         idum[69]  = INV_STF;
         idum[70]  = N_STF;
@@ -433,7 +428,6 @@ void exchange_par(void){
     npower = fdum[39];
     k_max_PML = fdum[40];
     
-    FC_HESSIAN = fdum[41];
     
     FC_START = fdum[42];
     FC_END = fdum[43];
@@ -539,15 +533,12 @@ void exchange_par(void){
     nfstart_jac = idum[61];
     nf_jac = idum[62];
     SWS_TAPER_FILE = idum[63];
-    HESSIAN = idum[64];
     GRAD_METHOD = idum[65];
     
     
     MODEL_FILTER = idum[66];
     FILT_SIZE = idum[67];
     
-    
-    ORDER_HESSIAN = idum[68];
     
     INV_STF = idum[69];
     N_STF = idum[70];

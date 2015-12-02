@@ -598,27 +598,6 @@ int main(int argc, char **argv){
             waveconv_u_shot = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         }
         
-        if(HESSIAN){
-            jac_rho =  vector(1,nxnyi*(NTDTINV));
-            jac_u =  vector(1,nxnyi*(NTDTINV));
-            jac_lam_x =  vector(1,nxnyi*(NTDTINV));
-            jac_lam_y =  vector(1,nxnyi*(NTDTINV));
-            temp_TS =  vector(1,NTDTINV);
-            temp_TS1 =  vector(1,NTDTINV);
-            temp_TS2 =  vector(1,NTDTINV);
-            temp_TS3 =  vector(1,NTDTINV);
-            temp_TS4 =  vector(1,NTDTINV);
-            temp_TS5 =  vector(1,NTDTINV);
-            temp_conv =  vector(1,NTDTINV);
-            temp_conv1 =  vector(1,NTDTINV);
-            temp_conv2 =  vector(1,NTDTINV);
-            hessian = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            hessian_u = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            hessian_rho = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            hessian_shot = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            hessian_u_shot = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            hessian_rho_shot = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-        }
     }
     
     /* Allocate memory for boundary */
@@ -1223,15 +1202,6 @@ int main(int argc, char **argv){
                         }
                     }
                 }
-                if(HESSIAN){
-                    for (i=1;i<=NX;i=i+IDX){
-                        for (j=1;j<=NY;j=j+IDY){
-                            hessian[j][i]=0.0;
-                            hessian_u[j][i]=0.0;
-                            hessian_rho[j][i]=0.0;
-                        }
-                    }
-                }
                 
                 if((EPRECOND>0)&&(EPRECOND_ITER==iter||(EPRECOND_ITER==0))){
                     for(i=1;i<=NX;i=i+IDX){
@@ -1241,19 +1211,6 @@ int main(int argc, char **argv){
                         }
                     }
                 }
-                
-                if(HESSIAN && TRKILL){ /* reading trace kill information */
-                    kill_tmp = imatrix(1,ntr_glob,1,nsrc_glob);
-                    
-                    ftracekill=fopen(TRKILL_FILE,"r");
-                    if (ftracekill==NULL) err(" Trace kill file could not be opened!");
-                    for(i=1;i<=ntr_glob;i++){
-                        for(j=1;j<=nsrc_glob;j++){
-                            fscanf(ftracekill,"%d",&kill_tmp[i][j]);
-                        }
-                    }
-                    fclose(ftracekill);
-                } /* end if(TRKILL)*/
                 
                 
                 
@@ -1671,7 +1628,7 @@ int main(int argc, char **argv){
                         /*----------- Start of Time Domain Filtering -----------------------------------*/
                         /*------------------------------------------------------------------------------*/
                         
-                        if (((TIME_FILT==1) || (TIME_FILT==2)) && (HESSIAN==0) && (QUELLART!=6) && (INV_STF==0)){
+                        if (((TIME_FILT==1) || (TIME_FILT==2)) && (QUELLART!=6) && (INV_STF==0)){
                             fprintf(FP," Time Domain Filter applied: lowpass filter, corner frequency of %.2f Hz, order %d\n",FC,ORDER);
                             
                             /*time domain filtering of the source signal */
@@ -1704,26 +1661,6 @@ int main(int argc, char **argv){
                                 inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
                                 timedomain_filt(sectionvz_obs,FC,ORDER,ntr_glob,ns,1);
                             }
-                            
-                        }
-                        
-                        if(nsrc_loc>0){
-                            /* source type is delta pulse */
-                            if(QUELLART==6){/*FFT_filt(signals,1.0,1,ns,1);}*/
-                                if(WAVETYPE==1||WAVETYPE==3) timedomain_filt(signals,FC_HESSIAN,ORDER_HESSIAN,nsrc_loc,ns,1);
-                                if(WAVETYPE==2||WAVETYPE==3) timedomain_filt(signals_SH,FC_HESSIAN,ORDER_HESSIAN,nsrc_loc,ns,1);
-                                
-                            }
-                            
-                            if(HESSIAN==1){	/*calculation of Hessian matrix; in this case also the forward modelled wavefields
-                                             must be filtered with the Butterworth filter applied to the delta impulse during
-                                             the backpropagation*/
-                                timedomain_filt(signals,FC_HESSIAN,ORDER_HESSIAN,nsrc_loc,ns,1);}
-                            
-                            /*char  source_signal_file[STRING_SIZE];
-                             sprintf(source_signal_file,"%s_source_signal.%d.su.shot%d", MFILE, MYID,ishot);
-                             fprintf(stdout,"\n PE %d outputs source time function in SU format to %s \n ", MYID, source_signal_file);
-                             output_source_signal(fopen(source_signal_file,"w"),signals,NT,1);*/
                             
                         }
                         /*------------------------------------------------------------------------------*/
@@ -1795,29 +1732,6 @@ int main(int argc, char **argv){
                             }
                         }
                         
-                        
-                        if(HESSIAN){
-                            h=1;
-                            for (nt=1;nt<=NT;nt=nt+DTINV){
-                                for (i=1;i<=NX;i=i+IDX){
-                                    for (j=1;j<=NY;j=j+IDY){
-                                        jac_lam_x[h]=0.0;
-                                        jac_lam_y[h]=0.0;
-                                        jac_u[h]=0.0;
-                                        jac_rho[h]=0.0;
-                                        h++;
-                                    }
-                                }
-                            }
-                            
-                            for(i=1;i<=NX;i=i+IDX){
-                                for(j=1;j<=NY;j=j+IDY){
-                                    hessian_shot[j][i]=0.0;
-                                    hessian_u_shot[j][i]=0.0;
-                                    hessian_rho_shot[j][i]=0.0;
-                                }
-                            }
-                        }
                         
                         lsnap=iround(TSNAP1/DT); lsamp=NDT; nsnap=0;
                         hin=1; hin1=1;
@@ -2130,7 +2044,7 @@ int main(int argc, char **argv){
                                 printf("-------------------  \n");
                             }
                             
-                            if ((ntr > 0)&&(HESSIAN==0)){
+                            if ((ntr > 0)){
                                 
                                 /* calculate L2-Norm and energy ? */
                                 if((ishot==itestshot)&&(ishot<=TESTSHOT_END)){swstestshot=1;}
@@ -2250,7 +2164,7 @@ int main(int argc, char **argv){
                                 }
                             } /* end HESSIAN != 1 */
                             
-                            if (HESSIAN) nshots1=ntr_glob; else nshots1=1;
+
                             
                             /*----------------------------------------------------------------------------------*/
                             /* ------ start loop over shots at receiver positions (backward model) ------------ */
@@ -2268,88 +2182,20 @@ int main(int argc, char **argv){
                                     printf("\n==================================================================================\n\n");
                                 }
                                 
-                                if (HESSIAN && TRKILL){
-                                    if (kill_tmp[irec][ishot]==1){
-                                        fprintf(FP,"MYID=%d:Trace kill applied to receiver number %d.\n",MYID,irec);
-                                        continue;}
-                                }
                                 
                                 /*------------------------------------------------------------*/
                                 /* determine source position out of reciever position on grid */
                                 /*------------------------------------------------------------*/
-                                if (HESSIAN){
-                                    /* find this single source positions on subdomains */
-                                    srcpos_loc_back = matrix(1,6,1,1);
-                                    ntr1=0;
-                                    
-                                    for (i=1; i<=ntr; i++){
-                                        
-                                        if (irec==(recpos_loc[3][i])){
-                                            
-                                            /*if((irec>=REC1)&&(irec<=REC2)){*/
-                                            srcpos_loc_back[1][1] = (recpos_loc[1][i]);
-                                            srcpos_loc_back[2][1] = (recpos_loc[2][i]);
-                                            srcpos_loc_back[4][1] = TSHIFT_back;
-                                            srcpos_loc_back[6][1] = 1.0;
-                                            ntr1=1;
-                                        }
-                                    }
-                                    
-                                    QUELLART=6;
-                                    
-                                    /*printf("MYID = %d \t REC1 = %d \t REC2 = %d \t ntr1 = %d x = %e \t y = %e \n",MYID,REC1,REC2,ntr1,srcpos_loc_back[1][1],srcpos_loc_back[2][1]);*/
-                                    
-                                    /* calculate wavelet for each source point */
-                                    if(ntr1>0){
-                                        
-                                        
-                                        signals_rec=wavelet(srcpos_loc_back,ntr1,ishot,0);
-                                        
-                                        /* output source signal e.g. for cross-correlation of comparison with analytical solutions */
-                                        if((QUELLART==6)&&(ntr1>0)){timedomain_filt(signals_rec,FC_HESSIAN,ORDER_HESSIAN,1,ns,1);}
-                                        
-                                        /*char  source_signal_file[STRING_SIZE];
-                                         sprintf(source_signal_file,"%s_source_signal_back.%d.su", MFILE, MYID);
-                                         fprintf(stdout,"\n PE %d outputs source time function in SU format to %s \n ", MYID, source_signal_file);
-                                         output_source_signal(fopen(source_signal_file,"w"),signals_rec,NT,1);*/
-                                        
-                                    }
-                                    
-                                    MPI_Barrier(MPI_COMM_WORLD);
-                                    
-                                    if(ntr1 > 0){
-                                        
-                                        h=1;
-                                        for(i=1;i<=ntr;i++){
-                                            for(j=1;j<=ns;j++){
-                                                sectionvxdiff[h][j]=signals_rec[1][j];
-                                                sectionvydiff[h][j]=signals_rec[1][j];
-                                                if(ACOUSTIC)
-                                                    sectionpdiff[h][j]=signals_rec[1][j];
-                                            }
-                                            h++;
-                                        }
-                                        
-                                        if (SEISMO){
-                                            if(!ACOUSTIC)
-                                                saveseis(FP,sectionvxdiff,sectionvydiff,sectionp,sectioncurl,sectiondiv,recpos,recpos_loc,ntr,srcpos1,ishot,ns,-1);
-                                            else
-                                                saveseis(FP,sectionvxdiff,sectionvydiff,sectionpdiff,sectioncurl,sectiondiv,recpos,recpos_loc,ntr,srcpos1,ishot,ns,-1);
-                                        }
-                                    }
-                                    
+                                
+                                /* Distribute multiple source positions on subdomains */
+                                /* define source positions at the receivers */
+                                srcpos_loc_back = matrix(1,6,1,ntr);
+                                for (i=1;i<=ntr;i++){
+                                    srcpos_loc_back[1][i] = (recpos_loc[1][i]);
+                                    srcpos_loc_back[2][i] = (recpos_loc[2][i]);
                                 }
-                                else
-                                {
-                                    /* Distribute multiple source positions on subdomains */
-                                    /* define source positions at the receivers */
-                                    srcpos_loc_back = matrix(1,6,1,ntr);
-                                    for (i=1;i<=ntr;i++){
-                                        srcpos_loc_back[1][i] = (recpos_loc[1][i]);
-                                        srcpos_loc_back[2][i] = (recpos_loc[2][i]);
-                                    }
-                                    ntr1=ntr;
-                                }
+                                ntr1=ntr;
+                                
                                 /*----------------------------------*/
                                 /* initialize wavefield with zero   */
                                 /*----------------------------------*/
@@ -2370,7 +2216,6 @@ int main(int argc, char **argv){
                                 lsnap=iround(TSNAP1/DT);
                                 lsamp=NDT;
                                 nsnap=0;
-                                if(HESSIAN==1){imat=1;}
                                 
                                 /*--------------------------------------------------------------------------------*/
                                 /*---------------------- Start loop over timesteps (backpropagation) -------------*/
@@ -2513,10 +2358,9 @@ int main(int argc, char **argv){
                                     /*-------------------------------------------------*/
                                     if(DTINV_help[NT-nt+1]==1){
                                         
-                                        if(HESSIAN==0){imat=((nxnyi*(NTDTINV)) - hin*nxnyi)+1;}
+                                        imat=((nxnyi*(NTDTINV)) - hin*nxnyi)+1;
                                         
-                                        
-                                        if((HESSIAN==0)&&(INVMAT==0)){
+                                        if((INVMAT==0)){
                                             for (i=1;i<=NX;i=i+IDXI){
                                                 for (j=1;j<=NY;j=j+IDYI){
                                                     
@@ -2549,21 +2393,7 @@ int main(int argc, char **argv){
                                                 }
                                             }
                                         }
-                                        
-                                        if((HESSIAN==1)&&(INVMAT==0)){
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                for (j=1;j<=NY;j=j+IDYI){
-                                                    
-                                                    /*jac_rho[imat]+=(pvxp1[j][i]*forward_prop_rho_x[imat])+(pvyp1[j][i]*forward_prop_rho_y[imat]);*/
-                                                    jac_lam_x[imat] = psxx[j][i];
-                                                    jac_lam_y[imat] = psyy[j][i];
-                                                    jac_u[imat] = psxy[j][i];
-                                                    
-                                                    imat++;
-                                                }
-                                            }
-                                        }
-                                        /*hin1=hin1+DTINV;*/
+
                                         hin++;
                                     }
                                     /*fclose(FP2);*/
@@ -2605,166 +2435,18 @@ int main(int argc, char **argv){
                                         write_matrix_disk(waveconv_u_shot_z, jac);
                                     }
                                 }
-                                
-                                if(HESSIAN){
-                                    
-                                    /* calculate Hessian for lambda from autocorrelation of the jacobian */
-                                    /* ----------------------------------------------------------------- */
-                                    imat=1;
-                                    
-                                    imat1=1;
-                                    for (i=1;i<=NX;i=i+IDXI){
-                                        for (j=1;j<=NY;j=j+IDYI){
-                                            h=1;
-                                            /*for (nt=1;nt<=NT;nt=nt+DTINV){*/
-                                            for (nt=1;nt<=NTDTINV;nt++){
-                                                imat = imat1 + nxnyi*(nt-1);
-                                                
-                                                temp_TS[h]  =  jac_lam_x[imat] + jac_lam_y[imat];
-                                                temp_TS1[h] =  forward_prop_x[j][i][nt] + forward_prop_y[j][i][nt];
-                                                // 			     temp_TS1[h] =  forward_prop_x[imat] + forward_prop_y[imat];
-                                                
-                                                temp_TS2[h] =  jac_lam_x[imat] - jac_lam_y[imat];
-                                                temp_TS3[h] =  forward_prop_x[j][i][nt] - forward_prop_y[j][i][nt];
-                                                // 			     temp_TS3[h] =  forward_prop_x[imat] - forward_prop_y[imat];
-                                                
-                                                temp_TS4[h] =  jac_u[imat];
-                                                temp_TS5[h] =  forward_prop_u[j][i][nt];
-                                                // 			     temp_TS5[h] =  forward_prop_u[imat];
-                                                
-                                                h++;
-                                            }
-                                            
-                                            /* convolve time series in frequency domain */
-                                            conv_FD(temp_TS,temp_TS1,temp_conv,NTDTINV);
-                                            conv_FD(temp_TS2,temp_TS3,temp_conv1,NTDTINV);
-                                            conv_FD(temp_TS4,temp_TS5,temp_conv2,NTDTINV);
-                                            
-                                            h=1;
-                                            /*for (nt=1;nt<=NT;nt=nt+DTINV){*/
-                                            for (nt=1;nt<=NTDTINV;nt++){
-                                                
-                                                if(INVMAT1==1){
-                                                    muss = prho[j][i] * pu[j][i] * pu[j][i];
-                                                    lamss = prho[j][i] * ppi[j][i] * ppi[j][i] - 2.0 * muss;
-                                                    mulamratio = (muss * muss)/((lamss+muss)*(lamss+muss));
-                                                    
-                                                    /* Hessian for vp */
-                                                    temp_hess_lambda=temp_conv[h]/(4.0*(lamss+muss)*(lamss+muss));   /* Hessian for lambda */
-                                                    temp_hess=2*prho[j][i]*ppi[j][i]*temp_hess_lambda;             /* Hessian for vp */
-                                                    hessian_shot[j][i] += temp_hess*temp_hess;
-                                                    
-                                                    /* Hessian for Mu */
-                                                    if(pu[j][i]>0.0){
-                                                        
-                                                        /*temp_hess = ((1.0/(muss*muss))*(temp_conv2[h]))
-                                                         + ((1.0/4.0) * (temp_conv[h]) / ((lamss+muss)*(lamss+muss)))
-                                                         + ((1.0/4.0) * (temp_conv1[h]) / (muss*muss));*/
-                                                        
-                                                        temp_hess_mu = temp_conv2[h]/(muss*muss) + temp_conv[h]/(4.0*(lamss+muss)*(lamss+muss)) + temp_conv1[h]/(4.0*muss*muss);   /* Hessian for mu */
-                                                        temp_hess = 2.0*prho[j][i]*pu[j][i]*temp_hess_mu - 4.0*prho[j][i]*pu[j][i]*temp_hess_lambda;		/* Hessian for vs */
-                                                        
-                                                        hessian_u_shot[j][i] += temp_hess*temp_hess;
-                                                    }
-                                                }
-                                                
-                                                if(INVMAT1==3){
-                                                    muss=pu[j][i];
-                                                    lamss=ppi[j][i];
-                                                    mulamratio = (muss * muss)/((lamss+muss)*(lamss+muss));
-                                                    
-                                                    /* Hessian for lambda */
-                                                    temp_hess_lambda=temp_conv[h]/(4.0*(lamss+muss)*(lamss+muss));
-                                                    hessian_shot[j][i] += temp_hess_lambda*temp_hess_lambda;
-                                                    
-                                                    /* Hessian for Mu */
-                                                    if(pu[j][i]>0.0){
-                                                        
-                                                        /*temp_hess = ((1.0/(muss*muss))*(temp_conv2[h]))
-                                                         + ((1.0/4.0) * (temp_conv[h]) / ((lamss+muss)*(lamss+muss)))
-                                                         + ((1.0/4.0) * (temp_conv1[h]) / (muss*muss));*/
-                                                        
-                                                        temp_hess_mu = temp_conv2[h]/(muss*muss) + temp_conv[h]/(4.0*(lamss+muss)*(lamss+muss)) + temp_conv1[h]/(4.0*muss*muss);
-                                                        
-                                                        hessian_u_shot[j][i] += temp_hess_mu*temp_hess_mu;
-                                                    }
-                                                }
-                                                h++;
-                                            }
-                                            imat1++;
-                                        }
-                                    }
-                                    
-                                    /* calculate Hessian for rho from autocorrelation of the jacobian */
-                                    /* ----------------------------------------------------------------- */
-                                    imat=1;
-                                    
-                                    for (nt=1;nt<=NTDTINV;nt++){
-                                        for (i=1;i<=NX;i=i+IDXI){
-                                            for (j=1;j<=NY;j=j+IDYI){
-                                                hessian_rho_shot[j][i] += jac_rho[imat]*jac_rho[imat];
-                                                imat++;
-                                            }
-                                        }
-                                    }
-                                    
-                                } /* end HESSIAN */
 
                             }
                             
                             /*--------------------------------------------------------------------------------*/
                             /* ------ end loop over shots at receiver positions (backward model) ------------ */
                             /*--------------------------------------------------------------------------------*/
-                            
-                            /* output Hessian for lambda and mu or vp and vs */
-                            if(HESSIAN){
-                                sprintf(jac,"%s_hessian_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
-                                FP4=fopen(jac,"wb");
-                                for (i=1;i<=NX;i=i+IDX){
-                                    for (j=1;j<=NY;j=j+IDY){
-                                        fwrite(&hessian_shot[j][i],sizeof(float),1,FP4);
-                                    }
-                                }
-                                fclose(FP4);
-                                MPI_Barrier(MPI_COMM_WORLD);
-                                sprintf(jac,"%s_hessian_shot%i.bin",JACOBIAN,ishot);
-                                if (MYID==0) mergemod(jac,3);
-                                MPI_Barrier(MPI_COMM_WORLD);
-                                sprintf(jac,"%s_hessian_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
-                                remove(jac);
-                                
-                                sprintf(jac,"%s_hessian_u_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
-                                FP4=fopen(jac,"wb");
-                                for (i=1;i<=NX;i=i+IDX){
-                                    for (j=1;j<=NY;j=j+IDY){
-                                        fwrite(&hessian_u_shot[j][i],sizeof(float),1,FP4);
-                                    }
-                                }
-                                fclose(FP4);
-                                MPI_Barrier(MPI_COMM_WORLD);
-                                sprintf(jac,"%s_hessian_u_shot%i.bin",JACOBIAN,ishot);
-                                if (MYID==0) mergemod(jac,3);
-                                MPI_Barrier(MPI_COMM_WORLD);
-                                sprintf(jac,"%s_hessian_u_shot%i.bin.%i.%i",JACOBIAN,ishot,POS[1],POS[2]);
-                                remove(jac);
-                            }
-                            
-                            /* Sum Hessian for all shots */
-                            if(HESSIAN){
-                                for(i=1;i<=NX;i=i+IDX){
-                                    for(j=1;j<=NY;j=j+IDY){
-                                        hessian[j][i] += hessian_shot[j][i];
-                                        hessian_u[j][i] += hessian_u_shot[j][i];
-                                        hessian_rho[j][i] += hessian_rho_shot[j][i];
-                                    }
-                                }
-                            }
-                            
+
                             
                             /* ------------------------------- */
                             /* calculate gradient direction pi */
                             /* ------------------------------- */
-                            if((HESSIAN!=1)&&(INVMAT==0)&&(WAVETYPE==1||WAVETYPE==3)){
+                            if((INVMAT==0)&&(WAVETYPE==1||WAVETYPE==3)){
                                 
                                 
                                 /* interpolate unknown values */
@@ -2805,7 +2487,7 @@ int main(int argc, char **argv){
                             /* ---------------------------------- */
                             /* calculate gradient direction u PSV */
                             /* ---------------------------------- */
-                            if((HESSIAN!=1)&&(WAVETYPE==1 || WAVETYPE==3)&&(INVMAT==0)&&(!ACOUSTIC)){
+                            if((WAVETYPE==1 || WAVETYPE==3)&&(INVMAT==0)&&(!ACOUSTIC)){
                                 
                                 
                                 /* interpolate unknown values */
@@ -2840,7 +2522,7 @@ int main(int argc, char **argv){
                             /* ---------------------------------- */
                             /* calculate gradient direction u SH */
                             /* ---------------------------------- */
-                            if((HESSIAN!=1)&&(WAVETYPE==2 || WAVETYPE==3)&&(INVMAT==0)&&(!ACOUSTIC)){
+                            if((WAVETYPE==2 || WAVETYPE==3)&&(INVMAT==0)&&(!ACOUSTIC)){
                                 
                                 /* interpolate unknown values */
                                 if((IDXI>1)||(IDYI>1)){
@@ -2870,7 +2552,7 @@ int main(int argc, char **argv){
                             /* ------------------------------------ */
                             /* calculate gradient direction rho PSV */
                             /* ------------------------------------ */
-                            if((HESSIAN!=1)&&(WAVETYPE==1 || WAVETYPE==3)&&(INVMAT==0)){
+                            if((WAVETYPE==1 || WAVETYPE==3)&&(INVMAT==0)){
                                 
                                 
                                 /* interpolate unknown values */
@@ -2906,7 +2588,7 @@ int main(int argc, char **argv){
                             /* ------------------------------------ */
                             /* calculate gradient direction rho SH*/
                             /* ------------------------------------ */
-                            if((HESSIAN!=1)&&(WAVETYPE==2 || WAVETYPE==3)&&(INVMAT==0)){
+                            if((WAVETYPE==2 || WAVETYPE==3)&&(INVMAT==0)){
                                 
                                 
                                 /* interpolate unknown values */
@@ -3140,49 +2822,7 @@ int main(int argc, char **argv){
                     }
                 }
                 
-                /* Save Hessian to disk */
-                if(HESSIAN){
-                    /* save HESSIAN for lambda */
-                    /* ----------------------- */
-                    sprintf(jac,"%s_hessian.%i.%i",JACOBIAN,POS[1],POS[2]);
-                    FP4=fopen(jac,"wb");
-                    
-                    /* output of the gradient */
-                    for (i=1;i<=NX;i=i+IDX){
-                        for (j=1;j<=NY;j=j+IDY){
-                            fwrite(&hessian[j][i],sizeof(float),1,FP4);
-                        }
-                    }
-                    
-                    fclose(FP4);
-                    
-                    MPI_Barrier(MPI_COMM_WORLD);
-                    
-                    /* merge gradient file */
-                    sprintf(jac,"%s_hessian",JACOBIAN);
-                    if (MYID==0) mergemod(jac,3);
-                    
-                    /* save HESSIAN for mu */
-                    /* ----------------------- */
-                    sprintf(jac,"%s_hessian_u.%i.%i",JACOBIAN,POS[1],POS[2]);
-                    FP4=fopen(jac,"wb");
-                    
-                    /* output of the gradient */
-                    for (i=1;i<=NX;i=i+IDX){
-                        for (j=1;j<=NY;j=j+IDY){
-                            fwrite(&hessian_u[j][i],sizeof(float),1,FP4);
-                        }
-                    }
-                    
-                    fclose(FP4);
-                    
-                    MPI_Barrier(MPI_COMM_WORLD);
-                    
-                    /* merge gradient file */
-                    sprintf(jac,"%s_hessian_u",JACOBIAN);
-                    if (MYID==0) mergemod(jac,3);
-                } /* end HESSIAN */
-                
+
                 /* calculate L2 norm of all CPUs*/
                 L2sum = 0.0;
                 MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
@@ -3265,7 +2905,7 @@ int main(int argc, char **argv){
                 /* ----------------------------------------------------------------------*/
                 /* ----------- Preconditioned Conjugate Gradient Method (PCG)  ----------*/
                 /* ----------------------------------------------------------------------*/
-                if((HESSIAN==0)&&(GRAD_METHOD==1)){
+                if((GRAD_METHOD==1)){
                     
                     if (WAVETYPE==1 || WAVETYPE==3) PCG(waveconv, taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, C_vp, gradp, nfstart_jac, waveconv_u, C_vs, gradp_u, waveconv_rho, C_rho, gradp_rho,Vs_avg,FC);
                     if (WAVETYPE==2 || WAVETYPE==3) PCG_SH(taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, nfstart_jac, waveconv_u_z, C_vs, gradp_u_z, waveconv_rho_z, C_rho, gradp_rho_z,Vs_avg,FC);
@@ -3315,7 +2955,7 @@ int main(int argc, char **argv){
                 /* -------------------------------------------------------------------------*/
                 /* ----------- Limited Memory - Broyden-Fletcher-Goldfarb-Shanno  ----------*/
                 /* -------------------------------------------------------------------------*/
-                if((HESSIAN==0)&&(GRAD_METHOD==2)){
+                if((GRAD_METHOD==2)){
                     
                     /*---------------------*/
                     /*         TAPER       */
@@ -3504,7 +3144,7 @@ int main(int argc, char **argv){
         /* =============================================== Step length estimation =====================================================*/
         /* ============================================================================================================================*/
         
-        if((INVMAT==0) && (HESSIAN!=1) && (!WOLFE_CONDITION || (WOLFE_CONDITION && GRAD_METHOD==2 && iter==LBFGS_iter_start))){
+        if((INVMAT==0)  && (!WOLFE_CONDITION || (WOLFE_CONDITION && GRAD_METHOD==2 && iter==LBFGS_iter_start))){
             
             fprintf(FP,"\n=================================================================================================\n");
             fprintf(FP,"\n *********************** Starting step length estimation at iteration %i ************************\n",iter);
@@ -3625,11 +3265,6 @@ int main(int argc, char **argv){
                                 timedomain_filt(signals,FC,ORDER,nsrc_loc,ns,1);
                             }
                             
-                            if (nsrc_loc){
-                                if(QUELLART==6){/*FFT_filt(signals,1.0,1,ns,1);*/
-                                    timedomain_filt(signals,FC_HESSIAN,ORDER_HESSIAN,nsrc_loc,ns,1);
-                                }
-                            }
                         }
                         
                         /*time domain filtering of the source signal */
@@ -3638,11 +3273,6 @@ int main(int argc, char **argv){
                                 timedomain_filt(signals_SH,FC,ORDER,nsrc_loc,ns,1);
                             }
                             
-                            if (nsrc_loc){
-                                if(QUELLART==6){/*FFT_filt(signals,1.0,1,ns,1);*/
-                                    timedomain_filt(signals_SH,FC_HESSIAN,ORDER_HESSIAN,nsrc_loc,ns,1);
-                                }
-                            }
                         }
                         /*------------------------------------------------------------------------------*/
                         /*----------- End of Time Domain Filtering -------------------------------------*/
@@ -4427,28 +4057,6 @@ int main(int argc, char **argv){
             free_matrix(waveconv_u_shot,-nd+1,NY+nd,-nd+1,NX+nd);
         }
         
-        
-        if(HESSIAN){
-            free_vector(jac_rho,1,nxnyi*(NTDTINV));
-            free_vector(jac_u,1,nxnyi*(NTDTINV));
-            free_vector(jac_lam_x,1,nxnyi*(NTDTINV));
-            free_vector(jac_lam_y,1,nxnyi*(NTDTINV));
-            free_vector(temp_TS,1,NTDTINV);
-            free_vector(temp_TS1,1,NTDTINV);
-            free_vector(temp_TS2,1,NTDTINV);
-            free_vector(temp_TS3,1,NTDTINV);
-            free_vector(temp_TS4,1,NTDTINV);
-            free_vector(temp_TS5,1,NTDTINV);
-            free_vector(temp_conv,1,NTDTINV);
-            free_vector(temp_conv1,1,NTDTINV);
-            free_vector(temp_conv2,1,NTDTINV);
-            free_matrix(hessian,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(hessian_u,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(hessian_rho,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(hessian_shot,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(hessian_u_shot,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(hessian_rho_shot,-nd+1,NY+nd,-nd+1,NX+nd);
-        }
     }
     
     if(FW>0){
@@ -4694,9 +4302,7 @@ int main(int argc, char **argv){
     /* free memory for global source positions */
     free_matrix(srcpos,1,8,1,nsrc);
     
-    if(HESSIAN && TRKILL){ /* reading trace kill information */
-        free_imatrix(kill_tmp,1,ntr_glob,1,nsrc_glob);
-    }
+
     
     if(TIME_FILT==2){
         free_vector(FC_EXT,1,nfrq);

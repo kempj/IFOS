@@ -43,8 +43,8 @@ void read_par_json(FILE *fp, char *fileinp){
     extern char JACOBIAN[STRING_SIZE],DATA_DIR[STRING_SIZE],FREQ_FILE[STRING_SIZE];
     extern int  NPROCX, NPROCY, MYID, IDX, IDY, CHECKPTREAD, CHECKPTWRITE;
     extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, QUELLTYPB;
-    extern int HESSIAN, GRAD_METHOD, ORDER_HESSIAN;
-    extern float FC_HESSIAN, TSHIFT_back;
+    extern int  GRAD_METHOD;
+    extern float TSHIFT_back;
     extern int FILT_SIZE, MODEL_FILTER;
     extern int FILT_SIZE_GRAD, GRAD_FILTER;
     
@@ -439,9 +439,6 @@ void read_par_json(FILE *fp, char *fileinp){
                 WAVETYPE=1;
                 fprintf(fp,"For acoustic modelling WAVETYPE is set to %d.\n",WAVETYPE);
             }
-            if (HESSIAN && WAVETYPE!=1) {
-                err("No HESSIAN yet for SH");
-            }
             if(WAVETYPE==3) {
                 if (get_int_from_objectlist("JOINT_INVERSION_PSV_SH_TYPE",number_readobjects,&JOINT_INVERSION_PSV_SH_TYPE,varname_list, value_list)){
                     JOINT_INVERSION_PSV_SH_TYPE=1;
@@ -711,13 +708,6 @@ void read_par_json(FILE *fp, char *fileinp){
                 
                 
                 /* Hessian and Gradient-Method */
-                if (get_int_from_objectlist("HESSIAN",number_readobjects,&HESSIAN,varname_list, value_list)){
-                    HESSIAN=0;
-                    fprintf(fp,"Variable HESSIAN is set to default value %d.\n",HESSIAN);}
-                else
-                    if(ACOUSTIC){
-                        HESSIAN=0;
-                        fprintf(fp,"For acoustic modelling currently only HESSIAN=%d possible.\n",HESSIAN);}
                 if (get_int_from_objectlist("GRAD_METHOD",number_readobjects,&GRAD_METHOD,varname_list, value_list))
                     err("Variable GRAD_METHOD could not be retrieved from the json input file!");
                 else {
@@ -756,16 +746,6 @@ void read_par_json(FILE *fp, char *fileinp){
                         }
                     }
                 }
-                if (HESSIAN){
-                    if (get_float_from_objectlist("FC_HESSIAN",number_readobjects,&FC_HESSIAN,varname_list, value_list))
-                        err("Variable FC_HESSIAN could not be retrieved from the json input file!");
-                    if (get_int_from_objectlist("ORDER_HESSIAN",number_readobjects,&ORDER_HESSIAN,varname_list, value_list))
-                        err("Variable ORDER_HESSIAN could not be retrieved from the json input file!");
-                    if (get_float_from_objectlist("TSHIFT_back",number_readobjects,&TSHIFT_back,varname_list, value_list)){
-                        TSHIFT_back=0.0;
-                        fprintf(fp,"Variable TSHIFT_back is set to default value %f.\n",TSHIFT_back);}
-                }
-                
                 
                 /* Definition of smoothing the models vp and vs */
                 if (get_int_from_objectlist("MODEL_FILTER",number_readobjects,&MODEL_FILTER,varname_list, value_list)){

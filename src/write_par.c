@@ -46,8 +46,8 @@ void write_par(FILE *fp){
 	extern int NP, NPROCX, NPROCY, MYID;
 	
 	extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, QUELLTYPB;
-	extern int HESSIAN, GRAD_METHOD, ORDER_HESSIAN;
-	extern float FC_HESSIAN, TSHIFT_back;
+	extern int  GRAD_METHOD;
+	extern float TSHIFT_back;
 	extern int FILT_SIZE, MODEL_FILTER;
 	extern int FILT_SIZE_GRAD, GRAD_FILTER;
 	
@@ -472,19 +472,12 @@ void write_par(FILE *fp){
 	
 	fprintf(fp,"\n\n");
 	fprintf(fp," --------------- Calculation of the diagonal elements of the approximate Hessian matrix -------------------\n");
-	fprintf(fp," HESSIAN = %d \n",HESSIAN);
-	if(HESSIAN){
-		fprintf(fp," Approximate HESSIAN is calculated.\n");
-		fprintf(fp," FC_HESSIAN = %f, ORDER_HESSIAN = %d, TSHIFT_back=%f \n",FC_HESSIAN,ORDER_HESSIAN,TSHIFT_back);}
 	switch(GRAD_METHOD){
 		case 1:
 			fprintf(fp," GRAD_METHOD=%d: PCG\n",GRAD_METHOD);
 			break;
 		case 2:
 			fprintf(fp," GRAD_METHOD=%d: LBFGS\n",GRAD_METHOD);
-			break;
-		case 3:
-			fprintf(fp," GRAD_METHOD=%d: LBFGS1\n",GRAD_METHOD);
 			break;
 		case 0: break;	/* only forward modeling is applied */
 		default:
