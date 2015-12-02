@@ -28,13 +28,14 @@
 
 #include "fd.h"
 
-void read_workflow(char file_in[STRING_SIZE],float *** workflow, int *workflow_lines){
+void read_workflow(char file_in[STRING_SIZE],float *** workflow, int *workflow_lines, char header[STRING_SIZE]){
     
     /* workflow is a pointer to a pointer, keep care... */
     
     /* intern variables */
     int i, c;
     int nw=0,x,y;
+    
     FILE *fwork;
     /* extern variables */
     extern FILE *FP;
@@ -47,11 +48,13 @@ void read_workflow(char file_in[STRING_SIZE],float *** workflow, int *workflow_l
     if (fwork==NULL) err(" Workflow file could no be opened !");
     
     /* Count how many lines the work flow file has */
+    fgets(header, 200, fwork); /* Read header */
     while(!feof(fwork)) {
         c = fgetc(fwork);
         if(c == '\n'){nw++;}
     }
-    fseek(fwork, SEEK_SET, 0);
+    fseek(fwork, SEEK_SET, 0); /* Reset */
+    fgets(header, 200, fwork); /* Read header */
     
     fprintf(FP," Number of lines in workflow file: %i\n",nw);
     
@@ -60,7 +63,7 @@ void read_workflow(char file_in[STRING_SIZE],float *** workflow, int *workflow_l
     if ((*workflow)==NULL) err(" Was not able to allocate memory for workflow file !");
     
     /* Read workflow */
-    fprintf(FP," ITER\tINV_VS\tINV_VP\tINV_RHO\tPRO\tTIME_FILT\tFC\tFREE\n");
+    fprintf(FP,"\n %s",header);
     fprintf(FP," ");
     for(y=1;y<=nw;y++){
         for(x=1;x<=WORKFLOW_MAX_VAR;x++){

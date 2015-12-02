@@ -24,7 +24,7 @@
 
 #include "fd.h"
 
-void apply_workflow(float ** workflow,int workflow_lines,int workflow_line_current ,int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start){
+void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int workflow_line_current ,int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start){
     
     /* local variables */
     int x;
@@ -47,7 +47,7 @@ void apply_workflow(float ** workflow,int workflow_lines,int workflow_line_curre
     /* Print current workflow */
     if(MYID==0){
         printf("\n ---------- Applying Workflow -----------\n");
-        printf(" ITER\tINV_VS\tINV_VP\tINV_RHO\tPRO\tTI_FILT\tFC\tWT\n ");
+        printf(" %s ",workflow_header);
         for(x=1;x<=WORKFLOW_MAX_VAR;x++){
             printf("%.2f\t",workflow[workflow_line_current][x]);
         }

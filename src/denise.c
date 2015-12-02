@@ -156,6 +156,7 @@ int main(int argc, char **argv){
     float ** workflow=NULL;
     int workflow_line_current=1;
     int workflow_lines;
+    char workflow_header[STRING_SIZE];
     int change_wavetype_iter=-10; /* Have to be inialized negative */
     int wavetype_start; /* We need this due to MPI Comm */
     
@@ -896,7 +897,7 @@ int main(int argc, char **argv){
     nsrc_glob=nsrc;
     
     if(INVMAT==0&&USE_WORKFLOW){
-        read_workflow(FILE_WORKFLOW,&workflow, &workflow_lines);
+        read_workflow(FILE_WORKFLOW,&workflow, &workflow_lines,workflow_header);
     }
     
     /* create model grids */
@@ -980,7 +981,7 @@ int main(int argc, char **argv){
         // At each iteration the workflow is applied
         if(USE_WORKFLOW&&(INVMAT==0)){
             
-            apply_workflow(workflow,workflow_lines,workflow_line_current,&iter,&FC,wavetype_start,&change_wavetype_iter,&LBFGS_iter_start);
+            apply_workflow(workflow,workflow_lines,workflow_header,workflow_line_current,&iter,&FC,wavetype_start,&change_wavetype_iter,&LBFGS_iter_start);
             
         }
         
