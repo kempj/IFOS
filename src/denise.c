@@ -901,25 +901,31 @@ int main(int argc, char **argv){
     
     /* create model grids */
     if(L){
-if(!ACOUSTIC){
-        if (READMOD) readmod(prho,ppi,pu,ptaus,ptaup,peta);
-        else model(prho,ppi,pu,ptaus,ptaup,peta);
-} else {
-if (READMOD){ 
-readmod_viscac(prho,ppi,ptaup,peta);
-			}else{ 
-model_viscac(prho,ppi,ptaup,peta);
-			}
-}
-
-    } else{
         if(!ACOUSTIC){
-            if (READMOD){ readmod_elastic(prho,ppi,pu);
-            }else{ model_elastic(prho,ppi,pu);
+            if (READMOD){
+                readmod(prho,ppi,pu,ptaus,ptaup,peta);
+            }else{
+                model(prho,ppi,pu,ptaus,ptaup,peta);
             }
         }else{
-            if (READMOD){ readmod_acoustic(prho,ppi);
-            }else{ model_acoustic(prho,ppi);
+            if (READMOD){
+                readmod_viscac(prho,ppi,ptaup,peta);
+            }else{
+                model_viscac(prho,ppi,ptaup,peta);
+            }
+        }
+    }else{
+        if(!ACOUSTIC){
+            if (READMOD){
+                readmod_elastic(prho,ppi,pu);
+            }else{
+                model_elastic(prho,ppi,pu);
+            }
+        }else{
+            if (READMOD){
+                readmod_acoustic(prho,ppi);
+            }else{
+                model_acoustic(prho,ppi);
             }
         }
     }
@@ -1030,11 +1036,11 @@ model_viscac(prho,ppi,ptaup,peta);
                  for example, are required on the local grid. These are now copied from the
                  neighbouring grids */
                 if (L){
-if(!ACOUSTIC){
-                    matcopy(prho,ppi,pu,ptaus,ptaup);
-} else {
-matcopy_viscac(prho,ppi,ptaup);
-			}
+                    if(!ACOUSTIC){
+                        matcopy(prho,ppi,pu,ptaus,ptaup);
+                    } else {
+                        matcopy_viscac(prho,ppi,ptaup);
+                    }
                 }else{
                     if(!ACOUSTIC){
                         matcopy_elastic(prho, ppi, pu);
@@ -1063,12 +1069,12 @@ matcopy_viscac(prho,ppi,ptaup);
                 
                 /* Preparing memory variables for update_s (viscoelastic) */
                 if (L) {
-if(!ACOUSTIC){
-prepare_update_s(etajm,etaip,peta,fipjp,pu,puipjp,ppi,prho,ptaus,ptaup,ptausipjp,f,g,bip,bjm,cip,cjm,dip,d,e);
-} else {
-                prepare_update_p(etajm,peta,ppi,prho,ptaup,g,bjm,cjm,e);
-			}
-		}
+                    if(!ACOUSTIC){
+                        prepare_update_s(etajm,etaip,peta,fipjp,pu,puipjp,ppi,prho,ptaus,ptaup,ptausipjp,f,g,bip,bjm,cip,cjm,dip,d,e);
+                    } else {
+                        prepare_update_p(etajm,peta,ppi,prho,ptaup,g,bjm,cjm,e);
+                    }
+                }
                 
                 if(iter==1){
                     
@@ -1295,15 +1301,15 @@ prepare_update_s(etajm,etaip,peta,fipjp,pu,puipjp,ppi,prho,ptaus,ptaup,ptausipjp
                             /* calculate wavelet for each source point */
                             signals=NULL;
                             signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
-                                
+                            
                             
                             /* initialize wavefield with zero */
                             if (L){
                                 if(!ACOUSTIC) {
-zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
-} else { 
-zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
-}
+                                    zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
+                                } else {
+                                    zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
+                                }
                             }else{
                                 if(!ACOUSTIC)
                                     zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
@@ -1361,11 +1367,11 @@ zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_
                                 }
                                 
                                 if (L) {   /* viscoelastic */
-if(!ACOUSTIC) {                                    
-update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, prho, hc, infoout,pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip,K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-} else { 
-update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-}
+                                    if(!ACOUSTIC) {
+                                        update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, prho, hc, infoout,pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip,K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    }else{
+                                        update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    }
                                 }else{
                                     if(!ACOUSTIC)
                                         update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho, hc, infoout,K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
@@ -1378,13 +1384,14 @@ update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bj
                                     psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                                 
                                 if ((FREE_SURF) && (POS[2]==0)){
-if (!ACOUSTIC){
-                                    if (L)    /* viscoelastic */
-                                        surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
-                                    else{
+                                    if (!ACOUSTIC){
+                                        if (L){    /* viscoelastic */
+                                            surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
+                                        }else{      /* elastic */
                                             surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
-                                       } else {
-                                            surface_acoustic_PML(1, psp);
+                                        }
+                                    } else { /* viscoelastic and elastic ACOUSTIC */
+                                        surface_acoustic_PML(1, psp);
                                     }
                                 }
                                 
@@ -1435,29 +1442,29 @@ if (!ACOUSTIC){
                                                     } else {
                                                         forward_prop_x[j][i][hin]=ux[j][i];
                                                         forward_prop_y[j][i][hin]=uy[j][i];}
-						// 	    				forward_prop_x[imat]=ux[j][i];
-						// 	    				forward_prop_y[imat]=uy[j][i];}
-							
-						// 	    		imat++;
-									}
-									}
-								}else{
-									for (i=1;i<=NX;i=i+IDXI){ 
-									for (j=1;j<=NY;j=j+IDYI){
-										forward_prop_p[j][i][hin]=psp[j][i];
+                                                    // 	    				forward_prop_x[imat]=ux[j][i];
+                                                    // 	    				forward_prop_y[imat]=uy[j][i];}
+                                                    
+                                                    // 	    		imat++;
                                                 }
                                             }
-								}
-								if(!ACOUSTIC){
+                                        }else{
+                                            for (i=1;i<=NX;i=i+IDXI){
+                                                for (j=1;j<=NY;j=j+IDYI){
+                                                    forward_prop_p[j][i][hin]=psp[j][i];
+                                                }
+                                            }
+                                        }
+                                        if(!ACOUSTIC){
                                             for (i=1;i<=NX;i=i+IDXI){
                                                 for (j=1;j<=NY;j=j+IDYI){
                                                     if(VELOCITY==0){
                                                         forward_prop_u[j][i][hin]=psxy[j][i];}
-						// 	    				forward_prop_u[imat2]=psxy[j][i];}
+                                                    // 	    				forward_prop_u[imat2]=psxy[j][i];}
                                                     else{
                                                         forward_prop_u[j][i][hin]=uxy[j][i];}
-						// 	    				forward_prop_u[imat2]=uxy[j][i];}
-						// 	    imat2++;	
+                                                    // 	    				forward_prop_u[imat2]=uxy[j][i];}
+                                                    // 	    imat2++;
                                                 }
                                             }
                                         }
@@ -1635,12 +1642,12 @@ if (!ACOUSTIC){
                             srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
                         }
                         
-				if(INV_STF){
-					QUELLART=7;
-					fprintf(FP,"\n MYID=%d *****  Due to inversion of source time function QUELLART is switched to 7  ********** \n",MYID);
-					fprintf(FP,"\n MYID=%d *****  Using optimized source time function located in %s.shot%d  ********** \n\n\n",MYID,SIGNAL_FILE,ishot);
-				}
-
+                        if(INV_STF){
+                            QUELLART=7;
+                            fprintf(FP,"\n MYID=%d *****  Due to inversion of source time function QUELLART is switched to 7  ********** \n",MYID);
+                            fprintf(FP,"\n MYID=%d *****  Using optimized source time function located in %s.shot%d  ********** \n\n\n",MYID,SIGNAL_FILE,ishot);
+                        }
+                        
                         MPI_Barrier(MPI_COMM_WORLD);
                         
                         /*-------------------*/
@@ -1722,14 +1729,14 @@ if (!ACOUSTIC){
                         
                         MPI_Barrier(MPI_COMM_WORLD);
                         
-                        if((iter>1)&&(nsrc_loc>0)&&(INV_STF==1)){
-                            
+                        
+                        
                         /* initialize wavefield with zero */
                         if (L){
-if(!ACOUSTIC) {
-                            zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
-} else {
-zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp); }
+                            if(!ACOUSTIC) {
+                                zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
+                            } else {
+                                zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp); }
                         }else{
                             if(!ACOUSTIC)
                                 zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
@@ -1858,9 +1865,9 @@ zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_
                                 if (WAVETYPE==2 || WAVETYPE==3) {
                                     update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, srcpos_loc, signals, signals_SH, nsrc_loc, absorb_coeff,hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
                                 }
-                            }
-                            else
+                            } else {
                                 update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, psp, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,absorb_coeff,hc,infoout,0, K_x_half, a_x_half, b_x_half, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
+                            }
                             
                             if (MYID==0){
                                 time4=MPI_Wtime();
@@ -1879,29 +1886,29 @@ zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_
                             
                             if (L) {   /* viscoelastic */
                                 if (WAVETYPE==1 || WAVETYPE==3) {
-if(!ACOUSTIC) {
-                                    update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, prho, hc, infoout, pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-}else{
-update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-}
+                                    if(!ACOUSTIC) {
+                                        update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, prho, hc, infoout, pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    }else{
+                                        update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    }
                                 }
                                 if (WAVETYPE==2 || WAVETYPE==3) {
                                     update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, puip, pujp, tausip, tausjp, bip, bjm, cip, cjm, etajm, etaip, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
                                 }
                             } else {   /* elastic */
-                                    if (WAVETYPE==1 || WAVETYPE==3) {
-if(!ACOUSTIC) {
+                                if (WAVETYPE==1 || WAVETYPE==3) {
+                                    if(!ACOUSTIC) {
                                         update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-} else {
-update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-}
-                                    }
-                                    if (WAVETYPE==2 || WAVETYPE==3) {
-                                        update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy,puipjp,pu,prho);
+                                    } else {
+                                        update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                     }
                                 }
-                               
+                                if (WAVETYPE==2 || WAVETYPE==3) {
+                                    update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy,puipjp,pu,prho);
+                                }
                             }
+                            
+                            
                             
                             /* explosive source */
                             if ((!CHECKPTREAD)&&(QUELLTYP==1)&&(WAVETYPE==1||WAVETYPE==3))
@@ -1909,17 +1916,20 @@ update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, 
                             
                             /* apply free surface */
                             if ((FREE_SURF) && (POS[2]==0)){
-                                if (L)    /* viscoelastic */
- if(!ACOUSTIC) {
-                                    surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
-}else{ 
-surface_acoustic_PML(1, psp); 
-}
-                                else{
-                                    if(!ACOUSTIC)/* elastic */
-                                        surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz, psxz,uxz);
-                                    else
+                                if (L) {
+                                    /* viscoelastic */
+                                    if(!ACOUSTIC) {
+                                        surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
+                                    }else{
                                         surface_acoustic_PML(1, psp);
+                                    }
+                                }else{
+                                    /* elastic */
+                                    if(!ACOUSTIC) {
+                                        surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz, psxz,uxz);
+                                    }else{
+                                        surface_acoustic_PML(1, psp);
+                                    }
                                 }
                             }
                             
@@ -2341,16 +2351,17 @@ surface_acoustic_PML(1, psp);
                                 /* initialize wavefield with zero   */
                                 /*----------------------------------*/
                                 if (L){
-if(!ACOUSTIC) {
-                                    zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
-} else { 
-zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
-}
+                                    if(!ACOUSTIC) {
+                                        zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
+                                    } else {
+                                        zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
+                                    }
                                 }else{
-                                    if(!ACOUSTIC)
+                                    if(!ACOUSTIC) {
                                         zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
-                                    else
+                                    }else{
                                         zero_fdveps_ac(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,psp,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
+                                    }
                                 }
                                 
                                 lsnap=iround(TSNAP1/DT);
@@ -2400,9 +2411,9 @@ zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_
                                         if (WAVETYPE==2 || WAVETYPE==3) {
                                             update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, srcpos_loc_back, sectionvzdiff, sectionvzdiff, ntr1, absorb_coeff,hc,infoout,1, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
                                         }
-                                    }
-                                    else
+                                    } else {
                                         update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, psp, prip, prjp, srcpos_loc_back, sectionpdiff,sectionpdiff,ntr1,absorb_coeff,hc,infoout,1, K_x_half, a_x_half, b_x_half, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
+                                    }
                                     
                                     
                                     if (MYID==0){
@@ -2422,18 +2433,20 @@ zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_
                                     
                                     /*update_s_elastic_hc(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp,absorb_coeff, prho, hc, infoout);*/
                                     
-                                    if (L) {    /* viscoelastic */
+                                    if (L) {
+                                        /* viscoelastic */
                                         if (WAVETYPE==1 || WAVETYPE==3) {
-                                            if(!ACOUSTIC)
-									update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, prho, hc, infoout,pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip,K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-								else
-									update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                            if(!ACOUSTIC) {
+                                                update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, prho, hc, infoout,pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip,K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                            }else{
+                                                update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                            }
                                         }
                                         if (WAVETYPE==2 || WAVETYPE==3) {
                                             update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, puip, pujp, tausip, tausjp, bip, bjm, cip, cjm, etajm, etaip, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
                                         }
-                                    }
-                                    else{
+                                    } else{
+                                        /* elastic */
                                         if(!ACOUSTIC){
                                             if (WAVETYPE==1 || WAVETYPE==3) {
                                                 update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
@@ -2441,9 +2454,9 @@ zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_
                                             if (WAVETYPE==2 || WAVETYPE==3) {
                                                 update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy,puipjp,pu,prho);
                                             }
-                                        }
-                                        else
+                                        } else {
                                             update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        }
                                     }
                                     
                                     /* explosive source */
@@ -2451,18 +2464,22 @@ zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_
                                         psource(nt,psxx,psyy,psp,srcpos_loc_back,sectionpdiff,ntr1,1);
                                     
                                     if ((FREE_SURF) && (POS[2]==0)){
-                                        if (L)    /* viscoelastic */
-if (!ACOUSTIC) {
-                                            surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
-}else{ /* acoustic */
+                                        if (L) {
+                                            /* viscoelastic */
+                                            if (!ACOUSTIC) {
+                                                surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
+                                            }else{
+                                                /* acoustic */
                                                 surface_acoustic_PML(1, psp);
-}
-                                        }
-                                        else{
-                                            if(!ACOUSTIC)/* elastic */
+                                            }
+                                        }else{
+                                            /* elastic */
+                                            if(!ACOUSTIC){
                                                 surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
-                                            else /* acoustic */
+                                            }else{
+                                                /* acoustic */
                                                 surface_acoustic_PML(1, psp);
+                                            }
                                         }
                                     }
                                     
@@ -2485,7 +2502,7 @@ if (!ACOUSTIC) {
                                         if (infoout)  fprintf(FP," finished (real time: %4.2f s).\n",time7-time6);
                                     }
                                     
-                                            
+                                    
                                     /*if(nt==hin1){*/
                                     
                                     /*-------------------------------------------------*/
@@ -2566,6 +2583,7 @@ if (!ACOUSTIC) {
                                     }
                                     
                                 }
+                                
                                 if((!VERBOSE)&&(MYID==0)) fprintf(FP,"\n");
                                 /*--------------------------------------------------------------------------------*/
                                 /*---------------------- End loop over timesteps (backpropagation) -------------*/
@@ -2688,9 +2706,7 @@ if (!ACOUSTIC) {
                                     }
                                     
                                 } /* end HESSIAN */
-                                
-                                
-                                
+
                             }
                             
                             /*--------------------------------------------------------------------------------*/
@@ -3033,7 +3049,6 @@ if (!ACOUSTIC) {
                                 }
                             }
                             
-                            
                             /* ----------------------------------------- */
                             /* Summing up the gradient for all shots SH */
                             /* ----------------------------------------- */
@@ -3100,8 +3115,6 @@ if (!ACOUSTIC) {
                         write_matrix_disk(We_sum_SH, jac);
                     }
                 }
-                
-
                 
                 /* ----------------------------------------- */
                 /*  Set gradient to zero if no inversion     */
@@ -3250,7 +3263,7 @@ if (!ACOUSTIC) {
                 /* ----------- Preconditioned Conjugate Gradient Method (PCG)  ----------*/
                 /* ----------------------------------------------------------------------*/
                 if((HESSIAN==0)&&(GRAD_METHOD==1)){
-
+                    
                     if (WAVETYPE==1 || WAVETYPE==3) PCG(waveconv, taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, C_vp, gradp, nfstart_jac, waveconv_u, C_vs, gradp_u, waveconv_rho, C_rho, gradp_rho,Vs_avg,FC);
                     if (WAVETYPE==2 || WAVETYPE==3) PCG_SH(taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, nfstart_jac, waveconv_u_z, C_vs, gradp_u_z, waveconv_rho_z, C_rho, gradp_rho_z,Vs_avg,FC);
                     
@@ -3478,12 +3491,12 @@ if (!ACOUSTIC) {
             FWI_run=1;
             gradient_optimization=1;
         }
-
+        
         opteps_vp=0.0;
         opteps_vs=0.0;
         opteps_rho=0.0;
         
-
+        
         /* ============================================================================================================================*/
         /* =============================================== Step length estimation =====================================================*/
         /* ============================================================================================================================*/
@@ -3532,10 +3545,11 @@ if (!ACOUSTIC) {
                      the have to be averaged. For this, values lying at 0 and NX+1,
                      for example, are required on the local grid. These are now copied from the
                      neighbouring grids */
-                    if(!ACOUSTIC)
+                    if(!ACOUSTIC) {
                         matcopy_elastic(prhonp1, ppinp1, punp1);	/* no differentiation of elastic and viscoelastic modelling because the viscoelastic parameters did not change during the forward modelling */
-                    else
+                    }else{
                         matcopy_acoustic(prhonp1, ppinp1);
+                    }
                     
                     MPI_Barrier(MPI_COMM_WORLD);
                     
@@ -3544,12 +3558,12 @@ if (!ACOUSTIC) {
                     
                     /* Preparing memory variables for update_s (viscoelastic) */
                     if (L) {
-if(!ACOUSTIC) {
-prepare_update_s(etajm,etaip,peta,fipjp,punp1,puipjp,ppinp1,prhonp1,ptaus,ptaup,ptausipjp,f,g, bip,bjm,cip,cjm,dip,d,e);
-}else{
-							prepare_update_p(etajm,peta,ppinp1,prhonp1,ptaup,g,bjm,cjm,e);
-}
-					}
+                        if(!ACOUSTIC) {
+                            prepare_update_s(etajm,etaip,peta,fipjp,punp1,puipjp,ppinp1,prhonp1,ptaus,ptaup,ptausipjp,f,g, bip,bjm,cip,cjm,dip,d,e);
+                        }else{
+                            prepare_update_p(etajm,peta,ppinp1,prhonp1,ptaup,g,bjm,cjm,e);
+                        }
+                    }
                     
                     /* initialization of L2 calculation */
                     L2=0.0;
@@ -3633,16 +3647,17 @@ prepare_update_s(etajm,etaip,peta,fipjp,punp1,puipjp,ppinp1,prhonp1,ptaus,ptaup,
                         
                         /* initialize wavefield with zero */
                         if (L){
-if(!ACOUSTIC) {
-                            zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
-}else {
-zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
-}
+                            if(!ACOUSTIC) {
+                                zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
+                            }else {
+                                zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
+                            }
                         }else{
-                            if(!ACOUSTIC)
+                            if(!ACOUSTIC) {
                                 zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
-                            else
+                            }else{
                                 zero_fdveps_ac(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,psp,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
+                            }
                         }
                         
                         
@@ -3712,11 +3727,11 @@ zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, psi_
                             
                             if (L) {   /* viscoelastic */
                                 if (WAVETYPE==1 || WAVETYPE==3) {
-if(!ACOUSTIC) {
-                                    update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppinp1, punp1, puipjp, prhonp1, hc, infoout, pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-} else { 
-update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppinp1, prhonp1, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-}
+                                    if(!ACOUSTIC) {
+                                        update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppinp1, punp1, puipjp, prhonp1, hc, infoout, pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    } else {
+                                        update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppinp1, prhonp1, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    }
                                 }
                                 if (WAVETYPE==2 || WAVETYPE==3) {
                                     update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, puip, pujp, tausip, tausjp, bip, bjm, cip, cjm, etajm, etaip, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
@@ -3746,17 +3761,17 @@ update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppinp1, prhonp1, hc, infoout, pp,
                             
                             if ((FREE_SURF) && (POS[2]==0)){
                                 if (L)    /* viscoelastic */
-if (!ACOUSTIC){ 
-                                    surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppinp1, punp1, prhonp1, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
-}else{
+                                    if (!ACOUSTIC){
+                                        surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppinp1, punp1, prhonp1, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
+                                    }else{
                                         surface_acoustic_PML(1, psp);
-                                }
-                                else{
-                                    if(!ACOUSTIC) /* elastic */
-                                        surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppinp1, punp1, prhonp1, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
-                                    else
-                                        surface_acoustic_PML(1, psp);
-                                }
+                                    }
+                                    else{
+                                        if(!ACOUSTIC) /* elastic */
+                                            surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppinp1, punp1, prhonp1, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
+                                        else
+                                            surface_acoustic_PML(1, psp);
+                                    }
                             }
                             
                             /* stress exchange between PEs */
@@ -3785,6 +3800,7 @@ if (!ACOUSTIC){
                             }
                             
                         }
+                        
                         /*-------------------------------------------------------------------------------*/
                         /*------------------ end loop over timesteps (forward model) step length  -------*/
                         /*-------------------------------------------------------------------------------*/
@@ -4723,6 +4739,6 @@ if (!ACOUSTIC){
     fclose(FP);
     
     MPI_Finalize();
-    return 0;	
+    return 0;
     
 }/*main*/

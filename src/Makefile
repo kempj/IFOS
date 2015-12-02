@@ -9,6 +9,7 @@
 MODEL = ../genmod/1D_linear_gradient_visc.c
 MODEL_AC = ../genmod/1D_linear_gradient_ac.c
 MODEL_EL = ../genmod/1D_linear_gradient_el.c
+MODEL_VAC = ../genmod/1D_linear_gradient_viscac.c
 EXEC= ../bin
 
 # Description:
@@ -18,7 +19,7 @@ EXEC= ../bin
 
 # LINUX with OpenMPI / IntelMPI and INTEL Compiler
 # Use icc whenever possible, this will be much faster than gcc
-CC=mpiicc
+CC=mpicc
 LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
 CFLAGS=-O3
 SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
@@ -101,6 +102,7 @@ DENISE= \
 	$(MODEL) \
 	$(MODEL_AC) \
 	$(MODEL_EL) \
+    $(MODEL_VAC) \
 	matcopy.c \
 	matcopy_elastic.c \
 	matcopy_acoustic.c \
@@ -158,6 +160,11 @@ DENISE= \
     calc_hilbert.c \
 	eprecond.c \
 	eprecond1.c \
+    zero_fdveps_viscac.c \
+    update_p_visc_PML.c \
+    matcopy_viscac.c \
+    prepare_update_p.c \
+    readmod_viscac.c \
         filter_frequencies.c
 	
 SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)

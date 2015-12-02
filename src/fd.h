@@ -546,3 +546,17 @@ void lbfgs_core(int iteration, int N_LBFGS, int NPAR_LBFGS,float ** s_LBFGS, flo
 /* Wolfe condition */
 int check_wolfe(float steplength, float misfit_old, float misfit_new, float ** grad_old_vs, float ** grad_new_vs, float ** update_vs, float ** grad_old_rho, float ** grad_new_rho, float ** update_rho, float ** grad_old_vp, float ** grad_new_vp, float ** update_vp, float c1, float c2, int NPAR_LBFGS);
 void wolfe_linesearch(int wolfe_status, float *alpha_SL_min, float *alpha_SL_max, float *alpha_SL);
+
+/* functions for viscoacoustic modelling */
+void model_viscac(float  **  rho, float **  pi, float **  taup, float *  eta);
+void readmod_viscac(float  **  rho, float **  pi, float **  taup, float *  eta);
+void matcopy_viscac(float ** prho, float ** ppi, float ** taup);
+void prepare_update_p(float *etajm, float *peta, float **ppi, float **prho, float **ptaup, float **g, float *bjm, float *cjm, float ***e);
+void zero_fdveps_viscac(int ny1, int ny2, int nx1, int nx2, float ** vx, float ** vy, float ** sp, float ** vxp1, float ** vyp1,
+                        float ** psi_sxx_x, float ** psi_sxy_x, float ** psi_vxx, float ** psi_vyx, float ** psi_syy_y, float ** psi_sxy_y, float ** psi_vyy, float ** psi_vxy, float ** psi_vxxs, float ***pp);
+void update_p_visc_PML(int nx1, int nx2, int ny1, int ny2, float ** vx, float ** vy, float ** sp, float ** pi, float **rho, float *hc, int infoout,
+                       float ***p, float **g, float *bjm, float *cjm, float ***e,
+                       float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
+                       float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,
+                       float ** psi_vxx, float ** psi_vyy, float ** psi_vxy, float ** psi_vyx);
+
