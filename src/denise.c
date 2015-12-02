@@ -4208,7 +4208,7 @@ int main(int argc, char **argv){
                 }
                 
                 if(diff<=pro) fprintf(FP,"\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
-                if(wolfe_SLS_failed) fprintf(FP,"\n Wolfe step length search failed \n",pro,diff);
+                if(wolfe_SLS_failed) fprintf(FP,"\n Wolfe step length search failed \n");
                 fprintf(FP,"\n Switching to next line in workflow");
                 
                 workflow_line_current++;
