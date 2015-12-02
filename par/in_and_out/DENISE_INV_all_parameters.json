@@ -100,8 +100,29 @@
 			"INVMAT" : "0",
 			"QUELLTYPB" : "1",
 			"MISFIT_LOG_FILE" : "L2_LOG.dat",
-			"VELOCITY" : "0",
-			
+			"VELOCITY" : "0",	
+
+"Gradient-Method" : "comment",
+			"GRAD_METHOD" : "1",
+			"LBFGS_STEP_LENGTH" : "1",
+			"N_LBFGS" : "5",
+
+"Wolfe Condition" : "comment",
+			"WOLFE_CONDITION" : "1",
+			"WOLFE_NUM_TEST" : "5",
+			"WOLFE_TRY_OLD_STEPLENGTH" : "0",
+
+"Approx. Hessian" : "comment",
+			"EPRECOND" : "3",
+			"EPSILON_WE" : "0.005",
+
+			"EPRECOND_ITER" : "0",
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "0",
+			"FILE_WORKFLOW" : "workflow.txt",
+
+
 "Inversion for density" : "comment",
 			"INV_RHO_ITER" : "0",
 			
@@ -135,7 +156,7 @@
 			"FC_HESSIAN" : "100",
 			"ORDER_HESSIAN" : "4",
 			"TSHIFT_back" : "0.0",
-			"GRAD_METHOD" : "1",
+
 
 "Gradient calculation" : "comment",
 			"LNORM" : "2",

@@ -87,6 +87,7 @@
 			"IDX" : "1",
 			"IDY" : "1",
 			"SNAP_FORMAT" : "3",
+			"SNAPSHOT_START , SNAPSHOT_END , SNAPSHOT_INCR" : "2, 3 , 2",
 			"SNAP_FILE" : "./snap/waveform_forward",
 
 "Monitoring the simulation" : "comment",

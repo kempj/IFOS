@@ -231,6 +231,16 @@ With this option pure acoustic modelling and/or inversion can be performed (ACOU
 
 For acoustic modelling the option HESSIAN is not available (GRAD\_METHOD needs to be 1), as well as the option VELOCITY. Only FDORDER = 2 and INVMAT1 = 1 are possible.
 
+\section{PSV and SH modelling}
+{\color{blue}{\begin{verbatim}
+			"WAVETYPE" : "1",
+\end{verbatim}}}
+
+{\color{red}{\begin{verbatim}
+Default value is:
+	WAVETYPE=1
+\end{verbatim}}}
+In 2D the wave equations of PSV and SH waves are decoupled. Therefore the inversion problem is decoupled as well. With the variable WAVETYPE it is possible to switch between a PSV (WAVETYPE==1) and a SH (WAVETYPE==2) simulation. However the SH FWI is still in development and it is strongly recommended to use the PSV simulation. If ACOUSTIC is set to 1, WAVETYPE==1 will be enforced automatically.
 
 \section{Model input}
 \label{gen_of_mod}
@@ -386,6 +396,7 @@ directory mfiles.
 			"IDX" : "1",
 			"IDY" : "1",
 			"SNAP_FORMAT" : "3",
+			"SNAPSHOT_START , SNAPSHOT_END , SNAPSHOT_INCR" : "2, 3 , 2",
 			"SNAP_FILE" : "./snap/waveform_forward",
 \end{verbatim}}}
 
@@ -396,7 +407,7 @@ IDX=1
 IDY=1
 \end{verbatim}}}
 
-If SNAP$>0$, wavefield information (particle velocities (SNAP=1), pressure (SNAP=2), or curl and divergence of particle velocities (SNAP=3), or everything (SNAP=4)) for the entire model is saved on the hard disk (assure that enough free space is on disk!). Each PE is writing his sub-volume to disk. The filenames have the basic filename SNAP\_FILE plus an extension that indicates the PE number in the logical processor array (SNAP\_FILE.<PEnumber>). The first snapshot is written at TSNAP1 seconds of seismic wave traveltime to the output files, the second at TSNAP1 + TSNAPINC seconds etc. The last snapshots contains wavefield at TSNAP2 seconds. Note that the file sizes increase during the simulation. The snapshot files might become quite LARGE. It may therefore be necessary to reduce the amount of snapshot data by increasing IDX, IDY and/or TSNAPINC. In order to merge the separate snapshots of each PE after the completion of the wave modeling, you can use the program snapmerge (see Chapter \ref{installation}, section \textbf{src}). The bash command line to merge the snapshot files can look like this: 
+If SNAP$>0$, wavefield information (particle velocities (SNAP=1), pressure (SNAP=2), or curl and divergence of particle velocities (SNAP=3), or everything (SNAP=4)) for the entire model is saved on the hard disk (assure that enough free space is on disk!). Each PE is writing his sub-volume to disk. The filenames have the basic filename SNAP\_FILE plus an extension that indicates the PE number in the logical processor array (SNAP\_FILE.<PEnumber>). The first snapshot is written at TSNAP1 seconds of seismic wave traveltime to the output files, the second at TSNAP1 + TSNAPINC seconds etc. The last snapshots contains wavefield at TSNAP2 seconds. With SNAPSHOT\_START (SNAPSHOT\_END) you can specify the first (last) shot, for which a snapshot should by generated. The increment for the shotwise output of the snapshots can be defined in the variable SNAPSHOT\_INCR. Note that the file sizes increase during the simulation. The snapshot files might become quite LARGE. It may therefore be necessary to reduce the amount of snapshot data by increasing IDX, IDY and/or TSNAPINC. In order to merge the separate snapshots of each PE after the completion of the wave modeling, you can use the program snapmerge (see Chapter \ref{installation}, section \textbf{src}). The bash command line to merge the snapshot files can look like this: 
 \newline
 
 \textit{../bin/snapmerge DENISE.json}.
@@ -491,11 +502,11 @@ Default values are:
 "USE_WORKFLOW" : "0"
 \end{verbatim}}}
 With the use of a workflow file, you can define different FWI stages. For instance, one FWI stage could refer to one corner frequency of a low-pass filter or to a specific time window. Every line in the workflow file corresponds to one FWI stage. To use a workflow file the switch USE\_WORKFLOW have to be set to 1.  The algorithm will automatically change to the next line of the workflow file if the abort criterium of the current line is reached or if no step length could be found which reduces the misfit. The structure of the variables inside the workflow file is as follow: \\ \\
-\begin{tabular}{llllllll}
-\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & FC & DUMMY\\
+\begin{tabular}{llllllllllll}
+\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & FC & WAVETYPE & 0 & 0 & EPRECOND & EPSILON\_WE\\
 \end{tabular}
 \\ \\
-The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency FC. DUMMY is a placeholder and currently not used. Please note, that all features which are used eg. TIME\_FILT within the workflow have to be activated in the .JSON file.\\
+The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency FC. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following to zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg. TIME\_FILT within the workflow have to be activated in the .JSON file.\\
 For an example of a workflow file, have a look in the par/ folder.
 
 
@@ -503,13 +514,15 @@ For an example of a workflow file, have a look in the par/ folder.
 {\color{blue}{\begin{verbatim}
 			"EPRECOND" : "3",
 			"EPSILON_WE" : "0.005",
+			
+			"EPRECOND_PER_SHOT" : "1",
 \end{verbatim}}}
 {\color{red}{\begin{verbatim}
 Default values are:
 			"EPRECOND" : "0",
 \end{verbatim}}}
 
-With the variable EPRECOND it is possible to activate an approximated Hessian for preconditioning. There are two different approximations available. EPRECOND==1 will be an approximation after \cite{shin2001efficient}, and EPRECOND==3 after \cite{plessix2004frequency}. EPSILON\_WE defines a water level to stabilize the approximated Hessian. The use of an approximated Hessian can significantly influence the speed of convergence.
+With the variable EPRECOND it is possible to activate an approximated Hessian for preconditioning. There are two different approximations available. EPRECOND==1 will be an approximation after \cite{shin2001efficient}, and EPRECOND==3 after \cite{plessix2004frequency}. EPSILON\_WE defines a water level to stabilize the approximated Hessian. The use of an approximated Hessian can significantly influence the speed of convergence. The Hessian is calculated for each shot individually and will be applied to the gradient from each shot directly if the switch EPRECOND\_PER\_SHOT is set to 1. Otherwise (EPRECOND\_PER\_SHOT==0) the Hessian will be summed up for each shot and will be applied to the total gradient. 
 Up to now there is no rule of tumb wether EPRECOND==1 or ==3 should be chosen,  so it is recommended to try both. After each iteration the Hessian will be outputted in the folder JACOBIAN with the syntax \*approx\_hessian\* in the file name.\\
 The corresponding functions are copied out of DENISE Black Edition, which is maintained by Daniel Koehn. 
 
