@@ -2155,7 +2155,7 @@ int main(int argc, char **argv){
                             /*----------------------------------------------------------------------------------*/
                             /* ------ start loop over shots at receiver positions (backward model) ------------ */
                             /*----------------------------------------------------------------------------------*/
-                            
+                            nshots1=1;
                             for (irec=1;irec<=nshots1;irec+=RECINC){ /* loop over shots at receiver positions */
                                 
                                 hin=1;
