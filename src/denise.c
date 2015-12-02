@@ -220,7 +220,7 @@ int main(int argc, char **argv){
     /* If Verbose==0, no PE will write a log file */
     if(!VERBOSE) sprintf(LOG_FILE,"/dev/null");
     
-    if ((MYID==0) && (LOG==1)) FP=stdout;
+    if ((MYID==0)) FP=stdout;
     else {
         FP=fopen(LOG_FILE,"w");
     }
@@ -1165,7 +1165,9 @@ int main(int argc, char **argv){
                 /* Open Log File for L2 norm */
                 if(INVMAT!=10){
                     if(MYID==0){
-                        if(iter==1){FPL2=fopen(MISFIT_LOG_FILE,"w");}
+                        if(iter==1){
+                            FPL2=fopen(MISFIT_LOG_FILE,"w");
+                        }
                         if(iter>1){FPL2=fopen(MISFIT_LOG_FILE,"a");}
                     }
                 }

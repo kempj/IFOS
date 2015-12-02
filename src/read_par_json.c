@@ -33,7 +33,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern float XREC1, XREC2, YREC1, YREC2, FPML;
     extern float REC_ARRAY_DEPTH, REC_ARRAY_DIST;
     extern int SEISMO, NDT, NGEOPH, SEIS_FORMAT, FREE_SURF, READMOD, READREC, SRCREC, RUN_MULTIPLE_SHOTS;
-    extern int BOUNDARY, REC_ARRAY, DRX, LOG, TAPER, TAPERLENGTH, INVTYPE, FW;
+    extern int BOUNDARY, REC_ARRAY, DRX, TAPER, TAPERLENGTH, INVTYPE, FW;
     extern float TSNAP1, TSNAP2, TSNAPINC, REFREC[4];
     extern int SNAPSHOT_START,SNAPSHOT_END,SNAPSHOT_INCR;
     extern char  MFILE[STRING_SIZE], SIGNAL_FILE[STRING_SIZE], SIGNAL_FILE_SH[STRING_SIZE], LOG_FILE[STRING_SIZE];
@@ -368,9 +368,6 @@ void read_par_json(FILE *fp, char *fileinp){
         }
         if (get_string_from_objectlist("MFILE",number_readobjects,MFILE,varname_list, value_list))
             err("Variable MFILE could not be retrieved from the json input file!");
-        if (get_int_from_objectlist("LOG",number_readobjects,&LOG,varname_list, value_list)){
-            LOG=1;
-            fprintf(fp,"Variable LOG is set to default value %d.\n",LOG);}
         if (get_int_from_objectlist("CHECKPTREAD",number_readobjects,&CHECKPTREAD,varname_list, value_list)){
             CHECKPTREAD=0;
             fprintf(fp,"Variable CHECKPTREAD is set to default value %d.\n",CHECKPTREAD);}

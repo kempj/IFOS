@@ -34,7 +34,7 @@ void exchange_par(void){
     extern float XREC1, XREC2, YREC1, YREC2, FPML;
     extern float REC_ARRAY_DEPTH, REC_ARRAY_DIST, MUN, EPSILON, EPSILON_u, EPSILON_rho;
     extern int SEISMO, NDT, NGEOPH, SEIS_FORMAT, FREE_SURF, READMOD, READREC, SRCREC;
-    extern int BOUNDARY, REC_ARRAY, DRX, LOG, FW;
+    extern int BOUNDARY, REC_ARRAY, DRX, FW;
     extern int SNAPSHOT_START,SNAPSHOT_END,SNAPSHOT_INCR;
     extern float TSNAP1, TSNAP2, TSNAPINC, REFREC[4];
     extern char  MFILE[STRING_SIZE], SIGNAL_FILE[STRING_SIZE],SIGNAL_FILE_SH[STRING_SIZE], LOG_FILE[STRING_SIZE];
@@ -204,7 +204,6 @@ void exchange_par(void){
         
         idum[1]  = NPROCX;
         idum[2]  = NPROCY;
-        idum[3]  = LOG;
         
         idum[4]  = NPROCX*NPROCY;
         idum[5]  = NX;
@@ -474,7 +473,6 @@ void exchange_par(void){
     
     NPROCX = idum[1];
     NPROCY = idum[2];
-    LOG=idum[3];
     NPROC  = idum[4];
     NX = idum[5];
     NY = idum[6];

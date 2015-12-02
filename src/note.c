@@ -27,7 +27,7 @@
 void note(FILE *fp){
 
 extern char LOG_FILE[STRING_SIZE];
-extern int MYID, LOG;
+extern int MYID;
 
 	fprintf(fp," Please note: \n");
 	fprintf(fp," Each processing element (PE) is writing log information during program \n");
@@ -36,6 +36,4 @@ extern int MYID, LOG;
 	fprintf(fp," Information about overall program execution \n");
 	fprintf(fp," (numerical artefacts, accuracy, computing times etc) \n");
 	fprintf(fp," will be written by PE 0 to ");
-	if (LOG==1) fprintf(fp," standard output. \n");
-	    else    fprintf(fp," %s.%i .\n",LOG_FILE,MYID);
 }
