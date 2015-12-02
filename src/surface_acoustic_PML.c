@@ -36,7 +36,6 @@ void surface_acoustic_PML(int ndepth, float ** sp){
 
 	j=ndepth;     /* The free surface is located exactly in y=1/2*dh !! */
 	for (i=1;i<=NX;i++){
-		sp[j][i] = 0;
 		for (m=1; m<=fdoh; m++) {
 			sp[j-m][i] = -sp[j+m][i];
 		}

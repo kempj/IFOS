@@ -28,7 +28,7 @@
 
 
 void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
-	float **syy, float **sp, float **u, float **pi, float *hc){
+	float **syy, float **sp, float **u, float **pi, float *hc, int ishot){
 
 	/* 
 		different data formats of output:
@@ -55,9 +55,16 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 	extern float DH, DT;
 	extern char SNAP_FILE[STRING_SIZE];
 	extern int NX, NY,  SNAP_FORMAT, SNAP, FDORDER, ACOUSTIC;
-	extern int MYID, POS[3], IDX, IDY;
-
-
+	extern int MYID, POS[3], IDX, IDY,VERBOSE;
+    
+    /* Check if snapshots should be writen for this shot*/
+    extern int SNAPSHOT_START, SNAPSHOT_END, SNAPSHOT_INCR;
+    int check=0;
+    for(i=SNAPSHOT_START;i<=SNAPSHOT_END;i+=SNAPSHOT_INCR) {
+        if(ishot==i) check=1;
+    }
+    if(check==0) return;
+    
 	dhi = 1.0/DH;
 	fdoh = FDORDER/2;
 
@@ -73,27 +80,24 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 		break;
 	}
 	
-	sprintf(snapfile_x,"%s%s.x.%i.%i",SNAP_FILE,ext,POS[1],POS[2]);
-	sprintf(snapfile_y,"%s%s.y.%i.%i",SNAP_FILE,ext,POS[1],POS[2]);
-	sprintf(snapfile_div,"%s%s.div.%i.%i",SNAP_FILE,ext,POS[1],POS[2]);
-	sprintf(snapfile_rot,"%s%s.rot.%i.%i",SNAP_FILE,ext,POS[1],POS[2]);
-	sprintf(snapfile_p,"%s%s.p.%i.%i",SNAP_FILE,ext,POS[1],POS[2]);
+	sprintf(snapfile_x,"%s%s.x.shot%i.%i.%i",SNAP_FILE,ext,ishot,POS[1],POS[2]);
+	sprintf(snapfile_y,"%s%s.y.shot%i.%i.%i",SNAP_FILE,ext,ishot,POS[1],POS[2]);
+	sprintf(snapfile_div,"%s%s.div.shot%i.%i.%i",SNAP_FILE,ext,ishot,POS[1],POS[2]);
+	sprintf(snapfile_rot,"%s%s.rot.shot%i.%i.%i",SNAP_FILE,ext,ishot,POS[1],POS[2]);
+	sprintf(snapfile_p,"%s%s.p.shot%i.%i.%i",SNAP_FILE,ext,ishot,POS[1],POS[2]);
 
-	fprintf(fp,"\n\n PE %d is writing snapshot-data at T=%fs to \n",MYID,nt*DT);
-	
+	if(VERBOSE) fprintf(fp,"\n\n PE %d is writing snapshot-data at T=%fs to \n",MYID,nt*DT);
 	
 	if (nsnap==1)
 		sprintf(wm,"w");
 	else 
 		sprintf(wm,"a");
-		
 
 	switch(SNAP){
 	case 1 :
-		fprintf(fp,"%s\n", snapfile_x);
-		fprintf(fp,"%s\n\n", snapfile_y);
-		
-		fpx1=fopen(snapfile_x,wm);
+		if(VERBOSE)fprintf(fp,"%s\n", snapfile_x);
+		if(VERBOSE)fprintf(fp,"%s\n\n", snapfile_y);
+        fpx1=fopen(snapfile_x,wm);
 		fpy1=fopen(snapfile_y,wm);
 		for (i=1;i<=NX;i+=IDX)
 			for (j=1;j<=NY;j+=IDY){
@@ -106,7 +110,7 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 
 
 	case 2 :
-		fprintf(fp,"%s\n\n",snapfile_p);
+		if(VERBOSE)fprintf(fp,"%s\n\n",snapfile_p);
 		fpx1=fopen(snapfile_p,wm);
 
 		for (i=1;i<=NX;i+=IDX)
@@ -121,8 +125,8 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 		break;
 
 	case 4 :
-		fprintf(fp,"%s\n", snapfile_x);
-		fprintf(fp,"%s\n", snapfile_y);
+		if(VERBOSE)fprintf(fp,"%s\n", snapfile_x);
+		if(VERBOSE)fprintf(fp,"%s\n", snapfile_y);
 		fpx1=fopen(snapfile_x,wm);
 		fpy1=fopen(snapfile_y,wm);
 		for (i=1;i<=NX;i+=IDX)
@@ -133,7 +137,7 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 		fclose(fpx1);
 		fclose(fpy1);
 		
-		fprintf(fp,"%s\n\n",snapfile_p);
+		if(VERBOSE)fprintf(fp,"%s\n\n",snapfile_p);
 		fpx1=fopen(snapfile_p,wm);
 
 		for (i=1;i<=NX;i+=IDX)
@@ -149,12 +153,12 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 		/* output of the curl of the velocity field according to Dougherty and
 				                  Stephen (PAGEOPH, 1988) */
 		/*if (NY1<=2) error("NY1 must be greater than 2.");*/
-		fprintf(fp,"%s\n", snapfile_div);
-		fprintf(fp,"%s\n\n", snapfile_rot);
+		if(VERBOSE)fprintf(fp,"%s\n", snapfile_div);
+		if(VERBOSE)fprintf(fp,"%s\n\n", snapfile_rot);
 		fpx2=fopen(snapfile_div,wm);
 		fpy2=fopen(snapfile_rot,wm);
 		
-		nd = FDORDER/2;
+		nd = FDORDER/2+1;
 		curlfield  =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
 
 
@@ -215,7 +219,7 @@ void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
 		break;
 	}
 
-
+    
 }
 
 

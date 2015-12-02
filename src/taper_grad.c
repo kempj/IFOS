@@ -50,7 +50,7 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
         float **m, **edgemat, **mm, **msum, minm, maxm, x, y, rad, **taper_coeff_glob;
         float maxrad;
 	char taper_file[STRING_SIZE];
-
+    extern int VERBOSE;
 	FILE *fp_taper;
 
 	/*SRTSHAPE=2;
@@ -71,7 +71,7 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
 	/*printf("%d \t %d \t %d \t %d \n",GRADT1, GRADT2, GRADT3, GRADT4);
 	printf("%d \t %d \t %d \n",taperlength, taperlength2,ifw);*/
 	
-	if (MYID==0)
+	if (MYID==0&&VERBOSE)
 	{
 		fprintf(FP,"\n **Message from taper_grid (printed by PE %d):\n",MYID);
 		fprintf(FP," Coefficients for gradient taper are now calculated.\n");
@@ -198,13 +198,11 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
         taperlength2=GRADT4-GRADT3;
         ifw = GRADT2-GRADT1+1;
 
-        printf("%d \t %d \t %d \t %d \n",GRADT1, GRADT2, GRADT3, GRADT4);
-        printf("%d \t %d \t %d \n",taperlength, taperlength2,ifw);
-
-        if (MYID==0)
-        {
-                fprintf(FP,"\n **Message from taper_grid (printed by PE %d):\n",MYID);
-                fprintf(FP," Coefficients for gradient taper are now calculated.\n");
+        if (MYID==0&&VERBOSE){
+            printf("%d \t %d \t %d \t %d \n",GRADT1, GRADT2, GRADT3, GRADT4);
+            printf("%d \t %d \t %d \n",taperlength, taperlength2,ifw);
+            fprintf(FP,"\n **Message from taper_grid (printed by PE %d):\n",MYID);
+            fprintf(FP," Coefficients for gradient taper are now calculated.\n");
         }
 
         waveconvtmp = matrix(0,NY+1,0,NX+1);
@@ -548,7 +546,7 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
         
     if((sws>=4)&&(sws<=6)){
         
-          if (MYID==0)
+          if (MYID==0&&VERBOSE)
           {
                   fprintf(FP,"\n **Message from taper_grid (printed by PE %d):\n",MYID);
                   fprintf(FP," Coefficients for gradient taper are now calculated.\n");

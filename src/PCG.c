@@ -31,13 +31,19 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 	extern int HESSIAN, INVMAT, SWS_TAPER_GRAD_VERT, SWS_TAPER_GRAD_HOR, SWS_TAPER_GRAD_SOURCES, SWS_TAPER_FILE;
 	extern int POS[3], MYID, ACOUSTIC;
 	extern char JACOBIAN[STRING_SIZE];
-	
+    extern int RESTART_WORKFLOW;
+    extern int VERBOSE;
+    extern int start_iter;
 	char jac[225], jac2[225];
 	int i, j;
 	float betaz, betan, gradplastiter, gradclastiter, betar, beta;
 	extern FILE *FP;
+    int use_conjugate_1=1;
+    int use_conjugate_2=1;
 	FILE *FP3, *FP4, *FP6, *FP5;
 	
+
+
 	/* ===================================================================================================================================================== */
 	/* ===================================================== GRADIENT ZP ================================================================================== */
 	/* ===================================================================================================================================================== */
@@ -79,13 +85,17 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 		/* merge gradient file */ 
 		sprintf(jac,"%s_g.old",JACOBIAN);
 		if (MYID==0) mergemod(jac,3);
-		
+        
+		MPI_Barrier(MPI_COMM_WORLD);
+        sprintf(jac,"%s_g.old.%i.%i",JACOBIAN,POS[1],POS[2]);
+        remove(jac);
+        
 		/* Normalize gradient to maximum value */
 		/*norm(waveconv,iter,1);*/
 		
 		/* apply spatial wavelength filter */
 		if(SPATFILTER==1){
-			if (MYID==0){
+			if (MYID==0&&VERBOSE){
 			fprintf(FP,"\n Spatial filter is applied to gradient (written by PE %d)\n",MYID);}
 			spat_filt(waveconv,iter,1);}
 		
@@ -102,6 +112,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 		
 		/* save gradient for output as inversion result */
 		if(iter==nfstart_jac){
+                        
 			sprintf(jac,"%s_p_it%d.old.%i.%i",JACOBIAN,iter,POS[1],POS[2]);
 			FP3=fopen(jac,"wb");
 			
@@ -126,12 +137,12 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 		/* calculate conjugate gradient direction, if iter > 1 (after Mora 1987) */
 		/* --------------------------------------------------------------------- */
 		
-		if(iter>1){
+		if((iter>1)&&(use_conjugate_1)){
 			
 			sprintf(jac,"%s_p.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 			FP6=fopen(jac,"rb");
 			
-			if(iter>2){
+			if((iter>2)&&(use_conjugate_2)){
 				sprintf(jac2,"%s_c.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 				FP5=fopen(jac2,"rb");
 			}
@@ -189,7 +200,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 			
 			/*betaVp = beta;*/
 			
-			printf("\n\nTEST: nach exchange (MYID=%d): beta = %e / %e = %e\n",MYID,betaz,betan,beta);
+			/*printf("\n\nTEST: nach exchange (MYID=%d): beta = %e / %e = %e\n",MYID,betaz,betan,beta);*/
 			
 			fseek(FP6,0,SEEK_SET);
 			
@@ -201,7 +212,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 					waveconv[j][i] = gradp[j][i] + gradplastiter * beta;
 				}
 				
-				if(iter>2){
+				if((iter>2)&&(use_conjugate_2)){
 					fread(&gradclastiter,sizeof(float),1,FP5);
 					waveconv[j][i] = gradp[j][i] + gradclastiter * beta;
 				}
@@ -226,11 +237,11 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 			
 			fclose(FP6);
 			
-			if(iter>2){fclose(FP5);}
+			if((iter>2)&&(use_conjugate_2)){fclose(FP5);}
 		}
 		
 		/* output of the conjugate gradient */
-		if(iter>1){
+		if((iter>1)&&(use_conjugate_1)){
 			sprintf(jac2,"%s_c.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 			FP5=fopen(jac2,"wb");
 			
@@ -316,7 +327,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 		
 		/* apply spatial wavelength filter */
 		if(SPATFILTER==1){
-			if (MYID==0){
+			if (MYID==0&&VERBOSE){
 			fprintf(FP,"\n Spatial filter is applied to gradient (written by PE %d)\n",MYID);}
 		spat_filt(waveconv_u,iter,2);}
 		
@@ -357,12 +368,12 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 		/* calculate conjugate gradient direction, if iter > 1 (after Mora 1987) */
 		/* --------------------------------------------------------------------- */
 		
-		if(iter>1){
+		if((iter>1)&&(use_conjugate_1)){
 			
 			sprintf(jac,"%s_p_u.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 			FP6=fopen(jac,"rb");
 			
-			if(iter>2){
+			if((iter>2)&&(use_conjugate_2)){
 				sprintf(jac2,"%s_c_u.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 				FP5=fopen(jac2,"rb");
 			}
@@ -374,7 +385,6 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 			for (j=1;j<=NY;j=j+IDY){
 				
 				fread(&gradplastiter,sizeof(float),1,FP6);
-				
 				/*if(gradglastiter==gradg[j][i]) err("TEST1");*/
 				/*if (MYID==10)  printf("TEST beta (MYID=%d) bei (j,i)=(%i,%i): gradg(k-1) = %e, gradg(k) = %e\n",MYID,j,i,gradglastiter,gradg[j][i]);*/
 				
@@ -419,7 +429,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 			if(beta<0.0){beta = 0.0;}
 			
 			/*betaVs = beta;*/
-			printf("\n\nTEST: nach exchange (MYID=%d): beta = %e / %e = %e\n",MYID,betaz,betan,beta);
+			//printf("\n\nTEST: nach exchange (MYID=%d): beta = %e / %e = %e\n",MYID,betaz,betan,beta);
 			
 			fseek(FP6,0,SEEK_SET);
 			
@@ -431,7 +441,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 					waveconv_u[j][i] = gradp_u[j][i] + gradplastiter * beta;
 				}
 				
-				if(iter>2){
+				if((iter>2)&&(use_conjugate_2)){
 					fread(&gradclastiter,sizeof(float),1,FP5);
 					waveconv_u[j][i] = gradp_u[j][i] + gradclastiter * beta;
 				}
@@ -457,11 +467,11 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 			
 			fclose(FP6);
 			
-			if(iter>2){fclose(FP5);}
+			if((iter>2)&&(use_conjugate_2)){fclose(FP5);}
 		}
 		
 		/* output of the conjugate gradient */
-		if(iter>1){
+		if((iter>1)&&(use_conjugate_1)){
 			sprintf(jac2,"%s_c_u.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 			FP5=fopen(jac2,"wb");
 			
@@ -544,7 +554,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 		
 		/* apply spatial wavelength filter */
 		if(SPATFILTER==1){
-			if (MYID==0){
+			if (MYID==0&&VERBOSE){
 			fprintf(FP,"\n Spatial filter is applied to gradient (written by PE %d)\n",MYID);}
 		spat_filt(waveconv_rho,iter,3);}
 		
@@ -585,12 +595,12 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 		/* calculate conjugate gradient direction, if iter > 1 (after Mora 1987) */
 		/* --------------------------------------------------------------------- */
 		
-		if(iter>1){
+		if((iter>1)&&(use_conjugate_1)){
 			
 			sprintf(jac,"%s_p_rho.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 			FP6=fopen(jac,"rb");
 			
-			if(iter>2){
+			if((iter>2)&&(use_conjugate_2)){
 				sprintf(jac2,"%s_c_rho.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 				FP5=fopen(jac2,"rb");
 			}
@@ -647,7 +657,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 			if(beta<0.0){beta = 0.0;}
 
 			/*betarho = beta;*/
-			printf("\n\nTEST: nach exchange (MYID=%d): beta = %e / %e = %e\n",MYID,betaz,betan,beta);
+			//printf("\n\nTEST: nach exchange (MYID=%d): beta = %e / %e = %e\n",MYID,betaz,betan,beta);
 			
 			fseek(FP6,0,SEEK_SET);
 			
@@ -659,7 +669,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 					waveconv_rho[j][i] = gradp_rho[j][i] + gradplastiter * beta;
 				}
 				
-				if(iter>2){
+				if((iter>2)&&(use_conjugate_2)){
 					fread(&gradclastiter,sizeof(float),1,FP5);
 					waveconv_rho[j][i] = gradp_rho[j][i] + gradclastiter * beta;
 				}
@@ -684,11 +694,11 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 			
 			fclose(FP6);
 			
-			if(iter>2){fclose(FP5);}
+			if((iter>2)&&(use_conjugate_2)){fclose(FP5);}
 		}
 		
 		/* output of the conjugate gradient */
-		if(iter>1){
+		if((iter>1)&&(use_conjugate_1)){
 			sprintf(jac2,"%s_c_rho.old.%i.%i",JACOBIAN,POS[1],POS[2]);
 			FP5=fopen(jac2,"wb");
 			

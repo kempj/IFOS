@@ -104,4 +104,6 @@
 "Termination of the programmme" : "comment",
 			"PRO" : "0.01",
 
+"Verbose mode" : "comment",
+			"VERBOSE" : "0",
 }

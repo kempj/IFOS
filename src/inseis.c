@@ -69,7 +69,12 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 	if(sws==9){  /* open seismic data p */
 		sprintf(data,"%s_p.su.shot%d",DATA_DIR,comp);
 	}
+    
+    if(sws==10){  /* open seismic data vz */
+        sprintf(data,"%s_z.su.shot%d",DATA_DIR,comp);
+    }
 	
+    
 	/*printf("%s\n",data);*/
 	
 	fpdata = fopen(data,"r");

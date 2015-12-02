@@ -17,21 +17,20 @@
 -----------------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------
- *   Taper function now adapted for use in stf.c, only for single traces!
- *   last update 21/10/15, L. Gassner
+ *   Write seismograms to disk                                  
+ *   last update 19/01/02, T. Bohlen
  *  ----------------------------------------------------------------------*/
 #include "fd.h"
 #include "segy.h"
 
-void  taper(float *section, int ns, float fc){
+void  taper(float **sectionpdiff, int ntr, int ns){
 
 	/* declaration of extern variables */
-	extern int MYID;
-	extern float DT;
+	extern int MYID, TAPERLENGTH;
 	extern FILE *FP;
 	
 	/* declaration of local variables */
-	int i,j, h, taperlength, taperduration;
+	int i,j, h;
 	int tracl1;
 	float a;
 	float damping, amp;
@@ -40,47 +39,31 @@ void  taper(float *section, int ns, float fc){
 	window = vector(1,ns);
         amp1 = vector(1,ns);
 	
-	taperlength=(int)(ceil(2.0/fc/DT));
-	taperduration=2*taperlength;
-	
 	/* "Cerjan"-Window */
-        damping=99.9;
+        damping=100.0;
         amp=1.0-damping/100.0;
-	        a=sqrt(-log(amp)/((taperlength-1)*(taperlength-1)));
-        
-	for (i=1;i<=ns;i++){
+        a=sqrt(-log(amp)/((TAPERLENGTH-1)*(TAPERLENGTH-1)));
+        for (i=1;i<=ns;i++){
 		window[i]=1.0;
 		amp1[i]=0.0;
 	}
-	
 	if (MYID==0){
-		fprintf(FP,"\n fc: %f\n",fc);
-		fprintf(FP,"\n taperlength: %d\n",taperlength);
+		fprintf(FP,"\n ntr: %d\n",ntr);
+		fprintf(FP,"\n ns: %d\n",ns);
+		fprintf(FP,"\n TAPERLENGTH: %d\n",TAPERLENGTH);
 	}
+        for (i=1;i<=TAPERLENGTH;i++){amp1[i]=exp(-(a*a*(TAPERLENGTH-i)*(TAPERLENGTH-i)));}
+        for (i=1;i<=1;i++){window[i]=amp1[i];}
+        h=1;
+        for (i=ns;i>=(ns-TAPERLENGTH+3);i--){window[i]=amp1[h];h++;}
 	
-	for (i=1;i<=taperlength;i++){
-		amp1[i]=exp(-(a*a*(taperlength-i)*(taperlength-i)));
+	/* Apply taper window */
+	for(tracl1=1;tracl1<=ntr;tracl1++){ 
+		
+		for(j=1;j<=ns;j++){
+			sectionpdiff[tracl1][j]*=window[j];
+		}
 	}
-	
-// 	/* Taper at the beginning of the window*/
-// 	for (i=1;i<=taperlength;i++){
-// 		window[i]=amp1[i];
-// 	}
-	
-	h=1;
-	for (i=taperduration;i>=(taperduration-taperlength+3);i--){
-		window[i]=amp1[h];
-		h++;
-	}
-	
-	for (i=taperduration;i<=ns;i++){
-		window[i]=amp1[i];
-	}
-	
-	for(j=1;j<=ns;j++){
-		section[j]*=window[j];
-	}
-	
 	free_vector(window,1,ns);
 	free_vector(amp1,1,ns);
 }

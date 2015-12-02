@@ -30,10 +30,10 @@ void prepare_update_s(float *etajm, float *etaip, float *peta, float **fipjp, fl
 	int i, j, l;
 	extern char  MFILE[STRING_SIZE];
 	extern float F_REF;
-		
+    extern int VERBOSE;
+
 	float sumu, sumpi, ws, *pts;
 	float mu, pi, muipjp;
-	
 	
 	/* vector for maxwellbodies */
 	pts=vector(1,L);
@@ -44,7 +44,7 @@ void prepare_update_s(float *etajm, float *etaip, float *peta, float **fipjp, fl
 	
 	/*ws=2.0*PI*FL[1];*/
 	ws=2.0*PI*F_REF;
-	if(MYID==0)printf("MYID %d: F_REF = %f\n",MYID,F_REF);
+	if(MYID==0&&VERBOSE)printf("MYID %d: F_REF = %f\n",MYID,F_REF);
 	
 	sumu=0.0;
 	sumpi=0.0;

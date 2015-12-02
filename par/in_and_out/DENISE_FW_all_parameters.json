@@ -6,6 +6,7 @@
 #
 
 {
+
 "Domain Decomposition" : "comment",
 			"NPROCX" : "4",
 			"NPROCY" : "2",
@@ -96,4 +97,7 @@
 "General inversion parameters" : "comment",
 			"INVMAT1" : "1",
 			"INVMAT" : "10",
+
+"Verbose mode" : "comment",
+			"VERBOSE" : "0",
 }

@@ -26,7 +26,8 @@
 void saveseis(FILE *fp, float **sectionvx, float **sectionvy,float **sectionp,
 float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc, 
 int ntr, float ** srcpos, int ishot, int ns, int iter){ 
-		
+    
+    extern int VERBOSE;
 	extern int SEISMO, SEIS_FORMAT, MYID, RUN_MULTIPLE_SHOTS;	
 	extern char  SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE];
 	extern char  SEIS_FILE_CURL[STRING_SIZE], SEIS_FILE_DIV[STRING_SIZE], SEIS_FILE_P[STRING_SIZE];
@@ -66,46 +67,46 @@ int ntr, float ** srcpos, int ishot, int ns, int iter){
 	
 	switch (SEISMO){
 	case 1 : /* particle velocities only */
-		fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",MYID,ntr,vxf);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",MYID,ntr,vxf);
 		outseis(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
-		fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",MYID,ntr,vyf);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",MYID,ntr,vyf);
 		outseis(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
 		break;
 		
 	case 2 : /* pressure only */
-		fprintf(fp," PE %d is writing %d seismograms of pressure to\n\t %s \n",MYID,ntr,SEIS_FILE_P);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms of pressure to\n\t %s \n",MYID,ntr,SEIS_FILE_P);
 		outseis(fp,fopen(pf,"w"), 0, sectionp,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
 		break;
 		
 	case 3 : /* curl and div only */
-		fprintf(fp," PE %d is writing %d seismograms of divergence to\n\t %s \n",MYID,ntr,SEIS_FILE_DIV);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms of divergence to\n\t %s \n",MYID,ntr,SEIS_FILE_DIV);
 		outseis(fp,fopen(divf,"w"), 0, sectiondiv,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
-		fprintf(fp," PE %d is writing %d seismograms of curl to\n\t %s \n",MYID,ntr,SEIS_FILE_CURL);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms of curl to\n\t %s \n",MYID,ntr,SEIS_FILE_CURL);
 		outseis(fp,fopen(curlf,"w"), 0, sectioncurl,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
 		break;
 		
 	case 4 : /* everything */
-		fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",MYID,ntr,SEIS_FILE_VX);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",MYID,ntr,SEIS_FILE_VX);
 		outseis(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
-		fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",MYID,ntr,SEIS_FILE_VY);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",MYID,ntr,SEIS_FILE_VY);
 		outseis(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
 		
-		fprintf(fp," PE %d is writing %d seismograms of pressure to\n\t %s \n",MYID,ntr,SEIS_FILE_P);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms of pressure to\n\t %s \n",MYID,ntr,SEIS_FILE_P);
 		outseis(fp,fopen(pf,"w"), 0, sectionp,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
 
-		fprintf(fp," PE %d is writing %d seismograms of divergence to\n\t %s \n",MYID,ntr,SEIS_FILE_DIV);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms of divergence to\n\t %s \n",MYID,ntr,SEIS_FILE_DIV);
 		outseis(fp,fopen(divf,"w"),0, sectiondiv,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
-		fprintf(fp," PE %d is writing %d seismograms of curl to\n\t %s \n",MYID,ntr,SEIS_FILE_CURL);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms of curl to\n\t %s \n",MYID,ntr,SEIS_FILE_CURL);
 		outseis(fp,fopen(curlf,"w"),0, sectioncurl,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);	
 		break;
 		
 	case 5 : /* everything except curl and div */
-		fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",MYID,ntr,SEIS_FILE_VX);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",MYID,ntr,SEIS_FILE_VX);
 		outseis(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
-		fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",MYID,ntr,SEIS_FILE_VY);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",MYID,ntr,SEIS_FILE_VY);
 		outseis(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
 		
-		fprintf(fp," PE %d is writing %d seismograms of pressure to\n\t %s \n",MYID,ntr,SEIS_FILE_P);
+		if(VERBOSE) fprintf(fp," PE %d is writing %d seismograms of pressure to\n\t %s \n",MYID,ntr,SEIS_FILE_P);
 		outseis(fp,fopen(pf,"w"), 0, sectionp,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
 		break;
 		

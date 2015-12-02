@@ -225,4 +225,7 @@
 			"TWLENGTH_PLUS" : "0.01",
 			"TWLENGTH_MINUS" : "0.01",
 			"GAMMA" : "100000",
+
+"Verbose mode" : "comment",
+			"VERBOSE" : "0",
 }

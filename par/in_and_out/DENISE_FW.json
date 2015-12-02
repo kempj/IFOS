@@ -72,4 +72,7 @@
 "General inversion parameters" : "comment",
 			"INVMAT1" : "1",
 			"INVMAT" : "10",
+
+"Verbose mode" : "comment",
+			"VERBOSE" : "0",
 }

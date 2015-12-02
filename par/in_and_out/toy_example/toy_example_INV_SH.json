@@ -1,0 +1,170 @@
+#-----------------------------------------------------------------
+#      JSON PARAMETER FILE FOR DENISE
+#-----------------------------------------------------------------
+# description:
+# description/name of the model: genmod/toy_example_start.c with flnodes.toy_example.start
+#
+
+{
+"Domain Decomposition" : "comment",
+			"NPROCX" : "4",
+			"NPROCY" : "1",
+
+"FD order" : "comment",
+			"FDORDER" : "4",
+			"MAXRELERROR" : "0",
+
+"2-D Grid" : "comment",
+			"NX" : "252",
+			"NY" : "75",
+			"DH" : "0.2",
+
+"Time Stepping" : "comment",
+			"TIME" : "0.6",
+			"DT" : "5.0e-05",
+
+"Source" : "comment",
+			"QUELLART" : "4",
+			"QUELLART_SH" : "4",
+			"QUELLART values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;Gaussian_deriv=5;Spike=6" : "comment",
+
+			"SIGNAL_FILE" : "./ormsby.dat",
+			"SIGNAL_FILE_SH" : "./ormsby.dat",
+
+			"QUELLTYP" : "3",
+			"QUELLTYP values (point_source) P-SV: explosive=1;force_in_x=2;force_in_y=3;rotated_force=4" : "comment",
+			
+			"SRCREC" : "1",
+			"SRCREC values : read source positions from SOURCE_FILE=1, PLANE_WAVE=2" : "comment",
+			
+			"SOURCE_FILE" : "./source/src_toy_example.dat",
+			"RUN_MULTIPLE_SHOTS" : "1",
+
+"Acoustic Computation" : "comment",
+			"ACOUSTIC" : "0",
+
+"Wavetype Computation" : "comment",
+			"WAVETYPE" : "2",
+
+"Verbose" : "comment",
+			"VERBOSE" : "0",
+
+"Model" : "comment",
+			"READMOD" : "0",
+			"MFILE" : "model_true/mod_toy_example",
+
+"Free Surface" : "comment",
+			"FREE_SURF" : "1",
+
+"PML Boundary" : "comment",
+			"FW" : "10",
+			"DAMPING" : "300.0",
+			"FPML" : "31.25",
+			"BOUNDARY" : "0",
+			"npower" : "4.0",
+			"k_max_PML" : "1.0",
+
+"Receiver" : "comment",
+			"SEISMO" : "5",
+			"READREC" : "1",
+			"REC_FILE" : "./receiver/rec_toy_example.dat",
+			"REFRECX, REFRECY" : "0.0 , 0.0",
+
+"Seismograms" : "comment",
+			"NDT" : "1",
+			"SEIS_FORMAT" : "1",
+			"SEIS_FILE_P" : "su/toy_example/toy_example_p.su",
+			"SEIS_FILE_VX" : "su/toy_example/toy_example_vx.su",
+			"SEIS_FILE_VY" : "su/toy_example/toy_example_vy.su",
+			"SEIS_FILE_VZ" : "su/toy_example/toy_example_vz.su",
+
+"Q-approximation" : "comment",
+			"L" : "0",
+			"FL1" : "0.5211", 
+			"FL2" : "7.6660",
+			"FL3" : "72.6774",
+			"TAU" : "0.0966",
+			
+
+"General inversion parameters" : "comment",
+			"ITERMAX" : "5",
+			"DATA_DIR" : "su/measured_data/toy_example",
+			"INVMAT1" : "1",
+			"INVMAT" : "0",
+			"QUELLTYPB" : "1",
+			"QUELLTYPB values: 1=x y; 2=x; 3=y; 4=z; 5=x y z" : "comment",
+			"MISFIT_LOG_FILE" : "LOG_toy_example.dat",
+			
+			"JOINT_INVERSION_PSV_SH_TYPE" : "1",
+			"JOINT_INVERSION_PSV_SH_ALPHA_VS" : "0.5",
+			"JOINT_INVERSION_PSV_SH_ALPHA_RHO" : "0.5",
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "1",
+			"FILE_WORKFLOW" : "workflow.txt",
+			"RESTART_WORKFLOW" : "0",
+			
+"Inversion for density" : "comment",
+			"INV_RHO_ITER" : "400",
+			"INV_VP_ITER" : "400",
+			
+"Output of inverted models" : "comment",
+			"INV_MODELFILE" : "model/toy_example/mod_toy_example",
+			"nfstart" : "1",
+			"nf" : "1",
+
+"Output of gradients" : "comment",
+			"JACOBIAN" : "jacobian/toy_example/jac_toy_example",
+			"nfstart_jac" : "1",
+			"nf_jac" : "1",
+
+"Hessian and Gradient-Method" : "comment",
+			"GRAD_METHOD" : "1",
+
+"Gradient calculation" : "comment",
+			"LNORM" : "2",
+			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, L2 norm with time windowing=6" : "comment",
+			"NORMALIZE" : "0",
+			"DTINV" : "15",
+
+"Step length estimation" : "comment", 
+			"EPS_SCALE" : "0.01", 
+			"STEPMAX" : "1",
+			"SCALEFAC" : "5.0",
+			"TESTSHOT_START , TESTSHOT_END , TESTSHOT_INCR" : "1 , 3 , 2",
+
+"Termination of the programmme" : "comment",
+			"PRO" : "0.01",
+
+
+"Definition of gradient taper geometry" : "comment",
+			"SWS_TAPER_CIRCULAR_PER_SHOT" : "1",
+			"SRTSHAPE" : "1",
+			"SRTRADIUS" : "3.0",
+			"FILTSIZE" : "1",
+			"SWS_TAPER_FILE" : "0",
+			"TAPER_FILE" : "taper/toy_example/taper_toy_example",
+
+"Definition of inversion for source time function" : "comment",			"INV_STF" : "0",			"PARA" : "fdlsq:tshift=0.0",			"N_STF" : "10",			"N_STF_START" : "1",
+
+"Upper and lower limits for model parameters" : "comment",
+			"VPUPPERLIM" : "2420",
+			"VPLOWERLIM" : "0",
+			"VSUPPERLIM" : "5000",
+			"VSLOWERLIM" : "0",
+			"RHOUPPERLIM" : "5000",
+			"RHOLOWERLIM" : "0",
+
+"Definition of smoothing the models vp and vs" : "comment",
+			"MODEL_FILTER" : "1",
+			"FILT_SIZE" : "3",
+
+"Minimum number of iteration per frequency" : "comment",
+			"MIN_ITER" : "10",
+"Frequency filtering during inversion" : "comment",
+			"TIME_FILT" : "1",
+			"FC_START" : "5.0",
+			"FC_END" : "5.0",
+			"FC_INCR" : "10.0",
+			"ORDER" : "4",
+}

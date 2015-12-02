@@ -20,14 +20,18 @@
 
 #include "fd.h"
 
-void av_tau(float **taus, float **tausipjp){
-
-	extern int NX, NY;
-	int i, j;
-	for (j=1;j<=NY;j++){
-		for (i=1;i<=NX;i++){
-
-		       tausipjp[j][i] = 0.25*(taus[j][i]+taus[j][i+1]+taus[j+1][i]+taus[j+1][i+1]);
-		}
-	}
+void av_tau(float **taus, float **tausipjp,float **tausip,float **tausjp){
+    
+    extern int NX, NY, WAVETYPE;
+    int i, j;
+    for (j=1;j<=NY;j++){
+        for (i=1;i<=NX;i++){
+            
+            tausipjp[j][i] = 0.25*(taus[j][i]+taus[j][i+1]+taus[j+1][i]+taus[j+1][i+1]);
+            if(WAVETYPE==2 || WAVETYPE==3) {
+                tausip[j][i]=0.5*(taus[j][i+1]+taus[j][i]);
+                tausjp[j][i]=0.5*(taus[j+1][i]+taus[j][i]);
+            }
+        }
+    }
 }

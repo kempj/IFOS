@@ -29,7 +29,7 @@
 
 void matcopy_elastic(float ** rho, float ** pi, float ** u){
 
-	extern int MYID, NX, NY, INDEX[5];
+	extern int MYID, NX, NY, INDEX[5],VERBOSE;
 	extern const int TAG1,TAG2,TAG5,TAG6;
 	extern FILE *FP;
 
@@ -45,11 +45,11 @@ void matcopy_elastic(float ** rho, float ** pi, float ** u){
 	buffertop_to_bot_1 = matrix(0,NX+1,1,3);
 	bufferbot_to_top_1 = matrix(0,NX+1,1,3);
 	
-	
-	fprintf(FP,"\n\n **Message from matcopy (written by PE %d):",MYID);
-	fprintf(FP,"\n Copy material properties at inner boundaries ... \n");
-	time1=MPI_Wtime();
-
+    if(VERBOSE){
+        fprintf(FP,"\n\n **Message from matcopy (written by PE %d):",MYID);
+        fprintf(FP,"\n Copy material properties at inner boundaries ... \n");
+        time1=MPI_Wtime();
+    }
 
 
 
@@ -142,7 +142,7 @@ void matcopy_elastic(float ** rho, float ** pi, float ** u){
 	}
 
 
-	if (MYID==0){
+	if (MYID==0&&VERBOSE){
 		time2=MPI_Wtime();
 		fprintf(FP," finished (real time: %4.2f s).\n",time2-time1);
 	}

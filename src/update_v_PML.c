@@ -71,9 +71,7 @@ void update_v_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 	 * ------------------------------------------------------------ */
 
 	switch (FDORDER){
-		
 	case 2:
-		
 		for (j=ny1;j<=ny2;j++){
 		for (i=nx1;i<=nx2;i++){
 			sxx_x =  hc[1]*(sxx[j][i+1]-sxx[j][i]);
@@ -102,9 +100,6 @@ void update_v_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 				h1 = (i-nx2+2*FW);
 				h=i; 
 				
-				/*psi_sxx_x[j][i] = b_x_half[i] * psi_sxx_x[j][i] + a_x_half[i] * sxx_x;                                                
-				sxx_x = sxx_x / K_x_half[i] + psi_sxx_x[j][i];*/
-				
 				psi_sxx_x[j][h1] = b_x_half[h1] * psi_sxx_x[j][h1] + a_x_half[h1] * sxx_x;                                                
 				sxx_x = sxx_x / K_x_half[h1] + psi_sxx_x[j][h1];
 				
@@ -130,14 +125,12 @@ void update_v_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 				h1 = (j-ny2+2*FW);
 				h = j;
 				
-				/*psi_syy_y[j][i] = b_y_half[j] * psi_syy_y[j][i] + a_y_half[j] * syy_y;                                                
-				syy_y = syy_y / K_y_half[j] + psi_syy_y[j][i];*/
-				
 				psi_syy_y[h1][i] = b_y_half[h1] * psi_syy_y[h1][i] + a_y_half[h1] * syy_y;                                                
 				syy_y = syy_y / K_y_half[h1] + psi_syy_y[h1][i];
 				
 				psi_sxy_y[h1][i] = b_y[h1] * psi_sxy_y[h1][i] + a_y[h1] * sxy_y;                                                
 				sxy_y = sxy_y / K_y[h1] + psi_sxy_y[h1][i]; 
+                        
 			}                       
 			
 			if(sw==0){
@@ -571,7 +564,6 @@ void update_v_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 		if(QUELLTYP==3){vy[j][i] += (DT*rjp[j][i]*signals1[l][nt])/(DH*DH);}  /* single force in y */
 		if(QUELLTYP==4){vx[j][i] += (DT*rip[j][i]*sin(azi_rad) * signals[l][nt])/(DH*DH);    /* rotated force in x */
 				vy[j][i] += (DT*rjp[j][i]*cos(azi_rad) * signals[l][nt])/(DH*DH);}  /* rotated force in y */          
-			
 	}}
 	
 	/* Backpropagation (sw==1) */

@@ -7,9 +7,8 @@
 
 #MODEL = hh.c
 MODEL = ../genmod/1D_linear_gradient_visc.c
-MODEL_EL = ../genmod/1D_linear_gradient_el.c
 MODEL_AC = ../genmod/1D_linear_gradient_ac.c
-MODEL_VAC = ../genmod/1D_linear_gradient_viscac.c
+MODEL_EL = ../genmod/1D_linear_gradient_el.c
 EXEC= ../bin
 
 # Description:
@@ -70,20 +69,22 @@ DENISE= \
 	exchange_s.c \
 	exchange_p.c \
 	snap_ssg.c \
+    snap_ssg_SH.c \
 	seismo_ssg.c \
 	surface_elastic_PML.c \
 	surface_acoustic_PML.c \
 	surface_PML.c \
 	update_v_ssg.c \
 	update_v_PML.c \
+	update_v_PML_SH.c \
 	update_v_acoustic_PML.c \
 	prepare_update_s.c \
-	prepare_update_p.c \
 	update_p_PML.c \
-	update_p_visc_PML.c \
 	update_s_elastic_ssg.c \
 	update_s_elastic_PML.c \
+    update_s_elastic_PML_SH.c \
 	update_s_visc_PML.c \
+    update_s_visc_PML_SH.c \
 	av_mue.c \
 	av_rho.c \
 	av_tau.c \
@@ -96,16 +97,13 @@ DENISE= \
 	interpol.c \
 	json_parser.c \
 	LBFGS.c \
-	LBFGS1.c \
 	smooth.c \
 	$(MODEL) \
-	$(MODEL_EL) \
 	$(MODEL_AC) \
-	$(MODEL_VAC) \
+	$(MODEL_EL) \
 	matcopy.c \
 	matcopy_elastic.c \
 	matcopy_acoustic.c \
-	matcopy_viscac.c \
 	mergemod.c \
 	max_grad.c \
 	note.c \
@@ -116,6 +114,7 @@ DENISE= \
 	catseis.c \
 	output_source_signal.c \
 	PCG.c \
+	PCG_SH.c \
 	PML_pro.c \
 	readdsk.c \
 	read_par_json.c \
@@ -123,9 +122,10 @@ DENISE= \
 	readmod.c \
 	readmod_elastic.c \
 	readmod_acoustic.c \
-	readmod_viscac.c \
     	receiver.c \
 	rd_sour.c \
+    read_workflow.c \
+    apply_workflow.c \
 	saveseis.c \
 	saveseis_glob.c \
 	save_checkpoint.c\
@@ -142,7 +142,6 @@ DENISE= \
 	timedomain_filt.c \
 	timedomain_filt_vector.c \
 	time_window.c \
-	time_window_glob.c \
 	util.c \
 	wavelet.c \
 	wavelet_stf.c \
@@ -152,9 +151,13 @@ DENISE= \
 	zero_fdveps.c \
 	zero_fdveps_ac.c \
 	zero_fdveps_visc.c \
-	zero_fdveps_viscac.c \
 	calc_envelope.c \
-	calc_hilbert.c \
+    joint_inversion.c \
+    matrix_operations.c \
+    wolfe_condition.c \
+    calc_hilbert.c \
+	eprecond.c \
+	eprecond1.c \
         filter_frequencies.c
 	
 SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)

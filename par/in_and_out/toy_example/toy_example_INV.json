@@ -82,7 +82,12 @@
 			"INVMAT" : "0",
 			"QUELLTYPB" : "1",
 			"MISFIT_LOG_FILE" : "LOG_toy_example.dat",
-			
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "1",
+			"FILE_WORKFLOW" : "workflow.txt",
+			"RESTART_WORKFLOW" : "0",
+
 "Inversion for density" : "comment",
 			"INV_RHO_ITER" : "400",
 			"INV_VP_ITER" : "400",
@@ -145,4 +150,7 @@
 			"FC_END" : "70.0",
 			"FC_INCR" : "10.0",
 			"ORDER" : "4",
+
+"Verbose mode" : "comment",
+			"VERBOSE" : "0",
 }

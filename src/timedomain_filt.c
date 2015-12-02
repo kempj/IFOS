@@ -65,7 +65,7 @@ void  timedomain_filt(float ** data, float fc, int order, int ntr, int ns, int m
 				seismogram[j]=(double)data[itr][j];
 			}
 			
-			seife_lpb(seismogram,ns+1,DT,T0,order); /* ns+1 because vector[0] is also allocated and otherwise seife_lpb does not filter the last sample */
+			seife_lpb(seismogram,ns+1,DT,T0,order); /* ns+1 because vector[0] is also allocated and otherwise seife_lpb do not filter the last sample */
 			
 			if (ZERO_PHASE==1){
 			ns_reverse=ns;

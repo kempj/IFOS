@@ -480,37 +480,79 @@ The parameters INV\_RHO\_ITER, INV\_VP\_ITER and INV\_VS\_ITER define from which
 
 The inverted models are saved in INV\_MODELFILE. The first model that is saved is at iteration step nfstart and then every $\mathrm{nf}^{\mathrm{th}}$ iteration step. Analog the gradients are saved every $\mathrm{nf\_jac}^{\mathrm{th}}$ iteration step from iteration step nftart\_jac on in JACOBIAN. 
 
-
-\section{Change optimization method}
+\section{Workflow}
 {\color{blue}{\begin{verbatim}
-"Hessian and Gradient-Method" : "comment",
-			"HESSIAN" : "0",
-			"FC_HESSIAN" : "100",
-			"ORDER_HESSIAN" : "4",
-			"TSHIFT_back" : "0.0",
-			"GRAD_METHOD" : "1",
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "1",
+			"FILE_WORKFLOW" : "workflow.txt",
+\end{verbatim}}}
+{\color{red}{\begin{verbatim}
+Default values are:
+"USE_WORKFLOW" : "0"
+\end{verbatim}}}
+With the use of a workflow file, you can define different FWI stages. For instance, one FWI stage could refer to one corner frequency of a low-pass filter or to a specific time window. Every line in the workflow file corresponds to one FWI stage. To use a workflow file the switch USE\_WORKFLOW have to be set to 1.  The algorithm will automatically change to the next line of the workflow file if the abort criterium of the current line is reached or if no step length could be found which reduces the misfit. The structure of the variables inside the workflow file is as follow: \\ \\
+\begin{tabular}{llllllll}
+\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & FC & DUMMY\\
+\end{tabular}
+\\ \\
+The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency FC. DUMMY is a placeholder and currently not used. Please note, that all features which are used eg. TIME\_FILT within the workflow have to be activated in the .JSON file.\\
+For an example of a workflow file, have a look in the par/ folder.
+
+
+\section{Approx. Hessian preconditioning}
+{\color{blue}{\begin{verbatim}
+			"EPRECOND" : "3",
+			"EPSILON_WE" : "0.005",
+\end{verbatim}}}
+{\color{red}{\begin{verbatim}
+Default values are:
+			"EPRECOND" : "0",
+\end{verbatim}}}
+
+With the variable EPRECOND it is possible to activate an approximated Hessian for preconditioning. There are two different approximations available. EPRECOND==1 will be an approximation after \cite{shin2001efficient}, and EPRECOND==3 after \cite{plessix2004frequency}. EPSILON\_WE defines a water level to stabilize the approximated Hessian. The use of an approximated Hessian can significantly influence the speed of convergence.
+Up to now there is no rule of tumb wether EPRECOND==1 or ==3 should be chosen,  so it is recommended to try both. After each iteration the Hessian will be outputted in the folder JACOBIAN with the syntax \*approx\_hessian\* in the file name.\\
+The corresponding functions are copied out of DENISE Black Edition, which is maintained by Daniel Koehn. 
+
+\section{PCG and L-BFGS}
+{\color{blue}{\begin{verbatim}
+"Gradient-Method" : "comment",
+			"GRAD_METHOD" : "2",
+			"N_LBFGS" : "5",
+			
+			"WOLFE_CONDITION" : "1",
+			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
+			"WOLFE_NUM_TEST" : "5", 
+			
+			"LBFGS_STEP_LENGTH" : "0",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
 Default values are:
-	HESSIAN=0
+	"GRAD_METHOD" : "1",
 \end{verbatim}}}
 
-DENISE contains the option to calculate the diagonal elements of the Hessian (after \cite{sheen:06}) for the starting model. Currently the Hessian is calculated for the Vp- and Vs-model and only for sources with directed forces in y-direction. The Hessian for the density model is not implemented yet.\\
+DENISE contains the option to chose between a preconditioned conjugate gradient (PCG) method or a quasi-newton L-BFGS method.
 
-The estimation of the Hessian requires for each shot position the solution of the forward problem with the actual source wavelet and for each receiver position the backpropagation of a spike. The forward and backpropagated wavefields have to be saved in memory and convolved with each other for each shot-receiver combination. This convolution is currently implemented as a multiplication in the frequency domain in \texttt{conv\_fd.c}. Because the time intensive computation of the forward/backpropgated wavefields and the convolution process it is highly recommended to estimate the Hessian only for acquisition geometries with a small number of sources and receivers.\\
+The preconditioned conjugate gradient (PCG), which can be used by GRAD\_METHOD==1, is very robust, however in general shows slow convergence. For a quick-and-dirty inversion or if you want to run an inversion without worry about a stable L-BFGS inversion it is recommended to use PCG, due to the higher stability and robustness of convergence.
 
-To calculate the Hessian the parameter HESSIAN in the input file has to be set to 1 and INVMAT to 0. If HESSIAN is set to 0 and INVMAT to 0 the code runs a standard FWT. If HESSIAN is set to 0 and INVMAT to 10 the code runs a forward modeling only.
+The L-BFGS method is a quasi-newton method, which will implicitly approximate the Hessian and can be chosen by setting GRAD\_METHOD to 2. Therefore the differences of the models and the gradients of a N\_LBFGS last iterations will be stored. First tests showed that N\_LBFGS=10 should be enough. The L-BFGS algorithm is implemented after the book \cite{nocedal:1999}, which is recommended to be read prior to using the L-BFGS method. Prior to starting the L-BFGS method one update with steepest decent have to be done to get a first set of model and gradient differences which are necessary to start L-BFGS.
 
-A few important things to keep in mind, when calculating the Hessian in the current version of DENISE:
-\begin{enumerate}
- \item The HESSIAN can currently only be calculated for sources with forces in y-direction. Therefore the parameters QUELLTYP and QUELLTYPB in the input file should be set to 3 and 2 respectively.
- \item To calculate the impulse response of a spike from the receiver positions a spike wavelet is defined as option in the parameter QUELLART. Due to the limitation of the frequency range by the grid dispersion criterion it is not possible to calculate a true spike response, neither in time or in frequency-domain FD. Therefore, the spike wavelet is low-pass filtered using the parameters FC\_HESSIAN and ORDER\_HESSIAN. Note that in the current version there maybe is a bug in the definition of the spike wavelet. Therefore, one should check the source signal that will be written out using \texttt{output\_source\_signal.c}. The parameter TSHIFT\_back must be given in seconds and causes a timeshift of the delta impulses which are propagated from the receiver positions into the medium. This parameter must be used in cases where the source signal of the forward propagated wavefields does not have its main impulse at t=0 s. 
- \item The estimated Vp-Hessian is written in binary format to JACOBIAN\_hessian.old in the Jacobian directory, the estimated Vs-Hessian to JACOBIAN\_hessian\_u.old, respectively. 
- \item The inversion of the Hessian and the application of a Marquardt-Levenberg regularization can be done with the Matlab script check\_hessian.m, which can be found in the /mfiles directory. With this script the value of the Marquardt factor, the damping function of the Hessian within the PML regions and additional preconditioning operators can be applied on the Hessian. To test the influence of the different parameters on the Hessian it is useful to calculate one FWT iteration and multiply the resulting gradient in check\_hessian.m with the inverse Hessian. When the regularization and preconditioning of the inverse Hessian is satisfying, the inverse Hessian is written in binary format to the file taper.bin.
- \item To apply the taper (inverse Hessian) defined in taper.bin, on the gradient in DENISE, the parameter SWS\_TAPER\_FILE has to be set to 1 (see section~\ref{sec:Definition_of_gradient_taper_geometry}). Each model parameter requires a taper file which should be located in the /par directory and named as taper.bin for the Vp-model, taper\_u.bin for the Vs-model and taper\_rho.bin for the density model. Because the density-Hessian is not implemented yet, taper\_rho.bin can be simply a copy of taper.bin.
- \item At each preconditioned conjugate gradient (PCG) iteration the Hessian for the starting model is multiplied by the regularized and preconditioned inverse Hessian. This scaling of the gradient improves the convergence speed of DENISE by approximately a factor 2. However it is not a real Gauss-Newton method, which would require the calculation of the inverse Hessian at each iteration step. The implementation of a quasi-Newton method, the L-BFGS method (see f.e. the book \cite{nocedal:1999}) is currently in development. A pre-alpha version is included in this version. It can be activated by the parameter GRAD\_METHOD, but a bug seem to prevent the convergence of the L-BFGS method. Therefore it is higly recommended to use only the PCG method (GRAD\_METHOD=1) and not the L-BFGS method. 
-\end{enumerate}
+The ensure a stable convergence when L-BFGS is used the step length has to satisfy the wolf condition. A detailed description of the wolfe condition can be also found in \cite{nocedal:1999}. The first wolfe condition, which is also called sufficient decrease condition, requires that the misfit for a chosen step length will be decreased at least linear with the step length. Let $f(x)$ be the objective function, $x$ the current model, $\alpha$ the step length and $p$ the desired model update, so the first wolfe condition reads \citep{nocedal:1999}:
+\begin{align}
+	f(x+\alpha \cdot p) \le f(x) + c_1 \cdot \alpha \cdot\bigtriangledown f(x)^{T} \cdot p
+\end{align}
+
+ The second one, which is called curvature condition, requires that the slope of the misfit function will be higher than the initial slope. This ensures that the next misfit minimum will be reached fast enough.
+ The second criterium is defined as \citep{nocedal:1999}:
+ \begin{align}
+ 	\bigtriangledown f(x+\alpha \cdot p)^{T} \cdot p \geq c_2 \cdot\bigtriangledown f(x)^{T} \cdot p
+ \end{align}
+ To verify this condition the full gradient (with all shots!) of the updated model have to be calculated, so the verification of this condition is very expensive in terms of computation time. In theory always a step length of one should be tried first, however to save time it is possible to chose the step length from the iteration before which satisfied the wolfe condition. This behavior can be controlled with WOLFE\_TRY\_OLD\_STEPLENGTH, if this is set to 1 always the old step length will be tried first. In practice the experience has shown that at the beginning of a FWI stage a couple of step lengths will be tested and then the algorithm converges to a step length which will be accepted by the wolfe condition until the misfit cannot be reduced further. With the variable WOLFE\_NUM\_TEST a maximum number of test calculations can be defined. If after WOLFE\_NUM\_TEST tests no step length could be found, the algorithm takes the step length of the tests which reduced the misfit most, even if this step length does not satisfy the wolfe condition. If no step length was found which reduces the misfit, the algorithm will switch to the next FWI stage in the workflow file or abort the inversion. 
+ The variable $c_1$ will be $10^{-7}\cdot max(f(x)^{-1}$ and $c_2$ is set to 0.9 (they are hard coded). 
+ A step length search which is based on the wolfe condition can be used which the switch WOLFE\_CONDITION. Please note that this step length search is only available if GRAD\_METHOD==2. 
+  
+  
+  However, it is possible to chose a second step length search which the L-BFGS method. This one is available by the switch LBFGS\_STEP\_LENGTH=0. If you use LBFGS\_STEP\_LENGTH the wolfe condition based step length search will be deactivated automatically. Whit this search the step length 0.1, 0.5 and 1.0 will be tried and with a parabolic fit the best step length will be estimated. This search algorithm is implemented to save computation time, however the wolfe condition will not be checked, so the L-BFGS stability will not be satisfied. It is highly recommended to use the step length search based on the wolfe condition. It is likely that this option will be removed in a future releas. 
 
 
 \section{Misfit definition}
