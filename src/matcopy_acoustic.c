@@ -32,7 +32,7 @@ void matcopy_acoustic(float ** rho, float ** pi){
 	extern int MYID, NX, NY, INDEX[5];
 	extern const int TAG1,TAG2,TAG5,TAG6;
 	extern FILE *FP;
-
+    extern int VERBOSE;
 
 	MPI_Status status;	
 	double time1, time2;	
@@ -46,8 +46,8 @@ void matcopy_acoustic(float ** rho, float ** pi){
 	bufferbot_to_top_1 = matrix(0,NX+1,1,2);
 	
 	
-	fprintf(FP,"\n\n **Message from matcopy (written by PE %d):",MYID);
-	fprintf(FP,"\n Copy material properties at inner boundaries ... \n");
+	if(VERBOSE) fprintf(FP,"\n\n **Message from matcopy (written by PE %d):",MYID);
+	if(VERBOSE) fprintf(FP,"\n Copy material properties at inner boundaries ... \n");
 	time1=MPI_Wtime();
 
 
@@ -131,7 +131,7 @@ void matcopy_acoustic(float ** rho, float ** pi){
 	}
 
 
-	if (MYID==0){
+	if (MYID==0 && VERBOSE){
 		time2=MPI_Wtime();
 		fprintf(FP," finished (real time: %4.2f s).\n",time2-time1);
 	}

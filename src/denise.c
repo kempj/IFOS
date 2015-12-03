@@ -1042,6 +1042,7 @@ int main(int argc, char **argv){
                     }
                 }
                 
+                /* Do some initia calculations */
                 if(iter==1){
                     
                     /* Calculationg material parameters according to INVMAT1 */
@@ -1276,14 +1277,18 @@ int main(int argc, char **argv){
                                 if ((QUELLTYP==1))
                                     psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                                 
+                                /* Applying free surface condition */
                                 if ((FREE_SURF) && (POS[2]==0)){
                                     if (!ACOUSTIC){
-                                        if (L){    /* viscoelastic */
+                                        if (L){
+                                            /* viscoelastic */
                                             surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
-                                        }else{      /* elastic */
+                                        }else{
+                                            /* elastic */
                                             surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
                                         }
-                                    } else { /* viscoelastic and elastic ACOUSTIC */
+                                    } else {
+                                        /* viscoelastic and elastic ACOUSTIC */
                                         surface_acoustic_PML(1, psp);
                                     }
                                 }
@@ -1757,22 +1762,19 @@ int main(int argc, char **argv){
                             if ((QUELLTYP==1)&&(WAVETYPE==1||WAVETYPE==3))
                                 psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                             
-                            /* apply free surface */
+                            /* Applying free surface condition */
                             if ((FREE_SURF) && (POS[2]==0)){
-                                if (L) {
-                                    /* viscoelastic */
-                                    if(!ACOUSTIC) {
+                                if (!ACOUSTIC){
+                                    if (L){
+                                        /* viscoelastic */
                                         surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
                                     }else{
-                                        surface_acoustic_PML(1, psp);
+                                        /* elastic */
+                                        surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
                                     }
-                                }else{
-                                    /* elastic */
-                                    if(!ACOUSTIC) {
-                                        surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz, psxz,uxz);
-                                    }else{
-                                        surface_acoustic_PML(1, psp);
-                                    }
+                                } else {
+                                    /* viscoelastic and elastic ACOUSTIC */
+                                    surface_acoustic_PML(1, psp);
                                 }
                             }
                             
@@ -2232,23 +2234,19 @@ int main(int argc, char **argv){
                                     if ((QUELLTYPB==4))
                                         psource(nt,psxx,psyy,psp,srcpos_loc_back,sectionpdiff,ntr1,1);
                                     
+                                    /* Applying free surface condition */
                                     if ((FREE_SURF) && (POS[2]==0)){
-                                        if (L) {
-                                            /* viscoelastic */
-                                            if (!ACOUSTIC) {
+                                        if (!ACOUSTIC){
+                                            if (L){
+                                                /* viscoelastic */
                                                 surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
                                             }else{
-                                                /* acoustic */
-                                                surface_acoustic_PML(1, psp);
-                                            }
-                                        }else{
-                                            /* elastic */
-                                            if(!ACOUSTIC){
+                                                /* elastic */
                                                 surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
-                                            }else{
-                                                /* acoustic */
-                                                surface_acoustic_PML(1, psp);
                                             }
+                                        } else {
+                                            /* viscoelastic and elastic ACOUSTIC */
+                                            surface_acoustic_PML(1, psp);
                                         }
                                     }
                                     
@@ -3313,19 +3311,20 @@ int main(int argc, char **argv){
                             if ((QUELLTYP==1))
                                 psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                             
+                            /* Applying free surface condition */
                             if ((FREE_SURF) && (POS[2]==0)){
-                                if (L)    /* viscoelastic */
-                                    if (!ACOUSTIC){
+                                if (!ACOUSTIC){
+                                    if (L){
+                                        /* viscoelastic */
                                         surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppinp1, punp1, prhonp1, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
                                     }else{
-                                        surface_acoustic_PML(1, psp);
+                                        /* elastic */
+                                        surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppinp1, punp1, prhonp1, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
                                     }
-                                    else{
-                                        if(!ACOUSTIC) /* elastic */
-                                            surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppinp1, punp1, prhonp1, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
-                                        else
-                                            surface_acoustic_PML(1, psp);
-                                    }
+                                } else {
+                                    /* viscoelastic and elastic ACOUSTIC */
+                                    surface_acoustic_PML(1, psp);
+                                }
                             }
                             
                             /* stress exchange between PEs */
