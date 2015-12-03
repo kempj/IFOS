@@ -19,7 +19,7 @@ EXEC= ../bin
 
 # LINUX with OpenMPI / IntelMPI and INTEL Compiler
 # Use icc whenever possible, this will be much faster than gcc
-CC=mpicc
+CC=mpiicc
 LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
 CFLAGS=-O3
 SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
@@ -181,4 +181,4 @@ clean:
 	find . -name "*.o" -exec rm {} \; 
 	find . -name "*.c%" -exec rm {} \;
 	find . -name "*.bck" -exec rm {} \;
-	find ../genmod -name "*.o" -exec rm {} \; 
+	find ../genmod -name "*.o" -exec rm {} \;
