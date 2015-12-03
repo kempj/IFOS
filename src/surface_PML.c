@@ -36,17 +36,16 @@ void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** sy
     float  vxx, vyy, sump=0.0;
     float  dh24, dthalbe;
     float *pts, ws, sumu, sumpi, mu, pi;
-    extern float DT, DH, *FL, WAVETYPE;
+    extern float DT, DH, *FL;
     extern int NX, INVMAT1, L;
     extern int FW, BOUNDARY;
     extern int NPROCX, NPROCY, POS[3], MYID;
-    extern int FDORDER;
+    extern int FDORDER,WAVETYPE;
     extern float F_REF;
     
     fdoh = FDORDER/2;
     dthalbe=DT/2.0;
     dh24=1.0/DH;
-    
     
     if (WAVETYPE==1||WAVETYPE==3){
         /* vector for maxwellbodies */
