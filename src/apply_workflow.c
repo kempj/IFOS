@@ -24,7 +24,7 @@
 
 #include "fd.h"
 
-void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int workflow_line_current ,int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start){
+void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start){
     
     /* local variables */
     int x;
@@ -39,6 +39,7 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
     extern int EPRECOND;
     extern float EPSILON_WE;
     extern int GRAD_METHOD;
+    extern int WORKFLOW_STAGE;
     
     /******************/
     /* Apply Workflow */
@@ -49,13 +50,13 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
         printf("\n ---------- Applying Workflow -----------\n");
         printf(" %s ",workflow_header);
         for(x=1;x<=WORKFLOW_MAX_VAR;x++){
-            printf("%.2f\t",workflow[workflow_line_current][x]);
+            printf("%.2f\t",workflow[WORKFLOW_STAGE][x]);
         }
     }
     
     /* Inversion of material parameter */
-    if(workflow[workflow_line_current][2]!=-1) {
-        if(workflow[workflow_line_current][2]==1) {
+    if(workflow[WORKFLOW_STAGE][2]!=-1) {
+        if(workflow[WORKFLOW_STAGE][2]==1) {
             if(INV_VS_ITER>*iter) INV_VS_ITER=*iter;
         } else {
             /* detect change and reset LBFGS */
@@ -64,8 +65,8 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
         }
     }
     
-    if(workflow[workflow_line_current][3]!=-1){
-        if(workflow[workflow_line_current][3]==1) {
+    if(workflow[WORKFLOW_STAGE][3]!=-1){
+        if(workflow[WORKFLOW_STAGE][3]==1) {
             if(INV_VP_ITER>*iter) INV_VP_ITER=*iter;
         } else {
             /* detect change and reset LBFGS */
@@ -74,8 +75,8 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
         }
     }
     
-    if(workflow[workflow_line_current][4]!=-1){
-        if(workflow[workflow_line_current][4]==1) {
+    if(workflow[WORKFLOW_STAGE][4]!=-1){
+        if(workflow[WORKFLOW_STAGE][4]==1) {
             if(INV_RHO_ITER>*iter) INV_RHO_ITER=*iter;
         } else {
             /* detect change and reset LBFGS */
@@ -84,41 +85,41 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
         }
     }
     
-    PRO=workflow[workflow_line_current][5];
+    PRO=workflow[WORKFLOW_STAGE][5];
     
     /* Frequency filtering  */
     if(TIME_FILT==1) {
-        TIME_FILT=workflow[workflow_line_current][6];
-        if(*FC>workflow[workflow_line_current][7]&&(workflow[workflow_line_current][6]>0)) {
+        TIME_FILT=workflow[WORKFLOW_STAGE][6];
+        if(*FC>workflow[WORKFLOW_STAGE][7]&&(workflow[WORKFLOW_STAGE][6]>0)) {
             if(MYID==0)printf("\n Due to the abort criteriom FC is already higher than specified in workflow\n");
-            if(MYID==0)printf(" therefore instead of %.2f HZ FC=%.2f HZ is used\n",workflow[workflow_line_current][7],*FC);
+            if(MYID==0)printf(" therefore instead of %.2f HZ FC=%.2f HZ is used\n",workflow[WORKFLOW_STAGE][7],*FC);
         } else {
-            if(*FC!=workflow[workflow_line_current][7]) *LBFGS_iter_start=*iter;
-            *FC=workflow[workflow_line_current][7];
+            if(*FC!=workflow[WORKFLOW_STAGE][7]) *LBFGS_iter_start=*iter;
+            *FC=workflow[WORKFLOW_STAGE][7];
         }
     } else {
         if(MYID==0)printf("\n TIME_FILT cannot be activated due to it is not activated in the JSON File \n");
     }
     /* Change of wavetype  */
-    if(wavetype_start!=3&&(WAVETYPE!=workflow[workflow_line_current][8])){
+    if(wavetype_start!=3&&(WAVETYPE!=workflow[WORKFLOW_STAGE][8])){
         if(MYID==0)printf("\n Sorry, change of WAVETYPE with workflow only possible if WAVETYPE==3 in *.json");
         if(MYID==0)printf("\n WAVETYPE will remain unchanged %i",WAVETYPE);
     } else {
         /* detect change and reset some things */
-        if(WAVETYPE!=workflow[workflow_line_current][8]) {
+        if(WAVETYPE!=workflow[WORKFLOW_STAGE][8]) {
             *change_wavetype_iter=*iter;
             *LBFGS_iter_start=*iter;
         }
-        WAVETYPE=workflow[workflow_line_current][8];
+        WAVETYPE=workflow[WORKFLOW_STAGE][8];
     }
     
     /* Joint inversion PSV and SH  */
-    JOINT_INVERSION_PSV_SH_ALPHA_VS=workflow[workflow_line_current][9];
-    JOINT_INVERSION_PSV_SH_ALPHA_RHO=workflow[workflow_line_current][10];
+    JOINT_INVERSION_PSV_SH_ALPHA_VS=workflow[WORKFLOW_STAGE][9];
+    JOINT_INVERSION_PSV_SH_ALPHA_RHO=workflow[WORKFLOW_STAGE][10];
     
     /* Approx. Hessian  */
-    EPRECOND=workflow[workflow_line_current][11];
-    EPSILON_WE=workflow[workflow_line_current][12];
+    EPRECOND=workflow[WORKFLOW_STAGE][11];
+    EPSILON_WE=workflow[WORKFLOW_STAGE][12];
     
     if(*LBFGS_iter_start==*iter && GRAD_METHOD==2){
         if(MYID==0)printf("\n L-BFGS will be used from iteration %d on.",*LBFGS_iter_start+1);

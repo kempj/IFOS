@@ -154,11 +154,12 @@ int main(int argc, char **argv){
     int min_iter_help=0;
     
     float ** workflow=NULL;
-    int workflow_line_current=1;
     int workflow_lines;
     char workflow_header[STRING_SIZE];
     int change_wavetype_iter=-10; /* Have to be inialized negative */
     int wavetype_start; /* We need this due to MPI Comm */
+    int buf1=0, buf2=0;
+    WORKFLOW_STAGE=1;
     
     /* variable for time domain filtering */
     float FC;
@@ -946,7 +947,7 @@ int main(int argc, char **argv){
         // At each iteration the workflow is applied
         if(USE_WORKFLOW&&(INVMAT==0)){
             
-            apply_workflow(workflow,workflow_lines,workflow_header,workflow_line_current,&iter,&FC,wavetype_start,&change_wavetype_iter,&LBFGS_iter_start);
+            apply_workflow(workflow,workflow_lines,workflow_header,&iter,&FC,wavetype_start,&change_wavetype_iter,&LBFGS_iter_start);
             
         }
         
@@ -3751,7 +3752,7 @@ int main(int argc, char **argv){
             /* ------------------------------------------- */
             if(USE_WORKFLOW && (diff<=pro || wolfe_SLS_failed)){
                 
-                if(workflow_lines==workflow_line_current){
+                if(workflow_lines==WORKFLOW_STAGE){
                     fprintf(FP,"\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
                     fprintf(FP,"\n No new line in workflow file");
                     break;
@@ -3761,7 +3762,13 @@ int main(int argc, char **argv){
                 if(wolfe_SLS_failed) fprintf(FP,"\n Wolfe step length search failed \n");
                 fprintf(FP,"\n Switching to next line in workflow");
                 
-                workflow_line_current++;
+                WORKFLOW_STAGE++;
+                
+                /* Sync WORKFLOW_STAGE on all PEs */
+                buf1=WORKFLOW_STAGE;
+                buf2=0;
+                MPI_Allreduce(&buf1,&buf2, 1,MPI_INT,MPI_MAX,MPI_COMM_WORLD);
+                WORKFLOW_STAGE=buf2;
                 
                 alpha_SL_old=1;
                 

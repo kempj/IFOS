@@ -526,7 +526,7 @@ void read_workflow(char file_in[STRING_SIZE],float *** workflow, int *workflow_l
 float ** joint_inversion_grad ( float ** gradiant_1,float ** gradiant_2, float alpha, int joint_type);
 
 void snap_SH(FILE *fp,int nt, int nsnap, float ** vz, float **u, float **pi, float *hc,int ishot);
-void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int workflow_line_current ,int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start);
+void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start);
 
 void eprecond(float ** W, float ** vx, float ** vy);
 void eprecond_SH(float ** W, float ** vz);
