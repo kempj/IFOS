@@ -4170,7 +4170,7 @@ int main(int argc, char **argv){
         free_matrix(waveconv_rho_up,-nd+1,NY+nd,-nd+1,NX+nd);
     }
     
-    if(WAVETYPE==2 || WAVETYPE==3){
+    if((WAVETYPE==2 || WAVETYPE==3) && (INVMAT==0)){
         free_f3tensor(forward_prop_rho_z,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
         free_f3tensor(forward_prop_z_xz,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
         free_f3tensor(forward_prop_z_yz,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
