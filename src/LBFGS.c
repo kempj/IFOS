@@ -320,7 +320,7 @@ void lbfgs_reset(int iter, int N_LBFGS, int NPAR_LBFGS,float ** s_LBFGS1, float 
     
     if(MYID==0) printf("\n\n ------------ L-BFGS ---------------");
     if(MYID==0&&iter>1) printf("\n Reset L-BFGS at iteration %d",iter);
-    if(MYID==0&&iter==1) printf("\n L-BFGS will be used from iteration %d on",iter);
+    if(MYID==0&&iter==1) printf("\n L-BFGS will be used from iteration %d on",iter+1);
     
     for(l=1;l<=N_LBFGS;l++){
         for(m=1;m<=NPAR_LBFGS*NX*NY;m++){

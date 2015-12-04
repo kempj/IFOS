@@ -103,7 +103,7 @@
 "Wolfe Condition" : "comment",
 			"WOLFE_CONDITION" : "1",
 			"WOLFE_NUM_TEST" : "5",
-			"WOLFE_TRY_OLD_STEPLENGTH" : "0",
+			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
 
 "Approx. Hessian" : "comment",
 			"EPRECOND" : "3",

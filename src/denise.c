@@ -582,11 +582,11 @@ int main(int argc, char **argv){
         
         if(WOLFE_CONDITION){
             waveconv_old= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            waveconv_u_old= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
+            if(!ACOUSTIC) waveconv_u_old= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
             waveconv_rho_old= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
             
             waveconv_up= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            waveconv_u_up= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
+            if(!ACOUSTIC) waveconv_u_up= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
             waveconv_rho_up= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         }
         

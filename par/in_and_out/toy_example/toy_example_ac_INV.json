@@ -97,8 +97,24 @@
 			"nfstart_jac" : "1",
 			"nf_jac" : "1",
 
-"Hessian and Gradient-Method" : "comment",
+"Gradient-Method" : "comment",
 			"GRAD_METHOD" : "1",
+			"LBFGS_STEP_LENGTH" : "1",
+			"N_LBFGS" : "5",
+
+"Wolfe Condition" : "comment",
+			"WOLFE_CONDITION" : "1",
+			"WOLFE_NUM_TEST" : "5",
+			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
+
+"Approx. Hessian" : "comment",
+			"EPRECOND" : "0",
+			"EPSILON_WE" : "0.005",
+			"EPRECOND_ITER" : "0",
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "0",
+			"FILE_WORKFLOW" : "workflow.txt",
 
 "Gradient calculation" : "comment",
 			"LNORM" : "2",
