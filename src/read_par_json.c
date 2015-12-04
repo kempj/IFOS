@@ -708,6 +708,9 @@ void read_par_json(FILE *fp, char *fileinp){
                         WOLFE_CONDITION=0;
                     }
                     if(GRAD_METHOD==2) {
+                        
+                        if(ACOUSTIC){err("Currently no L-BFGS with acoustic FWI.");}
+                        
                         if (get_int_from_objectlist("LBFGS_SURFACE",number_readobjects,&LBFGS_SURFACE,varname_list, value_list)){
                             LBFGS_SURFACE=0;
                             fprintf(fp,"Variable LBFGS_SURFACE is set to default value %d.\n",LBFGS_SURFACE);
@@ -747,8 +750,6 @@ void read_par_json(FILE *fp, char *fileinp){
                             err("Variable FILT_SIZE could not be retrieved from the json input file!");
                     }
                 }
-                
-                
                 
                 
                 /* Trace killing STF */

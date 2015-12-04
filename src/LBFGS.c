@@ -34,6 +34,7 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
     extern int POS[3];
     extern char JACOBIAN[STRING_SIZE];
     extern int WAVETYPE;
+    extern int ACOUSTIC;
     
     /* local */
     int m=0,v=0,w=0;
@@ -49,11 +50,16 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
     /*---------------------*/
     /*      DEBUGGING      */
     /*---------------------*/
-    sprintf(jac,"%s_grad1_it%d",JACOBIAN,iteration);
+    sprintf(jac,"%s_grad1_vs_it%d",JACOBIAN,iteration);
     write_matrix_disk(grad_vs, jac);
     
     sprintf(jac,"%s_grad1_rho_it%d",JACOBIAN,iteration);
     write_matrix_disk(grad_rho, jac);
+    
+    if(WAVETYPE==1||WAVETYPE==3) {
+        sprintf(jac,"%s_grad1_vp_it%d",JACOBIAN,iteration);
+        write_matrix_disk(grad_vp, jac);
+    }
     
     /*-------------------------------------------------*/
     /*      Init L-BFGS at iter==LBFGS_iter_start      */
@@ -89,7 +95,7 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
         if(w==0) w=N_LBFGS;
         
         /* Debugging */
-        sprintf(jac,"%s_y_LBFGS_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
+        sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
         FP_JAC=fopen(jac,"wb");
         
         if(MYID==0) printf("\n\n ------------ L-BFGS ---------------");
@@ -128,10 +134,10 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
         /*--------------------*/
         fclose(FP_JAC);
         MPI_Barrier(MPI_COMM_WORLD);
-        sprintf(jac,"%s_y_LBFGS_it%d_w%d.bin",JACOBIAN,iteration,w);
+        sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin",JACOBIAN,iteration,w);
         if (MYID==0) mergemod(jac,3);
         MPI_Barrier(MPI_COMM_WORLD);
-        sprintf(jac,"%s_y_LBFGS_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
+        sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
         remove(jac);
         
         /*----------------------------------*/
@@ -178,12 +184,16 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
     /*---------------------*/
     /*      DEBUGGING      */
     /*---------------------*/
-    sprintf(jac,"%s_grad2_it%d",JACOBIAN,iteration);
+    sprintf(jac,"%s_grad2_vs_it%d",JACOBIAN,iteration);
     write_matrix_disk(grad_vs, jac);
  
     sprintf(jac,"%s_grad2_rho_it%d",JACOBIAN,iteration);
     write_matrix_disk(grad_rho, jac);
     
+    if(WAVETYPE==1||WAVETYPE==3) {
+        sprintf(jac,"%s_grad2_vp_it%d",JACOBIAN,iteration);
+        write_matrix_disk(grad_vp, jac);
+    }
 }
 
 void lbfgs_core(int iteration, int N_LBFGS, int NPAR_LBFGS,float ** s_LBFGS, float ** y_LBFGS, float * rho_LBFGS,float *q_LBFGS,float *alpha_LBFGS,float *r_LBFGS) {

@@ -26,7 +26,7 @@
 
 #include "fd.h"
 void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_u, float  **  rho, float  **  rhonp1, float **  pi, float **  pinp1, float **  u, float **  unp1, int iter,
-                          int epstest, int INVMAT, float eps_scale, int itest, int nfstart, float ** u_start, float ** pi_start, float ** rho_start,int wavetype_start,float **bfgsmod,int bfgsnum,int bfgspar,float Vs_avg,float Vp_avg,float rho_avg,int LBFGS_iter_start){
+                          int epstest, int INVMAT, float eps_scale, int itest, int nfstart, float ** u_start, float ** pi_start, float ** rho_start,int wavetype_start,float **s_LBFGS,int N_LBFGS,int LBFGS_NPAR,float Vs_avg,float Vp_avg,float rho_avg,int LBFGS_iter_start){
     
     
     /*--------------------------------------------------------------------------*/
@@ -55,18 +55,23 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
     
     extern char JACOBIAN[STRING_SIZE];
     char jac[225],jac2[225];
-    FILE *FP_JAC,*FP_JAC2;
+    FILE *FP_JAC,*FP_JAC2,*FP_JAC3;
     
     if(GRAD_METHOD==2&&(itest==0)){
-        w=iter%bfgsnum;
-        if(w==0) w=bfgsnum;
+        w=iter%N_LBFGS;
+        if(w==0) w=N_LBFGS;
         
-        sprintf(jac,"%s_bfgsmod_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+        sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
         FP_JAC=fopen(jac,"wb");
         
-        if(bfgspar>1){
-            sprintf(jac2,"%s_bfgsmod_rho_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+        if(LBFGS_NPAR>1){
+            sprintf(jac2,"%s_s_LBFGS_rho_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
             FP_JAC2=fopen(jac2,"wb");
+        }
+        
+        if(LBFGS_NPAR>2){
+            sprintf(jac2,"%s_s_LBFGS_vp_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            FP_JAC3=fopen(jac2,"wb");
         }
         
         if(MYID==0) printf("\n\n ------------ L-BFGS ---------------");
@@ -309,16 +314,17 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
                     if(GRAD_METHOD==2){
                         l++;
 
-                        if(!ACOUSTIC) bfgsmod[w][l]=(unp1[j][i]-u[j][i])/Vs_avg;
-                        fwrite(&bfgsmod[w][l],sizeof(float),1,FP_JAC);
+                        if(!ACOUSTIC) s_LBFGS[w][l]=(unp1[j][i]-u[j][i])/Vs_avg;
+                        fwrite(&s_LBFGS[w][l],sizeof(float),1,FP_JAC);
                         
-                        if(bfgspar>1) {
-                            bfgsmod[w][l+NX*NY]=(rhonp1[j][i]-rho[j][i])/rho_avg;
-                            fwrite(&bfgsmod[w][l+NY*NX],sizeof(float),1,FP_JAC2);
+                        if(LBFGS_NPAR>1) {
+                            s_LBFGS[w][l+NX*NY]=(rhonp1[j][i]-rho[j][i])/rho_avg;
+                            fwrite(&s_LBFGS[w][l+NY*NX],sizeof(float),1,FP_JAC2);
                         }
                         
-                        if(bfgspar>2){
-                            bfgsmod[w][l+2*NX*NY]=(pinp1[j][i]-pi[j][i])/Vp_avg;
+                        if(LBFGS_NPAR>2){
+                            s_LBFGS[w][l+2*NX*NY]=(pinp1[j][i]-pi[j][i])/Vp_avg;
+                            fwrite(&s_LBFGS[w][l+2*NY*NX],sizeof(float),1,FP_JAC3);
                         }
                     }
                     if(!ACOUSTIC) u[j][i] = unp1[j][i];
@@ -332,19 +338,29 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
     if(GRAD_METHOD==2&&(itest==0)){
         fclose(FP_JAC);
         MPI_Barrier(MPI_COMM_WORLD);
-        sprintf(jac,"%s_bfgsmod_it%d_w%d.bin",JACOBIAN,iter+1,w);
+        sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin",JACOBIAN,iter+1,w);
         if (MYID==0) mergemod(jac,3);
         MPI_Barrier(MPI_COMM_WORLD);
-        sprintf(jac,"%s_bfgsmod_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+        sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
         remove(jac);
         
-        if(bfgspar>1){
+        if(LBFGS_NPAR>1){
             fclose(FP_JAC2);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_bfgsmod_rho_it%d_w%d.bin",JACOBIAN,iter+1,w);
+            sprintf(jac,"%s_s_LBFGS_rho_it%d_w%d.bin",JACOBIAN,iter+1,w);
             if (MYID==0) mergemod(jac,3);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_bfgsmod_rho_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            sprintf(jac,"%s_s_LBFGS_rho_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            remove(jac);
+        }
+        
+        if(LBFGS_NPAR>2){
+            fclose(FP_JAC3);
+            MPI_Barrier(MPI_COMM_WORLD);
+            sprintf(jac,"%s_s_LBFGS_vp_it%d_w%d.bin",JACOBIAN,iter+1,w);
+            if (MYID==0) mergemod(jac,3);
+            MPI_Barrier(MPI_COMM_WORLD);
+            sprintf(jac,"%s_s_LBFGS_vp_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
             remove(jac);
         }
     }

@@ -108,10 +108,10 @@ int main(int argc, char **argv){
     int QUELLART_OLD;
     
     /* Variables for L-BFGS */
-    int LBFGS=0, bfgsnum=0,bfgspar=3;
+    int LBFGS=0,LBFGS_NPAR=3;
     int LBFGS_iter_start=1;
     float LBFGS_L2_temp;
-    float **bfgsmod1,**bfgsmod2,**bfgsmod3,**bfgsgrad1, **bfgsgrad2, **bfgsgrad3, *bfgsscale1,*bfgsscale2,*bfgsscale3;
+    float **s_LBFGS,**bfgsmod2,**bfgsmod3,**y_LBFGS, **bfgsgrad2, **bfgsgrad3, *rho_LBFGS,*bfgsscale2,*bfgsscale3;
     int l=0;
     int w=0;
     int m=0;
@@ -391,22 +391,22 @@ int main(int argc, char **argv){
     }
     
     if(GRAD_METHOD==2) {
-        bfgsnum=N_LBFGS;
+        /* Allocate memory for L-BFGS */
         
-        if(WAVETYPE==2) bfgspar=2;
+        if(WAVETYPE==2) LBFGS_NPAR=2;
         
-        bfgsmod1=fmatrix(1,bfgsnum,1,bfgspar*NX*NY);
+        s_LBFGS=fmatrix(1,N_LBFGS,1,LBFGS_NPAR*NX*NY);
         
-        bfgsgrad1=fmatrix(1,bfgsnum,1,bfgspar*NX*NY);
+        y_LBFGS=fmatrix(1,N_LBFGS,1,LBFGS_NPAR*NX*NY);
         
-        bfgsscale1=vector(1,bfgsnum);
+        rho_LBFGS=vector(1,N_LBFGS);
         
-        for(l=1;l<=bfgsnum;l++){
-            for(m=1;m<=bfgspar*NX*NY;m++){
-                bfgsmod1[l][m]=0.0;
-                bfgsgrad1[l][m]=0.0;
+        for(l=1;l<=N_LBFGS;l++){
+            for(m=1;m<=LBFGS_NPAR*NX*NY;m++){
+                s_LBFGS[l][m]=0.0;
+                y_LBFGS[l][m]=0.0;
             }
-            bfgsscale1[l]=0.0;
+            rho_LBFGS[l]=0.0;
         }
     }
     
@@ -969,7 +969,7 @@ int main(int argc, char **argv){
             
             /* restart L-BFGS */
             if(iter==LBFGS_iter_start) {
-                lbfgs_reset(iter,bfgsnum,bfgspar,bfgsmod1,bfgsgrad1,bfgsscale1);
+                lbfgs_reset(iter,N_LBFGS,LBFGS_NPAR,s_LBFGS,y_LBFGS,rho_LBFGS);
                 
                 /* set values */
                 FWI_run=1;
@@ -2913,7 +2913,7 @@ int main(int argc, char **argv){
                     /*---------------------*/
                     /*       L-BFGS        */
                     /*---------------------*/
-                    lbfgs(waveconv_u, waveconv_rho, waveconv,Vs_avg,rho_avg,Vp_avg, bfgsscale1, bfgsmod1, bfgsgrad1, bfgsnum,bfgspar, iter,&LBFGS_iter_start);
+                    lbfgs(waveconv_u, waveconv_rho, waveconv,Vs_avg,rho_avg,Vp_avg, rho_LBFGS, s_LBFGS, y_LBFGS, N_LBFGS,LBFGS_NPAR, iter,&LBFGS_iter_start);
                     
                 }
                 
@@ -2961,14 +2961,14 @@ int main(int argc, char **argv){
                     if(iter>2 && WOLFE_TRY_OLD_STEPLENGTH)  alpha_SL=alpha_SL_old;
                     
                     /* Calculate update */
-                    calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,bfgsmod1,bfgsnum,bfgspar,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                    calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
                     FWI_run=1;
                 }
                 
                 /* Check if current step length satisfy wolfe condition, if not call linesearch for new step length */
                 if(countstep>0) {
                     
-                    wolfe_status=check_wolfe(alpha_SL, L2_SL_old, L2_SL_new, waveconv_u_old, waveconv_u, waveconv_u_up,waveconv_rho_old, waveconv_rho, waveconv_rho_up,waveconv_old, waveconv, waveconv_up, c1_SL, c2_SL,bfgspar);
+                    wolfe_status=check_wolfe(alpha_SL, L2_SL_old, L2_SL_new, waveconv_u_old, waveconv_u, waveconv_u_up,waveconv_rho_old, waveconv_rho, waveconv_rho_up,waveconv_old, waveconv, waveconv_up, c1_SL, c2_SL,LBFGS_NPAR);
                     
                     if(wolfe_status==0) {
                         /* Current step length satisfy wolfe condition, abort step length search */
@@ -2989,7 +2989,7 @@ int main(int argc, char **argv){
                         
                         /* Current step length do not satisfy wolfe condition, try new step length */
                         wolfe_linesearch(wolfe_status, &alpha_SL_min, &alpha_SL_max, &alpha_SL);
-                        calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,bfgsmod1,bfgsnum,bfgspar,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                        calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
                         fprintf(FP,"; New steplength=%1.3f",alpha_SL);
                         FWI_run=1;
                     }
@@ -3023,7 +3023,7 @@ int main(int argc, char **argv){
             }
             
             /* do the final model update */
-            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,bfgsmod1,bfgsnum,bfgspar,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
             
             /* write L2 log file */
             if (TIME_FILT==0){
@@ -3102,7 +3102,7 @@ int main(int argc, char **argv){
                 for (itest=itests;itest<=iteste;itest++){
                     
                     /* calculate change in the material parameters */
-                    calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,INVMAT,eps_scale,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,bfgsmod1,bfgsnum,bfgspar,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                    calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,INVMAT,eps_scale,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
                     
                     /* For the calculation of the material parameters beteween gridpoints
                      the have to be averaged. For this, values lying at 0 and NX+1,
@@ -3660,7 +3660,7 @@ int main(int argc, char **argv){
             /* -----------------------------------------------------------------------*/
             /* ----------- Do the actual update to the material parameters -----------*/
             /* -----------------------------------------------------------------------*/
-            calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,INVMAT,eps_scale,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,bfgsmod1,bfgsnum,bfgspar,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+            calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,INVMAT,eps_scale,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
             fprintf(FP,"=================================================================================================\n");
             
         } /* end of if(INVMAT!=4) */
