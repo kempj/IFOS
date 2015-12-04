@@ -3031,15 +3031,18 @@ int main(int argc, char **argv){
             /* do the final model update */
             calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
             
-            /* write L2 log file */
-            if (TIME_FILT==0){
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t 0 \t 0 \t %d \t %e \t %e \n",alpha_SL,iter,wolfe_sum_FWI,countstep-1,L2_SL_old,L2_SL_new);}
-            else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t 0 \t 0 \t %d \t %e \t %e \t %f\n",alpha_SL,iter,wolfe_sum_FWI,countstep-1,L2_SL_old,L2_SL_new,FC);
-            }
-            
             L2_hist[iter]=L2t[4];
             
+            /* write L2 log file */
+            float diff=0.0;
+            diff=fabs((L2_hist[iter-2]-L2_hist[iter])/L2_hist[iter-2]);
+            if (TIME_FILT==0){
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new);}
+            else{
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,FC);
+            }
+            
+            /* initiate variables for next iteration */
             if(use_wolfe_failsafe==1) {
                 L2_hist[iter]=L2_SL_new;
                 FWI_run=1;
@@ -3787,7 +3790,7 @@ int main(int argc, char **argv){
             /* ------------------------------------------------- */
             /* Check when Workflow is NOT used and TIME_FILT==1  */
             /* ------------------------------------------------- */
-            if(((diff<=pro)&&(TIME_FILT==1))||((TIME_FILT==1)&&(step3==1))&&!USE_WORKFLOW){
+            if( (TIME_FILT==1) && (!USE_WORKFLOW) && ( (diff<=pro) || (step3==1) || wolfe_SLS_failed ) ){
                 if(MYID==0){
                     if (diff<=pro){
                         printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);}
@@ -3810,12 +3813,13 @@ int main(int argc, char **argv){
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
+                wolfe_SLS_failed=0;
             }
             
             /* ------------------------------------------------- */
             /* Check when Workflow is NOT used and TIME_FILT==2  */
             /* ------------------------------------------------- */
-            if(((diff<=pro)&&(TIME_FILT==2))||((TIME_FILT==2)&&(step3==1))&&!USE_WORKFLOW){
+            if( (TIME_FILT==2) && (!USE_WORKFLOW) && ( (diff<=pro) || (step3==1) || wolfe_SLS_failed ) ){
                 if(MYID==0){
                     if (diff<=pro){
                         printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);}
@@ -3839,6 +3843,7 @@ int main(int argc, char **argv){
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
+                wolfe_SLS_failed=0;
             }
             
         }
