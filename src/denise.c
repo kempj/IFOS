@@ -2887,25 +2887,31 @@ int main(int argc, char **argv){
                         if(GRAD_FILTER==1){smooth(waveconv,1,1,Vs_avg,FC);}
                     }
                     
-                    if (SWS_TAPER_FILE){   /* read taper from BIN-File*/
+                    if (SWS_TAPER_FILE && !ACOUSTIC){   /* read taper from BIN-File*/
                         taper_grad(waveconv_u,taper_coeff,srcpos,nsrc,recpos,ntr_glob,5);}
                     
                     if (SWS_TAPER_FILE){   /* read taper from BIN-File*/
                         taper_grad(waveconv_rho,taper_coeff,srcpos,nsrc,recpos,ntr_glob,6);}
                     
-                    if(GRAD_FILTER==1){smooth(waveconv_u,2,1,Vs_avg,FC);}
+                    if(GRAD_FILTER==1&& !ACOUSTIC){smooth(waveconv_u,2,1,Vs_avg,FC);}
                     if(GRAD_FILTER==1){smooth(waveconv_rho,3,1,Vs_avg,FC);}
                     
                     if(WOLFE_CONDITION) {
                         for (j=1;j<=NY;j=j+IDY){
                             for (i=1;i<=NX;i=i+IDX){
-                                if(WAVETYPE!=2) waveconv_old[j][i]=waveconv[j][i];
-                                waveconv_u_old[j][i] = waveconv_u[j][i];
-                                waveconv_rho_old[j][i] = waveconv_rho[j][i];
                                 
+                                if(WAVETYPE!=2){
+                                    waveconv_old[j][i]=waveconv[j][i];
+                                    ppinp1[j][i] = ppi[j][i];
+                                }
+                                
+                                if(!ACOUSTIC){
+                                    waveconv_u_old[j][i] = waveconv_u[j][i];
+                                    punp1[j][i] =pu[j][i];
+                                }
+                                
+                                waveconv_rho_old[j][i] = waveconv_rho[j][i];
                                 prhonp1[j][i] = prho[j][i];
-                                if(WAVETYPE!=2) ppinp1[j][i] = ppi[j][i];
-                                punp1[j][i] =pu[j][i];
                             }
                         }
                     }
@@ -2921,7 +2927,7 @@ int main(int argc, char **argv){
                     for (j=1;j<=NY;j=j+IDY){
                         for (i=1;i<=NX;i=i+IDX){
                             if(WAVETYPE!=2) waveconv_up[j][i]=waveconv[j][i];
-                            waveconv_u_up[j][i] = waveconv_u[j][i];
+                            if(!ACOUSTIC) waveconv_u_up[j][i] = waveconv_u[j][i];
                             waveconv_rho_up[j][i] = waveconv_rho[j][i];
                         }
                     }
@@ -3018,7 +3024,7 @@ int main(int argc, char **argv){
                 for (i=1;i<=NX;i=i+IDX){
                     prho[j][i]=prhonp1[j][i];
                     if(WAVETYPE!=2)  ppi[j][i]=ppinp1[j][i];
-                    pu[j][i]=punp1[j][i];
+                    if(!ACOUSTIC) pu[j][i]=punp1[j][i];
                 }
             }
             

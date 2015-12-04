@@ -27,6 +27,7 @@ int check_wolfe(float steplength, float misfit_old, float misfit_new, float ** g
     /* global */
     extern int NX,NY,MYID;
     extern FILE *FP;
+    extern int ACOUSTIC;
     
     /* local */
     float left=0.0, right=0.0;
@@ -34,11 +35,13 @@ int check_wolfe(float steplength, float misfit_old, float misfit_new, float ** g
     float temp;
     float temp2;
     
-    temp=matrix_product(grad_old_vs, update_vs);
-    grad_dot_p_old+=temp;
-    temp2=global_maximum(grad_old_vs);
-    if(fabs(temp2)>0) grad_dot_p_old_norm+=temp/temp2;
-    grad_dot_p_new+=matrix_product(grad_new_vs, update_vs);
+    if(!ACOUSTIC){
+        temp=matrix_product(grad_old_vs, update_vs);
+        grad_dot_p_old+=temp;
+        temp2=global_maximum(grad_old_vs);
+        if(fabs(temp2)>0) grad_dot_p_old_norm+=temp/temp2;
+        grad_dot_p_new+=matrix_product(grad_new_vs, update_vs);
+    }
     
     if(NPAR_LBFGS>1) {
         temp=matrix_product(grad_old_rho, update_rho);
@@ -87,7 +90,7 @@ int check_wolfe(float steplength, float misfit_old, float misfit_new, float ** g
         fprintf(FP,"\n Condition 2 NOT OK: (%.1f>= %.1f)", left, right);
         return 2;
     }
-
+    
     fprintf(FP,"\n Steplength %.3f satisfy wolfe condition",steplength);
     return 0;
 }

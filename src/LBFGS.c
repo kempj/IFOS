@@ -46,12 +46,15 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
     char jac[225];
     FILE *FP_JAC;
     
-
+    
     /*---------------------*/
     /*      DEBUGGING      */
     /*---------------------*/
-    sprintf(jac,"%s_grad1_vs_it%d",JACOBIAN,iteration);
-    write_matrix_disk(grad_vs, jac);
+    
+    if(!ACOUSTIC) {
+        sprintf(jac,"%s_grad1_vs_it%d",JACOBIAN,iteration);
+        write_matrix_disk(grad_vs, jac);
+    }
     
     sprintf(jac,"%s_grad1_rho_it%d",JACOBIAN,iteration);
     write_matrix_disk(grad_rho, jac);
@@ -72,7 +75,7 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
         for (i=1;i<=NX;i++){
             for (j=1;j<=NY;j++){
                 l++;
-                y_LBFGS[w][l]=-grad_vs[j][i]*Vs_avg; /* VS */
+                if(!ACOUSTIC) y_LBFGS[w][l]=-grad_vs[j][i]*Vs_avg; /* VS */
                 if(NPAR_LBFGS>1) y_LBFGS[w][l+NX*NY]=-grad_rho[j][i]*rho_avg; /* RHO */
                 if(NPAR_LBFGS>2) y_LBFGS[w][l+2*NX*NY]=-grad_vp[j][i]*Vp_avg; /* VP */
             }
@@ -95,8 +98,10 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
         if(w==0) w=N_LBFGS;
         
         /* Debugging */
-        sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
-        FP_JAC=fopen(jac,"wb");
+        if(!ACOUSTIC) {
+            sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
+            FP_JAC=fopen(jac,"wb");
+        }
         
         if(MYID==0) printf("\n\n ------------ L-BFGS ---------------");
         if(MYID==0) printf("\n Start calculation L-BFGS update");
@@ -109,8 +114,10 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
                 l++;
                 
                 /* VS */
-                y_LBFGS[w][l]+=grad_vs[j][i]*Vs_avg; /* add grad(i) to build grad(i)-grad(i-1) */
-                q_LBFGS[l]=grad_vs[j][i]*Vs_avg; /* Normalisation */
+                if(!ACOUSTIC){
+                    y_LBFGS[w][l]+=grad_vs[j][i]*Vs_avg; /* add grad(i) to build grad(i)-grad(i-1) */
+                    q_LBFGS[l]=grad_vs[j][i]*Vs_avg; /* Normalisation */
+                }
                 
                 /* RHO */
                 if(NPAR_LBFGS>1) {
@@ -125,20 +132,22 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
                 }
                 
                 /* Debugging */
-                fwrite(&y_LBFGS[w][l],sizeof(float),1,FP_JAC);
+                if(!ACOUSTIC) fwrite(&y_LBFGS[w][l],sizeof(float),1,FP_JAC);
             }
         }
         
         /*---------------------*/
         /*      DEBUGGING      */
-        /*--------------------*/
-        fclose(FP_JAC);
-        MPI_Barrier(MPI_COMM_WORLD);
-        sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin",JACOBIAN,iteration,w);
-        if (MYID==0) mergemod(jac,3);
-        MPI_Barrier(MPI_COMM_WORLD);
-        sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
-        remove(jac);
+        /*---------------------*/
+        if(!ACOUSTIC) {
+            fclose(FP_JAC);
+            MPI_Barrier(MPI_COMM_WORLD);
+            sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin",JACOBIAN,iteration,w);
+            if (MYID==0) mergemod(jac,3);
+            MPI_Barrier(MPI_COMM_WORLD);
+            sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
+            remove(jac);
+        }
         
         /*----------------------------------*/
         /*      call L-BFGS Algorithm       */
@@ -158,8 +167,10 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
                 l++;
                 
                 /* VS */
-                y_LBFGS[w][l]=-grad_vs[j][i]*Vs_avg; /* add -grad(i-1) to build grad(i)-grad(i-1) */
-                grad_vs[j][i]=r_LBFGS[l]*Vs_avg; /* Denormalization */
+                if(!ACOUSTIC) {
+                    y_LBFGS[w][l]=-grad_vs[j][i]*Vs_avg; /* add -grad(i-1) to build grad(i)-grad(i-1) */
+                    grad_vs[j][i]=r_LBFGS[l]*Vs_avg; /* Denormalization */
+                }
                 
                 /* RHO */
                 if(NPAR_LBFGS>1) {
@@ -184,9 +195,11 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
     /*---------------------*/
     /*      DEBUGGING      */
     /*---------------------*/
-    sprintf(jac,"%s_grad2_vs_it%d",JACOBIAN,iteration);
-    write_matrix_disk(grad_vs, jac);
- 
+    if(!ACOUSTIC){
+        sprintf(jac,"%s_grad2_vs_it%d",JACOBIAN,iteration);
+        write_matrix_disk(grad_vs, jac);
+    }
+    
     sprintf(jac,"%s_grad2_rho_it%d",JACOBIAN,iteration);
     write_matrix_disk(grad_rho, jac);
     
@@ -306,7 +319,8 @@ void lbfgs_reset(int iter, int N_LBFGS, int NPAR_LBFGS,float ** s_LBFGS1, float 
     extern int NX,NY,MYID;
     
     if(MYID==0) printf("\n\n ------------ L-BFGS ---------------");
-    if(MYID==0) printf("\n Reset L-BFGS at Iteration %d",iter);
+    if(MYID==0&&iter>1) printf("\n Reset L-BFGS at iteration %d",iter);
+    if(MYID==0&&iter==1) printf("\n L-BFGS will be used from iteration %d on",iter);
     
     for(l=1;l<=N_LBFGS;l++){
         for(m=1;m<=NPAR_LBFGS*NX*NY;m++){

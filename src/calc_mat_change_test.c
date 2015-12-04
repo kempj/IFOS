@@ -61,8 +61,10 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
         w=iter%N_LBFGS;
         if(w==0) w=N_LBFGS;
         
-        sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
-        FP_JAC=fopen(jac,"wb");
+        if(!ACOUSTIC){
+            sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            FP_JAC=fopen(jac,"wb");
+        }
         
         if(LBFGS_NPAR>1){
             sprintf(jac2,"%s_s_LBFGS_rho_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
@@ -313,9 +315,11 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
                 if(itest==0){
                     if(GRAD_METHOD==2){
                         l++;
-
-                        if(!ACOUSTIC) s_LBFGS[w][l]=(unp1[j][i]-u[j][i])/Vs_avg;
-                        fwrite(&s_LBFGS[w][l],sizeof(float),1,FP_JAC);
+                        
+                        if(!ACOUSTIC) {
+                            s_LBFGS[w][l]=(unp1[j][i]-u[j][i])/Vs_avg;
+                            fwrite(&s_LBFGS[w][l],sizeof(float),1,FP_JAC);
+                        }
                         
                         if(LBFGS_NPAR>1) {
                             s_LBFGS[w][l+NX*NY]=(rhonp1[j][i]-rho[j][i])/rho_avg;
@@ -326,6 +330,7 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
                             s_LBFGS[w][l+2*NX*NY]=(pinp1[j][i]-pi[j][i])/Vp_avg;
                             fwrite(&s_LBFGS[w][l+2*NY*NX],sizeof(float),1,FP_JAC3);
                         }
+                        
                     }
                     if(!ACOUSTIC) u[j][i] = unp1[j][i];
                     rho[j][i] = rhonp1[j][i];
@@ -336,13 +341,15 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
     }
     
     if(GRAD_METHOD==2&&(itest==0)){
-        fclose(FP_JAC);
-        MPI_Barrier(MPI_COMM_WORLD);
-        sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin",JACOBIAN,iter+1,w);
-        if (MYID==0) mergemod(jac,3);
-        MPI_Barrier(MPI_COMM_WORLD);
-        sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
-        remove(jac);
+        if(!ACOUSTIC){
+            fclose(FP_JAC);
+            MPI_Barrier(MPI_COMM_WORLD);
+            sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin",JACOBIAN,iter+1,w);
+            if (MYID==0) mergemod(jac,3);
+            MPI_Barrier(MPI_COMM_WORLD);
+            sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            remove(jac);
+        }
         
         if(LBFGS_NPAR>1){
             fclose(FP_JAC2);

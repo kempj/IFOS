@@ -701,16 +701,11 @@ void read_par_json(FILE *fp, char *fileinp){
                 if (get_int_from_objectlist("GRAD_METHOD",number_readobjects,&GRAD_METHOD,varname_list, value_list))
                     err("Variable GRAD_METHOD could not be retrieved from the json input file!");
                 else {
-                    if(ACOUSTIC){
-                        GRAD_METHOD=1;
-                        fprintf(fp,"For acoustic modelling currently only GRAD_METHOD=%d possible.\n",GRAD_METHOD);}
                     if(GRAD_METHOD==1) {
                         WOLFE_CONDITION=0;
                     }
                     if(GRAD_METHOD==2) {
-                        
-                        if(ACOUSTIC){err("Currently no L-BFGS with acoustic FWI.");}
-                        
+                                                
                         if (get_int_from_objectlist("LBFGS_SURFACE",number_readobjects,&LBFGS_SURFACE,varname_list, value_list)){
                             LBFGS_SURFACE=0;
                             fprintf(fp,"Variable LBFGS_SURFACE is set to default value %d.\n",LBFGS_SURFACE);

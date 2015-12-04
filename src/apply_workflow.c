@@ -98,7 +98,7 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
             *FC=workflow[WORKFLOW_STAGE][7];
         }
     } else {
-        if(MYID==0)printf("\n TIME_FILT cannot be activated due to it is not activated in the JSON File \n");
+        if(MYID==0&&(workflow[WORKFLOW_STAGE][6]>0))printf("\n TIME_FILT cannot be activated due to it is not activated in the JSON File \n");
     }
     /* Change of wavetype  */
     if(wavetype_start!=3&&(WAVETYPE!=workflow[WORKFLOW_STAGE][8])){
