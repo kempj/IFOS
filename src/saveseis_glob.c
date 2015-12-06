@@ -23,16 +23,22 @@
 
 #include "fd.h"
 
-void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectionvz,float **sectionp,float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc,int ntr, float ** srcpos, int ishot, int ns, int iter){
+void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectionvz,float **sectionp,float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc,int ntr, float ** srcpos, int ishot, int ns, int iter, int type_switch){
+    
+     /* type_switch:
+     *  1== synthetic data
+     *  2== measured - synthetic data (residuals)
+     *  3== filtered measured data
+     */
     
     extern int SEISMO, SEIS_FORMAT, RUN_MULTIPLE_SHOTS, WAVETYPE, VERBOSE;
-    extern char  SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_VZ[STRING_SIZE];
-    extern char  SEIS_FILE_CURL[STRING_SIZE], SEIS_FILE_DIV[STRING_SIZE], SEIS_FILE_P[STRING_SIZE];
+    extern char SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_VZ[STRING_SIZE];
+    extern char SEIS_FILE_CURL[STRING_SIZE], SEIS_FILE_DIV[STRING_SIZE], SEIS_FILE_P[STRING_SIZE];
     
     char vxf[STRING_SIZE], vyf[STRING_SIZE],vzf[STRING_SIZE], curlf[STRING_SIZE], divf[STRING_SIZE], pf[STRING_SIZE];
     int nsrc=1;
     
-    if(iter>=0){
+    if(type_switch==1){
         sprintf(vxf,"%s.shot%d.it%d",SEIS_FILE_VX,ishot,iter);
         sprintf(vyf,"%s.shot%d.it%d",SEIS_FILE_VY,ishot,iter);
         if(WAVETYPE==2 || WAVETYPE==3) {
@@ -43,7 +49,7 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
         sprintf(curlf,"%s.shot%d.it%d",SEIS_FILE_CURL,ishot,iter);
     }
     
-    if(iter==-1){
+    if(type_switch==2){
         sprintf(vxf,"%s.shot%d_adjoint_src",SEIS_FILE_VX,ishot);
         sprintf(vyf,"%s.shot%d_adjoint_src",SEIS_FILE_VY,ishot);
         if(WAVETYPE==2 || WAVETYPE==3) {
@@ -54,7 +60,7 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
         sprintf(curlf,"%s.shot%d_adjoint_src",SEIS_FILE_CURL,ishot);
     }
     
-    if(iter==-2){
+    if(type_switch==3){
         sprintf(vxf,"%s_measured.shot%d.it%d",SEIS_FILE_VX,ishot,iter);
         sprintf(vyf,"%s_measured.shot%d.it%d",SEIS_FILE_VY,ishot,iter);
         if(WAVETYPE==2 || WAVETYPE==3) {

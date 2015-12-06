@@ -1394,18 +1394,18 @@ int main(int argc, char **argv){
                                         catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     }
                                     if (MYID==0){
-                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);}
+                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);}
                                     break;
                                     
                                 case 2 :	/* pressure only */
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);
+                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                                 case 3 : 	/* curl and div only */
                                     catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);
+                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                                 case 4 :	/* everything */
@@ -1417,7 +1417,7 @@ int main(int argc, char **argv){
                                     }
                                     catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);
+                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                                 case 5 :	/* everything except curl and div*/
@@ -1427,7 +1427,7 @@ int main(int argc, char **argv){
                                         catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     }
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);
+                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                             } /* end of switch (SEISMO) */
@@ -1916,18 +1916,18 @@ int main(int argc, char **argv){
                                     calc_envelope(fulldata_vy,fulldata_vy,ns,ntr_glob);
                                     calc_envelope(fulldata_vx,fulldata_vx,ns,ntr_glob);}
                                 if (MYID==0){
-                                    saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);}
+                                    saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);}
                                 break;
                                 
                             case 2 :	/* pressure only */
                                 catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);
+                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                 break;
                                 
                             case 3 : 	/* curl and div only */
                                 catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);
+                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                 break;
                                 
                             case 4 :	/* everything */
@@ -1941,7 +1941,7 @@ int main(int argc, char **argv){
                                 catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);
+                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                 break;
                                 
                             case 5 :	/* everything except curl and div*/
@@ -1953,7 +1953,7 @@ int main(int argc, char **argv){
                                     catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 }
                                 catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter);
+                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                 break;
                                 
                         } /* end of switch (SEISMO) */
@@ -2087,7 +2087,7 @@ int main(int argc, char **argv){
                                         catseis(sectionvzdiff, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
                                     }
                                     if(myid_ntr==0){
-                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,-1);
+                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,2);
                                     }
                                 }
                                 
@@ -2103,7 +2103,7 @@ int main(int argc, char **argv){
                                         catseis(sectionvzdata, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
                                     }
                                     if(myid_ntr==0){
-                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,-2);
+                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,3);
                                     }
                                 }
                             }

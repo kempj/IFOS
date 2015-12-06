@@ -239,9 +239,7 @@ void saveseis(FILE *fp, float **sectionvx, float **sectionvy,float **sectionp,
               float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc,
               int ntr, float ** srcpos_loc, int nsrc,int ns, int iter);
 
-void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectionvz,float **sectionp,
-                   float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc,
-                   int ntr, float ** srcpos, int ishot, int ns, int iter);
+void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectionvz,float **sectionp,float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc,int ntr, float ** srcpos, int ishot, int ns, int iter, int type_switch);
 
 void snap(FILE *fp,int nt, int nsnap, float **vx, float **vy, float **sxx,
           float **syy, float **sp, float **u, float **pi, float *hc, int ishot);
