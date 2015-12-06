@@ -2075,6 +2075,7 @@ int main(int argc, char **argv){
                                     itestshot+=TESTSHOT_INCR;
                                 }
                                 
+                                /* Write differences between measured and synthetic seismogramms to disk */
                                 if (SEISMO){
                                     if(WAVETYPE==1 || WAVETYPE==3){
                                         catseis(sectionvxdiff, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
@@ -2087,6 +2088,22 @@ int main(int argc, char **argv){
                                     }
                                     if(myid_ntr==0){
                                         saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,-1);
+                                    }
+                                }
+                                
+                                /* Write measured filtered seismogramms to disk */
+                                if (SEISMO && TIME_FILT && WRITE_FILTERED_DATA){
+                                    if(WAVETYPE==1 || WAVETYPE==3){
+                                        catseis(sectionvxdata, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        catseis(sectionvydata, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        if(ACOUSTIC)
+                                            catseis(sectionpdata, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
+                                    }
+                                    if(WAVETYPE==2 || WAVETYPE==3){
+                                        catseis(sectionvzdata, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
+                                    }
+                                    if(myid_ntr==0){
+                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,-2);
                                     }
                                 }
                             }

@@ -64,7 +64,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
     
-    extern int TIME_FILT, ORDER, ZERO_PHASE;
+    extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
     extern float FC_START, FC_END, FC_INCR, F_HP;
     
     extern int LNORM, DTINV;
@@ -764,6 +764,9 @@ void read_par_json(FILE *fp, char *fileinp){
                     TIME_FILT=0;
                     fprintf(fp,"Variable TIME_FILT is set to default value %d.\n",TIME_FILT);}
                 else {
+                    if (get_int_from_objectlist("WRITE_FILTERED_DATA",number_readobjects,&WRITE_FILTERED_DATA,varname_list, value_list)){
+                        WRITE_FILTERED_DATA=0;
+                    }
                     if (get_float_from_objectlist("F_HP",number_readobjects,&F_HP,varname_list, value_list)){
                         F_HP=0.0;
                         fprintf(fp,"Variable F_HP is set to default value %f.\n",F_HP);}

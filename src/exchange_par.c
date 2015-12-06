@@ -64,7 +64,7 @@ void exchange_par(void){
     extern float npower, k_max_PML;
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
-    extern int TIME_FILT, ORDER, ZERO_PHASE;
+    extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
     extern float FC_START, FC_END, FC_INCR, F_HP;
     extern int LNORM, DTINV;
     extern int STEPMAX;
@@ -342,6 +342,8 @@ void exchange_par(void){
         idum[108]=WOLFE_NUM_TEST;
         idum[109]=WOLFE_TRY_OLD_STEPLENGTH;
         
+        idum[110]=WRITE_FILTERED_DATA;
+        
     } /** if (MYID == 0) **/
     
     if (MYID != 0) FL=vector(1,L);
@@ -606,6 +608,8 @@ void exchange_par(void){
     WOLFE_NUM_TEST=idum[108];
     
     WOLFE_TRY_OLD_STEPLENGTH=idum[109];
+    
+    WRITE_FILTERED_DATA=idum[110];
     
     MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
     
