@@ -864,7 +864,8 @@ If MODEL\_FILTER = 1 vp- and vs-models are smoothed with a 2D median filter afte
 			"FC_INCR" : "10.0",
 			"ORDER" : "2",
 			"ZERO_PHASE" : "0",
-			"FREQ_FILE"  : "freqeuncies.dat";
+			"FREQ_FILE"  : "freqeuncies.dat",
+			"WRITE_FILTERED_DATA" : "0",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
@@ -883,6 +884,7 @@ With F\_HP an additional high pass filter can be applied, where F\_HP is the cor
 
 With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
 
+With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. 
 
 \section{Trace killing}
 {\color{blue}{\begin{verbatim}

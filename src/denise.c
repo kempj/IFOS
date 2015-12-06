@@ -3826,7 +3826,7 @@ int main(int argc, char **argv){
                 s=1;
                 min_iter_help=0;
                 min_iter_help=iter+MIN_ITER;
-                printf("Changing to corner frequency of %4.2f Hz \n",FC);
+                if(MYID==0) printf("Changing to corner frequency of %4.2f Hz \n",FC);
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
@@ -3856,7 +3856,7 @@ int main(int argc, char **argv){
                 s=1;
                 min_iter_help=0;
                 min_iter_help=iter+MIN_ITER;
-                printf("Changing to corner frequency of %4.2f Hz \n",FC);
+                if(MYID==0) printf("Changing to corner frequency of %4.2f Hz \n",FC);
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
