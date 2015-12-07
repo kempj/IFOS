@@ -3067,6 +3067,7 @@ int main(int argc, char **argv){
                 steplength_search=0;
                 
                 wolfe_SLS_failed=1;
+                alpha_SL_old=1;
             } else {
                 FWI_run=0;
                 gradient_optimization=1;
@@ -3815,17 +3816,18 @@ int main(int argc, char **argv){
                         printf("\n Did not find a step length which decreases the misfit.\n");}
                 }
                 
-                if(FC==FC_END){
+                FC=FC+FC_INCR;
+                s=1;
+                min_iter_help=0;
+                min_iter_help=iter+MIN_ITER;
+                
+                if(FC>FC_END){
                     if(MYID==0){
                         printf("\n Reached the maximum frequency of %4.2f Hz \n",FC);
                     }
                     break;
                 }
                 
-                FC=FC+FC_INCR;
-                s=1;
-                min_iter_help=0;
-                min_iter_help=iter+MIN_ITER;
                 if(MYID==0) printf("Changing to corner frequency of %4.2f Hz \n",FC);
                 
                 /* Restart L-BFGS at next iteration */
