@@ -59,7 +59,7 @@ int check_wolfe(float steplength, float misfit_old, float misfit_new, float ** g
         grad_dot_p_new+=matrix_product(grad_new_vp, update_vp);
     }
     
-    fprintf(FP,"\n\n--------- Wolfe condition ----------- ");
+    fprintf(FP,"\n\n ------- Wolfe condition -------- ");
     
     /*---------------------------------*/
     /*       Check condition 1         */

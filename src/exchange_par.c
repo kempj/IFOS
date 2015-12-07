@@ -110,6 +110,8 @@ void exchange_par(void){
     extern int WOLFE_CONDITION;
     extern int WOLFE_NUM_TEST;
     extern int WOLFE_TRY_OLD_STEPLENGTH;
+    extern float WOLFE_C1_SL;
+    extern float WOLFE_C2_SL;
     
     /* definition of local variables */
     
@@ -199,6 +201,9 @@ void exchange_par(void){
         fdum[61] = JOINT_INVERSION_PSV_SH_ALPHA_RHO;
         
         fdum[62]=EPSILON_WE;
+        
+        fdum[63]=WOLFE_C1_SL;
+        fdum[64]=WOLFE_C2_SL;
         
         idum[1]  = NPROCX;
         idum[2]  = NPROCY;
@@ -464,6 +469,9 @@ void exchange_par(void){
     JOINT_INVERSION_PSV_SH_ALPHA_RHO = fdum[61];
     
     EPSILON_WE=fdum[62];
+    
+    WOLFE_C1_SL=fdum[63];
+    WOLFE_C2_SL=fdum[64];
     
     NPROCX = idum[1];
     NPROCY = idum[2];

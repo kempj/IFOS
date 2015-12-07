@@ -111,7 +111,7 @@ int main(int argc, char **argv){
     int LBFGS=0,LBFGS_NPAR=3;
     int LBFGS_iter_start=1;
     float LBFGS_L2_temp;
-    float **s_LBFGS,**bfgsmod2,**bfgsmod3,**y_LBFGS, **bfgsgrad2, **bfgsgrad3, *rho_LBFGS,*bfgsscale2,*bfgsscale3;
+    float **s_LBFGS,**y_LBFGS, *rho_LBFGS;
     int l=0;
     int w=0;
     int m=0;
@@ -581,6 +581,10 @@ int main(int argc, char **argv){
         waveconv_rho_shot = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         
         if(WOLFE_CONDITION){
+            
+            c1_SL=WOLFE_C1_SL;
+            c2_SL=WOLFE_C2_SL;
+            
             waveconv_old= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
             if(!ACOUSTIC) waveconv_u_old= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
             waveconv_rho_old= matrix(-nd+1,NY+nd,-nd+1,NX+nd);
@@ -1095,6 +1099,14 @@ int main(int argc, char **argv){
                     if(MYID==0){
                         if(iter==1){
                             FPL2=fopen(MISFIT_LOG_FILE,"w");
+                            /* Write header for misfit log file */
+                            if(GRAD_METHOD==1) {
+                                if (TIME_FILT==0){
+                                    fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
+                                else{
+                                    fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t FC \n");
+                                }
+                            }
                         }
                         if(iter>1){FPL2=fopen(MISFIT_LOG_FILE,"a");}
                     }
@@ -1518,7 +1530,7 @@ int main(int argc, char **argv){
                         
                         fprintf(FP,"\n==================================================================================\n");
                         fprintf(FP,"\n MYID=%d * Starting simulation (forward model) for shot %d of %d. Iteration %d ** \n",MYID,ishot,nshots,iter);
-                        fprintf(FP,"\n==================================================================================\n\n");
+                        fprintf(FP,"\n==================================================================================\n");
                         
                         for (nt=1;nt<=8;nt++) srcpos1[nt][1]=srcpos[nt][ishot];
                         
@@ -1561,12 +1573,11 @@ int main(int argc, char **argv){
                         /*------------------------------------------------------------------------------*/
                         
                         if (((TIME_FILT==1) || (TIME_FILT==2)) && (QUELLART!=6) && (INV_STF==0)){
-                            fprintf(FP," Time Domain Filter applied: lowpass filter, corner frequency of %.2f Hz, order %d\n",FC,ORDER);
+                            fprintf(FP,"\n Time Domain Filter applied: Lowpass with corner frequency of %.2f Hz, order %d\n",FC,ORDER);
                             
                             /*time domain filtering of the source signal */
                             if(WAVETYPE==1||WAVETYPE==3) timedomain_filt(signals,FC,ORDER,nsrc_loc,ns,1);
                             if(WAVETYPE==2||WAVETYPE==3) timedomain_filt(signals_SH,FC,ORDER,nsrc_loc,ns,1);
-                            
                             
                             if(WAVETYPE==1||WAVETYPE==3){
                                 if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
@@ -2122,7 +2133,7 @@ int main(int argc, char **argv){
                                 if(MYID==0){
                                     printf("\n==================================================================================\n");
                                     printf("\n MYID=%d *****  Starting simulation (backward model) for shot %d of %d  ********** \n",MYID,irec,nshots1);
-                                    printf("\n==================================================================================\n\n");
+                                    printf("\n==================================================================================\n");
                                 }
                                 
                                 
@@ -2972,6 +2983,8 @@ int main(int argc, char **argv){
                         use_wolfe_failsafe=1;
                         break;
                     } else {
+                        fprintf(FP,"\n After %d simulations no step length could be found which reduces the misfit and satisfy the wolfe condition.",countstep);
+                        fprintf(FP,"\n Will continue without model update.");
                         wolfe_SLS_failed=1;
                         break;
                     }
@@ -3028,6 +3041,21 @@ int main(int argc, char **argv){
             if(INVMAT!=0) break;
         }
         
+        if(wolfe_SLS_failed) {
+            
+            if (TIME_FILT==0){
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old);}
+            else{
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,FC);
+            }
+            
+            /* No update is done here, however model fils are written to disk for easy post processing */
+            alpha_SL=0.0;
+            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+            
+            alpha_SL_old=1;
+        }
+        
         /*-----------------------------------------------------*/
         /*       Wolfe condition: Model update                 */
         /*-----------------------------------------------------*/
@@ -3081,6 +3109,7 @@ int main(int argc, char **argv){
             FWI_run=1;
             gradient_optimization=1;
         }
+        
         
         opteps_vp=0.0;
         opteps_vs=0.0;
@@ -3828,11 +3857,12 @@ int main(int argc, char **argv){
                     break;
                 }
                 
-                if(MYID==0) printf("Changing to corner frequency of %4.2f Hz \n",FC);
+                if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",FC);
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
                 wolfe_SLS_failed=0;
+                alpha_SL_old=1;
             }
             
             /* ------------------------------------------------- */
@@ -3858,11 +3888,12 @@ int main(int argc, char **argv){
                 s=1;
                 min_iter_help=0;
                 min_iter_help=iter+MIN_ITER;
-                if(MYID==0) printf("Changing to corner frequency of %4.2f Hz \n",FC);
+                if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",FC);
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
                 wolfe_SLS_failed=0;
+                alpha_SL_old=1;
             }
             
         }

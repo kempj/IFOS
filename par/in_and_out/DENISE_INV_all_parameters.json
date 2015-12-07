@@ -111,12 +111,15 @@
 			"WOLFE_CONDITION" : "1",
 			"WOLFE_NUM_TEST" : "5",
 			"WOLFE_TRY_OLD_STEPLENGTH" : "0",
+			"WOLFE_C1_SL" : "1e-4",
+			"WOLFE_C2_SL" : "0.9",
 
 "Approx. Hessian" : "comment",
 			"EPRECOND" : "3",
 			"EPSILON_WE" : "0.005",
 
 			"EPRECOND_ITER" : "0",
+			"EPRECOND_PER_SHOT" : "1",
 
 "Workflow" : "comment",
 			"USE_WORKFLOW" : "0",

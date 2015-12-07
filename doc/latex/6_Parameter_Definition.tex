@@ -535,6 +535,8 @@ The corresponding functions are copied out of DENISE Black Edition, which is mai
 			"WOLFE_CONDITION" : "1",
 			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
 			"WOLFE_NUM_TEST" : "5", 
+			"WOLFE_C1_SL" : "1e-4",
+			"WOLFE_C2_SL" : "0.9",
 			
 			"LBFGS_STEP_LENGTH" : "0",
 \end{verbatim}}}
@@ -561,7 +563,7 @@ The ensure a stable convergence when L-BFGS is used the step length has to satis
  	\bigtriangledown f(x+\alpha \cdot p)^{T} \cdot p \geq c_2 \cdot\bigtriangledown f(x)^{T} \cdot p
  \end{align}
  To verify this condition the full gradient (with all shots!) of the updated model have to be calculated, so the verification of this condition is very expensive in terms of computation time. In theory always a step length of one should be tried first, however to save time it is possible to chose the step length from the iteration before which satisfied the wolfe condition. This behavior can be controlled with WOLFE\_TRY\_OLD\_STEPLENGTH, if this is set to 1 always the old step length will be tried first. In practice the experience has shown that at the beginning of a FWI stage a couple of step lengths will be tested and then the algorithm converges to a step length which will be accepted by the wolfe condition until the misfit cannot be reduced further. With the variable WOLFE\_NUM\_TEST a maximum number of test calculations can be defined. If after WOLFE\_NUM\_TEST tests no step length could be found, the algorithm takes the step length of the tests which reduced the misfit most, even if this step length does not satisfy the wolfe condition. If no step length was found which reduces the misfit, the algorithm will switch to the next FWI stage in the workflow file or abort the inversion. 
- The variable $c_1$ will be $10^{-7}\cdot max(f(x)^{-1}$ and $c_2$ is set to 0.9 (they are hard coded). 
+ The variable $c_1$ will be $10^{-7}\cdot max(f(x)^{-1}$ and $c_2$ is set to 0.9. With WOLFE\_C1\_SL and WOLFE\_C2\_SL it is possible to manipulate $c_1$ and $c_2$ with the JSON input file. If the parameters are not set, they will be set to default values, so in most cases it should be the best to do not specify theses parameters in the JSON file.
  A step length search which is based on the wolfe condition can be used which the switch WOLFE\_CONDITION. Please note that this step length search is only available if GRAD\_METHOD==2. 
   
   

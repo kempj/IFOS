@@ -96,6 +96,8 @@ int LBFGS_STEP_LENGTH;
 int WOLFE_CONDITION=0;
 int WOLFE_NUM_TEST=5;
 int WOLFE_TRY_OLD_STEPLENGTH=1;
+float WOLFE_C1_SL;
+float WOLFE_C2_SL;
 
 /* trace kill variables */
 int TRKILL;

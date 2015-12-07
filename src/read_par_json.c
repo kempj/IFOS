@@ -115,6 +115,9 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int WOLFE_CONDITION;
     extern int WOLFE_NUM_TEST;
     extern int WOLFE_TRY_OLD_STEPLENGTH;
+    extern float WOLFE_C1_SL;
+    extern float WOLFE_C2_SL;
+    
     /* definition of local variables */
     
     int number_readobjects=0,fserr=0;
@@ -730,6 +733,14 @@ void read_par_json(FILE *fp, char *fileinp){
                             if (get_int_from_objectlist("WOLFE_TRY_OLD_STEPLENGTH",number_readobjects,&WOLFE_TRY_OLD_STEPLENGTH,varname_list, value_list)){
                                 WOLFE_TRY_OLD_STEPLENGTH=1;
                                 fprintf(fp,"Variable WOLFE_TRY_OLD_STEPLENGTH is set to default value %d.\n",WOLFE_TRY_OLD_STEPLENGTH);
+                            }
+                            if (get_float_from_objectlist("WOLFE_C1_SL",number_readobjects,&WOLFE_C1_SL,varname_list, value_list)){
+                                WOLFE_C1_SL=1e-4;
+                                fprintf(fp,"Variable WOLFE_C1_SL is set to default value %f.\n",WOLFE_C1_SL);
+                            }
+                            if (get_float_from_objectlist("WOLFE_C2_SL",number_readobjects,&WOLFE_C2_SL,varname_list, value_list)){
+                                WOLFE_C2_SL=0.9;
+                                fprintf(fp,"Variable WOLFE_C2_SL is set to default value %f.\n",WOLFE_C2_SL);
                             }
                         }
                     }

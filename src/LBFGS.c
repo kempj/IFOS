@@ -245,7 +245,7 @@ void lbfgs_core(int iteration, int N_LBFGS, int NPAR_LBFGS,float ** s_LBFGS, flo
     /* give output so stdout */
     if(VERBOSE || 1) {
         for(w=1;w<=N_LBFGS;w++) {
-            fprintf(FP,"\n rho_LBFGS(%d)=%e\n",w,rho_LBFGS[w]);
+            fprintf(FP,"\n rho_LBFGS(%2d)=%e",w,rho_LBFGS[w]);
         }
         fprintf(FP,"\n h0=%e\n",h0);
     }
