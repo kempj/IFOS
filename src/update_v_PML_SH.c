@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------------------
- * Copyright (C) 2013  For the list of authors, see file AUTHORS.
+ * Copyright (C) 2015  For the list of authors, see file AUTHORS.
  *
  * This file is part of DENISE.
  *
@@ -16,13 +16,11 @@
  * along with DENISE. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
  -----------------------------------------------------------------------------------------*/
 
-/* $Id: update_v_ssg.c,v 1.1.1.1 2007/11/21 22:44:52 koehn Exp $*/
 /*------------------------------------------------------------------------
  *   updating particle velocities at gridpoints [nx1...nx2][ny1...ny2]
  *   by a staggered grid finite difference scheme of FDORDER accuracy in space
  *   and second order accuracy in time
- *   T. Bohlen
- *
+ *   SH-Version F. Wittkamp
  *  ----------------------------------------------------------------------*/
 
 #include "fd.h"
@@ -34,8 +32,8 @@ void update_v_PML_SH(int nx1, int nx2, int ny1, int ny2, int nt,
                      float *hc, int infoout,int sw, float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
                      float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,float ** psi_sxz_x,float ** psi_syz_y){
     
-    int i, j,l,fdoh,m, h, h1;
-    float amp, dtdh, azi_rad;
+    int i, j,l,fdoh, h, h1;
+    float dtdh;
     float sxz_x, syz_y;
     extern float DT, DH;
     double time1, time2;
@@ -46,12 +44,8 @@ void update_v_PML_SH(int nx1, int nx2, int ny1, int ny2, int nt,
     extern FILE *FP;
     extern int VELOCITY;
     
-    
     fdoh = FDORDER/2;
     dtdh = DT*DT/DH;
-    
-    /* drad = PI/180.0;
-     angle = 135.0; */
     
     if (infoout && (MYID==0)){
         time1=MPI_Wtime();

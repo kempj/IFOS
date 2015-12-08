@@ -53,11 +53,11 @@ float norm(float ** waveconv, int iter, int sws);
 void av_mat(float **  pi, float **  u,
             float **  ppijm, float **  puip, float ** pujm);
 
-void av_mue(float ** u, float ** uipjp, float ** uip, float ** ujp, float ** rho);
+void av_mue(float ** u, float ** uipjp,float ** rho);
 
 void av_rho(float **rho, float **rip, float **rjp);
 
-void av_tau(float **taus, float **tausipjp,float **tausip,float **tausjp);
+void av_tau(float **taus, float **tausipjp);
 
 float median2d(float **mat, int ny, int nx);
 
@@ -283,10 +283,9 @@ void surface(int ndepth, float ** pvx, float ** pvy,
 void surface_elastic(int ndepth, float ** vx, float ** vy, float ** sxx, float ** syy,
                      float ** sxy, float  **  pi, float  **  u, float ** rho, float * hc);
 
-void surface_elastic_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** syy,
-                         float ** sxy, float ** syz, float  **  pi, float  **  u, float ** rho, float * hc, float * K_x, float * a_x, float * b_x, float ** psi_vxx, float ** ux, float ** uy, float ** uxy, float ** uyz,float ** sxz,float **uxz);
+void surface_elastic_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** syy, float ** sxy, float ** syz, float  **  pi, float  **  u, float ** rho, float * hc, float * K_x, float * a_x, float * b_x, float ** psi_vxx, float ** ux, float ** uy, float ** uxy, float ** uyz,float ** sxz,float **uxz);
 
-void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** syy, float ** sxy, float ** syz, float ***p, float ***q, float  **  ppi, float  **  pu, float **prho, float **ptaup, float **ptaus, float *etajm, float *peta, float * hc, float * K_x, float * a_x, float * b_x, float ** psi_vxx,float ** ux, float ** uy, float ** uxy);
+void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** syy, float ** sxy, float ** syz, float ***p, float ***q, float  **  ppi, float  **  pu, float **prho, float **ptaup, float **ptaus, float *etajm, float *peta, float * hc, float * K_x, float * a_x, float * b_x, float ** psi_vxx, float ** ux, float ** uy, float ** uxy, float ** uyz,float ** sxz,float **uxz);
 
 void  timedomain_filt(float ** data, float fc, int order, int ntr, int ns, int method);
 void  timedomain_filt_vector(float * data, float fc, int order, int ntr, int ns, int method);
@@ -313,8 +312,7 @@ void update_s_visc_hc(int nx1, int nx2, int ny1, int ny2,
 void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, float **   sxz, float **   syz, float ** uxz, float ** uyz, float *hc,  int infoout,float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
                              float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,float ** psi_vzx, float ** psi_vzy,float ** uipjp,float ** u,float ** rho);
 
-void update_s_visc_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, float **   sxz, float **   syz, float ***t, float ***o, float ** uip, float ** ujp, float ** tausip, float ** tausjp, float *bip, float *bjm, float *cip, float *cjm, float *etajm, float *etaip, float *hc,  int infoout,float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
-                          float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,float ** psi_vzx, float ** psi_vzy);
+void update_s_visc_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, float **   sxz, float **   syz, float ***t, float ***o, float *bip, float *bjm, float *cip, float *cjm, float ***d, float ***dip, float **fipjp, float **f, float *hc,  int infoout,float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,float ** psi_vzx, float ** psi_vzy);
 
 void update_s_rsg(int nx1, int nx2, int ny1, int ny2,
                   float ** pvx, float ** pvy, float ** psxx, float ** psyy,

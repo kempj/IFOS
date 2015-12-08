@@ -27,7 +27,7 @@
 
 void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** syy,
                  float ** sxy, float ** syz, float ***p, float ***q, float  **  ppi, float  **  pu, float **prho, float **ptaup, float **ptaus, float *etajm, float *peta, float * hc, float * K_x, float * a_x, float * b_x, float ** psi_vxx,
-                 float ** ux, float ** uy, float ** uxy){
+                 float ** ux, float ** uy, float ** uxy, float ** uyz,float ** sxz,float **uxz){
     
     
     int i,j,m,h,h1,l;
@@ -162,10 +162,15 @@ void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** sy
     }
     if (WAVETYPE==2||WAVETYPE==3){
         for (i=1;i<=NX;i++){
-            for (m=0; m<=fdoh-1; m++) {
-                /* mirroring of stress components for syz
-                 to make a stress free surface in depth y=jsurf*h */
-                syz[j-m][i]=-syz[j+m+1][i];
+            
+            syz[j][i]=0.0;
+            uyz[j][i]=0.0;
+            for (m=1; m<=fdoh; m++) {
+                syz[j-m][i]=-syz[j+m][i];
+                sxz[j-m][i]=-sxz[j+m-1][i];
+                
+                uyz[j-m][i]=-uyz[j+m][i];
+                uxz[j-m][i]=-uxz[j+m-1][i];
             }
         }
     }

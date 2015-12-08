@@ -19,9 +19,9 @@
 
 #include "fd.h"
 
-void av_mue(float ** u, float ** uipjp, float ** uip, float ** ujp, float ** rho){
+void av_mue(float ** u, float ** uipjp,float ** rho){
     
-    extern int NX, NY, INVMAT1, WAVETYPE;
+    extern int NX, NY, INVMAT1;
     int i, j;
     float u1, u2, u3, u4;
     
@@ -31,17 +31,9 @@ void av_mue(float ** u, float ** uipjp, float ** uip, float ** ujp, float ** rho
             for (i=1;i<=NX;i++){
                 
                 uipjp[j][i]=4.0/((1.0/u[j][i])+(1.0/u[j][i+1])+(1.0/u[j+1][i])+(1.0/u[j+1][i+1]));
-                if(WAVETYPE==2 || WAVETYPE==3) {
-                    uip[j][i]=0.5*(u[j][i+1]+u[j][i]);
-                    ujp[j][i]=0.5*(u[j+1][i]+u[j][i]);
-                }
-                
+
                 if((u[j][i]==0.0)||(u[j][i+1]==0.0)||(u[j+1][i]==0.0)||(u[j+1][i+1]==0.0)){
                     uipjp[j][i]=0.0;
-                    if(WAVETYPE==2 || WAVETYPE==3) {
-                        uip[j][i]=0.0;
-                        ujp[j][i]=0.0;
-                    }
                 }
                 
                 
@@ -61,18 +53,9 @@ void av_mue(float ** u, float ** uipjp, float ** uip, float ** ujp, float ** rho
                 u4 = rho[j+1][i+1] * u[j+1][i+1] * u[j+1][i+1];
                 
                 uipjp[j][i]=4.0/((1.0/u1)+(1.0/u2)+(1.0/u3)+(1.0/u4));
-                if(WAVETYPE==2 || WAVETYPE==3) {
-                    uip[j][i]=0.5*(u1+u2);
-                    ujp[j][i]=0.5*(u3+u1);
-                }
                 if((u1==0.0)||(u2==0.0)||(u3==0.0)||(u4==0.0)){
                     uipjp[j][i]=0.0;
-                    if(WAVETYPE==2 || WAVETYPE==3) {
-                        uip[j][i]=0.0;
-                        ujp[j][i]=0.0;
-                    }
                 }
-                
                 
             }
         }

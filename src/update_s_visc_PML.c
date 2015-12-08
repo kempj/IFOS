@@ -16,7 +16,6 @@
  * along with DENISE. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
 -----------------------------------------------------------------------------------------*/
 
-/* $Id: update_s_visc_PML.c,v 1.1.1.1 2011/10/06 22:44:52 groos Exp $*/
 /*------------------------------------------------------------------------
  *   updating stress components at gridpoints [nx1...nx2][ny1...ny2]
  *   by a staggered grid finite difference scheme of arbitrary (FDORDER) order accuracy in space
@@ -256,7 +255,7 @@ void update_s_visc_PML(int nx1, int nx2, int ny1, int ny2,
 			}
 
 
-                        /* updating components of the stress tensor, partially */
+            /* updating components of the stress tensor, partially */
 			sxy[j][i] += (fipjp[j][i]*(vxy+vyx))+(dthalbe*sumr);
 			sxx[j][i] += (g[j][i]*(vxx+vyy))-(2.0*f[j][i]*vyy)+(dthalbe*sump);
 			syy[j][i] += (g[j][i]*(vxx+vyy))-(2.0*f[j][i]*vxx)+(dthalbe*sumq);
