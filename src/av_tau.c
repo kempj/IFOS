@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------------------
- * Copyright (C) 2013  For the list of authors, see file AUTHORS.
+ * Copyright (C) 2016  For the list of authors, see file AUTHORS.
  *
  * This file is part of DENISE.
  * 
@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with DENISE. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
 -----------------------------------------------------------------------------------------*/
-
-/* $Id: av_tau.c,v 2.4 2007/08/21 13:16:19 tbohlen Exp $*/
 
 #include "fd.h"
 

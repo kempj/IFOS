@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------------------
- * Copyright (C) 2013  For the list of authors, see file AUTHORS.
+ * Copyright (C) 2016  For the list of authors, see file AUTHORS.
  *
  * This file is part of DENISE.
  *
