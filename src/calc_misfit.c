@@ -98,8 +98,8 @@ for(i=1;i<=ntr;i++){
 
 /* TIME WINDOWING */
 if(TIMEWIN==1){
-time_window(intseis_section, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
-time_window(intseis_sectiondata, picked_times, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+time_window(intseis_section, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
+time_window(intseis_sectiondata, iter, ntr_glob,recpos_loc, ntr, ns, ishot);
 }
 
 /* NORMALIZE TRACES */
