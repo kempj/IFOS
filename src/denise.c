@@ -78,7 +78,7 @@ int main(int argc, char **argv){
     ** sectionvydiff=NULL, ** sectionpn=NULL, ** sectionread=NULL, ** sectionvy_conv=NULL, ** sectionvy_obs=NULL, ** sectionvx_conv=NULL,** sectionvx_obs=NULL, ** sectionvz_conv=NULL,** sectionvz_obs=NULL,
     ** sectionp_conv=NULL,** sectionp_obs=NULL, * source_time_function=NULL;
     float  **  absorb_coeff, ** taper_coeff, * epst1, * epst2,  * epst3, * picked_times;
-    float  ** srcpos=NULL, **srcpos_loc=NULL, ** srcpos1=NULL, **srcpos_loc_back=NULL, ** signals=NULL,** signals_SH=NULL, ** signals_rec=NULL, *hc=NULL, ** dsignals=NULL;
+    float  ** srcpos=NULL, **srcpos_loc=NULL, ** srcpos1=NULL, **srcpos_loc_back=NULL, ** signals=NULL,** signals_SH=NULL, ** signals_rec=NULL, *hc=NULL;
     int   ** recpos=NULL, ** recpos_loc=NULL;
     /*int   ** tracekill=NULL, TRKILL, DTRKILL;*/
     int * DTINV_help;
@@ -4285,7 +4285,6 @@ int main(int argc, char **argv){
     
     if (nsrc_loc>0){
         free_matrix(signals,1,nsrc_loc,1,NT);
-        if(INV_STF==1) free_matrix(dsignals,1,nsrc_loc,1,NT);
         free_matrix(srcpos_loc,1,8,1,nsrc_loc);
         free_matrix(srcpos_loc_back,1,6,1,nsrc_loc);
     }

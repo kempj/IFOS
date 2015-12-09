@@ -52,8 +52,8 @@ float **  srcpos_loc, float ** signals, int nsrc, int sw){
 // 		amp = signals[l][nt]; //unscaled explosive source
 		
 		if(!ACOUSTIC){
-			sxx[j][i]+=amp;
-			syy[j][i]+=amp;
+			sxx[j][i]+=0.5*amp;
+			syy[j][i]+=0.5*amp;
 		}else
 			sp[j][i]+=amp;
 	}}
@@ -67,8 +67,8 @@ float **  srcpos_loc, float ** signals, int nsrc, int sw){
 			amp = signals[l][nt];
 			
 			if(!ACOUSTIC){
-				sxx[j][i]+=amp;
-				syy[j][i]+=amp;
+				sxx[j][i]+=0.5*amp;
+				syy[j][i]+=0.5*amp;
 			}else
 				sp[j][i]+=amp;
 		}

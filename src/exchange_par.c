@@ -72,7 +72,8 @@ void exchange_par(void){
     extern float PRO;
     extern int TRKILL, TRKILL_STF;
     extern char TRKILL_FILE[STRING_SIZE], TRKILL_FILE_STF[STRING_SIZE];
-    extern int TIMEWIN, NORMALIZE;
+    extern int TAPER_STF;
+    extern int TIMEWIN, NORMALIZE, TW_IND;
     extern float TWLENGTH_PLUS, TWLENGTH_MINUS, GAMMA;
     extern char PICKS_FILE[STRING_SIZE];
     extern char MISFIT_LOG_FILE[STRING_SIZE];
@@ -349,6 +350,9 @@ void exchange_par(void){
         
         idum[110]=WRITE_FILTERED_DATA;
         
+        idum[111]=TAPER_STF;
+        idum[112]=TW_IND;
+        
     } /** if (MYID == 0) **/
     
     if (MYID != 0) FL=vector(1,L);
@@ -618,6 +622,10 @@ void exchange_par(void){
     WOLFE_TRY_OLD_STEPLENGTH=idum[109];
     
     WRITE_FILTERED_DATA=idum[110];
+    
+    TAPER_STF=idum[111];
+    TW_IND=idum[112];
+    
     
     MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
     
