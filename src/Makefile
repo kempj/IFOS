@@ -54,9 +54,9 @@ DENISE= \
 	stf.c \
 	window_cos.c \
 	calc_mat_change_test.c \
-        calc_res.c \
+    calc_res.c \
 	calc_misfit.c \
-        calc_opt_step.c \
+    calc_opt_step.c \
 	calc_energy.c \
 	checkfd.c \
 	checkfd_ssg_elastic.c \
@@ -123,7 +123,7 @@ DENISE= \
 	readmod.c \
 	readmod_elastic.c \
 	readmod_acoustic.c \
-    	receiver.c \
+    receiver.c \
 	rd_sour.c \
     read_workflow.c \
     apply_workflow.c \
@@ -164,8 +164,8 @@ DENISE= \
     prepare_update_p.c \
     readmod_viscac.c \
     time_window_glob.c \
-        filter_frequencies.c
-	
+    filter_frequencies.c
+    
 SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)
 
 DENISE_OBJ = $(DENISE:%.c=%.o)
