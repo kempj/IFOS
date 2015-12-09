@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------------------
- * Copyright (C) 2013  For the list of authors, see file AUTHORS.
+ * Copyright (C) 2016  For the list of authors, see file AUTHORS.
  *
  * This file is part of DENISE.
  * 
@@ -15,8 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with DENISE. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
 -----------------------------------------------------------------------------------------*/
-
-/* $Id: update_v_ssg.c,v 1.1.1.1 2007/11/21 22:44:52 koehn Exp $*/
 /*------------------------------------------------------------------------
  *   updating particle velocities at gridpoints [nx1...nx2][ny1...ny2]
  *   by a staggered grid finite difference scheme of FDORDER accuracy in space

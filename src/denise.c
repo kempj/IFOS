@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------------------
- * Copyright (C) 2013  For the list of authors, see file AUTHORS.
+ * Copyright (C) 2016  For the list of authors, see file AUTHORS.
  *
  * This file is part of DENISE.
  *
@@ -68,7 +68,6 @@ int main(int argc, char **argv){
     float ** gradg, ** gradp,** gradg_rho, ** gradp_rho, ** gradg_u, ** gradp_u, ** gradp_u_z,** gradp_rho_z;
     float  **  prho,**  prhonp1, **prip=NULL, **prjp=NULL, **pripnp1=NULL, **prjpnp1=NULL, **  ppi, **  pu, **  punp1, **  puipjp, **  ppinp1;
     float  **  vpmat, ***forward_prop_x, ***forward_prop_y, ***forward_prop_rho_x, ***forward_prop_u, ***forward_prop_rho_y, ***forward_prop_p;
-    float ** puip,** pujp;
     
     float ***forward_prop_z_xz,***forward_prop_z_yz,***forward_prop_rho_z,**waveconv_mu_z;
     float ** uxz, ** uyz;
@@ -93,7 +92,7 @@ int main(int argc, char **argv){
     /* Variables for viscoelastic modeling */
     float **ptaus=NULL, **ptaup=NULL, *etaip=NULL, *etajm=NULL, *peta=NULL, **ptausipjp=NULL, **fipjp=NULL, ***dip=NULL, *bip=NULL, *bjm=NULL;
     float *cip=NULL, *cjm=NULL, ***d=NULL, ***e=NULL, ***pr=NULL, ***pp=NULL, ***pq=NULL, **f=NULL, **g=NULL;
-    float **tausjp, **tausip, ***pt=NULL, ***po=NULL; // SH Simulation
+    float ***pt=NULL, ***po=NULL; // SH Simulation
     
     /* Variables for step length calculation */
     int step1, step2, step3=0, itests, iteste, stepmax, countstep;
@@ -472,10 +471,6 @@ int main(int argc, char **argv){
         pu   =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         punp1   =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         puipjp   =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-        if(WAVETYPE==2 || WAVETYPE==3) {
-            puip =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            pujp =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-        }
     }
     vpmat   =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
     
@@ -507,8 +502,6 @@ int main(int argc, char **argv){
         ptaus =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         ptausipjp =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         if(WAVETYPE==2 || WAVETYPE==3) {
-            tausip =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
-            tausjp =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
             pt = f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,L);
             po = f3tensor(-nd+1,NY+nd,-nd+1,NX+nd,1,L);
         }
@@ -1033,9 +1026,9 @@ int main(int argc, char **argv){
                 /* end of MPI split for processors with ntr>0 */
                 
                 
-                if(!ACOUSTIC) av_mue(pu,puipjp,puip,pujp,prho);
+                if(!ACOUSTIC) av_mue(pu,puipjp,prho);
                 av_rho(prho,prip,prjp);
-                if (!ACOUSTIC && L) av_tau(ptaus,ptausipjp,tausip,tausjp);
+                if (!ACOUSTIC && L) av_tau(ptaus,ptausipjp);
                 
                 
                 /* Preparing memory variables for update_s (viscoelastic) */
@@ -1295,7 +1288,7 @@ int main(int argc, char **argv){
                                     if (!ACOUSTIC){
                                         if (L){
                                             /* viscoelastic */
-                                            surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
+                                            surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy,uxy,uyz,psxz,uxz);
                                         }else{
                                             /* elastic */
                                             surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
@@ -1753,7 +1746,7 @@ int main(int argc, char **argv){
                                     }
                                 }
                                 if (WAVETYPE==2 || WAVETYPE==3) {
-                                    update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, puip, pujp, tausip, tausjp, bip, bjm, cip, cjm, etajm, etaip, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
+                                    update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, cip, cjm, d, dip,fipjp, f, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
                                 }
                             } else {   /* elastic */
                                 if (WAVETYPE==1 || WAVETYPE==3) {
@@ -1779,7 +1772,7 @@ int main(int argc, char **argv){
                                 if (!ACOUSTIC){
                                     if (L){
                                         /* viscoelastic */
-                                        surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
+                                        surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy,uxy,uyz,psxz,uxz);
                                     }else{
                                         /* elastic */
                                         surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
@@ -2243,7 +2236,7 @@ int main(int argc, char **argv){
                                             }
                                         }
                                         if (WAVETYPE==2 || WAVETYPE==3) {
-                                            update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, puip, pujp, tausip, tausjp, bip, bjm, cip, cjm, etajm, etaip, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
+                                            update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, cip, cjm, d, dip,fipjp, f, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
                                         }
                                     } else{
                                         /* elastic */
@@ -2268,7 +2261,7 @@ int main(int argc, char **argv){
                                         if (!ACOUSTIC){
                                             if (L){
                                                 /* viscoelastic */
-                                                surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
+                                                surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy,uxy,uyz,psxz,uxz);
                                             }else{
                                                 /* elastic */
                                                 surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
@@ -2882,7 +2875,7 @@ int main(int argc, char **argv){
                             waveconv_rho=joint_inversion_grad(waveconv_rho,waveconv_rho_z,JOINT_INVERSION_PSV_SH_ALPHA_RHO,JOINT_INVERSION_PSV_SH_TYPE);
                             
                             /* Output joint gradient to disk */
-                            sprintf(jac,"%s_joint_u_it%i",JACOBIAN,iter);
+                            sprintf(jac,"%s_joint_vs_it%i",JACOBIAN,iter);
                             write_matrix_disk(waveconv_u, jac);
                             
                             /* Output joint gradient to disk */
@@ -3172,7 +3165,7 @@ int main(int argc, char **argv){
                     
                     MPI_Barrier(MPI_COMM_WORLD);
                     
-                    if(!ACOUSTIC) av_mue(punp1,puipjp,puip,pujp,prhonp1);
+                    if(!ACOUSTIC) av_mue(punp1,puipjp,prhonp1);
                     av_rho(prhonp1,prip,prjp);
                     
                     /* Preparing memory variables for update_s (viscoelastic) */
@@ -3343,7 +3336,7 @@ int main(int argc, char **argv){
                                     }
                                 }
                                 if (WAVETYPE==2 || WAVETYPE==3) {
-                                    update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, puip, pujp, tausip, tausjp, bip, bjm, cip, cjm, etajm, etaip, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
+                                    update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, cip, cjm, d, dip,fipjp, f, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
                                 }
                             } else {   /* elastic */
                                 if(!ACOUSTIC){
@@ -3373,7 +3366,7 @@ int main(int argc, char **argv){
                                 if (!ACOUSTIC){
                                     if (L){
                                         /* viscoelastic */
-                                        surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppinp1, punp1, prhonp1, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy);
+                                        surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppinp1, punp1, prhonp1, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy,uxy,uyz,psxz,uxz);
                                     }else{
                                         /* elastic */
                                         surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppinp1, punp1, prhonp1, hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
@@ -4251,14 +4244,8 @@ int main(int argc, char **argv){
         free_matrix(gradp_u_z,-nd+1,NY+nd,-nd+1,NX+nd);
         free_matrix(gradp_rho_z,-nd+1,NY+nd,-nd+1,NX+nd);
         if(L){
-            free_matrix(tausip,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(tausjp,-nd+1,NY+nd,-nd+1,NX+nd);
             free_f3tensor(pt,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
             free_f3tensor(po,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
-        }
-        if(!ACOUSTIC){
-            free_matrix(puip,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(pujp,-nd+1,NY+nd,-nd+1,NX+nd);
         }
     }
     
