@@ -83,10 +83,38 @@
 			"QUELLTYPB" : "4",
 			"MISFIT_LOG_FILE" : "LOG_toy_example_ac.dat",
 			
+"Gradient-Method" : "comment",
+			"GRAD_METHOD" : "2",
+			"LBFGS_STEP_LENGTH" : "1",
+			"N_LBFGS" : "10",
+
+"Wolfe Condition" : "comment",
+			"WOLFE_CONDITION" : "1",
+			"WOLFE_NUM_TEST" : "5",
+			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
+			"WOLFE_C1_SL" : "0.0",
+
+"Approx. Hessian" : "comment",
+			"EPRECOND" : "3",
+			"EPSILON_WE" : "0.005",
+			
+			"EPRECOND_ITER" : "0",
+			"EPRECOND_PER_SHOT" : "0",
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "0",
+			"FILE_WORKFLOW" : "workflow.txt",
+			
 "Inversion for density" : "comment",
 			"INV_RHO_ITER" : "100",
 			"INV_VP_ITER" : "1",
 			
+"Step length estimation" : "comment", 
+			"EPS_SCALE" : "0.01",
+			"STEPMAX" : "4",
+			"SCALEFAC" : "5.0",
+			"TESTSHOT_START , TESTSHOT_END , TESTSHOT_INCR" : "1 , 5 , 2",
+
 "Output of inverted models" : "comment",
 			"INV_MODELFILE" : "model/toy_example/mod_toy_example_ac",
 			"nfstart" : "1",
@@ -97,36 +125,11 @@
 			"nfstart_jac" : "1",
 			"nf_jac" : "1",
 
-"Gradient-Method" : "comment",
-			"GRAD_METHOD" : "1",
-			"LBFGS_STEP_LENGTH" : "1",
-			"N_LBFGS" : "5",
-
-"Wolfe Condition" : "comment",
-			"WOLFE_CONDITION" : "1",
-			"WOLFE_NUM_TEST" : "5",
-			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
-
-"Approx. Hessian" : "comment",
-			"EPRECOND" : "0",
-			"EPSILON_WE" : "0.005",
-			"EPRECOND_ITER" : "0",
-
-"Workflow" : "comment",
-			"USE_WORKFLOW" : "0",
-			"FILE_WORKFLOW" : "workflow.txt",
-
 "Gradient calculation" : "comment",
 			"LNORM" : "2",
 			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, L2 norm with time windowing=6" : "comment",
 			"NORMALIZE" : "0",
 			"DTINV" : "1",
-
-"Step length estimation" : "comment", 
-			"EPS_SCALE" : "0.01",
-			"STEPMAX" : "4",
-			"SCALEFAC" : "5.0",
-			"TESTSHOT_START , TESTSHOT_END , TESTSHOT_INCR" : "1 , 5 , 2",
 
 "Termination of the programmme" : "comment",
 			"PRO" : "0.01",
@@ -144,6 +147,15 @@
 			"TAPER_FILE_NAME_U" : "taper_te_ac_u.bin",
 			"TAPER_FILE_NAME_RHO" : "taper_te_ac_rho.bin",
 
+"Definition of inversion for source time function" : "comment",
+			"INV_STF" : "0",
+			"PARA" : "fdlsq:tshift=0.0",
+			"N_STF" : "10",
+			"N_STF_START" : "1",
+			"TAPER_STF" : "1",
+			"TRKILL_STF" : "0",
+			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
+			
 "Upper and lower limits for model parameters" : "comment",
 			"VPUPPERLIM" : "5000",
 			"VPLOWERLIM" : "0",
@@ -156,15 +168,6 @@
 			"MODEL_FILTER" : "0",
 			"FILT_SIZE" : "3",
 
-"Definition of inversion for source time function" : "comment",
-			"INV_STF" : "0",
-			"PARA" : "fdlsq:tshift=0.0",
-			"N_STF" : "10",
-			"N_STF_START" : "1",
-			"TAPER_STF" : "1",
-			"TRKILL_STF" : "0",
-			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
-			
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",
 			"F_HP" : "1",
@@ -180,6 +183,7 @@
 			
 "Time windowing and damping" : "comment",
 			"TIMEWIN" : "0",
+			"TW_IND" : "1",
 			"PICKS_FILE" : "./picked_times/PickedTimes",
 			"TWLENGTH_PLUS" : "4.0",
 			"TWLENGTH_MINUS" : "0.01",

@@ -190,7 +190,38 @@ void read_par_json(FILE *fp, char *fileinp){
             }
         }
         
-        
+        if (get_int_from_objectlist("ACOUSTIC",number_readobjects,&ACOUSTIC,varname_list, value_list)){
+            ACOUSTIC=0;
+            fprintf(fp,"Variable ACOUSTIC is set to default value %d.\n",ACOUSTIC);}
+        if (get_int_from_objectlist("WAVETYPE",number_readobjects,&WAVETYPE,varname_list, value_list)){
+            WAVETYPE=1;
+            fprintf(fp,"Variable WAVETYPE is set to default value %d.\n",WAVETYPE);
+        } else {
+            if (ACOUSTIC && WAVETYPE!=1) {
+                WAVETYPE=1;
+                fprintf(fp,"For acoustic modelling WAVETYPE is set to %d.\n",WAVETYPE);
+            }
+            if(WAVETYPE==3) {
+                if (get_int_from_objectlist("JOINT_INVERSION_PSV_SH_TYPE",number_readobjects,&JOINT_INVERSION_PSV_SH_TYPE,varname_list, value_list)){
+                    JOINT_INVERSION_PSV_SH_TYPE=1;
+                    fprintf(fp,"Variable JOINT_INVERSION_PSV_SH_TYPE is set to default value %d.\n",JOINT_INVERSION_PSV_SH_TYPE);
+                } else {
+                    /* Check herer possible dependencies */
+                }
+                if (get_float_from_objectlist("JOINT_INVERSION_PSV_SH_ALPHA_VS",number_readobjects,&JOINT_INVERSION_PSV_SH_ALPHA_VS,varname_list, value_list)){
+                    JOINT_INVERSION_PSV_SH_ALPHA_VS=0.5;
+                    fprintf(fp,"Variable JOINT_INVERSION_PSV_SH_ALPHA_VS is set to default value %f.\n",JOINT_INVERSION_PSV_SH_ALPHA_VS);
+                } else {
+                    /* Check herer possible dependencies */
+                }
+                if (get_float_from_objectlist("JOINT_INVERSION_PSV_SH_ALPHA_RHO",number_readobjects,&JOINT_INVERSION_PSV_SH_ALPHA_RHO,varname_list, value_list)){
+                    JOINT_INVERSION_PSV_SH_ALPHA_RHO=0.5;
+                    fprintf(fp,"Variable JOINT_INVERSION_PSV_SH_ALPHA_RHO is set to default value %f.\n",JOINT_INVERSION_PSV_SH_ALPHA_RHO);
+                } else {
+                    /* Check herer possible dependencies */
+                }
+            }
+        }
         
         if (get_int_from_objectlist("QUELLART",number_readobjects,&QUELLART,varname_list, value_list))
             err("Variable QUELLART could not be retrieved from the json input file!");
@@ -412,44 +443,11 @@ void read_par_json(FILE *fp, char *fileinp){
                 fprintf(fp,"Reference frequency for viscoelastic modeling is set to center frequency of the source wavelet.\n");}
         }
         
-        if (get_int_from_objectlist("ACOUSTIC",number_readobjects,&ACOUSTIC,varname_list, value_list)){
-            ACOUSTIC=0;
-            fprintf(fp,"Variable ACOUSTIC is set to default value %d.\n",ACOUSTIC);}
-        
         
         /*=================================
          section inversion parameters
          =================================*/
-        if (get_int_from_objectlist("WAVETYPE",number_readobjects,&WAVETYPE,varname_list, value_list)){
-            WAVETYPE=1;
-            fprintf(fp,"Variable WAVETYPE is set to default value %d.\n",WAVETYPE);
-        } else {
-            if (ACOUSTIC && WAVETYPE!=1) {
-                WAVETYPE=1;
-                fprintf(fp,"For acoustic modelling WAVETYPE is set to %d.\n",WAVETYPE);
-            }
-            if(WAVETYPE==3) {
-                if (get_int_from_objectlist("JOINT_INVERSION_PSV_SH_TYPE",number_readobjects,&JOINT_INVERSION_PSV_SH_TYPE,varname_list, value_list)){
-                    JOINT_INVERSION_PSV_SH_TYPE=1;
-                    fprintf(fp,"Variable JOINT_INVERSION_PSV_SH_TYPE is set to default value %d.\n",JOINT_INVERSION_PSV_SH_TYPE);
-                } else {
-                    /* Check herer possible dependencies */
-                }
-                if (get_float_from_objectlist("JOINT_INVERSION_PSV_SH_ALPHA_VS",number_readobjects,&JOINT_INVERSION_PSV_SH_ALPHA_VS,varname_list, value_list)){
-                    JOINT_INVERSION_PSV_SH_ALPHA_VS=0.5;
-                    fprintf(fp,"Variable JOINT_INVERSION_PSV_SH_ALPHA_VS is set to default value %f.\n",JOINT_INVERSION_PSV_SH_ALPHA_VS);
-                } else {
-                    /* Check herer possible dependencies */
-                }
-                if (get_float_from_objectlist("JOINT_INVERSION_PSV_SH_ALPHA_RHO",number_readobjects,&JOINT_INVERSION_PSV_SH_ALPHA_RHO,varname_list, value_list)){
-                    JOINT_INVERSION_PSV_SH_ALPHA_RHO=0.5;
-                    fprintf(fp,"Variable JOINT_INVERSION_PSV_SH_ALPHA_RHO is set to default value %f.\n",JOINT_INVERSION_PSV_SH_ALPHA_RHO);
-                } else {
-                    /* Check herer possible dependencies */
-                }
-            }
-        }
-
+        
         if (get_int_from_objectlist("INVMAT1",number_readobjects,&INVMAT1,varname_list, value_list))
             err("Variable INVMAT1 could not be retrieved from the json input file!");
         else

@@ -2585,7 +2585,9 @@ int main(int argc, char **argv){
                                                 if(WAVETYPE==1 || WAVETYPE==3) {
                                                     We[j][i]=We[j][i]/We_max;
                                                     waveconv_shot[j][i] = waveconv_shot[j][i]/(We[j][i]*C_vp);
-                                                    waveconv_u_shot[j][i] = waveconv_u_shot[j][i]/(We[j][i]*C_vs);
+                                                    if(!ACOUSTIC){
+                                                        waveconv_u_shot[j][i] = waveconv_u_shot[j][i]/(We[j][i]*C_vs);
+                                                    }
                                                     waveconv_rho_shot[j][i] = waveconv_rho_shot[j][i]/(We[j][i]*C_rho);
                                                 }
                                                 if(WAVETYPE==2 || WAVETYPE==3) {
@@ -2713,7 +2715,9 @@ int main(int argc, char **argv){
                                 for (i=1;i<=NX;i=i+IDX){
                                     We_sum[j][i]=We_sum[j][i]/We_sum_max1;
                                     waveconv[j][i] = waveconv[j][i]*We_sum[j][i]/C_vp;
-                                    waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i]/C_vs;
+                                    if(!ACOUSTIC){
+                                        waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i]/C_vs;
+                                    }
                                     waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i]/C_rho;
                                 }
                             }
@@ -4223,11 +4227,11 @@ int main(int argc, char **argv){
     
     if(WOLFE_CONDITION){
         free_matrix(waveconv_old,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_u_old,-nd+1,NY+nd,-nd+1,NX+nd);
+        if(!ACOUSTIC) free_matrix(waveconv_u_old,-nd+1,NY+nd,-nd+1,NX+nd);
         free_matrix(waveconv_rho_old,-nd+1,NY+nd,-nd+1,NX+nd);
         
         free_matrix(waveconv_up,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_u_up,-nd+1,NY+nd,-nd+1,NX+nd);
+        if(!ACOUSTIC) free_matrix(waveconv_u_up,-nd+1,NY+nd,-nd+1,NX+nd);
         free_matrix(waveconv_rho_up,-nd+1,NY+nd,-nd+1,NX+nd);
     }
     
