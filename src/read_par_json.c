@@ -479,7 +479,7 @@ void read_par_json(FILE *fp, char *fileinp){
                     VELOCITY=0;
                     fprintf(fp,"Variable VELOCITY is set to default value %d.\n",VELOCITY);
                 }else
-                    if(ACOUSTIC)
+                    if(ACOUSTIC && VELOCITY==1)
                         err("For acoustic inversion option VELOCITY not available");
                 
                 if (get_int_from_objectlist("USE_WORKFLOW",number_readobjects,&USE_WORKFLOW,varname_list, value_list)){
