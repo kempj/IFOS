@@ -68,7 +68,6 @@
 			"SEIS_FILE_P" : "su/DENISE_p.su",
 
 
-
 "General inversion parameters" : "comment",
 			"ITERMAX" : "10",
 			"DATA_DIR" : "su/measured_data/DENISE_real",

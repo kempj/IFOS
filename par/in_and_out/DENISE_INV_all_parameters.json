@@ -38,6 +38,9 @@
 "Acoustic Computation" : "comment",
 			"ACOUSTIC" : "0",
 
+"Wavetype Computation" : "comment",
+			"WAVETYPE" : "1",
+
 "Model" : "comment",
 			"READMOD" : "0",
 			"MFILE" : "model/model_Test",
@@ -102,6 +105,31 @@
 			"MISFIT_LOG_FILE" : "L2_LOG.dat",
 			"VELOCITY" : "0",	
 
+"Inversion for parameter starting from iteration" : "comment",
+			"INV_RHO_ITER" : "0",
+			"INV_VP_ITER" : "0",
+			"INV_VS_ITER" : "0",
+
+"Output of inverted models" : "comment",
+			"INV_MODELFILE" : "model/modelTest",
+			"nfstart" : "1",
+			"nf" : "1",
+
+"Output of gradients" : "comment",
+			"JACOBIAN" : "jacobian/jacobian_Test",
+			"nfstart_jac" : "1",
+			"nf_jac" : "1",
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "0",
+			"FILE_WORKFLOW" : "workflow.txt",
+
+"Approx. Hessian" : "comment",
+			"EPRECOND" : "3",
+			"EPSILON_WE" : "0.005",
+			"EPRECOND_ITER" : "0",
+			"EPRECOND_PER_SHOT" : "1",
+
 "Gradient-Method" : "comment",
 			"GRAD_METHOD" : "1",
 			"LBFGS_STEP_LENGTH" : "1",
@@ -114,66 +142,58 @@
 			"WOLFE_C1_SL" : "1e-4",
 			"WOLFE_C2_SL" : "0.9",
 
-"Approx. Hessian" : "comment",
-			"EPRECOND" : "3",
-			"EPSILON_WE" : "0.005",
-
-			"EPRECOND_ITER" : "0",
-			"EPRECOND_PER_SHOT" : "1",
-
-"Workflow" : "comment",
-			"USE_WORKFLOW" : "0",
-			"FILE_WORKFLOW" : "workflow.txt",
-
-
-"Inversion for density" : "comment",
-			"INV_RHO_ITER" : "0",
-			
-"Inversion for Vp" : "comment",
-			"INV_VP_ITER" : "0",
-			
-"Inversion for Vs" : "comment",
-			"INV_VS_ITER" : "0",
-			
-"Minimum Vp/Vs-ratio" : "comment",
-			"VP_VS_RATIO" : "0.0",
-			
-"Limited update of model parameters in reference to the starting model" : "comment",
-			"S" : "0",
-			"S_VS" : "0.0",
-			"S_VP" : "0.0",
-			"S_RHO" : "0.0",			
-						
-"Output of inverted models" : "comment",
-			"INV_MODELFILE" : "model/modelTest",
-			"nfstart" : "1",
-			"nf" : "1",
-
-"Output of gradients" : "comment",
-			"JACOBIAN" : "jacobian/jacobian_Test",
-			"nfstart_jac" : "1",
-			"nf_jac" : "1",
-
-"Gradient calculation" : "comment",
-			"LNORM" : "2",
-			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, normalized L2 norm=7, Envelope-based norm=8" : "comment",
-			"NORMALIZE" : "0",
-			"DTINV" : "2",
-			"WATERLEVEL_LNORM8" : "0.0",
-
 "Step length estimation" : "comment", 
 			"EPS_SCALE" : "0.01", 
 			"STEPMAX" : "4",
 			"SCALEFAC" : "4.0",
 			"TESTSHOT_START , TESTSHOT_END , TESTSHOT_INCR" : "1 , 2 , 1",
 
+"Misfit Definition" : "comment",
+			"LNORM" : "2",
+			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, normalized L2 norm=7, Envelope-based norm=8" : "comment",
+			"NORMALIZE" : "0",
+			"DTINV" : "2",
+			"WATERLEVEL_LNORM8" : "0.0",
+
 "Termination of the programmme" : "comment",
 			"PRO" : "0.01",
-			
+
+
+"Definition of inversion for source time function" : "comment",
+			"INV_STF" : "0",
+			"PARA" : "fdlsq:tshift=0.0",
+			"N_STF" : "10",
+			"N_STF_START" : "1",
+			"TAPER_STF" : "0",
+			"TRKILL_STF" : "0",
+			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
+
+"Frequency filtering during inversion" : "comment",
+			"TIME_FILT" : "0",
+			"F_HP" : "1",
+			"FC_START" : "10.0",
+			"FC_END" : "75.0",
+			"FC_INCR" : "10.0",
+			"ORDER" : "2",
+			"ZERO_PHASE" : "0",
+			"FREQ_FILE" : "frequencies.dat",                       
+
 "Minimum number of iteration per frequency" : "comment",
 			"MIN_ITER" : "0",
-			
-"Definition of gradient taper geometry" : "comment",
+
+"Time windowing" : "comment",
+			"TIMEWIN" : "0",
+			"TW_IND" : "0",
+			"PICKS_FILE" : "./picked_times/picks",
+			"TWLENGTH_PLUS" : "0.01",
+			"TWLENGTH_MINUS" : "0.01",
+			"GAMMA" : "100000",
+
+"Trace killing" : "comment",
+			"TRKILL" : "0",
+			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
+
+"Definition of a gradient taper" : "comment",
 			"SWS_TAPER_GRAD_VERT" : "0",
 			"SWS_TAPER_GRAD_HOR" : "0",
 			"GRADT1 , GRADT2 , GRADT3 , GRADT4" : "5 , 15 , 490 , 500",
@@ -188,7 +208,7 @@
 			"TAPER_FILE_NAME_U" : "taper_u.bin",
 			"TAPER_FILE_NAME_RHO" : "taper_rho.bin",
 
-"Definition of smoothing (spatial filtering) of the gradients" : "comment",
+"Definition of spatial filtering of the gradients" : "comment",
 			"SPATFILTER" : "0",
 			"SPAT_FILT_SIZE" : "40",
 			"SPAT_FILT_1" : "1",
@@ -208,40 +228,18 @@
 			"RHOUPPERLIM" : "5000",
 			"RHOLOWERLIM" : "0",
 
+"Limited update of model parameters in reference to the starting model" : "comment",
+			"S" : "0",
+			"S_VS" : "0.0",
+			"S_VP" : "0.0",
+			"S_RHO" : "0.0",
+
+"Minimum Vp/Vs-ratio" : "comment",
+			"VP_VS_RATIO" : "0.0",
+
 "Definition of smoothing the models vp and vs" : "comment",
 			"MODEL_FILTER" : "0",
 			"FILT_SIZE" : "5",
-
-"Definition of inversion for source time function" : "comment",
-			"INV_STF" : "0",
-			"PARA" : "fdlsq:tshift=0.0",
-			"N_STF" : "10",
-			"N_STF_START" : "1",
-			"TAPER_STF" : "0",
-			"TRKILL_STF" : "0",
-			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
-			
-"Frequency filtering during inversion" : "comment",
-			"TIME_FILT" : "0",
-			"F_HP" : "1",
-			"FC_START" : "10.0",
-			"FC_END" : "75.0",
-			"FC_INCR" : "10.0",
-			"ORDER" : "2",
-			"ZERO_PHASE" : "0",
-                        "FREQ_FILE" : "frequencies.dat",                       
- 
-"Trace killing" : "comment",
-			"TRKILL" : "0",
-			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
-
-"Time windowing and damping" : "comment",
-			"TIMEWIN" : "0",
-			"TW_IND" : "0",
-			"PICKS_FILE" : "./picked_times/picks",
-			"TWLENGTH_PLUS" : "0.01",
-			"TWLENGTH_MINUS" : "0.01",
-			"GAMMA" : "100000",
 
 "Verbose mode" : "comment",
 			"VERBOSE" : "0",

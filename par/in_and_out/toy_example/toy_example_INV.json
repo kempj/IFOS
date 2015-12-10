@@ -83,14 +83,11 @@
 			"QUELLTYPB" : "1",
 			"MISFIT_LOG_FILE" : "LOG_toy_example.dat",
 
-"Workflow" : "comment",
-			"USE_WORKFLOW" : "0",
-			"FILE_WORKFLOW" : "workflow.txt",
-
-"Inversion for density" : "comment",
+"Inversion for parameter starting from iteration" : "comment",
 			"INV_RHO_ITER" : "400",
 			"INV_VP_ITER" : "400",
-			
+			"INV_VS_ITER" : "0",
+
 "Output of inverted models" : "comment",
 			"INV_MODELFILE" : "model/toy_example/mod_toy_example",
 			"nfstart" : "1",
@@ -100,6 +97,15 @@
 			"JACOBIAN" : "jacobian/toy_example/jac_toy_example",
 			"nfstart_jac" : "1",
 			"nf_jac" : "1",
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "0",
+			"FILE_WORKFLOW" : "workflow.txt",
+
+"Approx. Hessian" : "comment",
+			"EPRECOND" : "0",
+			"EPSILON_WE" : "0.005",
+			"EPRECOND_ITER" : "0",
 
 "Gradient-Method" : "comment",
 			"GRAD_METHOD" : "1",
@@ -111,12 +117,7 @@
 			"WOLFE_NUM_TEST" : "5",
 			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
 
-"Approx. Hessian" : "comment",
-			"EPRECOND" : "0",
-			"EPSILON_WE" : "0.005",
-			"EPRECOND_ITER" : "0",
-
-"Gradient calculation" : "comment",
+"Misfit Definition" : "comment",
 			"LNORM" : "7",
 			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, L2 norm with time windowing=6" : "comment",
 			"NORMALIZE" : "0",
@@ -131,6 +132,13 @@
 "Termination of the programmme" : "comment",
 			"PRO" : "0.01",
 
+"Frequency filtering during inversion" : "comment",
+			"TIME_FILT" : "1",
+			"FC_START" : "10.0",
+			"FC_END" : "70.0",
+			"FC_INCR" : "10.0",
+			"ORDER" : "4",
+
 "Minimum number of iteration per frequency" : "comment",
 			"MIN_ITER" : "10",
 
@@ -140,7 +148,6 @@
 			"SRTRADIUS" : "3.0",
 			"FILTSIZE" : "1",
 			"SWS_TAPER_FILE" : "0",
-
 
 "Upper and lower limits for model parameters" : "comment",
 			"VPUPPERLIM" : "2420",
@@ -153,13 +160,6 @@
 "Definition of smoothing the models vp and vs" : "comment",
 			"MODEL_FILTER" : "1",
 			"FILT_SIZE" : "3",
-
-"Frequency filtering during inversion" : "comment",
-			"TIME_FILT" : "1",
-			"FC_START" : "10.0",
-			"FC_END" : "70.0",
-			"FC_INCR" : "10.0",
-			"ORDER" : "4",
 
 "Verbose mode" : "comment",
 			"VERBOSE" : "0",

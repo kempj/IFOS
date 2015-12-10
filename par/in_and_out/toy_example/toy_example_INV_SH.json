@@ -46,9 +46,6 @@
 "Wavetype Computation" : "comment",
 			"WAVETYPE" : "2",
 
-"Verbose" : "comment",
-			"VERBOSE" : "0",
-
 "Model" : "comment",
 			"READMOD" : "0",
 			"MFILE" : "model_true/mod_toy_example",
@@ -84,7 +81,7 @@
 			"FL2" : "7.6660",
 			"FL3" : "72.6774",
 			"TAU" : "0.0966",
-			
+
 
 "General inversion parameters" : "comment",
 			"ITERMAX" : "5",
@@ -94,6 +91,30 @@
 			"QUELLTYPB" : "1",
 			"QUELLTYPB values: 1=x y; 2=x; 3=y; 4=z; 5=x y z" : "comment",
 			"MISFIT_LOG_FILE" : "LOG_toy_example.dat",
+
+"Inversion for parameter starting from iteration" : "comment",
+			"INV_RHO_ITER" : "400",
+			"INV_VP_ITER" : "400",
+			"INV_VS_ITER" : "0",
+
+"Output of inverted models" : "comment",
+			"INV_MODELFILE" : "model/toy_example/mod_toy_example",
+			"nfstart" : "1",
+			"nf" : "1",
+
+"Output of gradients" : "comment",
+			"JACOBIAN" : "jacobian/toy_example/jac_toy_example",
+			"nfstart_jac" : "1",
+			"nf_jac" : "1",
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "0",
+			"FILE_WORKFLOW" : "workflow.txt",
+
+"Approx. Hessian" : "comment",
+			"EPRECOND" : "3",
+			"EPSILON_WE" : "0.005",
+			"EPRECOND_ITER" : "0",
 
 "Gradient-Method" : "comment",
 			"GRAD_METHOD" : "1",
@@ -105,31 +126,7 @@
 			"WOLFE_NUM_TEST" : "5",
 			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
 
-"Approx. Hessian" : "comment",
-			"EPRECOND" : "3",
-			"EPSILON_WE" : "0.005",
-
-			"EPRECOND_ITER" : "0",
-
-"Workflow" : "comment",
-			"USE_WORKFLOW" : "0",
-			"FILE_WORKFLOW" : "workflow.txt",
-			
-"Inversion for density" : "comment",
-			"INV_RHO_ITER" : "400",
-			"INV_VP_ITER" : "400",
-			
-"Output of inverted models" : "comment",
-			"INV_MODELFILE" : "model/toy_example/mod_toy_example",
-			"nfstart" : "1",
-			"nf" : "1",
-
-"Output of gradients" : "comment",
-			"JACOBIAN" : "jacobian/toy_example/jac_toy_example",
-			"nfstart_jac" : "1",
-			"nf_jac" : "1",
-
-"Gradient calculation" : "comment",
+"Misfit Definition" : "comment",
 			"LNORM" : "2",
 			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, L2 norm with time windowing=6" : "comment",
 			"NORMALIZE" : "0",
@@ -144,6 +141,22 @@
 "Termination of the programmme" : "comment",
 			"PRO" : "0.01",
 
+"Definition of inversion for source time function" : "comment",
+			"INV_STF" : "0",
+			"PARA" : "fdlsq:tshift=0.0",
+			"N_STF" : "10",
+			"N_STF_START" : "1",
+
+"Frequency filtering during inversion" : "comment",
+			"TIME_FILT" : "0",
+			"FC_START" : "5.0",
+			"FC_END" : "5.0",
+			"FC_INCR" : "10.0",
+			"ORDER" : "4",
+
+"Minimum number of iteration per frequency" : "comment",
+			"MIN_ITER" : "10",
+
 "Definition of gradient taper geometry" : "comment",
 			"SWS_TAPER_CIRCULAR_PER_SHOT" : "1",
 			"SRTSHAPE" : "1",
@@ -151,8 +164,6 @@
 			"FILTSIZE" : "1",
 			"SWS_TAPER_FILE" : "0",
 			"TAPER_FILE" : "taper/toy_example/taper_toy_example",
-
-"Definition of inversion for source time function" : "comment",			"INV_STF" : "0",			"PARA" : "fdlsq:tshift=0.0",			"N_STF" : "10",			"N_STF_START" : "1",
 
 "Upper and lower limits for model parameters" : "comment",
 			"VPUPPERLIM" : "2420",
@@ -166,12 +177,6 @@
 			"MODEL_FILTER" : "1",
 			"FILT_SIZE" : "3",
 
-"Minimum number of iteration per frequency" : "comment",
-			"MIN_ITER" : "10",
-"Frequency filtering during inversion" : "comment",
-			"TIME_FILT" : "0",
-			"FC_START" : "5.0",
-			"FC_END" : "5.0",
-			"FC_INCR" : "10.0",
-			"ORDER" : "4",
+"Verbose" : "comment",
+			"VERBOSE" : "0",
 }

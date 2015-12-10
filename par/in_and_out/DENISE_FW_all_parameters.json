@@ -6,7 +6,6 @@
 #
 
 {
-
 "Domain Decomposition" : "comment",
 			"NPROCX" : "4",
 			"NPROCY" : "2",
@@ -38,6 +37,9 @@
 
 "Acoustic Computation" : "comment",
 			"ACOUSTIC" : "0",
+
+"Wavetype Computation" : "comment",
+			"WAVETYPE" : "1",
 
 "Model" : "comment",
 			"READMOD" : "0",

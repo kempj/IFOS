@@ -40,25 +40,11 @@
 			"SOURCE_FILE" : "./source/src_toy_example.dat",
 			"RUN_MULTIPLE_SHOTS" : "1",
 
-"Snapshots" : "comment",
-			"SNAP" : "0",
-			"TSNAP1" : "5e-5",
-			"TSNAP2" : "0.6",
-			"TSNAPINC" : "0.006",
-			"IDX" : "1",
-			"IDY" : "1",
-			"SNAP_FORMAT" : "3",
-			"SNAPSHOT_START , SNAPSHOT_END , SNAPSHOT_INCR" : "2, 3 , 2",
-			"SNAP_FILE" : "./snap/waveform_forward",
-
 "Acoustic Computation" : "comment",
 			"ACOUSTIC" : "0",
 
 "Wavetype Computation" : "comment",
 			"WAVETYPE" : "3",
-
-"Verbose" : "comment",
-			"VERBOSE" : "0",
 
 "Model" : "comment",
 			"READMOD" : "0",
@@ -96,10 +82,23 @@
 			"FL3" : "72.6774",
 			"TAU" : "0.0966",
 
+"Snapshots" : "comment",
+			"SNAP" : "0",
+			"TSNAP1" : "5e-5",
+			"TSNAP2" : "0.6",
+			"TSNAPINC" : "0.006",
+			"IDX" : "1",
+			"IDY" : "1",
+			"SNAP_FORMAT" : "3",
+			"SNAPSHOT_START , SNAPSHOT_END , SNAPSHOT_INCR" : "2, 3 , 2",
+			"SNAP_FILE" : "./snap/waveform_forward",
+
 
 "General inversion parameters" : "comment",
 			"ITERMAX" : "1",
 			"INVMAT1" : "1",
 			"INVMAT" : "10",
-			
+
+"Verbose" : "comment",
+			"VERBOSE" : "0",
 }
