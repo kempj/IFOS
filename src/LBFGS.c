@@ -99,7 +99,7 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
         
         /* Debugging */
         if(!ACOUSTIC) {
-            sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
+            sprintf(jac,"%s_y_LBFGS_vs_it%d.bin.%i.%i",JACOBIAN,iteration,POS[1],POS[2]);
             FP_JAC=fopen(jac,"wb");
         }
         
@@ -142,10 +142,10 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
         if(!ACOUSTIC) {
             fclose(FP_JAC);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin",JACOBIAN,iteration,w);
+            sprintf(jac,"%s_y_LBFGS_vs_it%d.bin",JACOBIAN,iteration);
             if (MYID==0) mergemod(jac,3);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_y_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iteration,w,POS[1],POS[2]);
+            sprintf(jac,"%s_y_LBFGS_vs_it%d.bin.%i.%i",JACOBIAN,iteration,POS[1],POS[2]);
             remove(jac);
         }
         

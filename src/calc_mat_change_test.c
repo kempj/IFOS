@@ -62,17 +62,17 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
         if(w==0) w=N_LBFGS;
         
         if(!ACOUSTIC){
-            sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            sprintf(jac,"%s_s_LBFGS_vs_it%d.bin.%i.%i",JACOBIAN,iter+1,POS[1],POS[2]);
             FP_JAC=fopen(jac,"wb");
         }
         
         if(LBFGS_NPAR>1){
-            sprintf(jac2,"%s_s_LBFGS_rho_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            sprintf(jac2,"%s_s_LBFGS_rho_it%d.bin.%i.%i",JACOBIAN,iter+1,POS[1],POS[2]);
             FP_JAC2=fopen(jac2,"wb");
         }
         
         if(LBFGS_NPAR>2){
-            sprintf(jac2,"%s_s_LBFGS_vp_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            sprintf(jac2,"%s_s_LBFGS_vp_it%d.bin.%i.%i",JACOBIAN,iter+1,POS[1],POS[2]);
             FP_JAC3=fopen(jac2,"wb");
         }
         
@@ -344,30 +344,30 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
         if(!ACOUSTIC){
             fclose(FP_JAC);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin",JACOBIAN,iter+1,w);
+            sprintf(jac,"%s_s_LBFGS_vs_it%d.bin",JACOBIAN,iter+1);
             if (MYID==0) mergemod(jac,3);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_s_LBFGS_vs_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            sprintf(jac,"%s_s_LBFGS_vs_it%d.bin.%i.%i",JACOBIAN,iter+1,POS[1],POS[2]);
             remove(jac);
         }
         
         if(LBFGS_NPAR>1){
             fclose(FP_JAC2);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_s_LBFGS_rho_it%d_w%d.bin",JACOBIAN,iter+1,w);
+            sprintf(jac,"%s_s_LBFGS_rho_it%d.bin",JACOBIAN,iter+1);
             if (MYID==0) mergemod(jac,3);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_s_LBFGS_rho_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            sprintf(jac,"%s_s_LBFGS_rho_it%d.bin.%i.%i",JACOBIAN,iter+1,POS[1],POS[2]);
             remove(jac);
         }
         
         if(LBFGS_NPAR>2){
             fclose(FP_JAC3);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_s_LBFGS_vp_it%d_w%d.bin",JACOBIAN,iter+1,w);
+            sprintf(jac,"%s_s_LBFGS_vp_it%d.bin",JACOBIAN,iter+1);
             if (MYID==0) mergemod(jac,3);
             MPI_Barrier(MPI_COMM_WORLD);
-            sprintf(jac,"%s_s_LBFGS_vp_it%d_w%d.bin.%i.%i",JACOBIAN,iter+1,w,POS[1],POS[2]);
+            sprintf(jac,"%s_s_LBFGS_vp_it%d.bin.%i.%i",JACOBIAN,iter+1,POS[1],POS[2]);
             remove(jac);
         }
     }
