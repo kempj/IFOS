@@ -2584,16 +2584,16 @@ int main(int argc, char **argv){
                                                 
                                                 if(WAVETYPE==1 || WAVETYPE==3) {
                                                     We[j][i]=We[j][i]/We_max;
-                                                    waveconv_shot[j][i] = waveconv_shot[j][i]/(We[j][i]*C_vp);
+                                                    waveconv_shot[j][i] = waveconv_shot[j][i]/(We[j][i]);
                                                     if(!ACOUSTIC){
-                                                        waveconv_u_shot[j][i] = waveconv_u_shot[j][i]/(We[j][i]*C_vs);
+                                                        waveconv_u_shot[j][i] = waveconv_u_shot[j][i]/(We[j][i]);
                                                     }
-                                                    waveconv_rho_shot[j][i] = waveconv_rho_shot[j][i]/(We[j][i]*C_rho);
+                                                    waveconv_rho_shot[j][i] = waveconv_rho_shot[j][i]/(We[j][i]);
                                                 }
                                                 if(WAVETYPE==2 || WAVETYPE==3) {
                                                     We_SH[j][i]=We_SH[j][i]/We_max_SH;
-                                                    waveconv_u_shot_z[j][i] = waveconv_u_shot_z[j][i]/(We_SH[j][i]*C_vs);
-                                                    waveconv_rho_shot_z[j][i] = waveconv_rho_shot_z[j][i]/(We_SH[j][i]*C_rho);
+                                                    waveconv_u_shot_z[j][i] = waveconv_u_shot_z[j][i]/(We_SH[j][i]);
+                                                    waveconv_rho_shot_z[j][i] = waveconv_rho_shot_z[j][i]/(We_SH[j][i]);
                                                 }
                                             }
                                         }
@@ -2714,11 +2714,11 @@ int main(int argc, char **argv){
                             for (j=1;j<=NY;j=j+IDY){
                                 for (i=1;i<=NX;i=i+IDX){
                                     We_sum[j][i]=We_sum[j][i]/We_sum_max1;
-                                    waveconv[j][i] = waveconv[j][i]*We_sum[j][i]/C_vp;
+                                    waveconv[j][i] = waveconv[j][i]*We_sum[j][i];
                                     if(!ACOUSTIC){
-                                        waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i]/C_vs;
+                                        waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i];
                                     }
-                                    waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i]/C_rho;
+                                    waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i];
                                 }
                             }
                         }
@@ -2728,8 +2728,8 @@ int main(int argc, char **argv){
                             for (j=1;j<=NY;j=j+IDY){
                                 for (i=1;i<=NX;i=i+IDX){
                                     We_sum_SH[j][i]=We_sum_SH[j][i]/We_sum_max1;
-                                    waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i]/C_vs;
-                                    waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i]/C_rho;
+                                    waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i];
+                                    waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i];
                                 }
                             }
                         }

@@ -28,6 +28,7 @@ endif
 
 .PHONY: clean
 clean: 
+	rm -rf ../bin/denise
 	$(MAKE) -C ../contrib/aff clean
 	$(MAKE) -C ../contrib/fourier clean
 	$(MAKE) -C ../contrib/stfinv clean
