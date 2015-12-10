@@ -21,12 +21,6 @@ Sometimes possible values are described in comments, feel free to add own commen
 
 If you use the json input file some default values for the forward modeling and the inversion are set. The default values are written in the following subsections in red. The input file \texttt{DENISE\_FW\_all\_parameters.json} in the directory \texttt{par/in\_and\_out} is an input file for a forward modeling containing all parameters that can be defined. Analog to that the input file \texttt{DENISE\_INV\_all\_parameters.json} is an example for an inversion input file. The input files \texttt{DENISE\_FW.json} and \texttt{DENISE\_INV.json} contain only the parameters that must be set by the user.\\
 
-% In the beginning of the code development DENISE used a different kind of input parameter file. The current version is still able to read this old input file. The old parameter file was organized as follows: 
-% {\color{blue}{\begin{verbatim}
-% description_of_parameter_(VARNAME)_(switches) = parameter value
-% \end{verbatim}}}
-% where VARNAME denotes the name of the global variable in which the value is saved in all functions of the program. The possible values are described in switches. A comment line is indicated by a \# on the very first position of a line. You can find an example of such a parameter file in \texttt{par/in\_and\_out/DENISE\_HESSIAN.inp}.  You can switch between the two possible input files via the file extension. Use ``.inp'' as file extension to read in the old input file or the file extension ``.json'' to use the new input file. 
-
 
 \section{Domain decomposition}
 {\color{blue}{\begin{verbatim}
@@ -349,10 +343,8 @@ Default values are:
 	NDT=1
 \end{verbatim}}}
 
-If SEISMO$>$0 seismograms recorded at the receiver positions are written to the corresponding output files. The sampling rate of the seismograms is NDT*DT seconds. In case of a small
-time step interval and a high number of time steps, it might be useful to choose a high NDT in order to avoid a unnecessary detailed sampling of the seismograms and consequently large files of seismogram data. Possible output formats of the seismograms are SU, ASCII and BINARY. It is recommended to use SU format for saving the seismograms. The main advantage of this format is that the time step interval (NDT*DT) and the acquisition geometry (shot and receiver locations) are stored in the corresponding SU header words. Also additional header words like offset are set by DENISE. This format thus facilitates a further visualization and processing of the synthetic seismograms. Note, however, that SU cannot handle sampling rates smaller than 1.0e-6 seconds and the number of samples is limited to about 32.000. In such cases, you should increase the sampling rate by increasing NDT. If this is impossible (for example because the Nyquist criterion is violated) you must choose a different output format (ASCII or binary).
+If SEISMO$>$0 seismograms recorded at the receiver positions are written to the corresponding output files. The sampling rate of the seismograms is NDT*DT seconds. In case of a small time step interval and a high number of time steps, it might be useful to choose a high NDT in order to avoid a unnecessary detailed sampling of the seismograms and consequently large files of seismogram data. Possible output formats of the seismograms are SU, ASCII and BINARY. It is recommended to use SU format for saving the seismograms. The main advantage of this format is that the time step interval (NDT*DT) and the acquisition geometry (shot and receiver locations) are stored in the corresponding SU header words. Also additional header words like offset are set by DENISE. This format thus facilitates a further visualization and processing of the synthetic seismograms. Note, however, that SU cannot handle sampling rates smaller than 1.0e-6 seconds and the number of samples is limited to about 32.000. In such cases, you should increase the sampling rate by increasing NDT. If this is impossible (for example because the Nyquist criterion is violated) you must choose a different output format (ASCII or binary).
 
-\newpage
 
 \section{Q-approximation}
 \label{q_approx}
@@ -371,19 +363,11 @@ Default values are:
 	L=0
 \end{verbatim}}}
 
-These lines may be used to define an overall level of intrinsic (viscoelastic) attenuation of seismic waves. In case of L=0, a purely elastic simulation is performed 
-(no absorption). The frequency dependence of the (intrinsic) Quality factor $Q(\omega)$ is defined by 
-the L relaxation 
-frequencies (FL=$f_l=2\pi/\tau_{\sigma l}$) and one value $\tau$ (see equation 5 in \cite{bohlen:02}). For a single relaxation mechanism (L=1) $Q \approx 2/\tau$ \citep{bohlen:98,blanch:95,bohlen:02}. If the model is generated ''on the fly'' the value
-of TAU can be assigned to all gridpoints for both P- and S-waves. Thus, intrinsic attenuation is homogeneous and equal for P- and S-waves ($Q_p(\omega)=Q_s(\omega)$). However, it is possible to simulate any spatial distribution of 
-absorption by assigning the gridpoints with different Q-values by reading external grid files for $Q_p$ (P-waves) and $Q_s$ (S-waves) (see \texttt{src/readmod.c}) or by generating these files ''on the fly'' (see section \ref{gen_of_mod} or exemplary model function \texttt{genmod/1D\_linear\_gradient\_visc.c}).  
+These lines may be used to define an overall level of intrinsic (viscoelastic) attenuation of seismic waves. In case of L=0, a purely elastic simulation is performed (no absorption). The frequency dependence of the (intrinsic) Quality factor $Q(\omega)$ is defined by the L relaxation frequencies (FL=$f_l=2\pi/\tau_{\sigma l}$) and one value $\tau$ (see equation 5 in \cite{bohlen:02}). For a single relaxation mechanism (L=1) $Q \approx 2/\tau$ \citep{bohlen:98,blanch:95,bohlen:02}. If the model is generated ''on the fly'' the value of TAU can be assigned to all gridpoints for both P- and S-waves. Thus, intrinsic attenuation is homogeneous and equal for P- and S-waves ($Q_p(\omega)=Q_s(\omega)$). However, it is possible to simulate any spatial distribution of absorption by assigning the gridpoints with different Q-values by reading external grid files for $Q_p$ (P-waves) and $Q_s$ (S-waves) (see \texttt{src/readmod.c}) or by generating these files ''on the fly'' (see section \ref{gen_of_mod} or exemplary model function \texttt{genmod/1D\_linear\_gradient\_visc.c}).  
 
-Small $Q$ values ($Q<50$) may lead to significant amplitude decay and velocity dispersion. Please note, that due to dispersive media properties the viscoelastic velocity model is defined for the reference frequency only. In DENISE, this 
-reference frequency is specified as the center source frequency. With F\_REF one can set the reference frequency manually. At the exact reference frequency, elastic and viscoelastic models are equivalent. As a consequence, slightly smaller and larger minimum and maximum velocity values 
-occure in the viscoelastic model.
+Small $Q$ values ($Q<50$) may lead to significant amplitude decay and velocity dispersion. Please note, that due to dispersive media properties the viscoelastic velocity model is defined for the reference frequency only. In DENISE, this reference frequency is specified as the center source frequency. With F\_REF one can set the reference frequency manually. At the exact reference frequency, elastic and viscoelastic models are equivalent. As a consequence, slightly smaller and larger minimum and maximum velocity values occure in the viscoelastic model.
 
-The frequency dependence of attenuation, i.e. $Q$ and phase velocity as a function  of frequency, may be calculated using the Matlab functions in the 
-directory mfiles.
+The frequency dependence of attenuation, i.e. $Q$ and phase velocity as a function  of frequency, may be calculated using the Matlab functions in the directory mfiles. The Matlab script /mfiles/qplot.m can be used to plot $Q(\omega)$ for different values of L, $f_l$ and $\tau$. The m-file qapprox.m in the same directory finds optimal values for L, $f_l$ and $\tau$ that fit a desired function $Q(\omega)=const$ in a least-squares sense.
 
 
 \section{Wavefield snapshots}
@@ -440,7 +424,6 @@ If TIME\_FILT is set to one the log file L2\_LOG.dat contains a 9th column with 
 			"DATA_DIR" : "su/measured_data/DENISE_real",
 			"INVMAT1" : "1",
 			"INVMAT" : "0",
-% 			"INVTYPE" : "2",
 			"QUELLTYPB" : "1",
 			"MISFIT_LOG_FILE" : "L2_LOG.dat",
 			"VELOCITY" : "0",
@@ -449,30 +432,24 @@ If TIME\_FILT is set to one the log file L2\_LOG.dat contains a 9th column with 
 			"INV_RHO_ITER" : "0",
 			"INV_VP_ITER" : "0",
 			"INV_VS_ITER" : "0",
-% 
-% "Cosine taper" : "comment",
-% 			"TAPER" : "0",
-% 			"TAPERLENGTH" : "10",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
 Default values are:
-% INVTYPE=2
 MISFIT_LOG_FILE=L2_LOG.dat
 VELOCITY=0
 INV_RHO_ITER=0
 INV_VP_ITER=0
 INV_VS_ITER=0
-% TAPER=0
-% TAPERLENGTH=10
 \end{verbatim}}}
 
-This section covers some general inversion parameters. The maximum number of iterations is defined by ITERMAX. The switch INVMAT controls if only the forward modeling code should be used (INVMAT=10), e.\,g. to calculate synthetic seismograms or a complete FWT run (INVMAT=0). The seismic sections of the real data need to be located in DATA\_DIR and should have the ending \_x.su.shot<shotnumber> for the x-component and so on. As noted in section \ref{model parametrizations} the gradients can be expressed for different model parameterizations. The switch INVMAT1 defines which parameterization should be used, seismic velocities and density (Vp,Vs,rho, INVMAT1=1), seismic impedances (Zp,Zs,rho, INVMAT1=2) or Lam$\rm{\acute{e}}$ parameters ($\rm{\lambda,\mu,\rho}$, INVMAT1=3). If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be backpropagated. For two component data (x- and y-component) set QUELLTYPB=1, only the y-component (QUELLTYPB=2) and only the x-component (QUELLTYPB=3). For acoustic modelling pressure seismograms and QUELLTYPB=4 have to be used.\\
-During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of eight or nine columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use freqeuncy filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step.\\
-In general DENISE tries to minimize the misfit in the particle displacement between the observed data and the synthetic data. If you set the switch VELOCITY to 1 the misfit in the particle velocity seismograms is minimized.\\
-The parameters INV\_RHO\_ITER, INV\_VP\_ITER and INV\_VS\_ITER define from which inversion step on an inversion for density, Vp and Vs, respectively, is applied. To invert for one parameter from the beginning of an inversion set it to 0 or 1.\\
+This section covers some general inversion parameters. The maximum number of iterations is defined by ITERMAX. The switch INVMAT controls if only the forward modeling code should be used (INVMAT=10), e.\,g. to calculate synthetic seismograms or a complete FWT run (INVMAT=0). The seismic sections of the real data need to be located in DATA\_DIR and should have the ending \_x.su.shot<shotnumber> for the x-component and so on. As noted in section \ref{model parametrizations} the gradients can be expressed for different model parameterizations. The switch INVMAT1 defines which parameterization should be used, seismic velocities and density (Vp,Vs,rho, INVMAT1=1), seismic impedances (Zp,Zs,rho, INVMAT1=2) or Lam$\rm{\acute{e}}$ parameters ($\rm{\lambda,\mu,\rho}$, INVMAT1=3). If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be backpropagated. For two component data (x- and y-component) set QUELLTYPB=1, only the y-component (QUELLTYPB=2) and only the x-component (QUELLTYPB=3). For acoustic modelling pressure seismograms and QUELLTYPB=4 have to be used.
 
-% The parameters TAPER, TAPERLENGTH and INVTYPE are debug parameters and should not be changed.
+During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of eight or nine columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use frequency filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step.
+
+In general DENISE tries to minimize the misfit in the particle displacement between the observed data and the synthetic data. If you set the switch VELOCITY to 1 the misfit in the particle velocity seismograms is minimized.
+
+The parameters INV\_RHO\_ITER, INV\_VP\_ITER and INV\_VS\_ITER define from which inversion step on an inversion for density, Vp and Vs, respectively, is applied. To invert for one parameter from the beginning of an inversion set it to 0 or 1.
 
 
 \section{Output of inversion results}
@@ -503,11 +480,14 @@ Default values are:
 \end{verbatim}}}
 With the use of a workflow file, you can define different FWI stages. For instance, one FWI stage could refer to one corner frequency of a low-pass filter or to a specific time window. Every line in the workflow file corresponds to one FWI stage. To use a workflow file the switch USE\_WORKFLOW have to be set to 1.  The algorithm will automatically change to the next line of the workflow file if the abort criterium of the current line is reached or if no step length could be found which reduces the misfit. The structure of the variables inside the workflow file is as follow: \\
 
+\noindent
 \begin{tabular}{llllllllllll}
 \# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & FC & WAVETYPE & 0 & 0 & EPRECOND & EPSILON\_WE\\
 \end{tabular}
-\\ \\
-The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency FC. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following to zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg. TIME\_FILT within the workflow have to be activated in the .JSON file.\\
+
+\ \\
+The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency FC. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following to zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg. TIME\_FILT (see section \ref{sec:filtering}) within the workflow have to be activated in the .JSON file.
+
 For an example of a workflow file, have a look in the par/ folder.
 
 
@@ -553,22 +533,21 @@ The preconditioned conjugate gradient (PCG), which can be used by GRAD\_METHOD==
 
 The L-BFGS method is a quasi-newton method, which will implicitly approximate the Hessian and can be chosen by setting GRAD\_METHOD to 2. Therefore the differences of the models and the gradients of a N\_LBFGS last iterations will be stored. First tests showed that N\_LBFGS=10 should be enough. The L-BFGS algorithm is implemented after the book \cite{nocedal:1999}, which is recommended to be read prior to using the L-BFGS method. Prior to starting the L-BFGS method one update with steepest decent have to be done to get a first set of model and gradient differences which are necessary to start L-BFGS.
 
-The ensure a stable convergence when L-BFGS is used the step length has to satisfy the wolf condition. A detailed description of the wolfe condition can be also found in \cite{nocedal:1999}. The first wolfe condition, which is also called sufficient decrease condition, requires that the misfit for a chosen step length will be decreased at least linear with the step length. Let $f(x)$ be the objective function, $x$ the current model, $\alpha$ the step length and $p$ the desired model update, so the first wolfe condition reads \citep{nocedal:1999}:
+To ensure a stable convergence when L-BFGS is used the step length has to satisfy the wolf condition. A detailed description of the wolfe condition can be also found in \cite{nocedal:1999}. The first wolfe condition, which is also called sufficient decrease condition, requires that the misfit for a chosen step length will be decreased at least linear with the step length. Let $f(x)$ be the objective function, $x$ the current model, $\alpha$ the step length and $p$ the desired model update, so the first wolfe condition reads \citep{nocedal:1999}:
 \begin{align}
 	f(x+\alpha \cdot p) \le f(x) + c_1 \cdot \alpha \cdot\bigtriangledown f(x)^{T} \cdot p
 \end{align}
 
- The second one, which is called curvature condition, requires that the slope of the misfit function will be higher than the initial slope. This ensures that the next misfit minimum will be reached fast enough.
- The second criterium is defined as \citep{nocedal:1999}:
- \begin{align}
- 	\bigtriangledown f(x+\alpha \cdot p)^{T} \cdot p \geq c_2 \cdot\bigtriangledown f(x)^{T} \cdot p
- \end{align}
- To verify this condition the full gradient (with all shots!) of the updated model have to be calculated, so the verification of this condition is very expensive in terms of computation time. In theory always a step length of one should be tried first, however to save time it is possible to chose the step length from the iteration before which satisfied the wolfe condition. This behavior can be controlled with WOLFE\_TRY\_OLD\_STEPLENGTH, if this is set to 1 always the old step length will be tried first. In practice the experience has shown that at the beginning of a FWI stage a couple of step lengths will be tested and then the algorithm converges to a step length which will be accepted by the wolfe condition until the misfit cannot be reduced further. With the variable WOLFE\_NUM\_TEST a maximum number of test calculations can be defined. If after WOLFE\_NUM\_TEST tests no step length could be found, the algorithm takes the step length of the tests which reduced the misfit most, even if this step length does not satisfy the wolfe condition. If no step length was found which reduces the misfit, the algorithm will switch to the next FWI stage in the workflow file or abort the inversion. 
- The variable $c_1$ will be $10^{-7}\cdot max(f(x)^{-1}$ and $c_2$ is set to 0.9. With WOLFE\_C1\_SL and WOLFE\_C2\_SL it is possible to manipulate $c_1$ and $c_2$ with the JSON input file. If the parameters are not set, they will be set to default values, so in most cases it should be the best to do not specify theses parameters in the JSON file.
- A step length search which is based on the wolfe condition can be used which the switch WOLFE\_CONDITION. Please note that this step length search is only available if GRAD\_METHOD==2. 
-  
-  
-  However, it is possible to chose a second step length search which the L-BFGS method. This one is available by the switch LBFGS\_STEP\_LENGTH=0. If you use LBFGS\_STEP\_LENGTH the wolfe condition based step length search will be deactivated automatically. Whit this search the step length 0.1, 0.5 and 1.0 will be tried and with a parabolic fit the best step length will be estimated. This search algorithm is implemented to save computation time, however the wolfe condition will not be checked, so the L-BFGS stability will not be satisfied. It is highly recommended to use the step length search based on the wolfe condition. It is likely that this option will be removed in a future releas. 
+The second one, which is called curvature condition, requires that the slope of the misfit function will be higher than the initial slope. This ensures that the next misfit minimum will be reached fast enough.
+The second criterium is defined as \citep{nocedal:1999}:
+\begin{align}
+	\bigtriangledown f(x+\alpha \cdot p)^{T} \cdot p \geq c_2 \cdot\bigtriangledown f(x)^{T} \cdot p
+\end{align}
+To verify this condition the full gradient (with all shots!) of the updated model have to be calculated, so the verification of this condition is very expensive in terms of computation time. In theory always a step length of one should be tried first, however to save time it is possible to chose the step length from the iteration before which satisfied the wolfe condition. This behavior can be controlled with WOLFE\_TRY\_OLD\_STEPLENGTH, if this is set to 1 always the old step length will be tried first. In practice the experience has shown that at the beginning of a FWI stage a couple of step lengths will be tested and then the algorithm converges to a step length which will be accepted by the wolfe condition until the misfit cannot be reduced further. With the variable WOLFE\_NUM\_TEST a maximum number of test calculations can be defined. If after WOLFE\_NUM\_TEST tests no step length could be found, the algorithm takes the step length of the tests which reduced the misfit most, even if this step length does not satisfy the wolfe condition. If no step length was found which reduces the misfit, the algorithm will switch to the next FWI stage in the workflow file or abort the inversion. 
+The variable $c_1$ will be $10^{-7}\cdot \max(f(x)^{-1}$ and $c_2$ is set to 0.9. With WOLFE\_C1\_SL and WOLFE\_C2\_SL it is possible to manipulate $c_1$ and $c_2$ with the JSON input file. If the parameters are not set, they will be set to default values, so in most cases it should be the best to do not specify theses parameters in the JSON file.
+A step length search which is based on the wolfe condition can be used which the switch WOLFE\_CONDITION. Please note that this step length search is only available if GRAD\_METHOD==2. 
+
+However, it is possible to chose a second step length search which the L-BFGS method. This one is available by the switch LBFGS\_STEP\_LENGTH=0. If you use LBFGS\_STEP\_LENGTH the wolfe condition based step length search will be deactivated automatically. Whit this search the step length 0.1, 0.5 and 1.0 will be tried and with a parabolic fit the best step length will be estimated. This search algorithm is implemented to save computation time, however the wolfe condition will not be checked, so the L-BFGS stability will not be satisfied. It is highly recommended to use the step length search based on the wolfe condition. It is likely that this option will be removed in a future releas. 
 
 
 \section{Misfit definition}
@@ -626,8 +605,7 @@ EPS\_SCALE += EPS\_SCALE/SCALEFAC.\\
 
 If a corresponding value epst(3) can be found after STEPMAX forward modellings, DENISE can fit a parabola through the 3 points (L2t(i),epst(i)) and estimates an optimum step length at the minimum of the parabola. If the L2-value L2t(3) after STEPMAX forward models is still smaller than L2t(2) the optimum steplength estimated by parabolic fitting will be not larger than epst(3).\\
 
-Please note: This step length search is only available wenn PCG method (GRAD\_METHOD==1) is used and will be automatically selected. 
-\newpage
+Please note: This step length search is only available wenn PCG method (GRAD\_METHOD==1) is used and will be automatically selected.
 
 
 \section{Abort criterion}
@@ -640,8 +618,88 @@ Additionally to the parameter ITERMAX a second abort criterion is implemented in
 the current iteration step and the misfit of the second to last iteration step is calculated with regard to the misfit of the second to last iteration step. If this relative change is
 smaller than PRO the inversion aborts or in case of using frequency filtering (TIME\_FILT==1) it increases the corner frequency of the low pass filter and therefore switches to next higher bandwidth. 
 
+\newpage
 
-\section{Minimum number of iteration per frequency}
+\section{Source wavelet inversion}
+To remove the contribution of the unknown source time function (STF) from the waveform residuals, it is necessary to design a filter which minimizes the misfit to the field recordings and raw synthetics. Therefore, a second forward simulation is applied. The first one is done with the wavelet specified in QUELLART and the second one with the optimized source wavelet saved in SIGNAL\_FILE (see Section~\ref{sec:sources}). This optimized source wavelet is kept constant within N\_STF or within a frequency range (see below).\\
+
+{\color{blue}{\begin{verbatim}
+"Definition of inversion for source time function" : "comment",
+			"INV_STF" : "0",
+			"PARA" : "fdlsq:exp=1.0",
+			"N_STF" : "10",
+			"N_STF_START" : "1",
+			"TAPER_STF" : "0",
+			"TRKILL_STF" : "0", 
+			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
+\end{verbatim}}}
+
+{\color{red}{\begin{verbatim}
+Default values are:
+	INV_STF=0
+\end{verbatim}}}
+
+INV\_STF should be switched to 1 if you want to invert for the source time function.
+\newline
+
+An example for the parameter string provided in PARA is:
+\begin{itemize}
+ \item To select frequency domain least squares (fdlsq), apply offset dependent weights and a waterlevel use\\
+ \textit{fdlsq:exp=1.0:waterlevel=0.01}
+\end{itemize}
+
+In most cases the frequency domain least squares engine is the best approach to find a suitable wavelet. There are also other possibilities, if you want to use those a detailed look at the libraries and the acompanying documentation provided in the folder /contrib is recommended. Here only the two main parameters for the fdlsq approach are described.
+
+Due to the amplitude decay with offset to the source signals from receivers at larger offset would contribute less to the optimization criterion for which the source wavelet correction filter is constructed. The option exp=k provides means to add a weight factor $(r/1\text{m})^k$ to each signal, where r is the receiver to source offset. This is used to compensate the decrease in signal amplitude.
+
+The procedure is implemented in the Fourier domain. Fourier coefficients for the correction filter are constructed such that the residual between Fourier coefficients of recorded signals and Fourier coefficients of synthetic signals after application of the correction filter are minimized in a least-squares sense. The least-squares solution is subject to a damping constraint. If the weighted power spectral density of the synthetics at a given frequency drops below the l-th fraction (waterlevel parameter) of the average (over all frequencies) power spectral density, the filter coefficients are damped (artificially made smaller) by the damping constraint (i.e. waterlevel as seen from the perspective of deconvolution). 
+
+Start with l=0.01 as a reasonable initial value for the waterlevel. The best fitting waterlevel must be searched by trial and error and depends of signal noise and on how well the synthetics describe the actually observed wave propagtion.
+
+The theory behind the Fourier domain least squares procedure is outlined by Lisa Groos (2013, Appendix F, page 146). She also describes a way to find an approrpiate waterlevel by application of the L-curve criterion (Groos, 2013, Appendix G, page 148).
+\newline
+
+N\_STF is the increment between the iteration steps. N\_STF\_START defines at which iterationstep the inversion for STF should start. This parameter has to be set at least to 1 NOT(!) 0. When using TAPER\_STF = 1, the source signal is tapered. See \texttt{src/taper.c} for the taper definition. With TRKILL\_STF = 1 it is possible to apply a trace killing for the estimation of the source wavelet correction filter.
+\newline
+
+Please note: If you additionally switch on frequency filtering during the inversion (TIME\_FILT=1 or TIME\_FILT=2), the parameters N\_STF and N\_STF\_START will be ignored. But the optimal source time function will be inverted for the first iteration and after every change of the frequency range.
+
+For more information see chapter \ref{cha:STF-Inversion}.
+
+
+\section{Frequency filtering}
+\label{sec:filtering}
+{\color{blue}{\begin{verbatim}
+"Frequency filtering during inversion" : "comment",
+			"TIME_FILT" : "0",
+			"F_HP" : "1",
+			"FC_START" : "10.0",
+			"FC_END" : "75.0",
+			"FC_INCR" : "10.0",
+			"ORDER" : "2",
+			"ZERO_PHASE" : "0",
+			"FREQ_FILE"  : "frequencies.dat",
+			"WRITE_FILTERED_DATA" : "0",
+\end{verbatim}}}
+
+{\color{red}{\begin{verbatim}
+Default values are:
+	TIME_FILT=0
+	ZERO_PHASE=0
+\end{verbatim}}}
+
+TIME\_FILT = 1 can be set to use frequency filtering. The parameter FC\_START defines the corner frequency of the Butterworth low pass filter at the beginning of the inversion. The parameter FC\_END defines the maximum corner frequency used in the inversion. The parameter FC\_INCR controls in which steps the bandwidth is increased during the inversion.
+
+If TIME\_FILT = 2 individual frequencies for each step can be read from FREQ\_FILE. In this file the first entry must be the number of frequencies used for filtering. Each frequency in Hz has to be specified in a row. The example file frequencies.dat can be found in \texttt{trunk/par}.
+
+The parameter ORDER defines the order of the Butterworth low pass filter. If the variable ZERO\_PHASE is set to one a zero phase filter is applied. It is realized by filtering the the traces in both forward and reverse direction with the defined Butterworth low pass filter. Therefore, the effective order of the low pass filter is doubled. 
+
+With F\_HP an additional high pass filter can be applied, where F\_HP is the corner frequency in Hz.
+
+With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
+
+With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data.
+
 {\color{blue}{\begin{verbatim}
 "Minimum number of iteration per frequency" : "comment",
 "MIN_ITER" : "10",
@@ -654,7 +712,43 @@ MIN_ITER=0
 If you are using frequeny filtering (TIME\_FILT==1) during the inversion, you can set a minimum number of iterations per frequency. Within this minimum number of iteration per frequency the abort criterion PRO will receive no consideration.
 
 
-\section{Definition of the gradient taper geometry}
+\section{Data manipulation}
+\subsection{Time windowing}
+{\color{blue}{\begin{verbatim}
+"Time windowing and damping" : "comment",
+			"TIMEWIN" : "0",
+			"TW_IND" : "0",
+			"PICKS_FILE" : "./picked_times/picks"
+			"TWLENGTH_PLUS" : "0.01",
+			"TWLENGTH_MINUS" : "0.01",
+			"GAMMA" : "100000",
+\end{verbatim}}}
+
+{\color{red}{\begin{verbatim}
+Default values are:
+	TIMEWIN=0
+\end{verbatim}}}
+
+To apply time windowing in a time series the paramter TIMEWIN must set to 1. A automatic picker routine is not integrated at the moment. The point in time (picked time) for each source must be specified in seperate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources in (SRCREC) must be equal to the number of files. Each file must contain the picked times for every receiver.\
+The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually. When usig TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time, time window length plus and time window length minus. In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored.
+
+\subsection{Trace killing}
+{\color{blue}{\begin{verbatim}
+"Trace killing" : "comment",
+			"TRKILL" : "0",
+			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
+\end{verbatim}}}
+
+{\color{red}{\begin{verbatim}
+Default values are:
+	TRKILL=0
+\end{verbatim}}}
+
+If you don't want to use single traces or a subset of your data, the parameter TRKILL can be used. If it is set to 1, trace killing is in use. The necessary file can be selected with the parameter TRKILL\_FILE. The file should include a kill table, where the number of rows is the number of receivers and the number of columns reflects the number of sources. Now, a 1 (ONE) means, YES, please kill the trace. The trace is NOT used, it should be killed. A 0 (ZERO) means, NO, this trace should NOT be killed. 
+
+
+\section{Gradient manipulation}
+\subsection{Definition of a gradient taper}
 \label{sec:Definition_of_gradient_taper_geometry}
 {\color{blue}{\begin{verbatim}
 "Definition of gradient taper geometry" : "comment",
@@ -689,8 +783,7 @@ To apply an externally defined taper on the gradients in DENISE, the parameter S
 
 It is also possible to apply externally defined taper files to the gradients of the single shots before summation of these gradients. This can be done by setting SWS\_TAPER\_FILE\_PER\_SHOT to one. DENISE expects the tapers in TAPER\_FILE\_NAME.shot<shotnumber> for the vp gradients, in TAPER\_FILE\_NAME\_U.shot<shotnumber> for the vs gradients and in TAPER\_FILE\_NAME\_RHO.shot<shotnumber> for the density gradients.
 
-
-\section{Definition of spatial filtering of the gradients}
+\subsection{Spatial filtering of the gradients}
 {\color{blue}{\begin{verbatim}
 "Definition of smoothing (spatial filtering) of the gradients" : "comment",
 			"SPATFILTER" : "0",
@@ -706,8 +799,7 @@ Default values are:
 
 One can apply a spatial Gaussian filter to the gradients that acts in horizontal direction (SPATFILTER=1). Have a look at the function \texttt{spat\_filt.c} for more information.
 
-
-\section{Smoothing the gradients}
+\subsection{Smoothing the gradients}
 {\color{blue}{\begin{verbatim}
 "Definition of smoothing the gradients with a 2D-Gaussian filter" : "comment",
                         "GRAD_FILTER" : "0",
@@ -730,7 +822,8 @@ For GRAD\_FILT\_WAVELENGTH = 1 (and TIME\_FILT=1) a new wavelength dependent fil
 where FC is the corner frequency of TIME\_FILT and A is a weighting factor.
 
 
-\section{Limits for the model parameters}
+\section{Model manipulation}
+\subsection{Limits for the model parameters}
 {\color{blue}{\begin{verbatim}
 "Upper and lower limits for model parameters" : "comment",
 			"VPUPPERLIM" : "3500",
@@ -753,8 +846,7 @@ RHOLOWERLIM=0.0
 
 The six limits for the model parameters specify the minimum and maximum values which may be achieved by the inversion. Here, known a priori information can be used. Depending on the choice of the parameter INVMAT1, either vp and vs or lambda and mu is meant.
 
-
-\section{Limited update of model parameters}
+\subsection{Limited update of model parameters}
 {\color{blue}{\begin{verbatim}
 "Limited model update in reference to the starting model" : "comment",
 "S" : "0",
@@ -768,8 +860,7 @@ Default values are:
 \end{verbatim}}}
 For S=1 individual limited updates of the elastic model parameters are considered. S\_VS, S\_VP and S\_RHO are the maximum updates of the model parameters at each grid point (given in \%) in reference to the model parameters of their starting models for S-wave and P-wave velocity as well as density, respectively. For example S\_VS = 30.0 means that the model parameter update of the S-wave velocity model is limited to 30\,\% at each grid point in reference to the starting model of the S-wave velocity model. Zero (S\_VS=0.0, S\_VP=0.0 or S\_RHO=0.0) means that the model parameter won't be updated at all. S\_VS=100.0, S\_VP=100.0 or S\_RHO=100.0 equal to S=0.
 
-
-\section{Vp/Vs ratio}
+\subsection{Vp/Vs ratio}
 {\color{blue}{\begin{verbatim}
 "Minimum Vp/Vs-ratio" : "comment",
 "VP_VS_RATIO" : "1.5",
@@ -780,69 +871,7 @@ Default values are:
 \end{verbatim}}}
 With VP\_VS\_RATIO = 1.5 (e.g.) it is possible to ensure a minimum Vp/Vs ratio during the inversion. This is done by checking the Vp/Vs ratio at every grid point after every model update and if it is less than (e.g.) 1.5 the P-wave velocity will be increased. For smaller values than one (1) this criterion is disregarded.
 
-
-\section{Time windowing and damping}
-{\color{blue}{\begin{verbatim}
-"Time windowing and damping" : "comment",
-			"TIMEWIN" : "0",
-			"TW_IND" : "0",
-			"PICKS_FILE" : "./picked_times/picks"
-			"TWLENGTH_PLUS" : "0.01",
-			"TWLENGTH_MINUS" : "0.01",
-			"GAMMA" : "100000",
-\end{verbatim}}}
-
-{\color{red}{\begin{verbatim}
-Default values are:
-	TIMEWIN=0
-\end{verbatim}}}
-
-To apply time windowing in a time series the paramter TIMEWIN must set to 1. A automatic picker routine is not integrated at the moment. The point in time (picked time) for each source must be specified in seperate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources in (SRCREC) must be equal to the number of files. Each file must contain the picked times for every receiver.\
-The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually. When usig TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time, time window length plus and time window length minus. In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored.
-
-
-\section{Source wavelet inversion}
-To remove the contribution of the unknown source time function (STF) from the waveform residuals, 
-it is necessary to design a filter which minimizes the misfit to the field recordings and raw synthetics. Therefore, a second forward simulation is applied. The first one is done with the wavelet specified in QUELLART and the second one with the optimized source wavelet saved in SIGNAL\_FILE (see Section~\ref{sec:sources}). This optimized source wavelet is kept constant within N\_STF or within a frequency range (see below).\\
-
-{\color{blue}{\begin{verbatim}
-"Definition of inversion for source time function" : "comment",
-			"INV_STF" : "0",
-			"PARA" : "fdlsq:tshift=0.0",
-			"N_STF" : "10",
-			"N_STF_START" : "1",
-			"TAPER_STF" : "0",
-			"TRKILL_STF" : "0", 
-			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
-\end{verbatim}}}
-
-{\color{red}{\begin{verbatim}
-Default values are:
-	INV_STF=0
-\end{verbatim}}}
-
-INV\_STF should be switched to 1 if you want to invert for the source time function. %How to construct parameter strings PARA see doxygen documentation.
-
-Examples for the parameter PARA are:
-\begin{itemize}
-\item To select frequency domain least squares (fdlsq) and shift the returned source time function by 0.4s, pass the following parameter string:\\
-      \textit{fdlsq:tshift=0.4}
-
-\item To select fdlsq, apply offset dependent weights and use a power of two to speed up the FFT\\
-      \textit{fdlsq:exp=1.4:pow2}
-
-\end{itemize}
-N\_STF is the increment between the iteration steps. N\_STF\_START defines at which iterationstep the inversion for STF should start. This parameter has to be set at least to 1 NOT(!) 0.
-When using TAPER\_STF = 1, the source signal is tapered. See \texttt{src/taper.c} for the taper definition.
-With TRKILL\_STF = 1 it is possible to apply a trace killing for the estimation of the source wavelet correction filter.
-\newline
-
-Please note: If you additionally switch on frequency filtering during the inversion (TIME\_FILT=1 or TIME\_FILT=2), the parameters N\_STF and N\_STF\_START will be ignored. But the optimal source time function will be inverted for the first iteration and after every change of the frequency range.
-
-For more information see \ref{cha:STF-Inversion}
-
-
-\section{Smoothing the models}
+\subsection{Smoothing the models}
 {\color{blue}{\begin{verbatim}
 "Definition of smoothing the models vp and vs" : "comment",
 			"MODEL_FILTER" : "0",
@@ -855,87 +884,3 @@ Default values are:
 \end{verbatim}}}
 
 If MODEL\_FILTER = 1 vp- and vs-models are smoothed with a 2D median filter after every iterationstep. With FILT\_SIZE you can set the filter length in gridpoints. 
-
-
-\section{Frequency filtering}
-{\color{blue}{\begin{verbatim}
-"Frequency filtering during inversion" : "comment",
-			"TIME_FILT" : "0",
-			"F_HP" : "1",
-			"FC_START" : "10.0",
-			"FC_END" : "75.0",
-			"FC_INCR" : "10.0",
-			"ORDER" : "2",
-			"ZERO_PHASE" : "0",
-			"FREQ_FILE"  : "freqeuncies.dat",
-			"WRITE_FILTERED_DATA" : "0",
-\end{verbatim}}}
-
-{\color{red}{\begin{verbatim}
-Default values are:
-	TIME_FILT=0
-	ZERO_PHASE=0
-\end{verbatim}}}
-
-TIME\_FILT = 1 can be set to use frequency filtering. The parameter FC\_START defines the corner frequency of the Butterworth low pass filter at the beginning of the inversion. The parameter FC\_END defines the maximum corner frequency used in the inversion. The parameter FC\_INCR controls in which steps the bandwidth is increased during the inversion.
-
-If TIME\_FILT = 2 individual frequencies for each step can be read from FREQ\_FILE. In this file the first entry must be the number of frequencies used for filtering. Each frequency in Hz has to be specified in a row. The example file freqeuncies.dat can be found in \texttt{trunk/par}.
-
-The parameter ORDER defines the order of the Butterworth low pass filter. If the variable ZERO\_PHASE is set to one a zero phase filter is applied. It is realized by filtering the the traces in both forward and reverse direction with the defined Butterworth low pass filter. Therefore, the effective order of the low pass filter is doubled. 
-
-With F\_HP an additional high pass filter can be applied, where F\_HP is the corner frequency in Hz.
-
-With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
-
-With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. 
-
-\section{Trace killing}
-{\color{blue}{\begin{verbatim}
-"Trace killing" : "comment",
-			"TRKILL" : "0",
-			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
-\end{verbatim}}}
-
-{\color{red}{\begin{verbatim}
-Default values are:
-	TRKILL=0
-\end{verbatim}}}
-
-For not using all traces, the parameter TRKILL is introduced. If TRKILL is set to 1, trace killing is in use. The necessary file can be selected with the parameter TRKILL\_FILE. The file should include a kill table, where
-the number of rows is the number of receivers and the number of columns reflects the number of sources. Now, a 1 (ONE) means, YES, please kill the trace. The trace is NOT used, it should be killed. A 0 (ZERO) means, NO, this trace should NOT be killed. 
-
-% \newpage
-
-% \section{Receiver array}
-% {\color{blue}{\begin{verbatim}
-% "Receiver array" : "comment",
-% 			"REC_ARRAY" : "0",
-% 			"REC_ARRAY_DEPTH" : "70.0",
-% 			"REC_ARRAY_DIST" : "40.0", 
-% 			"DRX" : "4",
-% \end{verbatim}}}
-% 
-% {\color{red}{\begin{verbatim}
-% Default values are:
-% 	REC_ARRAY=0
-% \end{verbatim}}}
-% 
-% These options are obsolete. Receiver arrays have to be defined directly in receiver.dat.
-% 
-% 
-% \section{Checkpointing}
-% {\color{blue}{\begin{verbatim}
-% "Checkpoints" : "comment",
-% 			"CHECKPTREAD" : "0",
-% 			"CHECKPTWRITE" : "0",
-% 			"CHECKPTFILE" : "tmp/checkpoint_fdveps",
-% \end{verbatim}}}
-% 
-% {\color{red}{\begin{verbatim}
-% Default values are:
-% CHECKPTREAD=0
-% CHECKPTWRITE=0
-% CHECKPTFILE="tmp/checkpoint_fdveps"
-% \end{verbatim}}}
-% 
-% These options are obsolete and will not be supported in the current version of DENISE.

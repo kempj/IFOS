@@ -27,13 +27,13 @@ This directory contains documentation on the software (this users guide) as well
 Contains the model and benchmark files for DENISE.
 
 \textbf{mfiles}\\
-Here some Matlab routines (m-files) are stored. These Matlab programs can be used to find optimal relaxation frequencies to approximate a constant Q (qapprox.m) or to plot Q as a function of frequency for certain relaxation frequencies and value of tau (qplot.m). It is necessary to have the Matlab Optimization Toolbox installed. For further details on the theory behind these algorithms we refer to the Phd thesis of T. Bohlen \cite{bohlen:98} and to the paper in which the so-called tau-method is described \cite{blanch:95}. The parameter tau is used in this software to define the level of attenuation.
+Here some Matlab routines (m-files) are stored. These Matlab programs can be used to find optimal relaxation frequencies to approximate a constant Q (qapprox.m) or to plot Q as a function of frequency for certain relaxation frequencies and value of tau (qplot.m). It is necessary to have the Matlab Optimization Toolbox installed. For further details we refer to \cite{bohlen:98} and to the paper in which the so-called tau-method is described \cite{blanch:95}.
 
 \textbf{par}\\
 Parameter files for DENISE modeling.
 
-\textbf{scripts}\\
-Here, you will find examples of script-files used to submit modeling jobs on cluster-computers.
+% \textbf{scripts}\\
+% Here, you will find examples of script-files used to submit modeling jobs on cluster-computers.
 
 \textbf{src}\\
 This directory contains the complete source codes.  The following programs are available and may be compiled using make $<$program$>$.
@@ -46,11 +46,7 @@ Before compiling the main program DENISE you have to compile the required additi
 \textit{make}
 \newline
 
-% {\color{blue}{\begin{verbatim}
-% -bash-2.05b$:~/DENISE/par> make
-% \end{verbatim}}} 
-
-which should install the following libraries:
+which will install the following libraries:
 
 {\color{blue}{\begin{verbatim}
 lib cseife
@@ -71,44 +67,33 @@ The source code of DENISE is located in the directory DENISE/src. To compile DEN
 
 # source code for model generation
 
-MODEL_EL = half_space.c
+#MODEL = hh.c
+MODEL = ../genmod/1D_linear_gradient_visc.c
+MODEL_AC = ../genmod/1D_linear_gradient_ac.c
+MODEL_EL = ../genmod/1D_linear_gradient_el.c
+MODEL_VAC = ../genmod/1D_linear_gradient_viscac.c
 EXEC= ../bin
 
+# Description:
+# CC = Compiler
+# LFLAGS = Linker flag
+# CFLAGS = Compiler flag
 
-# Compiler (LAM: CC=hcc, CRAY T3E: CC=cc)
-
-# ON Linux cluster running LAM (options for DENISE)
-#CC=hcc
-#LFLAGS=-lm -lmpi -lcseife 
-#CFLAGS=-O3 
-#SFLAGS=-L./../libcseife
-#IFLAGS=-I./../libcseife
-
-# On CRAY T3E
-# CC=cc
-
-# On MARWIN
-CC=mpicc
-LFLAGS=-lm -lcseife
-CFLAGS=-O3
-SFLAGS=-L./../libcseife
-IFLAGS=-I./../libcseife
-
-# On HLRN system
-#CC=mpcc
-#LFLAGS=-lm  
-
-# ALTIX
-#CC=icc
-#CFLAGS=-mp -O3 -ipo
-#LFLAGS=-lmpi -lm -i-static
-
-# On the workstations in Karlsruhe (GPI)
-CC=mpicc
+# LINUX with OpenMPI / IntelMPI and INTEL Compiler
+# Use icc whenever possible, this will be much faster than gcc
+CC=mpiicc
 LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
 CFLAGS=-O3
-SFLAGS=-L./../libcseife -L./../contrib/bin
-IFLAGS=-I./../libcseife -I./../contrib/header
+SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
+IFLAGS=-I./../contrib/libcseife -I./../contrib/header -I.
+
+# LINUX with OpenMPI / IntelMPI and GCC Compiler
+#CC=mpicc
+#LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
+#CFLAGS=-O3
+#SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
+#IFLAGS=-I./../contrib/libcseife -I./../contrib/header -I.
+
 
 # after this line, no further editing should be necessary
 # --------------------------------------------------------
@@ -124,89 +109,67 @@ The command to start a simulation on 8 processor with the lowest priority of -19
 \textit{mpirun -np 8 nice -19 ../bin/denise DENISE.json }
 \newline
 
-% {\color{blue}{\begin{verbatim}
-% mpirun -np 8 nice -19 ../bin/denise DENISE.json 
-% \end{verbatim}}}
-
 It is often useful to save the standard output of the program for later reference. The screen output may be saved to DENISE.out using
 \newline
 
 \textit{mpirun -np 8 nice -19 ../bin/denise DENISE.json > DENISE.out}
 \newline
 
-% {\color{blue}{\begin{verbatim}
-% mpirun -np 8 nice -19 ../bin/denise DENISE.json > DENISE.out
-% \end{verbatim}}}
+% \newpage
 
-\newpage
-
-After the output of geometry and model parameters the code starts the time stepping and displaying timing information:
+After the output of geometry and model parameters the code starts the time stepping and displaying information:
 
 {\color{blue}{\begin{verbatim} 
-===============================================================================
+==============================================================================
 
- MYID=0 *****  Starting simulation (forward model) for shot 1 of 1  ********** 
+ MYID=0 * Starting simulation (forward model) for shot 1 of 5. Iteration 1 ** 
 
-===============================================================================
+==============================================================================
 
- Number of samples (nts) in source file: 3462
- Number of samples (nts) in source file: 3462
- Message from function wavelet written by PE 0 
- 1 source positions located in subdomain of PE 0 
- have been assigned with a source signal. 
+ ****************************************
+ ****************************************
 
- PE 0 outputs source time function in SU format to start/source_signal.0.su.shot1 
- 
- Computing timestep 1000 of 3462 
+==============================================================================
 
- **Message from update_v (printed by PE 0):
- Updating particle velocities ... finished (real time: 0.00 s).
- particle velocity exchange between PEs ... finished (real time: 0.00 s).
+ MYID=0 * Starting simulation (forward model) for shot 2 of 5. Iteration 1 ** 
 
- **Message from update_s (printed by PE 0):
- Updating stress components ... finished (real time: 0.00 s).
- stress exchange between PEs ... finished (real time: 0.00 s).
- total real time for timestep 1000 : 0.01 s.
+==============================================================================
 
- Computing timestep 2000 of 3462 
+ ****************************************
+ ****************************************
 
- **Message from update_v (printed by PE 0):
- Updating particle velocities ... finished (real time: 0.00 s).
- particle velocity exchange between PEs ... finished (real time: 0.00 s).
+==============================================================================
 
- **Message from update_s (printed by PE 0):
- Updating stress components ... finished (real time: 0.00 s).
- stress exchange between PEs ... finished (real time: 0.00 s).
- total real time for timestep 2000 : 0.01 s.
+ MYID=0 * Starting simulation (forward model) for shot 3 of 5. Iteration 1 ** 
 
- Computing timestep 3000 of 3462 
+==============================================================================
 
- **Message from update_v (printed by PE 0):
- Updating particle velocities ... finished (real time: 0.00 s).
- particle velocity exchange between PEs ... finished (real time: 0.00 s).
+ ****************************************
+ ****************************************
 
- **Message from update_s (printed by PE 0):
- Updating stress components ... finished (real time: 0.00 s).
- stress exchange between PEs ... finished (real time: 0.00 s).
- total real time for timestep 3000 : 0.01 s.
- PE 0 is writing 11 seismograms (vx) to
-         su/DENISE_US_x.su.shot1.it1 
- PE 0 is writing 11 seismograms (vy) to
-         su/DENISE_US_y.su.shot1.it1 
+==============================================================================
 
- **Info from main (written by PE 0): 
- CPU time of program per PE: 17 seconds.
- Total real time of program: 18.08 seconds.
- Average times for 
- velocity update:        0.003 seconds  
- stress update:          0.002 seconds  
- velocity exchange:      0.000 seconds  
- stress exchange:        0.000 seconds  
- timestep:       0.005 seconds 
+ MYID=0 * Starting simulation (forward model) for shot 4 of 5. Iteration 1 ** 
+
+==============================================================================
+
+ ****************************************
+ ****************************************
+
+==============================================================================
+
+ MYID=0 * Starting simulation (forward model) for shot 5 of 5. Iteration 1 ** 
+
+==============================================================================
+
+ ****************************************
+ ****************************************
+
+ Forward calculation finished.
 \end{verbatim}}}  
 
 \section{Postprocessing}  
-The wavefield snapshots can be merged using the program \textit{snapmerge}. The program snapmerge is not a MPI program. Therefore, it can be executed without MPI and the mpirun command. You can run snapmerge on any PC since a MPI environment (e.g. LAM) is not required. You may therefore copy the snapshot outputs of the different nodes to another non-MPI computer to merge the files together. \textit{snapmerge} reads the required information from the DENISE parameter file. Simply type
+The wavefield snapshots can be merged using the program \textit{snapmerge}. The program snapmerge is not a MPI program. Therefore, it can be executed without MPI and the mpirun command. You can run snapmerge on any PC since a MPI environment is not required. You may therefore copy the snapshot outputs of the different nodes to another non-MPI computer to merge the files together. \textit{snapmerge} reads the required information from the DENISE parameter file. Simply type
 \newline
 
 \textit{../bin/snapmerge DENISE.json  }
