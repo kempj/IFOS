@@ -179,9 +179,7 @@ void model_elastic(float  **  rho, float **  pi, float **  u){
 	free_vector(flrho,1,nodes);
 	free_vector(flvp,1,nodes);
 	free_vector(flvs,1,nodes);
-	
-	free_vector(pts,1,L);
-	 
+
 }
 
 

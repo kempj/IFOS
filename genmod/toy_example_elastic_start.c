@@ -260,11 +260,6 @@ void model_elastic(float  **  rho, float **  pi, float **  u){
 	sprintf(modfile,"%s_vp_it0.bin.%i%i",INV_MODELFILE,POS[1],POS[2]);
 	remove(modfile);
 		
-	
-	
-	
-	free_vector(pts,1,L);
-	 
 }
 
 
