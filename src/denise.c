@@ -3721,7 +3721,7 @@ int main(int argc, char **argv){
         /* ------------------------------------*/
         /* smoothing the models vp, vs and rho */
         /* ------------------------------------*/
-        if (INVMAT==0 && ( opteps_vp>0.0 || WOLFE_CONDITION ) ){
+        if (INVMAT==0 && (opteps_vp>0.0 || WOLFE_CONDITION)){
             if(!ACOUSTIC){
                 if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vs_avg,FC);
                 if(MODEL_FILTER)smooth(pu,5,2,Vs_avg,FC);
