@@ -25,6 +25,7 @@
 void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int* ptr_killed_traces, int* ptr_killed_traces_testshots){
 
 /* declaration of variables */
+extern int USE_WORKFLOW, WORKFLOW_STAGE;
 extern char TRKILL_FILE[STRING_SIZE];
 int i,j,h;
 
@@ -38,9 +39,23 @@ FILE *ftracekill;
 kill_tmp = imatrix(1,ntr_glob,1,nsrc_glob);
 kill_vector = ivector(1,ntr);
 
-ftracekill=fopen(TRKILL_FILE,"r");
-
-if (ftracekill==NULL) err(" Trace kill file could not be opened!");
+    if(USE_WORKFLOW){
+        sprintf(trace_kill_file,"%s_%i.dat",TRKILL_FILE,WORKFLOW_STAGE);
+        ftracekill=fopen(trace_kill_file,"r");
+        if (ftracekill==NULL){
+            sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
+            ftracekill=fopen(trace_kill_file,"r");
+            if (ftracekill==NULL){
+                err(" Trace kill file could not be opened!");
+            }
+        }
+    }else{
+        sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
+        ftracekill=fopen(trace_kill_file,"r");
+        if (ftracekill==NULL){
+            err(" Trace kill file could not be opened!");
+        }
+    }
 
 for(i=1;i<=ntr_glob;i++){
 	for(j=1;j<=nsrc_glob;j++){

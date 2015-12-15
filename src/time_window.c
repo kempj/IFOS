@@ -28,7 +28,7 @@ void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, 
     /* declaration of variables */
     extern float DT;
     extern float GAMMA, TWLENGTH_PLUS, TWLENGTH_MINUS;
-    extern int TW_IND;
+    extern int TW_IND, USE_WORKFLOW, WORKFLOW_STAGE;
     extern char PICKS_FILE[STRING_SIZE];
     char pickfile_char[STRING_SIZE];
     float time, dump, dump1, dump2, dump3, taper, taper1;
@@ -47,13 +47,24 @@ void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, 
         pick_tmp = vector(1,ntr_glob);
     }
     
-    sprintf(pickfile_char,"%s_%i.dat",PICKS_FILE,ishot);
-    
-    fptime=fopen(pickfile_char,"r");
-    if (fptime == NULL) {
-        err(" picks_?.dat could not be opened !");
+    /* read picked first arrival times */
+    if(USE_WORKFLOW){
+        sprintf(pickfile_char,"%s_%i_%i.dat",PICKS_FILE,ishot,WORKFLOW_STAGE);
+        fptime=fopen(pickfile_char,"r");
+        if (fptime == NULL) {
+            sprintf(pickfile_char,"%s_%i.dat",PICKS_FILE,ishot);
+            fptime=fopen(pickfile_char,"r");
+            if (fptime == NULL) {
+                err(" picks_?.dat could not be opened !");
+            }
+        }
+    }else{
+        sprintf(pickfile_char,"%s_%i.dat",PICKS_FILE,ishot);
+        fptime=fopen(pickfile_char,"r");
+        if (fptime == NULL) {
+            err(" picks_?.dat could not be opened !");
+        }
     }
-    
     
     if(TW_IND){
         for(i=1;i<=ntr_glob;i++){

@@ -32,7 +32,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	extern float DT, DH;
 	extern int SEIS_FORMAT, MYID, NT, QUELLART, TIME_FILT, TIMEWIN, TAPER_STF;
 	extern char  SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_P[STRING_SIZE], PARA[STRING_SIZE], DATA_DIR[STRING_SIZE];
-	extern int TRKILL_STF, NORMALIZE;
+	extern int TRKILL_STF, NORMALIZE, USE_WORKFLOW, WORKFLOW_STAGE;
 	extern char TRKILL_FILE_STF[STRING_SIZE];
 	extern char SIGNAL_FILE[STRING_SIZE];
 	
@@ -64,9 +64,23 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 		kill_tmp = imatrix(1,ntr_glob,1,nshots);
 		kill_vector = ivector(1,ntr_glob);
 		
-		ftracekill=fopen(TRKILL_FILE_STF,"r");
-		
-		if (ftracekill==NULL) err(" Trace kill file could not be opened!");
+        if(USE_WORKFLOW){
+            sprintf(trace_kill_file,"%s_%i.dat",TRKILL_FILE_STF,WORKFLOW_STAGE);
+            ftracekill=fopen(trace_kill_file,"r");
+            if (ftracekill==NULL){
+                sprintf(trace_kill_file,"%s.dat",TRKILL_FILE_STF);
+                ftracekill=fopen(trace_kill_file,"r");
+                if (ftracekill==NULL){
+                    err(" Trace kill file could not be opened!");
+                }
+            }
+        }else{
+            sprintf(trace_kill_file,"%s.dat",TRKILL_FILE_STF);
+            ftracekill=fopen(trace_kill_file,"r");
+            if (ftracekill==NULL){
+                err(" Trace kill file could not be opened!");
+            }
+        }
 		
 		for(i=1;i<=ntr_glob;i++){
 			for(j=1;j<=nshots;j++){

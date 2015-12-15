@@ -987,52 +987,52 @@ void read_par_json(FILE *fp, char *fileinp){
         }
         
         
-        /* trace kill file */
-        if (TRKILL == 1)
-        {
-            if (access(TRKILL_FILE,0) != 0)
-            {
-                fprintf(fp, "\n==================================================================\n");
-                fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
-                fprintf(fp, "        The trace kill file does not exist!\n");
-                fprintf(fp, "        File name: <%s>", TRKILL_FILE);
-                fprintf(fp, "\n==================================================================\n");
-                fserr = 1;
-            }
-            else if (access(TRKILL_FILE,4) != 0)
-            {
-                fprintf(fp, "\n==================================================================\n");
-                fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
-                fprintf(fp, "        The trace kill file does not have read access!\n");
-                fprintf(fp, "        File name: <%s>", TRKILL_FILE);
-                fprintf(fp, "\n==================================================================\n");
-                fserr = 1;
-            }
-        }
-        
-        
-        /* trace kill STF file */
-        if (TRKILL_STF == 1)
-        {
-            if (access(TRKILL_FILE_STF,0) != 0)
-            {
-                fprintf(fp, "\n==================================================================\n");
-                fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
-                fprintf(fp, "        The trace kill file does not exist!\n");
-                fprintf(fp, "        File name: <%s>", TRKILL_FILE_STF);
-                fprintf(fp, "\n==================================================================\n");
-                fserr = 1;
-            }
-            else if (access(TRKILL_FILE_STF,4) != 0)
-            {
-                fprintf(fp, "\n==================================================================\n");
-                fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
-                fprintf(fp, "        The trace kill file does not have read access!\n");
-                fprintf(fp, "        File name: <%s>", TRKILL_FILE_STF);
-                fprintf(fp, "\n==================================================================\n");
-                fserr = 1;
-            }
-        }
+//         /* trace kill file */
+//         if (TRKILL == 1)
+//         {
+//             if (access(TRKILL_FILE,0) != 0)
+//             {
+//                 fprintf(fp, "\n==================================================================\n");
+//                 fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
+//                 fprintf(fp, "        The trace kill file does not exist!\n");
+//                 fprintf(fp, "        File name: <%s>", TRKILL_FILE);
+//                 fprintf(fp, "\n==================================================================\n");
+//                 fserr = 1;
+//             }
+//             else if (access(TRKILL_FILE,4) != 0)
+//             {
+//                 fprintf(fp, "\n==================================================================\n");
+//                 fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
+//                 fprintf(fp, "        The trace kill file does not have read access!\n");
+//                 fprintf(fp, "        File name: <%s>", TRKILL_FILE);
+//                 fprintf(fp, "\n==================================================================\n");
+//                 fserr = 1;
+//             }
+//         }
+//         
+//         
+//         /* trace kill STF file */
+//         if (TRKILL_STF == 1)
+//         {
+//             if (access(TRKILL_FILE_STF,0) != 0)
+//             {
+//                 fprintf(fp, "\n==================================================================\n");
+//                 fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
+//                 fprintf(fp, "        The trace kill file does not exist!\n");
+//                 fprintf(fp, "        File name: <%s>", TRKILL_FILE_STF);
+//                 fprintf(fp, "\n==================================================================\n");
+//                 fserr = 1;
+//             }
+//             else if (access(TRKILL_FILE_STF,4) != 0)
+//             {
+//                 fprintf(fp, "\n==================================================================\n");
+//                 fprintf(fp, "  ERROR parsing input file <%s>:\n", fileinp);
+//                 fprintf(fp, "        The trace kill file does not have read access!\n");
+//                 fprintf(fp, "        File name: <%s>", TRKILL_FILE_STF);
+//                 fprintf(fp, "\n==================================================================\n");
+//                 fserr = 1;
+//             }
+//         }
         
         
         /* frequency file */

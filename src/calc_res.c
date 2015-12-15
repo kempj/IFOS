@@ -29,7 +29,7 @@ extern float DT, WATERLEVEL_LNORM8;
 extern int REC1, REC2, MYID, ACOUSTIC;
 extern int TRKILL, NORMALIZE, FC, TIMEWIN;
 extern char TRKILL_FILE[STRING_SIZE];
-extern int VELOCITY;
+extern int VELOCITY, USE_WORKFLOW, WORKFLOW_STAGE;
 float RMS, signL1, intseis;
 int Lcount,i,j,invtime,k,h, umax=0;
 float l2;
@@ -67,11 +67,25 @@ if(TRKILL==1){
 	
 	kill_tmp = imatrix(1,ntr_glob,1,nsrc_glob);
 	kill_vector = ivector(1,ntr);
-
-	ftracekill=fopen(TRKILL_FILE,"r");
-
-	if (ftracekill==NULL) err(" Trace kill file could not be opened!");
-
+    
+    if(USE_WORKFLOW){
+        sprintf(trace_kill_file,"%s_%i.dat",TRKILL_FILE,WORKFLOW_STAGE);
+        ftracekill=fopen(trace_kill_file,"r");
+        if (ftracekill==NULL){
+            sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
+            ftracekill=fopen(trace_kill_file,"r");
+            if (ftracekill==NULL){
+                err(" Trace kill file could not be opened!");
+            }
+        }
+    }else{
+        sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
+        ftracekill=fopen(trace_kill_file,"r");
+        if (ftracekill==NULL){
+            err(" Trace kill file could not be opened!");
+        }
+    }
+    
 	for(i=1;i<=ntr_glob;i++){
 		for(j=1;j<=nsrc_glob;j++){
 			fscanf(ftracekill,"%d",&kill_tmp[i][j]);

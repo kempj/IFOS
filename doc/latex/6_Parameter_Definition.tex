@@ -466,9 +466,10 @@ The parameters INV\_RHO\_ITER, INV\_VP\_ITER and INV\_VS\_ITER define from which
 			"nf_jac" : "1",
 \end{verbatim}}}
 
-The inverted models are saved in INV\_MODELFILE. The first model that is saved is at iteration step nfstart and then every $\mathrm{nf}^{\mathrm{th}}$ iteration step. Analog the gradients are saved every $\mathrm{nf\_jac}^{\mathrm{th}}$ iteration step from iteration step nftart\_jac on in JACOBIAN. 
+The inverted models are saved in INV\_MODELFILE. The first model that is saved is at iteration step nfstart and then every $\mathrm{nf}^{\mathrm{th}}$ iteration step. Analog the gradients are saved every $\mathrm{nf\_jac}^{\mathrm{th}}$ iteration step from iteration step nfstart\_jac on in JACOBIAN. 
 
 \section{Workflow}
+\label{sec:workflow}
 {\color{blue}{\begin{verbatim}
 "Workflow" : "comment",
 			"USE_WORKFLOW" : "1",
@@ -631,7 +632,7 @@ To remove the contribution of the unknown source time function (STF) from the wa
 			"N_STF_START" : "1",
 			"TAPER_STF" : "0",
 			"TRKILL_STF" : "0", 
-			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
+			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
@@ -659,7 +660,7 @@ Start with l=0.01 as a reasonable initial value for the waterlevel. The best fit
 The theory behind the Fourier domain least squares procedure is outlined by Lisa Groos (2013, Appendix F, page 146). She also describes a way to find an approrpiate waterlevel by application of the L-curve criterion (Groos, 2013, Appendix G, page 148).
 \newline
 
-N\_STF is the increment between the iteration steps. N\_STF\_START defines at which iterationstep the inversion for STF should start. This parameter has to be set at least to 1 NOT(!) 0. When using TAPER\_STF = 1, the source signal is tapered. See \texttt{src/taper.c} for the taper definition. With TRKILL\_STF = 1 it is possible to apply a trace killing for the estimation of the source wavelet correction filter.
+N\_STF is the increment between the iteration steps. N\_STF\_START defines at which iterationstep the inversion for STF should start. This parameter has to be set at least to 1 NOT(!) 0. When using TAPER\_STF = 1, the source signal is tapered. See \texttt{src/taper.c} for the taper definition. With TRKILL\_STF = 1 it is possible to apply a trace killing for the estimation of the source wavelet correction filter (see section \ref{sec:trace_killing}).
 \newline
 
 Please note: If you additionally switch on frequency filtering during the inversion (TIME\_FILT=1 or TIME\_FILT=2), the parameters N\_STF and N\_STF\_START will be ignored. But the optimal source time function will be inverted for the first iteration and after every change of the frequency range.
@@ -667,7 +668,8 @@ Please note: If you additionally switch on frequency filtering during the invers
 For more information see chapter \ref{cha:STF-Inversion}.
 
 
-\section{Frequency filtering}
+\section{Data manipulation}
+\subsection{Frequency filtering}
 \label{sec:filtering}
 {\color{blue}{\begin{verbatim}
 "Frequency filtering during inversion" : "comment",
@@ -680,39 +682,32 @@ For more information see chapter \ref{cha:STF-Inversion}.
 			"ZERO_PHASE" : "0",
 			"FREQ_FILE"  : "frequencies.dat",
 			"WRITE_FILTERED_DATA" : "0",
+			
+			"Minimum number of iteration per frequency" : "comment",
+			"MIN_ITER" : "10",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
 Default values are:
 	TIME_FILT=0
 	ZERO_PHASE=0
+	MIN_ITER=0
 \end{verbatim}}}
 
 TIME\_FILT = 1 can be set to use frequency filtering. The parameter FC\_START defines the corner frequency of the Butterworth low pass filter at the beginning of the inversion. The parameter FC\_END defines the maximum corner frequency used in the inversion. The parameter FC\_INCR controls in which steps the bandwidth is increased during the inversion.
 
 If TIME\_FILT = 2 individual frequencies for each step can be read from FREQ\_FILE. In this file the first entry must be the number of frequencies used for filtering. Each frequency in Hz has to be specified in a row. The example file frequencies.dat can be found in \texttt{trunk/par}.
 
-The parameter ORDER defines the order of the Butterworth low pass filter. If the variable ZERO\_PHASE is set to one a zero phase filter is applied. It is realized by filtering the the traces in both forward and reverse direction with the defined Butterworth low pass filter. Therefore, the effective order of the low pass filter is doubled. 
+The parameter ORDER defines the order of the Butterworth low pass filter. If the variable ZERO\_PHASE is set to one a zero phase filter is applied. It is realized by filtering the traces in both forward and reverse direction with the defined Butterworth low pass filter. Therefore, the effective order of the low pass filter is doubled. 
 
 With F\_HP an additional high pass filter can be applied, where F\_HP is the corner frequency in Hz.
 
 With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
 
-With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data.
-
-{\color{blue}{\begin{verbatim}
-"Minimum number of iteration per frequency" : "comment",
-"MIN_ITER" : "10",
-\end{verbatim}}}
-{\color{red}{\begin{verbatim}
-Default values are:
-MIN_ITER=0
-\end{verbatim}}}
+With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. The filtered data is located in DATA\_DIR and are labeled with "\_measured".
 
 If you are using frequeny filtering (TIME\_FILT==1) during the inversion, you can set a minimum number of iterations per frequency. Within this minimum number of iteration per frequency the abort criterion PRO will receive no consideration.
 
-
-\section{Data manipulation}
 \subsection{Time windowing}
 {\color{blue}{\begin{verbatim}
 "Time windowing" : "comment",
@@ -729,14 +724,20 @@ Default values are:
 	TIMEWIN=0
 \end{verbatim}}}
 
-To apply time windowing in a time series the paramter TIMEWIN must set to 1. A automatic picker routine is not integrated at the moment. The point in time (picked time) for each source must be specified in seperate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources in (SRCREC) must be equal to the number of files. Each file must contain the picked times for every receiver.\
-The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually. When usig TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time, time window length plus and time window length minus. In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored.
+To apply time windowing in a time series the paramter TIMEWIN must set to 1. A automatic picker routine is not integrated. The point in time (picked time) for each source must be specified in separate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources must be equal to the number of files. Each file must contain the picked times for every receiver.
+
+The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually.
+
+When usig TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time, time window length plus and time window length minus. In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored.
+
+If you use the option "Workflow" (section \ref{sec:workflow}) it is possible to define separate files for each workflow stage. They have to be named PICKS\_FILE\_<sourcenumber>\_<workflowstage>.dat. If you don't provide separate files for some or all stages the standard file (PICKS\_FILE\_<sourcenumber>.dat) is used. This means a standard file should exist in any case.
 
 \subsection{Trace killing}
+\label{sec:trace_killing}
 {\color{blue}{\begin{verbatim}
 "Trace killing" : "comment",
 			"TRKILL" : "0",
-			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
+			"TRKILL_FILE" : "./trace_kill/trace_kill",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
@@ -744,7 +745,9 @@ Default values are:
 	TRKILL=0
 \end{verbatim}}}
 
-If you don't want to use single traces or a subset of your data, the parameter TRKILL can be used. If it is set to 1, trace killing is in use. The necessary file can be selected with the parameter TRKILL\_FILE. The file should include a kill table, where the number of rows is the number of receivers and the number of columns reflects the number of sources. Now, a 1 (ONE) means, YES, please kill the trace. The trace is NOT used, it should be killed. A 0 (ZERO) means, NO, this trace should NOT be killed. 
+If you don't want to use single traces or a subset of your data, the parameter TRKILL can be used. If it is set to 1, trace killing is in use. The necessary file can be selected needs to be located at TRKILL\_FILE.dat. The file should include a kill table, where the number of rows is the number of receivers and the number of columns reflects the number of sources. Now, a 1 (ONE) means, YES, please kill the trace. The trace is NOT used, it should be killed. A 0 (ZERO) means, NO, this trace should NOT be killed. 
+
+If you use the option "Workflow" (section \ref{sec:workflow}) it is possible to define separate files for each workflow stage. They have to be named TRKILL\_FILE\_<workflowstage>.dat. If you don't provide separate files for some or all stages the standard file (TRKILL\_FILE.dat) is used. This means a standard file should exist in any case.
 
 
 \section{Gradient manipulation}
