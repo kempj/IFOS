@@ -1093,7 +1093,7 @@ int main(int argc, char **argv){
                         if(iter==1){
                             FPL2=fopen(MISFIT_LOG_FILE,"w");
                             /* Write header for misfit log file */
-                            if(GRAD_METHOD==1) {
+                            if(GRAD_METHOD==1&&VERBOSE) {
                                 if (TIME_FILT==0){
                                     fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
                                 else{
@@ -2366,8 +2366,13 @@ int main(int argc, char **argv){
                                 if(VERBOSE){
                                     /* Output jacobian VS per SHOT  PSV */
                                     if (WAVETYPE==1 || WAVETYPE==3) {
-                                        sprintf(jac,"%s_jacobian_u_shot%i",JACOBIAN,ishot);
-                                        write_matrix_disk(waveconv_u_shot, jac);
+                                        if(!ACOUSTIC){
+                                            sprintf(jac,"%s_jacobian_u_shot%i",JACOBIAN,ishot);
+                                            write_matrix_disk(waveconv_u_shot, jac);
+                                        } else {
+                                            sprintf(jac,"%s_jacobian_shot%i",JACOBIAN,ishot);
+                                            write_matrix_disk(waveconv_shot, jac);
+                                        }
                                     }
                                     
                                     /* Output jacobian VS per SHOT SH */
@@ -2376,7 +2381,7 @@ int main(int argc, char **argv){
                                         write_matrix_disk(waveconv_u_shot_z, jac);
                                     }
                                 }
-
+                                
                             }
                             
                             /*--------------------------------------------------------------------------------*/
@@ -2752,17 +2757,17 @@ int main(int argc, char **argv){
                 if (WAVETYPE==1 || WAVETYPE==3) {
                     for (j=1;j<=NY;j=j+IDY){
                         for (i=1;i<=NX;i=i+IDX){
-                            if (iter<INV_VP_ITER) waveconv[j][i] = 0.0;
-                            if (iter<INV_VS_ITER) waveconv_u[j][i] = 0.0;
-                            if (iter<INV_RHO_ITER) waveconv_rho[j][i] = 0.0;
+                            if(iter<INV_VP_ITER) waveconv[j][i] = 0.0;
+                            if(iter<INV_VS_ITER && !ACOUSTIC) waveconv_u[j][i] = 0.0;
+                            if(iter<INV_RHO_ITER) waveconv_rho[j][i] = 0.0;
                         }
                     }
                 }
                 if (WAVETYPE==2 || WAVETYPE==3) {
                     for (j=1;j<=NY;j=j+IDY){
                         for (i=1;i<=NX;i=i+IDX){
-                            if (iter<INV_VS_ITER) waveconv_u_z[j][i] = 0.0;
-                            if (iter<INV_RHO_ITER) waveconv_rho_z[j][i] = 0.0;
+                            if(iter<INV_VS_ITER) waveconv_u_z[j][i] = 0.0;
+                            if(iter<INV_RHO_ITER) waveconv_rho_z[j][i] = 0.0;
                         }
                     }
                 }
