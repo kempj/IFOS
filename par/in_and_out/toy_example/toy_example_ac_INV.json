@@ -157,7 +157,7 @@
 
 "Trace killing" : "comment",
 			"TRKILL" : "0",
-			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
+			"TRKILL_FILE" : "./trace_kill/trace_kill",
 
 "Time windowing" : "comment",
 			"TIMEWIN" : "0",

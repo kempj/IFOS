@@ -192,7 +192,7 @@
 
 "Trace killing" : "comment",
 			"TRKILL" : "0",
-			"TRKILL_FILE" : "./trace_kill/trace_kill.dat",
+			"TRKILL_FILE" : "./trace_kill/trace_kill",
 
 "Definition of a gradient taper" : "comment",
 			"SWS_TAPER_GRAD_VERT" : "0",
