@@ -527,7 +527,7 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
 
 void eprecond(float ** W, float ** vx, float ** vy);
 void eprecond_SH(float ** W, float ** vz);
-void eprecond1(float ** We, float ** Ws, float ** Wr);
+void eprecond1(float ** We, float ** Ws, float ** Wr, float epsilon);
 
 /* Matrix Operations */
 float average_matrix(float ** matrix);

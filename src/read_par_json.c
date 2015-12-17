@@ -107,7 +107,7 @@ void read_par_json(FILE *fp, char *fileinp){
     
     extern int EPRECOND;
     extern int EPRECOND_ITER;
-    extern float EPSILON_WE;
+    extern float EPSILON_WE,EPSILON_WE_SH;
     extern int EPRECOND_PER_SHOT;
     
     extern int LBFGS_SURFACE;
@@ -509,6 +509,12 @@ void read_par_json(FILE *fp, char *fileinp){
                     }
                     if (get_float_from_objectlist("EPSILON_WE",number_readobjects,&EPSILON_WE,varname_list, value_list))
                         err("Variable EPSILON_WE could not be retrieved from the json input file!");
+                    
+                    if (get_float_from_objectlist("EPSILON_WE_SH",number_readobjects,&EPSILON_WE_SH,varname_list, value_list)) {
+                        EPSILON_WE_SH=EPSILON_WE;
+                        fprintf(fp,"Variable EPSILON_WE_SH is set to EPSILON_WE=%f.\n",EPSILON_WE_SH);
+                    }
+                    
                 }
                 
                 if (get_int_from_objectlist("TESTSHOT_START",number_readobjects,&TESTSHOT_START,varname_list, value_list))

@@ -100,7 +100,7 @@ void exchange_par(void){
     
     extern int EPRECOND;
     extern int EPRECOND_ITER;
-    extern float EPSILON_WE;
+    extern float EPSILON_WE,EPSILON_WE_SH;
     extern int EPRECOND_PER_SHOT;
     
     extern int LBFGS_SURFACE;
@@ -114,16 +114,18 @@ void exchange_par(void){
     extern float WOLFE_C1_SL;
     extern float WOLFE_C2_SL;
     
+    
     /* definition of local variables */
-    
     /* NPAR is set in fd.h and must be set to the max. number of elements in idum/fdum +1 (because vector index starts at 0) */
-    
     int idum[NPAR];
     float fdum[NPAR];
     
     
     if (MYID == 0){
         
+        /***********/
+        /*  Float  */
+        /***********/
         fdum[1]  = DH;
         fdum[2]  = TIME;
         fdum[3]  = DT;
@@ -202,10 +204,14 @@ void exchange_par(void){
         fdum[61] = JOINT_INVERSION_PSV_SH_ALPHA_RHO;
         
         fdum[62]=EPSILON_WE;
+        fdum[63]=EPSILON_WE_SH;
         
-        fdum[63]=WOLFE_C1_SL;
-        fdum[64]=WOLFE_C2_SL;
+        fdum[64]=WOLFE_C1_SL;
+        fdum[65]=WOLFE_C2_SL;
         
+        /***********/
+        /* Integer */
+        /***********/
         idum[1]  = NPROCX;
         idum[2]  = NPROCY;
         
@@ -396,6 +402,9 @@ void exchange_par(void){
     
     MPI_Barrier(MPI_COMM_WORLD);
     
+    /***********/
+    /*  Float  */
+    /***********/
     DH=fdum[1];
     TIME=fdum[2];
     DT=fdum[3];
@@ -473,9 +482,14 @@ void exchange_par(void){
     JOINT_INVERSION_PSV_SH_ALPHA_RHO = fdum[61];
     
     EPSILON_WE=fdum[62];
+    EPSILON_WE_SH=fdum[63];
     
-    WOLFE_C1_SL=fdum[63];
-    WOLFE_C2_SL=fdum[64];
+    WOLFE_C1_SL=fdum[64];
+    WOLFE_C2_SL=fdum[65];
+    
+    /***********/
+    /* Integer */
+    /***********/
     
     NPROCX = idum[1];
     NPROCY = idum[2];
