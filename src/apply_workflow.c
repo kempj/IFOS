@@ -85,6 +85,7 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
         }
     }
     
+    /* Abort criterium */
     PRO=workflow[WORKFLOW_STAGE][5];
     
     /* Frequency filtering  */
@@ -100,6 +101,7 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
     } else {
         if(MYID==0&&(workflow[WORKFLOW_STAGE][6]>0))printf("\n TIME_FILT cannot be activated due to it is not activated in the JSON File \n");
     }
+    
     /* Change of wavetype  */
     if(wavetype_start!=3&&(WAVETYPE!=workflow[WORKFLOW_STAGE][8])){
         if(MYID==0)printf("\n Sorry, change of WAVETYPE with workflow only possible if WAVETYPE==3 in *.json");
@@ -118,6 +120,9 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
     JOINT_INVERSION_PSV_SH_ALPHA_RHO=workflow[WORKFLOW_STAGE][10];
     
     /* Approx. Hessian  */
+    if(EPRECOND==0 && workflow[WORKFLOW_STAGE][11]!=0){
+        if(MYID==0) printf(" WARNING: EPRECOND have to be set >0 in JSON (if so, ignore this message)");
+    }
     EPRECOND=workflow[WORKFLOW_STAGE][11];
     EPSILON_WE=workflow[WORKFLOW_STAGE][12];
     

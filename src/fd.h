@@ -170,9 +170,6 @@ void mergemod(char modfile[STRING_SIZE], int format);
 
 void note(FILE *fp);
 
-void  outseis(FILE *fp, FILE *fpdata, int comp, float **section,
-              int **recpos, int **recpos_loc, int ntr, float ** srcpos_loc,
-              int nsrc, int ns, int seis_form, int ishot, int sws);
 
 void  outseis_glob(FILE *fp, FILE *fpdata, int comp, float **section,
                    int **recpos, int **recpos_loc, int ntr, float ** srcpos_loc,
@@ -234,10 +231,6 @@ int **receiver(FILE *fp, int *ntr);
 
 void save_checkpoint(int nx1, int nx2, int ny1, int ny2,
                      float **  vx, float ** vy, float ** sxx, float ** syy, float ** sxy);
-
-void saveseis(FILE *fp, float **sectionvx, float **sectionvy,float **sectionp,
-              float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc,
-              int ntr, float ** srcpos_loc, int nsrc,int ns, int iter);
 
 void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectionvz,float **sectionp,float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc,int ntr, float ** srcpos, int ishot, int ns, int iter, int type_switch);
 

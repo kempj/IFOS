@@ -38,8 +38,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int SNAPSHOT_START,SNAPSHOT_END,SNAPSHOT_INCR;
     extern char  MFILE[STRING_SIZE], SIGNAL_FILE[STRING_SIZE], SIGNAL_FILE_SH[STRING_SIZE], LOG_FILE[STRING_SIZE];
     extern char SNAP_FILE[STRING_SIZE], SOURCE_FILE[STRING_SIZE], REC_FILE[STRING_SIZE];
-    extern char SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_VZ[STRING_SIZE];
-    extern char SEIS_FILE_CURL[STRING_SIZE], SEIS_FILE_DIV[STRING_SIZE], SEIS_FILE_P[STRING_SIZE];
+    extern char SEIS_FILE[STRING_SIZE];
     extern char JACOBIAN[STRING_SIZE],DATA_DIR[STRING_SIZE],FREQ_FILE[STRING_SIZE];
     extern int  NPROCX, NPROCY, MYID, IDX, IDY;
     extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, QUELLTYPB;
@@ -328,25 +327,8 @@ void read_par_json(FILE *fp, char *fileinp){
             err("Variable SEISMO could not be retrieved from the json input file!");
         else {
             if (SEISMO>0){
-                if ((SEISMO==1) || (SEISMO==4) || (SEISMO==5)) {
-                    if (get_string_from_objectlist("SEIS_FILE_VX",number_readobjects,SEIS_FILE_VX,varname_list, value_list))
-                        err("Variable SEIS_FILE_VX could not be retrieved from the json input file!");
-                    if (get_string_from_objectlist("SEIS_FILE_VY",number_readobjects,SEIS_FILE_VY,varname_list, value_list))
-                        err("Variable SEIS_FILE_VY could not be retrieved from the json input file!");
-                    if (get_string_from_objectlist("SEIS_FILE_VZ",number_readobjects,SEIS_FILE_VZ,varname_list, value_list)) {
-                        if(WAVETYPE==2||WAVETYPE==3) err("Variable SEIS_FILE_VZ could not be retrieved from the json input file!");
-                    }
-                }
-                if ((SEISMO==3) || (SEISMO==4)) {
-                    if (get_string_from_objectlist("SEIS_FILE_DIV",number_readobjects,SEIS_FILE_DIV,varname_list, value_list))
-                        err("Variable SEIS_FILE_DIV could not be retrieved from the json input file!");
-                    if (get_string_from_objectlist("SEIS_FILE_CURL",number_readobjects,SEIS_FILE_CURL,varname_list, value_list))
-                        err("Variable SEIS_FILE_CURL could not be retrieved from the json input file!");
-                }
-                if ((SEISMO==2) || (SEISMO==4) || (SEISMO==5)) {
-                    if (get_string_from_objectlist("SEIS_FILE_P",number_readobjects,SEIS_FILE_P,varname_list, value_list))
-                        err("Variable SEIS_FILE_P could not be retrieved from the json input file!");
-                }
+                if (get_string_from_objectlist("SEIS_FILE",number_readobjects,SEIS_FILE,varname_list, value_list))
+                    err("Variable SEIS_FILE could not be retrieved from the json input file!");
                 
                 if (get_int_from_objectlist("READREC",number_readobjects,&READREC,varname_list, value_list))
                     err("Variable READREC could not be retrieved from the json input file!");

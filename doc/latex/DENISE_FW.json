@@ -59,8 +59,7 @@
 
 "Seismograms" : "comment",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE_VX" : "su/DENISE_x.su",
-			"SEIS_FILE_VY" : "su/DENISE_y.su",
+			"SEIS_FILE" : "su/DENISE",
 
 
 "General inversion parameters" : "comment",

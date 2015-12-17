@@ -27,8 +27,7 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 
 	/* declaration of extern variables */
 	extern int NDT, MYID;
-	extern char DATA_DIR[STRING_SIZE], SEIS_FILE_P[STRING_SIZE], SEIS_FILE_VX[STRING_SIZE];
-	extern char SEIS_FILE_VY[STRING_SIZE];
+    extern char DATA_DIR[STRING_SIZE];
 	extern float  TIME, DH, DT, REFREC[4];
         char data[STRING_SIZE];
 	const float xshift=800.0, yshift=800.0;
@@ -42,22 +41,8 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 		sprintf(data,"%s_y.su.shot%d",DATA_DIR,comp);
 	}
 	
-	if(sws==3){ /* open forward modelled data vx*/
-		sprintf(data,"%s.shot%d.%d",SEIS_FILE_VX,comp,MYID);
-	}
-	
-	if(sws==4){ /* open forward modelled data vy*/
-		sprintf(data,"%s.shot%d.%d",SEIS_FILE_VY,comp,MYID);
-	}
-	
-	if(sws==5){ /* open old data residuals vx*/
-		sprintf(data,"%s.shot%d_it-1.%d",SEIS_FILE_VX,comp,MYID);
-	}
-	
-	if(sws==6){ /* open old data residuals vy*/
-		sprintf(data,"%s.shot%d_it-1.%d",SEIS_FILE_VY,comp,MYID);
-	}
-	
+    /* sws 3 -- 6 not used */
+    
 	if(sws==7){  /* open convolved seismic data vx */
 		sprintf(data,"%s_x.su.conv.shot%d",DATA_DIR,comp);
 	}
@@ -74,11 +59,12 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
         sprintf(data,"%s_z.su.shot%d",DATA_DIR,comp);
     }
 	
-    
-	/*printf("%s\n",data);*/
-	
+
 	fpdata = fopen(data,"r");
-	if (fpdata==NULL) err(" Seismograms for inversion were not found ");
+    if (fpdata==NULL) {
+        if(MYID==0) printf(" Was not able to read %s",data);
+        err(" Seismograms for inversion were not found ");
+    }
 
 	/* declaration of local variables */
 	int i,j;

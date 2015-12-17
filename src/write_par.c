@@ -39,9 +39,8 @@ void write_par(FILE *fp){
 	extern int  READMOD, READREC, BOUNDARY, REC_ARRAY, DRX, INVTYPE;
 	extern float TSNAP1, TSNAP2, TSNAPINC, REFREC[4];
 	extern char SNAP_FILE[STRING_SIZE], SOURCE_FILE[STRING_SIZE], REC_FILE[STRING_SIZE];
-	extern char SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE];
-	extern char SEIS_FILE_CURL[STRING_SIZE], SEIS_FILE_DIV[STRING_SIZE];
-	extern char SIGNAL_FILE[STRING_SIZE], SEIS_FILE_P[STRING_SIZE];
+    extern char SEIS_FILE[STRING_SIZE];
+    extern char SIGNAL_FILE[STRING_SIZE];
 	extern char  MFILE[STRING_SIZE], JACOBIAN[STRING_SIZE], DATA_DIR[STRING_SIZE],FREQ_FILE[STRING_SIZE];
 	extern int NP, NPROCX, NPROCY, MYID;
 	
@@ -314,17 +313,17 @@ void write_par(FILE *fp){
 			fprintf(fp," x- and y-component");
 			fprintf(fp," of particle velocity.\n");
 			fprintf(fp," output-files: \n ");
-			fprintf(fp,"\t%s\n\t%s\n",SEIS_FILE_VX,SEIS_FILE_VY);
+			fprintf(fp,"\t%s\n\t%s\n",SEIS_FILE,SEIS_FILE);
 		}
 		if ((SEISMO==2) || (SEISMO==4) || (SEISMO==5)){
 			fprintf(fp," seismograms of pressure field (hydrophones).\n");
 			fprintf(fp," output-file: \n ");
-			fprintf(fp,"\t%s\n",SEIS_FILE_P);
+			fprintf(fp,"\t%s\n",SEIS_FILE);
 		}
 		if ((SEISMO==3) || (SEISMO==4)){
 			fprintf(fp," seismograms of curl and div.\n");
 			fprintf(fp," output-files: \n ");
-			fprintf(fp,"\t%s\n\t%s\n",SEIS_FILE_CURL,SEIS_FILE_DIV);
+			fprintf(fp,"\t%s\n\t%s\n",SEIS_FILE,SEIS_FILE);
 			
 		}		
 	

@@ -31,7 +31,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	/* declaration of global variables */
 	extern float DT, DH;
 	extern int SEIS_FORMAT, MYID, NT, QUELLART, TIME_FILT, TIMEWIN, TAPER_STF;
-	extern char  SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_P[STRING_SIZE], PARA[STRING_SIZE], DATA_DIR[STRING_SIZE];
+	extern char  PARA[STRING_SIZE], DATA_DIR[STRING_SIZE];
 	extern int TRKILL_STF, NORMALIZE, USE_WORKFLOW, WORKFLOW_STAGE;
 	extern char TRKILL_FILE_STF[STRING_SIZE];
 	extern char SIGNAL_FILE[STRING_SIZE];

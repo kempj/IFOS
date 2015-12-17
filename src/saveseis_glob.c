@@ -31,44 +31,60 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
      *  3== filtered measured data
      */
     
-    extern int SEISMO, SEIS_FORMAT, RUN_MULTIPLE_SHOTS, WAVETYPE, VERBOSE;
-    extern char SEIS_FILE_VX[STRING_SIZE], SEIS_FILE_VY[STRING_SIZE], SEIS_FILE_VZ[STRING_SIZE];
-    extern char SEIS_FILE_CURL[STRING_SIZE], SEIS_FILE_DIV[STRING_SIZE], SEIS_FILE_P[STRING_SIZE];
+    extern int SEISMO, SEIS_FORMAT, RUN_MULTIPLE_SHOTS, WAVETYPE, VERBOSE,INVMAT;
+    extern char SEIS_FILE[STRING_SIZE];
     
     char vxf[STRING_SIZE], vyf[STRING_SIZE],vzf[STRING_SIZE], curlf[STRING_SIZE], divf[STRING_SIZE], pf[STRING_SIZE];
     int nsrc=1;
     
-    if(type_switch==1){
-        sprintf(vxf,"%s.shot%d.it%d",SEIS_FILE_VX,ishot,iter);
-        sprintf(vyf,"%s.shot%d.it%d",SEIS_FILE_VY,ishot,iter);
-        if(WAVETYPE==2 || WAVETYPE==3) {
-            sprintf(vzf,"%s.shot%d.it%d",SEIS_FILE_VZ,ishot,iter);
-        }
-        sprintf(pf,"%s.shot%d.it%d",SEIS_FILE_P,ishot,iter);
-        sprintf(divf,"%s.shot%d.it%d",SEIS_FILE_DIV,ishot,iter);
-        sprintf(curlf,"%s.shot%d.it%d",SEIS_FILE_CURL,ishot,iter);
+    switch (type_switch) {
+        case 1:
+            sprintf(vxf,"%s_vx.su.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(vyf,"%s_vy.su.shot%d.it%d",SEIS_FILE,ishot,iter);
+            if(WAVETYPE==2 || WAVETYPE==3) {
+                sprintf(vzf,"%s_vz.su.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+            sprintf(pf,"%s_p.su.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(divf,"%s_div.su.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(curlf,"%s_curl.su.shot%d.it%d",SEIS_FILE,ishot,iter);
+            break;
+            
+        case 2:
+            sprintf(vxf,"%s_vx.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            sprintf(vyf,"%s_vy.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            if(WAVETYPE==2 || WAVETYPE==3) {
+                sprintf(vzf,"%s_vz.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            }
+            sprintf(pf,"%s_p.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            sprintf(divf,"%s_div.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            sprintf(curlf,"%s_curl.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            break;
+            
+        case 3:
+            sprintf(vxf,"%s_vx.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(vyf,"%s_vy.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            if(WAVETYPE==2 || WAVETYPE==3) {
+                sprintf(vzf,"%s_vz.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+            sprintf(pf,"%s_p.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(divf,"%s_div.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(curlf,"%s_curl.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            break;
+            
+        default:
+            err("saveseis_glob: Unkown type_switch");
+            break;
     }
     
-    if(type_switch==2){
-        sprintf(vxf,"%s.shot%d_adjoint_src",SEIS_FILE_VX,ishot);
-        sprintf(vyf,"%s.shot%d_adjoint_src",SEIS_FILE_VY,ishot);
+    if(INVMAT==10){
+        sprintf(vxf,"%s_x.su.shot%d",SEIS_FILE,ishot);
+        sprintf(vyf,"%s_y.su.shot%d",SEIS_FILE,ishot);
         if(WAVETYPE==2 || WAVETYPE==3) {
-            sprintf(vzf,"%s.shot%d_adjoint_src",SEIS_FILE_VZ,ishot);
+            sprintf(vzf,"%s_z.su.shot%d",SEIS_FILE,ishot);
         }
-        sprintf(pf,"%s.shot%d_adjoint_src",SEIS_FILE_P,ishot);
-        sprintf(divf,"%s.shot%d_adjoint_src",SEIS_FILE_DIV,ishot);
-        sprintf(curlf,"%s.shot%d_adjoint_src",SEIS_FILE_CURL,ishot);
-    }
-    
-    if(type_switch==3){
-        sprintf(vxf,"%s_measured.shot%d.it%d",SEIS_FILE_VX,ishot,iter);
-        sprintf(vyf,"%s_measured.shot%d.it%d",SEIS_FILE_VY,ishot,iter);
-        if(WAVETYPE==2 || WAVETYPE==3) {
-            sprintf(vzf,"%s_measured.shot%d.it%d",SEIS_FILE_VZ,ishot,iter);
-        }
-        sprintf(pf,"%s_measured.shot%d.it%d",SEIS_FILE_P,ishot,iter);
-        sprintf(divf,"%s_measured.shot%d.it%d",SEIS_FILE_DIV,ishot,iter);
-        sprintf(curlf,"%s_measured.shot%d.it%d",SEIS_FILE_CURL,ishot,iter);
+        sprintf(pf,"%s_p.shot%d",SEIS_FILE,ishot);
+        sprintf(divf,"%s_div.shot%d",SEIS_FILE,ishot);
+        sprintf(curlf,"%s_curl.shot%d",SEIS_FILE,ishot);
     }
     
     switch (SEISMO){

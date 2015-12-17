@@ -14,12 +14,6 @@ make denise MODEL=../genmod/toy_example_true.c MODEL_EL=../genmod/toy_example_el
 #lamboot
 mpirun -np 4 ../bin/denise in_and_out/toy_example/toy_example_FW_SH.json | tee in_and_out/toy_example/toy_example_FW_SH.out
 
-# the forward modeled data have to be renamed for the inversion
-for (( i=1; i <= 5; i++ )) ; do
-     mv su/measured_data/toy_example_vz.su.shot${i}.it1 su/measured_data/toy_example_z.su.shot${i}
-
-done
-
 
 ###############################################################
 #                    running the inversion                    #

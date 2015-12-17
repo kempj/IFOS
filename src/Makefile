@@ -110,7 +110,6 @@ DENISE= \
 	max_grad.c \
 	note.c \
 	norm.c \
-	outseis.c \
 	outseis_vector.c \
 	outseis_glob.c \
 	catseis.c \
@@ -127,7 +126,6 @@ DENISE= \
 	rd_sour.c \
     read_workflow.c \
     apply_workflow.c \
-	saveseis.c \
 	saveseis_glob.c \
 	sources.c \
 	solvelin.c \

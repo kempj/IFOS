@@ -70,10 +70,7 @@
 "Seismograms" : "comment",
 			"NDT" : "1",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE_P" : "su/measured_data/toy_example_p.su",
-			"SEIS_FILE_VX" : "su/measured_data/toy_example_vx.su",
-			"SEIS_FILE_VY" : "su/measured_data/toy_example_vy.su",
-			"SEIS_FILE_VZ" : "su/measured_data/toy_example_vz.su",
+			"SEIS_FILE" : "su/measured_data/toy_example",
 
 "Q-approximation" : "comment",
 			"L" : "0",

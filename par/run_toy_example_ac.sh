@@ -17,15 +17,6 @@ make denise MODEL_AC=../genmod/toy_example_ac_true.c
 
 # starting DENISE for forward modeling
 mpirun -np 4 nice -19 ../bin/denise in_and_out/toy_example/toy_example_ac_FW.json | tee in_and_out/toy_example/toy_example_ac_FW.out
-# mpirun -np 4 xterm -e gdb --args ../bin/denise in_and_out/toy_example/toy_example_ac_FW.json | tee in_and_out/toy_example/toy_example_ac_FW.out
-# the forward modeled data have to be renamed for the inversion
-for (( i=1; i <= 5; i++ )) ; do
-
-     mv su/measured_data/toy_example_ac_p.su.shot${i}.it1 su/measured_data/toy_example_ac_p.su.shot${i}
-     mv su/measured_data/toy_example_ac_vx.su.shot${i}.it1 su/measured_data/toy_example_ac_x.su.shot${i}
-     mv su/measured_data/toy_example_ac_vy.su.shot${i}.it1 su/measured_data/toy_example_ac_y.su.shot${i}
-
-done
 
 ###############################################################
 #                    running the inversion                    #
