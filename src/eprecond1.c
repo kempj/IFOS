@@ -1,14 +1,13 @@
 /* This function is copied from DENISE Black Edition from D. Koehn  */
 
 #include "fd.h"
-void eprecond1(float ** We, float ** Ws, float ** Wr){
+void eprecond1(float ** We, float ** Ws, float ** Wr, float epsilon){
     
     extern int NX, NY, IDX, IDY, DTINV, EPRECOND, VERBOSE;
     extern int POS[3], NXG;
     extern float DH;
     int i, j, k, l, ii, jj;
     float maxWetmp, maxWe, x, y, xmin, xmax;
-    extern float EPSILON_WE;
     xmin = DH;
     xmax = NXG*DH;
     
@@ -56,11 +55,12 @@ void eprecond1(float ** We, float ** Ws, float ** Wr){
     
     /* estimate maximum of We */
     MPI_Allreduce(&maxWetmp,&maxWe,1,MPI_FLOAT,MPI_MAX,MPI_COMM_WORLD);
+    
     /* regularize energy weighting to avoid divison by zero */
     for (j=1;j<=NY;j=j+IDY){
         for (i=1;i<=NX;i=i+IDX){
             
-            We[j][i] = We[j][i] + (EPSILON_WE*maxWe);
+            We[j][i] = We[j][i] + (epsilon*maxWe);
             
         }
     }

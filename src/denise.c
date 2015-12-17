@@ -2337,7 +2337,6 @@ int main(int argc, char **argv){
 
                                         hin++;
                                     }
-                                    /*fclose(FP2);*/
                                     
                                     if((EPRECOND==1)&&(EPRECOND_ITER==iter||(EPRECOND_ITER==0))){
                                         if (WAVETYPE==1 || WAVETYPE==3) eprecond(Wr,pvx,pvy);
@@ -2551,7 +2550,6 @@ int main(int argc, char **argv){
                                         
                                         if(INVMAT1==1){
                                             /* calculate density gradient */
-                                            
                                             waveconv_rho_shot_z[j][i] = ( (pu[j][i] * pu[j][i] * waveconv_mu_z[j][i]) + waveconv_rho_s_z[j][i]);
                                             
                                         }
@@ -2570,15 +2568,18 @@ int main(int argc, char **argv){
                             /* calculate and apply energy preconditioning   */
                             /* -------------------------------------------- */
                             if((EPRECOND==1)||(EPRECOND==3)){
+                                
                                 /* calculate energy weights */
                                 if(EPRECOND_ITER==iter||(EPRECOND_ITER==0)) {
                                     fprintf(FP,"\n Calculating approx. Hessian for shot %i. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
+                                    
                                     if(WAVETYPE==1 || WAVETYPE==3) {
-                                        eprecond1(We,Ws,Wr);
+                                        eprecond1(We,Ws,Wr,EPSILON_WE);
                                         if(EPRECOND_PER_SHOT) We_max=global_maximum(We);
                                     }
+                                    
                                     if(WAVETYPE==2 || WAVETYPE==3) {
-                                        eprecond1(We_SH,Ws_SH,Wr_SH);
+                                        eprecond1(We_SH,Ws_SH,Wr_SH,EPSILON_WE_SH);
                                         if(EPRECOND_PER_SHOT) We_max_SH=global_maximum(We_SH);
                                     }
                                     

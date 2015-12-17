@@ -25,9 +25,6 @@
  *  ----------------------------------------------------------------------*/
 #include "fd.h"
 
-/* Declare local functions */
-
-
 float ** joint_inversion_grad ( float ** gradiant_1,float ** gradiant_2, float alpha, int joint_type) {
     /*
      * Input parameters:
@@ -57,11 +54,31 @@ float ** joint_inversion_grad ( float ** gradiant_1,float ** gradiant_2, float a
             for (j=1;j<=NY;j++){
                 for (i=1;i<=NX;i++){
                     gradiant_1[j][i]=((1-alpha)*gradiant_1[j][i]/max1+alpha*gradiant_2[j][i]/max2);
+                    
+                    if (isnan(gradiant_1[j][i])) {
+                        gradiant_1[j][i]=0.0;
+                    }
                 }
             }
             joint_gradiant=gradiant_1;
             break;
+            
+        case 2:
+             /* joint_type=2: Arithmetic mean without normalization */
+            for (j=1;j<=NY;j++){
+                for (i=1;i<=NX;i++){
+                    gradiant_1[j][i]=((1-alpha)*gradiant_1[j][i]+alpha*gradiant_2[j][i]);
+                    
+                    if (isnan(gradiant_1[j][i])) {
+                        gradiant_1[j][i]=0.0;
+                    }
+                }
+            }
+            joint_gradiant=gradiant_1;
+            break;
+            
     }
+
     return joint_gradiant;
 };
 
