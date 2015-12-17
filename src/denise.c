@@ -978,7 +978,11 @@ int main(int argc, char **argv){
         if (MYID==0){
             time2=MPI_Wtime();
             fprintf(FP,"\n\n\n ------------------------------------------------------------------\n");
-            fprintf(FP,"\n\n\n                   TDFWI ITERATION %d \t of %d \n",iter,ITERMAX);
+            if(INVMAT==0) {
+                fprintf(FP,"\n\n\n                   TDFWI ITERATION %d \t of %d \n",iter,ITERMAX);
+            } else {
+                fprintf(FP,"\n\n\n                        FD-SIMULATION \n");
+            }
             fprintf(FP,"\n\n\n ------------------------------------------------------------------\n");
         }
         
