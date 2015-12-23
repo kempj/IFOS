@@ -59,6 +59,8 @@ int main(int argc, char **argv){
     int *ptr_killed_traces=&killed_traces, *ptr_killed_traces_testshots=&killed_traces_testshots;
     
     float energy, energy_sum, energy_all_shots, energy_sum_all_shots;
+    float energy_SH, energy_sum_SH, energy_all_shots_SH, energy_sum_all_shots_SH;
+    float L2_SH, L2sum_SH, L2_all_shots_SH, L2sum_all_shots_SH;
     
     // Pointer for dynamic wavefields:
     float  **  psxx, **  psxy, **  psyy, **  psxz, **  psyz, **psp, ** ux, ** uy, ** uz, ** uxy, ** uyx, ** Vp0, ** uttx, ** utty, ** Vs0, ** Rho0;
@@ -1118,6 +1120,12 @@ int main(int argc, char **argv){
                 killed_traces=0;
                 killed_traces_testshots=0;
                 
+                if(WAVETYPE==2||WAVETYPE==3){
+                    L2_SH=0.0;
+                    energy_SH=0.0;
+                    L2_all_shots_SH=0.0;
+                    energy_all_shots_SH=0.0;
+                }
                 
                 EPSILON=0.0;  /* test step length */
                 exchange_par();
@@ -2067,10 +2075,10 @@ int main(int argc, char **argv){
                                         }
                                         h++;
                                     }
-                                    L2=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
-                                    if(swstestshot==1){energy=calc_energy(sectionvzdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);}
-                                    L2_all_shots=calc_misfit(sectionvzdata,sectionvz,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
-                                    energy_all_shots=calc_energy(sectionvzdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
+                                    L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2_SH,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
+                                    if(swstestshot==1){energy_SH=calc_energy(sectionvzdata,ntr,ns,energy_SH, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);}
+                                    L2_all_shots_SH=calc_misfit(sectionvzdata,sectionvz,ntr,ns,LNORM,L2_all_shots_SH,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
+                                    energy_all_shots_SH=calc_energy(sectionvzdata,ntr,ns,energy_all_shots_SH, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
                                 }
                                 
                                 // Tracekill
@@ -2777,16 +2785,33 @@ int main(int argc, char **argv){
                     }
                 }
                 
-
-                /* calculate L2 norm of all CPUs*/
-                L2sum = 0.0;
-                MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                energy_sum = 0.0;
-                MPI_Allreduce(&energy,&energy_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                L2sum_all_shots = 0.0;
-                MPI_Allreduce(&L2_all_shots,&L2sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                energy_sum_all_shots = 0.0;
-                MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                /* ------------------------------*/
+                /* calculate L2 norm of all CPUs */
+                /* ------------------------------*/
+                if(WAVETYPE==1||WAVETYPE==3){
+                    L2sum = 0.0;
+                    MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    energy_sum = 0.0;
+                    MPI_Allreduce(&energy,&energy_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    L2sum_all_shots = 0.0;
+                    MPI_Allreduce(&L2_all_shots,&L2sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    energy_sum_all_shots = 0.0;
+                    MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    
+                    if(MYID==0) printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
+                }
+                if(WAVETYPE==2||WAVETYPE==3){
+                    L2sum_SH = 0.0;
+                    MPI_Allreduce(&L2_SH,&L2sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    energy_sum_SH = 0.0;
+                    MPI_Allreduce(&energy_SH,&energy_sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    L2sum_all_shots_SH = 0.0;
+                    MPI_Allreduce(&L2_all_shots_SH,&L2sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    energy_sum_all_shots_SH = 0.0;
+                    MPI_Allreduce(&energy_all_shots_SH,&energy_sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    
+                    if(MYID==0) printf("\n\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                }
                 sum_killed_traces=0;
                 MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
                 sum_killed_traces_testshots=0;
@@ -2795,8 +2820,19 @@ int main(int argc, char **argv){
                 
                 switch (LNORM){
                     case 2:
-                        L2t[1]=L2sum/energy_sum;
-                        L2t[4]=L2sum_all_shots/energy_sum_all_shots;
+                        L2t[1]=0.0; L2t[4]=0.0;
+                        
+                        if(WAVETYPE==1||WAVETYPE==3){
+                            L2t[1]+=L2sum/energy_sum;
+                            L2t[4]+=L2sum_all_shots/energy_sum_all_shots;
+                        }
+                        
+                        if(WAVETYPE==2||WAVETYPE==3){
+                            L2t[1]+=L2sum_SH/energy_sum_SH;
+                            L2t[4]+=L2sum_all_shots_SH/energy_sum_all_shots_SH;
+                        }
+                        if(MYID==0) printf("\n\n Sum: L2=%f",L2t[4]);
+                        
                         break;
                     case 7:
                         if (TRKILL){
@@ -3193,6 +3229,7 @@ int main(int argc, char **argv){
                     
                     /* initialization of L2 calculation */
                     L2=0.0;
+                    L2_SH=0.0;
                     
                     alphanom = 0.0;
                     alphadenom = 0.0;
@@ -3504,7 +3541,7 @@ int main(int argc, char **argv){
                                     }
                                     h++;
                                 }
-                                L2=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
+                                L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2_SH,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
                             }
                         }
                         
@@ -3515,13 +3552,28 @@ int main(int argc, char **argv){
                     epst1[itest]=eps_scale;
                     epst1[1] = 0.0;
                     
-                    L2sum=0.0;
-                    MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    if(WAVETYPE==1||WAVETYPE==3){
+                        L2sum=0.0;
+                        MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    }
                     
+                    if(WAVETYPE==2||WAVETYPE==3){
+                        L2sum_SH=0.0;
+                        MPI_Allreduce(&L2_SH,&L2sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                    }
                     
                     switch (LNORM){
                         case 2:
-                            L2t[itest]=L2sum/energy_sum;
+                            L2t[itest]=0.0;
+                            
+                            if(WAVETYPE==1||WAVETYPE==3){
+                                L2t[itest]+=L2sum/energy_sum;
+                            }
+                            
+                            if(WAVETYPE==2||WAVETYPE==3){
+                                L2t[itest]+=L2sum_SH/energy_sum_SH;
+                            }
+                            
                             break;
                         case 7:
                             if (TRKILL){
