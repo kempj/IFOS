@@ -77,6 +77,21 @@ float ** joint_inversion_grad ( float ** gradiant_1,float ** gradiant_2, float a
             joint_gradiant=gradiant_1;
             break;
             
+        case 3:
+            /* joint_type=1: Normalize both and take the arithmetic mean */
+            max1=global_maximum(gradiant_1);
+            max2=global_maximum(gradiant_2);
+            for (j=1;j<=NY;j++){
+                for (i=1;i<=NX;i++){
+                    gradiant_1[j][i]=(gradiant_1[j][i]/max1+gradiant_2[j][i]/max2)*(max2+max1);
+                    
+                    if (isnan(gradiant_1[j][i])) {
+                        gradiant_1[j][i]=0.0;
+                    }
+                }
+            }
+            joint_gradiant=gradiant_1;
+            break;
     }
 
     return joint_gradiant;
