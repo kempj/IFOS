@@ -101,6 +101,7 @@ void exchange_par(void){
     extern int EPRECOND_ITER;
     extern float EPSILON_WE,EPSILON_WE_SH;
     extern int EPRECOND_PER_SHOT;
+    extern int EPRECOND_PER_SHOT_SH;
     
     extern int LBFGS_SURFACE;
     extern int LBFGS_STEP_LENGTH;
@@ -346,17 +347,18 @@ void exchange_par(void){
         idum[104]=LBFGS_STEP_LENGTH;
         
         idum[105]=EPRECOND_PER_SHOT;
+        idum[106]=EPRECOND_PER_SHOT_SH;
         
-        idum[106]=N_LBFGS;
+        idum[107]=N_LBFGS;
 
-        idum[107]=WOLFE_CONDITION;
-        idum[108]=WOLFE_NUM_TEST;
-        idum[109]=WOLFE_TRY_OLD_STEPLENGTH;
+        idum[108]=WOLFE_CONDITION;
+        idum[109]=WOLFE_NUM_TEST;
+        idum[110]=WOLFE_TRY_OLD_STEPLENGTH;
         
-        idum[110]=WRITE_FILTERED_DATA;
+        idum[111]=WRITE_FILTERED_DATA;
         
-        idum[111]=TAPER_STF;
-        idum[112]=TW_IND;
+        idum[112]=TAPER_STF;
+        idum[113]=TW_IND;
         
     } /** if (MYID == 0) **/
     
@@ -621,19 +623,20 @@ void exchange_par(void){
     LBFGS_STEP_LENGTH=idum[104];
     
     EPRECOND_PER_SHOT= idum[105];
+    EPRECOND_PER_SHOT_SH= idum[106];
     
-    N_LBFGS=idum[106];
+    N_LBFGS=idum[107];
     
-    WOLFE_CONDITION=idum[107];
+    WOLFE_CONDITION=idum[108];
     
-    WOLFE_NUM_TEST=idum[108];
+    WOLFE_NUM_TEST=idum[109];
     
-    WOLFE_TRY_OLD_STEPLENGTH=idum[109];
+    WOLFE_TRY_OLD_STEPLENGTH=idum[110];
     
-    WRITE_FILTERED_DATA=idum[110];
+    WRITE_FILTERED_DATA=idum[111];
     
-    TAPER_STF=idum[111];
-    TW_IND=idum[112];
+    TAPER_STF=idum[112];
+    TW_IND=idum[113];
     
     
     MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);

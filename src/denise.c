@@ -1687,6 +1687,7 @@ int main(int argc, char **argv){
                         
                         if((!VERBOSE)&&(MYID==0)) fprintf(FP,"\n ****************************************\n ");
                         
+                        
                         /*------------------------------------------------------------------------------*/
                         /*----------------------  start loop over timesteps (forward model) ------------*/
                         /*------------------------------------------------------------------------------*/
@@ -2592,27 +2593,30 @@ int main(int argc, char **argv){
                                     
                                     if(WAVETYPE==2 || WAVETYPE==3) {
                                         eprecond1(We_SH,Ws_SH,Wr_SH,EPSILON_WE_SH);
-                                        if(EPRECOND_PER_SHOT) We_max_SH=global_maximum(We_SH);
+                                        if(EPRECOND_PER_SHOT_SH) We_max_SH=global_maximum(We_SH);
                                     }
                                     
-                                    if(EPRECOND_PER_SHOT){
-                                        fprintf(FP,"\n Applying approx. Hessian for shot %i. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
+                                    if(EPRECOND_PER_SHOT && (WAVETYPE==1 || WAVETYPE==3)){
+                                        fprintf(FP,"\n Applying approx. Hessian for shot %i PSV. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
                                         for (j=1;j<=NY;j=j+IDY){
                                             for (i=1;i<=NX;i=i+IDX){
-                                                
-                                                if(WAVETYPE==1 || WAVETYPE==3) {
-                                                    We[j][i]=We[j][i]/We_max;
-                                                    waveconv_shot[j][i] = waveconv_shot[j][i]/(We[j][i]);
-                                                    if(!ACOUSTIC){
-                                                        waveconv_u_shot[j][i] = waveconv_u_shot[j][i]/(We[j][i]);
-                                                    }
-                                                    waveconv_rho_shot[j][i] = waveconv_rho_shot[j][i]/(We[j][i]);
+                                                We[j][i]=We[j][i]/We_max;
+                                                waveconv_shot[j][i] = waveconv_shot[j][i]/(We[j][i]);
+                                                if(!ACOUSTIC){
+                                                    waveconv_u_shot[j][i] = waveconv_u_shot[j][i]/(We[j][i]);
                                                 }
-                                                if(WAVETYPE==2 || WAVETYPE==3) {
-                                                    We_SH[j][i]=We_SH[j][i]/We_max_SH;
-                                                    waveconv_u_shot_z[j][i] = waveconv_u_shot_z[j][i]/(We_SH[j][i]);
-                                                    waveconv_rho_shot_z[j][i] = waveconv_rho_shot_z[j][i]/(We_SH[j][i]);
-                                                }
+                                                waveconv_rho_shot[j][i] = waveconv_rho_shot[j][i]/(We[j][i]);
+                                            }
+                                        }
+                                    }
+                                    
+                                    if(EPRECOND_PER_SHOT_SH && (WAVETYPE==2 || WAVETYPE==3)){
+                                        fprintf(FP,"\n Applying approx. Hessian for shot %i SH. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
+                                        for (j=1;j<=NY;j=j+IDY){
+                                            for (i=1;i<=NX;i=i+IDX){
+                                                We_SH[j][i]=We_SH[j][i]/We_max_SH;
+                                                waveconv_u_shot_z[j][i] = waveconv_u_shot_z[j][i]/(We_SH[j][i]);
+                                                waveconv_rho_shot_z[j][i] = waveconv_rho_shot_z[j][i]/(We_SH[j][i]);
                                             }
                                         }
                                     }
@@ -2724,31 +2728,31 @@ int main(int argc, char **argv){
                 /* ----------------------------------------- */
                 if((EPRECOND==1)||(EPRECOND==3)){
                     
-                    if(!EPRECOND_PER_SHOT){
-                        fprintf(FP,"\n Applying approx. Hessian to summed gradient. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
+                    if(!EPRECOND_PER_SHOT && (WAVETYPE==1 || WAVETYPE==3)){
+                        fprintf(FP,"\n Applying approx. Hessian to summed gradient PSV. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
                         
-                        if (WAVETYPE==1 || WAVETYPE==3) {
-                            We_sum_max1=global_maximum(We_sum);
-                            for (j=1;j<=NY;j=j+IDY){
-                                for (i=1;i<=NX;i=i+IDX){
-                                    We_sum[j][i]=We_sum[j][i]/We_sum_max1;
-                                    waveconv[j][i] = waveconv[j][i]*We_sum[j][i];
-                                    if(!ACOUSTIC){
-                                        waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i];
-                                    }
-                                    waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i];
+                        We_sum_max1=global_maximum(We_sum);
+                        for (j=1;j<=NY;j=j+IDY){
+                            for (i=1;i<=NX;i=i+IDX){
+                                We_sum[j][i]=We_sum[j][i]/We_sum_max1;
+                                waveconv[j][i] = waveconv[j][i]*We_sum[j][i];
+                                if(!ACOUSTIC){
+                                    waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i];
                                 }
+                                waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i];
                             }
                         }
+                    }
+                    
+                    if(!EPRECOND_PER_SHOT_SH && (WAVETYPE==2 || WAVETYPE==3)){
+                        fprintf(FP,"\n Applying approx. Hessian to summed gradient SH. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
                         
-                        if (WAVETYPE==2 || WAVETYPE==3) {
-                            We_sum_max1=global_maximum(We_sum_SH);
-                            for (j=1;j<=NY;j=j+IDY){
-                                for (i=1;i<=NX;i=i+IDX){
-                                    We_sum_SH[j][i]=We_sum_SH[j][i]/We_sum_max1;
-                                    waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i];
-                                    waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i];
-                                }
+                        We_sum_max1=global_maximum(We_sum_SH);
+                        for (j=1;j<=NY;j=j+IDY){
+                            for (i=1;i<=NX;i=i+IDX){
+                                We_sum_SH[j][i]=We_sum_SH[j][i]/We_sum_max1;
+                                waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i];
+                                waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i];
                             }
                         }
                     }

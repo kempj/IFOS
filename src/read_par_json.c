@@ -108,6 +108,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int EPRECOND_ITER;
     extern float EPSILON_WE,EPSILON_WE_SH;
     extern int EPRECOND_PER_SHOT;
+    extern int EPRECOND_PER_SHOT_SH;
     
     extern int LBFGS_SURFACE;
     extern int LBFGS_STEP_LENGTH;
@@ -488,6 +489,10 @@ void read_par_json(FILE *fp, char *fileinp){
                             fprintf(fp," EPRECOND_PER_SHOT and EPRECOND_ITER>0 not supported.\n");
                             fprintf(fp," EPRECOND_ITER is set to EPRECOND_ITER=%d.\n",EPRECOND_ITER);
                         }
+                    }
+                    if (get_int_from_objectlist("EPRECOND_PER_SHOT_SH",number_readobjects,&EPRECOND_PER_SHOT_SH,varname_list, value_list)){
+                        EPRECOND_PER_SHOT_SH=0;
+                        fprintf(fp,"Variable EPRECOND_PER_SHOT_SH is set to default value %d.\n",EPRECOND_PER_SHOT_SH);
                     }
                     if (get_float_from_objectlist("EPSILON_WE",number_readobjects,&EPSILON_WE,varname_list, value_list))
                         err("Variable EPSILON_WE could not be retrieved from the json input file!");
