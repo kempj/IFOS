@@ -2802,7 +2802,7 @@ int main(int argc, char **argv){
                     energy_sum_all_shots = 0.0;
                     MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
                     
-                    if(MYID==0) printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
+                    if(MYID==0&&(WAVETYPE==3)) printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
                 }
                 if(WAVETYPE==2||WAVETYPE==3){
                     L2sum_SH = 0.0;
@@ -2814,7 +2814,7 @@ int main(int argc, char **argv){
                     energy_sum_all_shots_SH = 0.0;
                     MPI_Allreduce(&energy_all_shots_SH,&energy_sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
                     
-                    if(MYID==0) printf("\n\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                    if(MYID==0&&(WAVETYPE==3)) printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
                 }
                 sum_killed_traces=0;
                 MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
@@ -2835,7 +2835,7 @@ int main(int argc, char **argv){
                             L2t[1]+=L2sum_SH/energy_sum_SH;
                             L2t[4]+=L2sum_all_shots_SH/energy_sum_all_shots_SH;
                         }
-                        if(MYID==0) printf("\n\n Sum: L2=%f",L2t[4]);
+                        if(MYID==0&&(WAVETYPE==3)) printf("\n Sum: L2=%f",L2t[4]);
                         
                         break;
                     case 7:
