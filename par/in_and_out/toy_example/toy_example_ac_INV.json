@@ -56,7 +56,7 @@
 			"k_max_PML" : "8.0",
 
 "Receiver" : "comment",
-			"SEISMO" : "5",
+			"SEISMO" : "2",
 			"READREC" : "1",
 			"REC_FILE" : "./receiver/rec_toy_example_ac.dat",
 			"REFRECX, REFRECY" : "0.0 , 0.0",

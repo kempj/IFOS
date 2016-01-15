@@ -2092,13 +2092,18 @@ int main(int argc, char **argv){
                                     itestshot+=TESTSHOT_INCR;
                                 }
                                 
-                                /* Write differences between measured and synthetic seismogramms to disk */
-                                if (SEISMO){
+                                /* Write differences between measured and synthetic seismogramms (adjoint sources) to disk */
+                                if (SEISMO&&VERBOSE){
                                     if(WAVETYPE==1 || WAVETYPE==3){
-                                        catseis(sectionvxdiff, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
-                                        catseis(sectionvydiff, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
-                                        if(ACOUSTIC)
+                                        if ((QUELLTYPB==1)|| (QUELLTYPB==3)){
+                                            catseis(sectionvxdiff, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                        if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                            catseis(sectionvydiff, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                        if (QUELLTYPB==4){
                                             catseis(sectionpdiff, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
                                     }
                                     if(WAVETYPE==2 || WAVETYPE==3){
                                         catseis(sectionvzdiff, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
@@ -2111,10 +2116,15 @@ int main(int argc, char **argv){
                                 /* Write measured filtered seismogramms to disk */
                                 if (SEISMO && TIME_FILT && WRITE_FILTERED_DATA){
                                     if(WAVETYPE==1 || WAVETYPE==3){
-                                        catseis(sectionvxdata, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
-                                        catseis(sectionvydata, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
-                                        if(ACOUSTIC)
+                                        if ((QUELLTYPB==1)|| (QUELLTYPB==3)){
+                                            catseis(sectionvxdata, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                        if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                            catseis(sectionvydata, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                        if (QUELLTYPB==4){
                                             catseis(sectionpdata, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
                                     }
                                     if(WAVETYPE==2 || WAVETYPE==3){
                                         catseis(sectionvzdata, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
