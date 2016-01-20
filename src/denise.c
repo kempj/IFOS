@@ -2230,7 +2230,7 @@ int main(int argc, char **argv){
                                             update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, srcpos_loc_back, sectionvzdiff, sectionvzdiff, ntr1, absorb_coeff,hc,infoout,1, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
                                         }
                                     } else {
-                                        update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, psp, prip, prjp, srcpos_loc_back, sectionpdiff,sectionpdiff,ntr1,absorb_coeff,hc,infoout,1, K_x_half, a_x_half, b_x_half, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
+                                        update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, psp, prip, prjp, srcpos_loc_back, sectionvxdiff,sectionvydiff,ntr1,absorb_coeff,hc,infoout,1, K_x_half, a_x_half, b_x_half, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
                                     }
                                     
                                     
