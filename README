@@ -1,7 +1,7 @@
 README for IFOS
 =================
 
-IFOS (subwavelength DEtail resolving Nonlinear Iterative SEismic inversion) 
+IFOS (Inversion of Full observed seismograms) 
 is a 2D elastic full waveform inversion code. The inversion problem is solved 
 by a conjugate gradient method. The gradients are computed in the time domain 
 with the adjoint method. The forward modeling is also done in the time domain 
