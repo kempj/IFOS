@@ -34,21 +34,21 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
         FILE *fpdata;
 	
 	if(sws==1){  /* open seismic data vx */
-		sprintf(data,"%s_x.su.shot%d",DATA_DIR,comp);
+		sprintf(data,"%s_vx.su.shot%d",DATA_DIR,comp);
 	}
 	
 	if(sws==2){  /* open seismic data vy */
-		sprintf(data,"%s_y.su.shot%d",DATA_DIR,comp);
+		sprintf(data,"%s_vy.su.shot%d",DATA_DIR,comp);
 	}
 	
     /* sws 3 -- 6 not used */
     
 	if(sws==7){  /* open convolved seismic data vx */
-		sprintf(data,"%s_x.su.conv.shot%d",DATA_DIR,comp);
+		sprintf(data,"%s_vx.su.conv.shot%d",DATA_DIR,comp);
 	}
 	
 	if(sws==8){  /* open convolved seismic data vy */
-		sprintf(data,"%s_y.su.conv.shot%d",DATA_DIR,comp);
+		sprintf(data,"%s_vy.su.conv.shot%d",DATA_DIR,comp);
 	}
 	
 	if(sws==9){  /* open seismic data p */
@@ -56,7 +56,7 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 	}
     
     if(sws==10){  /* open seismic data vz */
-        sprintf(data,"%s_z.su.shot%d",DATA_DIR,comp);
+        sprintf(data,"%s_vz.su.shot%d",DATA_DIR,comp);
     }
 	
 

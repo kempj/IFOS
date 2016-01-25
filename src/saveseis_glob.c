@@ -77,10 +77,10 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
     }
     
     if(INVMAT==10){
-        sprintf(vxf,"%s_x.su.shot%d",SEIS_FILE,ishot);
-        sprintf(vyf,"%s_y.su.shot%d",SEIS_FILE,ishot);
+        sprintf(vxf,"%s_vx.su.shot%d",SEIS_FILE,ishot);
+        sprintf(vyf,"%s_vy.su.shot%d",SEIS_FILE,ishot);
         if(WAVETYPE==2 || WAVETYPE==3) {
-            sprintf(vzf,"%s_z.su.shot%d",SEIS_FILE,ishot);
+            sprintf(vzf,"%s_vz.su.shot%d",SEIS_FILE,ishot);
         }
         sprintf(pf,"%s_p.su.shot%d",SEIS_FILE,ishot);
         sprintf(divf,"%s_div.su.shot%d",SEIS_FILE,ishot);
