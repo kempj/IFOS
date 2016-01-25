@@ -31,7 +31,7 @@ float **sources(int *nsrc){
 	/* declaration of extern variables */
 	extern float PLANE_WAVE_DEPTH, PHI, TS, DH, F_REF;
 	extern  char SOURCE_FILE[STRING_SIZE];
-	extern int MYID, NXG, NYG, SRCREC, RUN_MULTIPLE_SHOTS, QUELLTYP;
+	extern int MYID, NXG, NYG, SRCREC, RUN_MULTIPLE_SHOTS, SOURCE_TYPE;
 	extern FILE *FP;
 
 	float **srcpos;
@@ -76,7 +76,7 @@ float **sources(int *nsrc){
 					case 5: if (MYID==0) fprintf(FP," No amplitude defined for source %i in %s!\n",l, SOURCE_FILE);
 						err("Missing parameter in SOURCE_FILE!");
 					case 6: srcpos[7][l]=0.0;
-					case 7: srcpos[8][l]=QUELLTYP;
+					case 7: srcpos[8][l]=SOURCE_TYPE;
 				}
 				if ((srcpos[8][l]!=4) && (nvarin>6)) {
 				current_source=(int)srcpos[8][l];

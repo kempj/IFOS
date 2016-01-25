@@ -92,13 +92,13 @@ The program checks these criteria for the entire model, outputs a warning messag
 \label{sec:sources}
 {\color{blue}{\begin{verbatim}
 "Source" : "comment",
-			"QUELLART" : "4",
-			"QUELLART values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;
+			"SOURCE_SHAPE" : "4",
+			"SOURCE_SHAPE values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;
 			Gaussian_deriv=5;Spike=6;from_SIGNAL_FILE_in_su_format=7" : "comment",
 			"SIGNAL_FILE" : "./ormsby.dat",
 			
-			"QUELLTYP" : "3",
-			"QUELLTYP values (point_source): explosive=1;force_in_x=2;force_in_y=3;
+			"SOURCE_TYPE" : "3",
+			"SOURCE_TYPE values (point_source): explosive=1;force_in_x=2;force_in_y=3;
 			rotated_force=4" : "comment",
 			
 			"SRCREC" : "1",
@@ -121,34 +121,34 @@ Default values are:
 Five built-in wavelets of the seismic source are available. The corresponding source time functions are defined in \texttt{src/wavelet.c}. You may modify the time functions in this file and recompile to include your
 own analytical wavelet or to modify the shape of the built-in wavelets.
 
-Ricker wavelet (QUELLART=1):
+Ricker wavelet (SOURCE\_SHAPE=1):
 \begin{equation}
 r(\tau)=\left(1-2\tau^2\right)\exp(-\tau^2) \quad \mbox{with} \quad \tau=\frac{\pi(t-1.5/f_c-t_d)}{1.0/f_c}
 \label{eq_ricker}
 \end{equation}
 
-Fuchs-M\"uller wavelet (QUELLART=2):
+Fuchs-M\"uller wavelet (SOURCE\_SHAPE=2):
 \begin{equation}
 f_m(t)=\sin(2\pi(t-t_d)f_c)-0.5\sin(4\pi(t-t_d)f_c) \quad \mbox{if} \quad t\in[t_d,t_d+1/fc] \quad \mbox{else} \quad fm(t)=0
 \label{eq_fm}
 \end{equation}
 
-$sin^3$ wavelet (QUELLART=4):
+$sin^3$ wavelet (SOURCE\_SHAPE=4):
 \begin{equation}
 s3(t)=0.75 \pi f_c \sin(\pi(t+t_d)f_c)^3\quad \mbox{if} \quad t \in[t_d,t_d+1/fc] \quad \mbox{else} \quad s3(t)=0
 \label{eq_s3}
 \end{equation}
 
-First derivative of a Gaussian function (QUELLART=5):
+First derivative of a Gaussian function (SOURCE\_SHAPE=5):
 \begin{equation}
 f(t)= -2.0 a (t-t_s) \exp(-a (t-t_s)^2)\quad \mbox{with} \quad a=\pi^2 f_c^2 \quad \mbox{and} \quad t_s=1.2/f_c
 \label{eq_deriv_of_gaussian}
 \end{equation}
 
-Delta pulse (QUELLART=6):
+Delta pulse (SOURCE\_SHAPE=6):
 Lowpass filtered delta pulse. Note, that it is not clear if the lowpass filter used in the current version works correctly for a delta pulse.\\
 
-Source time function from SIGNAL\_FILE in su format (QUELLART=7).\\
+Source time function from SIGNAL\_FILE in su format (SOURCE\_SHAPE=7).\\
 
 In these equations, t denotes time and $f_c=1/TS$ is the center frequency. $t_d$ is a time delay which can be defined for each source position in SOURCE\_FILE. Note that the symmetric (zero phase) Ricker signal is always delayed by $1.0/f_c$, which means that after one period the maximum amplitude is excited at the source location. Three of these 5 source wavelets and the corresponding amplitude spectra for a center frequency of $f_c=50$ Hz and a delay of $t_d=0$ are plotted in Figure \ref{fig_source_wavelets_json}. Note the delay of the Ricker signal described above. The Fuchs-M\"uller wavelet has a slightly higher center frequency and covers a broader frequency range.
 
@@ -162,7 +162,7 @@ spectrum, c) phase spectrum.  }
 \label{fig_source_wavelets_json}
 \end{figure}
 
-You may also use your own time function as the source wavelet (for instance the signal of the first arrival recorded by a geophone at near offsets). Specify QUELLART=3 and save the samples of
+You may also use your own time function as the source wavelet (for instance the signal of the first arrival recorded by a geophone at near offsets). Specify SOURCE\_SHAPE=3 and save the samples of
 your source wavelet in ASCII-format in SIGNAL\_FILE. SIGNAL\_FILE should contain one sample per line. It should thus look like:
 
 {\color{blue}{\begin{verbatim}
@@ -175,12 +175,12 @@ your source wavelet in ASCII-format in SIGNAL\_FILE. SIGNAL\_FILE should contain
 The time interval between the samples must equal the time step interval (DT) of the FD simulation (see above)! Therefore it might be necessary to resample/interpolate a given source time function with a smaller sample rate. You may use the matlab script mfiles/resamp.m to resample your external source signal to the required sampling interval.
 \newline
 
-It is also possible to read different external source wavelets for each shot. Specify QUELLART=7 and save the wavelets in su format in SIGNAL\_FILE.shot<no\_of\_shot>. The wavelets in each su file must equal the time step intervel (DT) and the number of time steps of the FD simulation!
+It is also possible to read different external source wavelets for each shot. Specify SOURCE\_SHAPE=7 and save the wavelets in su format in SIGNAL\_FILE.shot<no\_of\_shot>. The wavelets in each su file must equal the time step intervel (DT) and the number of time steps of the FD simulation!
 \newline
 
-The following source types are availabe: explosive sources that excite compressional waves only (QUELLTYP=1), and point forces in the x- and y-direction (QUELLTYP=2,3).
+The following source types are availabe: explosive sources that excite compressional waves only (SOURCE\_TYPE=1), and point forces in the x- and y-direction (SOURCE\_TYPE=2,3).
 The force sources excite both P- and S-waves. The explosive source is located at the same position as the diagonal elements of the stress tensor, i.e. at (i,j) (Figure \ref{fig_cell}).
-The forces are located at the same position as the corresponding components of particle velocity (Figure \ref{fig_cell}). If (x,y) denotes the position at which the source location is defined in source.dat, then the actual force in x-direction is located at (x+DX/2,y) and the actual force in y-direction is located at (x,y+DY/2). With QUELLTYP=4 a custom directive force can be defined by a force angle between y and x. The angle of the force must be specified in the SOURCE\_FILE after AMP. This force is not aligned along the main directions.
+The forces are located at the same position as the corresponding components of particle velocity (Figure \ref{fig_cell}). If (x,y) denotes the position at which the source location is defined in source.dat, then the actual force in x-direction is located at (x+DX/2,y) and the actual force in y-direction is located at (x,y+DY/2). With SOURCE\_TYPE=4 a custom directive force can be defined by a force angle between y and x. The angle of the force must be specified in the SOURCE\_FILE after AMP. This force is not aligned along the main directions.
 
 The locations of multiple sources must be defined in an external ASCII file (SOURCE\_FILE) that has the following format:
 {\color{blue}{\begin{verbatim}
@@ -202,7 +202,7 @@ a center frequency of 5 Hz (no time delay) is
 
 If the option RUN\_MULTIPLE\_SHOTS=0 in the parameter file all shot points defined in the SOURCE\_FILE are excitated simultaneously in one simulation. Setting RUN\_MULTIPLE\_SHOTS=1 will start individual model runs from i=1 to i=NSRC with source locations and properties defined at line i of the SOURCE\_FILE. (To apply a full waveform inversion you have to use RUN\_MULTIPLE\_SHOTS=1.) 
 
-% Instead of a single source or multiple sources specified in the SOURCE\_FILE, you can also specify to excite a plane wave parallel (or tilted by an angle PHI) to the top of the model. This plane wave is approximated by a plane of single sources at every grid point at a depth of PLANE\_WAVE\_DEPTH below. The center source frequency $f_c$ is specified by the inverse of the duration of the source signal TS. QUELLART and QUELLTYP are taken from the parameters as described above. If you choose the plane wave option by specifying a PLANE\_WAVE\_DEPTH$>$0, the parameters SRCREC and SOURCE\_FILE will be ignored.
+% Instead of a single source or multiple sources specified in the SOURCE\_FILE, you can also specify to excite a plane wave parallel (or tilted by an angle PHI) to the top of the model. This plane wave is approximated by a plane of single sources at every grid point at a depth of PLANE\_WAVE\_DEPTH below. The center source frequency $f_c$ is specified by the inverse of the duration of the source signal TS. SOURCE\_SHAPE and SOURCE\_TYPE are taken from the parameters as described above. If you choose the plane wave option by specifying a PLANE\_WAVE\_DEPTH$>$0, the parameters SRCREC and SOURCE\_FILE will be ignored.
 % 
 % This option will not be supported in future releases of IFOS.    
 
@@ -221,7 +221,7 @@ Default value is:
 	ACOUSTIC=0
 \end{verbatim}}}
 
-With this option pure acoustic modelling and/or inversion can be performed (ACOUSTIC = 1). Only a P-wave and a density model need to be provided. Acoustic modelling and inversion can be a quick estimate especially for marine environments. Acoustic gradients are derived from pressure wavefields, therefore the option QUELLTYPB = 4 has to be used and only the inversion of hydrophone data is possible at the moment.
+With this option pure acoustic modelling and/or inversion can be performed (ACOUSTIC = 1). Only a P-wave and a density model need to be provided. Acoustic modelling and inversion can be a quick estimate especially for marine environments. Acoustic gradients are derived from pressure wavefields, therefore the option ADJOINT\_TYPE = 4 has to be used and only the inversion of hydrophone data is possible at the moment.
 
 For acoustic modelling the option HESSIAN is not available (GRAD\_METHOD needs to be 1), as well as the option VELOCITY. Only FDORDER = 2 and INVMAT1 = 1 are possible.
 
@@ -270,7 +270,7 @@ A plane stress free surface is applied at the top of the global grid if FREE\_SU
 {\color{blue}{\begin{verbatim}
 "PML Boundary" : "comment",
 			"FW" : "20",
-			"DAMPING" : "600.0",
+			"VPPML" : "600.0",
 			"FPML" : "31.25",
 			"BOUNDARY" : "0",
 			"npower" : "4.0",
@@ -279,7 +279,7 @@ A plane stress free surface is applied at the top of the global grid if FREE\_SU
 \end{verbatim}}}
 The boundary conditions are applied on each side face and the bottom face of the model grid. If FREE\_SURF = 0 the boundary conditions are also applied at the top face of the model grid. Note that the absorbing frames are always located INSIDE the model space, i.e. parts of the model structure are covered by the absorbing frame, in which no physically meaningful wavefield propagates. You should therefore consider the frame width when you design the model structure and the acquisition geometry (shot and receivers should certainly be placed outside).
 
-A convolutional perfectly matched layer (CPML) boundary condition is used. The PML implementation is based on the following papers \cite{komatitsch:07} and \cite{martin:09}. A width of the absorbing frame of FW=10-20 grid points should be sufficient. For the optimal realization of the PML boundary condition you have to specify the dominant signal frequency FPML occurring during the wave simulation. This is usually the center source frequency FC specified in the source file. DAMPING specifies the attenuation velocity in m/s within the PML. DAMPING should be approximately the propagation velocity of the dominant wave near the model boundaries.
+A convolutional perfectly matched layer (CPML) boundary condition is used. The PML implementation is based on the following papers \cite{komatitsch:07} and \cite{martin:09}. A width of the absorbing frame of FW=10-20 grid points should be sufficient. For the optimal realization of the PML boundary condition you have to specify the dominant signal frequency FPML occurring during the wave simulation. This is usually the center source frequency FC specified in the source file. VPPML specifies the attenuation velocity in m/s within the PML. VPPML should be approximately the propagation velocity of the dominant wave near the model boundaries.
 
 In some cases, it is usefull to apply periodic boundary conditions (see section \ref{bound_cond}). IF BOUNDARY=1 no absorbing boundaries are installed at the left/right sides of the grid. Instead, wavefield information is copied from left to right and vice versa. The effect is, for example, that a wave which leaves the model at the left side enters the model again at the right side.
 
@@ -420,7 +420,7 @@ If TIME\_FILT is set to one the log file L2\_LOG.dat contains a 9th column with 
 			"DATA_DIR" : "su/measured_data/IFOS_real",
 			"INVMAT1" : "1",
 			"INVMAT" : "0",
-			"QUELLTYPB" : "1",
+			"ADJOINT_TYPE" : "1",
 			"MISFIT_LOG_FILE" : "L2_LOG.dat",
 			"VELOCITY" : "0",
 
@@ -439,7 +439,7 @@ INV_VP_ITER=0
 INV_VS_ITER=0
 \end{verbatim}}}
 
-This section covers some general inversion parameters. The maximum number of iterations is defined by ITERMAX. The switch INVMAT controls if only the forward modeling code should be used (INVMAT=10), e.\,g. to calculate synthetic seismograms or a complete FWT run (INVMAT=0). The seismic sections of the real data need to be located in DATA\_DIR and should have the ending \_x.su.shot<shotnumber> for the x-component and so on. As noted in section \ref{model parametrizations} the gradients can be expressed for different model parameterizations. The switch INVMAT1 defines which parameterization should be used, seismic velocities and density (Vp,Vs,rho, INVMAT1=1), seismic impedances (Zp,Zs,rho, INVMAT1=2) or Lam$\rm{\acute{e}}$ parameters ($\rm{\lambda,\mu,\rho}$, INVMAT1=3). If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be backpropagated. For two component data (x- and y-component) set QUELLTYPB=1, only the y-component (QUELLTYPB=2) and only the x-component (QUELLTYPB=3). For acoustic modelling pressure seismograms and QUELLTYPB=4 have to be used.
+This section covers some general inversion parameters. The maximum number of iterations is defined by ITERMAX. The switch INVMAT controls if only the forward modeling code should be used (INVMAT=10), e.\,g. to calculate synthetic seismograms or a complete FWT run (INVMAT=0). The seismic sections of the real data need to be located in DATA\_DIR and should have the ending \_x.su.shot<shotnumber> for the x-component and so on. As noted in section \ref{model parametrizations} the gradients can be expressed for different model parameterizations. The switch INVMAT1 defines which parameterization should be used, seismic velocities and density (Vp,Vs,rho, INVMAT1=1), seismic impedances (Zp,Zs,rho, INVMAT1=2) or Lam$\rm{\acute{e}}$ parameters ($\rm{\lambda,\mu,\rho}$, INVMAT1=3). If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be backpropagated. For two component data (x- and y-component) set ADJOINT\_TYPE=1, only the y-component (ADJOINT\_TYPE=2) and only the x-component (ADJOINT\_TYPE=3). For acoustic modelling pressure seismograms and ADJOINT\_TYPE=4 have to be used.
 
 During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of eight or nine columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use frequency filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step.
 
@@ -618,7 +618,7 @@ smaller than PRO the inversion aborts or in case of using frequency filtering (T
 \newpage
 
 \section{Source wavelet inversion}
-To remove the contribution of the unknown source time function (STF) from the waveform residuals, it is necessary to design a filter which minimizes the misfit to the field recordings and raw synthetics. Therefore, a second forward simulation is applied. The first one is done with the wavelet specified in QUELLART and the second one with the optimized source wavelet saved in SIGNAL\_FILE (see Section~\ref{sec:sources}). This optimized source wavelet is kept constant within N\_STF or within a frequency range (see below).\\
+To remove the contribution of the unknown source time function (STF) from the waveform residuals, it is necessary to design a filter which minimizes the misfit to the field recordings and raw synthetics. Therefore, a second forward simulation is applied. The first one is done with the wavelet specified in SOURCE\_SHAPE and the second one with the optimized source wavelet saved in SIGNAL\_FILE (see Section~\ref{sec:sources}). This optimized source wavelet is kept constant within N\_STF or within a frequency range (see below).\\
 
 {\color{blue}{\begin{verbatim}
 "Definition of inversion for source time function" : "comment",

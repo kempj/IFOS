@@ -25,10 +25,10 @@
 			"DT" : "5.0e-05",
 
 "Source" : "comment",
-			"QUELLART" : "4",
+			"SOURCE_SHAPE" : "4",
 			"SIGNAL_FILE" : "./ormsby.dat",
 			
-			"QUELLTYP" : "3",
+			"SOURCE_TYPE" : "3",
 			
 			"SOURCE_FILE" : "./source/sources.dat",
 			"RUN_MULTIPLE_SHOTS" : "1",
@@ -42,7 +42,7 @@
 
 "PML Boundary" : "comment",
 			"FW" : "20",
-			"DAMPING" : "600.0",
+			"VPPML" : "600.0",
 			"FPML" : "31.25",
 			"BOUNDARY" : "0",
 			"npower" : "4.0",

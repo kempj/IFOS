@@ -39,7 +39,7 @@ void update_v_hc(int nx1, int nx2, int ny1, int ny2, int nt,
 	
 	extern float DT, DH, FW;
 	double time1, time2;
-	extern int MYID, QUELLTYP, FDORDER;
+	extern int MYID, SOURCE_TYPE, FDORDER;
 	extern FILE *FP;
 
 	

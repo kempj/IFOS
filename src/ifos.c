@@ -106,7 +106,7 @@ int main(int argc, char **argv){
     float * temp_TS, * temp_TS1, * temp_TS2, * temp_TS3, * temp_TS4, * temp_TS5, * temp_conv, * temp_conv1, * temp_conv2;
     float temp_hess, temp_hess_lambda, temp_hess_mu, mulamratio;
     float ** hessian, ** hessian_u, ** hessian_rho, **hessian_shot, **hessian_u_shot, **hessian_rho_shot;
-    int QUELLART_OLD;
+    int SOURCE_SHAPE_OLD;
     
     /* Variables for L-BFGS */
     int LBFGS=0,LBFGS_NPAR=3;
@@ -933,7 +933,7 @@ int main(int argc, char **argv){
         case 2: FC_EXT=filter_frequencies(&nfrq); FC=FC_EXT[FREQ_NR]; break;
     }
     
-    QUELLART_OLD = QUELLART;
+    SOURCE_SHAPE_OLD = SOURCE_SHAPE;
     
     nt_out=10000;
     if(!VERBOSE) nt_out=1e5;
@@ -1178,7 +1178,7 @@ int main(int argc, char **argv){
                     
                     for (ishot=1;ishot<=nshots;ishot+=SHOTINC){
                         /*for (ishot=1;ishot<=1;ishot+=1){*/
-                        QUELLART = QUELLART_OLD;
+                        SOURCE_SHAPE = SOURCE_SHAPE_OLD;
                         
                         if (INV_STF==1 && WAVETYPE !=1) {
                             fprintf(FP,"\n==================================================================================\n");
@@ -1208,7 +1208,7 @@ int main(int argc, char **argv){
                                 srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
                             }
                             
-                            if((QUELLART==7)||(QUELLART==3))err("QUELLART==7 or QUELLART==3 isn't possible with INV_STF==1");
+                            if((SOURCE_SHAPE==7)||(SOURCE_SHAPE==3))err("SOURCE_SHAPE==7 or SOURCE_SHAPE==3 isn't possible with INV_STF==1");
                             MPI_Barrier(MPI_COMM_WORLD);
                             /* calculate wavelet for each source point */
                             signals=NULL;
@@ -1292,7 +1292,7 @@ int main(int argc, char **argv){
                                 }
                                 
                                 /* explosive source */
-                                if ((QUELLTYP==1))
+                                if ((SOURCE_TYPE==1))
                                     psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                                 
                                 /* Applying free surface condition */
@@ -1460,11 +1460,11 @@ int main(int argc, char **argv){
                                         if (nsrc_loc>0){
                                             
                                             /*time domain filtering of the observed data sectionvy_obs */
-                                            if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                            if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
                                                 inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
                                                 timedomain_filt(sectionvy_obs,FC,ORDER,ntr_glob,ns,1);
                                             }
-                                            if (QUELLTYPB==4){
+                                            if (ADJOINT_TYPE==4){
                                                 inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
                                                 timedomain_filt(sectionp_obs,FC,ORDER,ntr_glob,ns,1);
                                             }
@@ -1482,10 +1482,10 @@ int main(int argc, char **argv){
                                                 printf("\n MYID = %d: STF inversion because of frequency step at the end of the last iteration \n",MYID);
                                             }
                                             
-                                            if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                            if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
                                                 stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC);
                                             }
-                                            if (QUELLTYPB==4){
+                                            if (ADJOINT_TYPE==4){
                                                 stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC);
                                             }
                                         }
@@ -1505,17 +1505,17 @@ int main(int argc, char **argv){
                                             printf("\n ====================================================== \n");
                                             printf("\n MYID = %d: STF inversion due to the increment N_STF \n",MYID);
                                             
-                                            if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                            if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
                                                 inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
                                             }
-                                            if (QUELLTYPB==4){
+                                            if (ADJOINT_TYPE==4){
                                                 inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
                                             }
                                             
-                                            if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                            if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
                                                 stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC);
                                             }
-                                            if (QUELLTYPB==4){
+                                            if (ADJOINT_TYPE==4){
                                                 stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC);
                                             }
                                         }
@@ -1552,8 +1552,8 @@ int main(int argc, char **argv){
                         }
                         
                         if(INV_STF){
-                            QUELLART=7;
-                            fprintf(FP,"\n MYID=%d *****  Due to inversion of source time function QUELLART is switched to 7  ********** \n",MYID);
+                            SOURCE_SHAPE=7;
+                            fprintf(FP,"\n MYID=%d *****  Due to inversion of source time function SOURCE_SHAPE is switched to 7  ********** \n",MYID);
                             fprintf(FP,"\n MYID=%d *****  Using optimized source time function located in %s.shot%d  ********** \n\n\n",MYID,SIGNAL_FILE,ishot);
                         }
                         
@@ -1577,7 +1577,7 @@ int main(int argc, char **argv){
                         /*----------- Start of Time Domain Filtering -----------------------------------*/
                         /*------------------------------------------------------------------------------*/
                         
-                        if (((TIME_FILT==1) || (TIME_FILT==2)) && (QUELLART!=6) && (INV_STF==0)){
+                        if (((TIME_FILT==1) || (TIME_FILT==2)) && (SOURCE_SHAPE!=6) && (INV_STF==0)){
                             fprintf(FP,"\n Time Domain Filter applied: Lowpass with corner frequency of %.2f Hz, order %d\n",FC,ORDER);
                             
                             /*time domain filtering of the source signal */
@@ -1585,19 +1585,19 @@ int main(int argc, char **argv){
                             if(WAVETYPE==2||WAVETYPE==3) timedomain_filt(signals_SH,FC,ORDER,nsrc_loc,ns,1);
                             
                             if(WAVETYPE==1||WAVETYPE==3){
-                                if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
                                     /*time domain filtering of the observed data sectionvy_obs */
                                     inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
                                     timedomain_filt(sectionvy_obs,FC,ORDER,ntr_glob,ns,1);
                                 }
                                 
-                                if ((QUELLTYPB==1)|| (QUELLTYPB==3)){
+                                if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==3)){
                                     /*time domain filtering of the observed data sectionvx_obs */
                                     inseis(fprec,ishot,sectionvx_obs,ntr_glob,ns,1,iter);
                                     timedomain_filt(sectionvx_obs,FC,ORDER,ntr_glob,ns,1);
                                 }
                                 
-                                if (QUELLTYPB==4){
+                                if (ADJOINT_TYPE==4){
                                     /*time domain filtering of the observed data sectionp_obs */
                                     inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
                                     timedomain_filt(sectionp_obs,FC,ORDER,ntr_glob,ns,1);
@@ -1777,7 +1777,7 @@ int main(int argc, char **argv){
                             
                             
                             /* explosive source */
-                            if ((QUELLTYP==1)&&(WAVETYPE==1||WAVETYPE==3))
+                            if ((SOURCE_TYPE==1)&&(WAVETYPE==1||WAVETYPE==3))
                                 psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                             
                             /* Applying free surface condition */
@@ -2000,7 +2000,7 @@ int main(int argc, char **argv){
                                     /* read seismic data from SU file vx */
                                     /* --------------------------------- */
                                     
-                                    if((QUELLTYPB==1)||(QUELLTYPB==3)){ /* if QUELLTYPB */
+                                    if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==3)){ /* if ADJOINT_TYPE */
                                         inseis(fprec,ishot,sectionread,ntr_glob,ns,1,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)){
                                             timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
@@ -2017,13 +2017,13 @@ int main(int argc, char **argv){
                                         L2_all_shots=calc_misfit(sectionvxdata,sectionvx,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
                                         energy_all_shots=calc_energy(sectionvxdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
                                         /*fprintf(FP,"Energy vxdata for PE %d:   %f\n\n", MYID,energy);*/
-                                    } /* end QUELLTYPB */
+                                    } /* end ADJOINT_TYPE */
                                     
                                     /* --------------------------------- */
                                     /* read seismic data from SU file vy */
                                     /* --------------------------------- */
                                     
-                                    if((QUELLTYPB==1)||(QUELLTYPB==2)){ /* if QUELLTYPB */
+                                    if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==2)){ /* if ADJOINT_TYPE */
                                         inseis(fprec,ishot,sectionread,ntr_glob,ns,2,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)){
                                             timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
@@ -2040,12 +2040,12 @@ int main(int argc, char **argv){
                                         L2_all_shots=calc_misfit(sectionvydata,sectionvy,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
                                         energy_all_shots=calc_energy(sectionvydata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
                                         /*fprintf(FP,"Energy vydata for PE %d:   %f\n\n", MYID,energy);	*/
-                                    } /* end QUELLTYPB */
+                                    } /* end ADJOINT_TYPE */
                                     
                                     /* --------------------------------- */
                                     /* read seismic data from SU file p */
                                     /* --------------------------------- */
-                                    if(QUELLTYPB==4){ /* if QUELLTYPB */
+                                    if(ADJOINT_TYPE==4){ /* if ADJOINT_TYPE */
                                         inseis(fprec,ishot,sectionread,ntr_glob,ns,9,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)){
                                             timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
@@ -2061,7 +2061,7 @@ int main(int argc, char **argv){
                                         if(swstestshot==1){energy=calc_energy(sectionpdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);}
                                         L2_all_shots=calc_misfit(sectionpdata,sectionp,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
                                         energy_all_shots=calc_energy(sectionpdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
-                                    } /* end QUELLTYPB */
+                                    } /* end ADJOINT_TYPE */
                                 }
                                 
                                 if(WAVETYPE==2 || WAVETYPE==3){
@@ -2095,13 +2095,13 @@ int main(int argc, char **argv){
                                 /* Write differences between measured and synthetic seismogramms (adjoint sources) to disk */
                                 if (SEISMO&&VERBOSE){
                                     if(WAVETYPE==1 || WAVETYPE==3){
-                                        if ((QUELLTYPB==1)|| (QUELLTYPB==3)){
+                                        if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==3)){
                                         catseis(sectionvxdiff, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
                                         }
-                                        if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                        if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
                                         catseis(sectionvydiff, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
                                         }
-                                        if (QUELLTYPB==4){
+                                        if (ADJOINT_TYPE==4){
                                             catseis(sectionpdiff, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
                                     }
                                     }
@@ -2116,13 +2116,13 @@ int main(int argc, char **argv){
                                 /* Write measured filtered seismogramms to disk */
                                 if (SEISMO && TIME_FILT && WRITE_FILTERED_DATA){
                                     if(WAVETYPE==1 || WAVETYPE==3){
-                                        if ((QUELLTYPB==1)|| (QUELLTYPB==3)){
+                                        if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==3)){
                                         catseis(sectionvxdata, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
                                         }
-                                        if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
+                                        if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
                                         catseis(sectionvydata, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
                                         }
-                                        if (QUELLTYPB==4){
+                                        if (ADJOINT_TYPE==4){
                                             catseis(sectionpdata, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
                                     }
                                     }
@@ -2276,7 +2276,7 @@ int main(int argc, char **argv){
                                     }
                                     
                                     /* explosive source */
-                                    if ((QUELLTYPB==4))
+                                    if ((ADJOINT_TYPE==4))
                                         psource(nt,psxx,psyy,psp,srcpos_loc_back,sectionpdiff,ntr1,1);
                                     
                                     /* Applying free surface condition */
@@ -2851,7 +2851,7 @@ int main(int argc, char **argv){
                             break;
                             case 7:
                             if (TRKILL){
-                                if(QUELLTYPB==1){	/* x and y component are used in the inversion */
+                                if(ADJOINT_TYPE==1){	/* x and y component are used in the inversion */
                                     L2t[1]=2.0*(1.0+(L2sum/((float)((NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots)*2.0))));
                                     L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)((nsrc_glob*ntr_glob-sum_killed_traces)*2.0))));
                                     if (MYID==0){
@@ -2866,7 +2866,7 @@ int main(int argc, char **argv){
                                         printf("ntr_glob=%d\n",ntr_glob);
                                         printf("nsrc_glob=%d\n",nsrc_glob);}}}
                             else{
-                                if(QUELLTYPB==1){	/* x and y component are used in the inversion */
+                                if(ADJOINT_TYPE==1){	/* x and y component are used in the inversion */
                                     L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob*2.0)));
                                     L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob*2.0)));}
                                 else{
@@ -3424,7 +3424,7 @@ int main(int argc, char **argv){
                             }
                             
                             /* explosive source */
-                            if ((QUELLTYP==1))
+                            if ((SOURCE_TYPE==1))
                                 psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                             
                             /* Applying free surface condition */
@@ -3491,7 +3491,7 @@ int main(int argc, char **argv){
                                 /* read seismic data from SU file vx */
                                 /* --------------------------------- */
                                 
-                                if((QUELLTYPB==1)||(QUELLTYPB==3)){ /* if QUELLTYPB */
+                                if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==3)){ /* if ADJOINT_TYPE */
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,1,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
                                         timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
@@ -3510,7 +3510,7 @@ int main(int argc, char **argv){
                                 /* read seismic data from SU file vy */
                                 /* --------------------------------- */
                                 
-                                if((QUELLTYPB==1)||(QUELLTYPB==2)){ /* if QUELLTYPB */
+                                if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==2)){ /* if ADJOINT_TYPE */
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,2,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
                                         timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
@@ -3528,7 +3528,7 @@ int main(int argc, char **argv){
                                 /* --------------------------------- */
                                 /* read seismic data from SU file p */
                                 /* --------------------------------- */
-                                if(QUELLTYPB==4){ /* if QUELLTYPB */
+                                if(ADJOINT_TYPE==4){ /* if ADJOINT_TYPE */
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,9,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
                                         timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
@@ -3592,7 +3592,7 @@ int main(int argc, char **argv){
                             break;
                         case 7:
                             if (TRKILL){
-                                if(QUELLTYPB==1){	/* x and y component are used in the inversion */
+                                if(ADJOINT_TYPE==1){	/* x and y component are used in the inversion */
                                     L2t[itest]=2.0*(1.0+(L2sum/((float)((NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots)*2.0))));
                                     if (MYID==0){
                                         printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);}}
@@ -3603,7 +3603,7 @@ int main(int argc, char **argv){
                                         printf("ntr_glob=%d\n",ntr_glob);
                                         printf("NO_OF_TESTSHOTS=%d\n",NO_OF_TESTSHOTS);}}}
                             else{
-                                if(QUELLTYPB==1){	/* x and y component are used in the inversion */
+                                if(ADJOINT_TYPE==1){	/* x and y component are used in the inversion */
                                     L2t[itest]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob*2.0)));}
                                 else{
                                     L2t[itest]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob)));}

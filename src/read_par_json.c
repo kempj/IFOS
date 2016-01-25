@@ -28,8 +28,8 @@ char ** varname_list,** value_list;
 void read_par_json(FILE *fp, char *fileinp){
     
     /* declaration of extern variables */
-    extern int   NX, NY, FDORDER, MAXRELERROR, QUELLART,QUELLART_SH, QUELLTYP, SNAP, SNAP_FORMAT, ACOUSTIC, L, VERBOSE, WAVETYPE,JOINT_INVERSION_PSV_SH_TYPE;
-    extern float DH, TIME, DT, TS, *FL, TAU, DAMPING, PLANE_WAVE_DEPTH, PHI, F_REF,JOINT_INVERSION_PSV_SH_ALPHA_VS,JOINT_INVERSION_PSV_SH_ALPHA_RHO;
+    extern int   NX, NY, FDORDER, MAXRELERROR, SOURCE_SHAPE,SOURCE_SHAPE_SH, SOURCE_TYPE, SNAP, SNAP_FORMAT, ACOUSTIC, L, VERBOSE, WAVETYPE,JOINT_INVERSION_PSV_SH_TYPE;
+    extern float DH, TIME, DT, TS, *FL, TAU, VPPML, PLANE_WAVE_DEPTH, PHI, F_REF,JOINT_INVERSION_PSV_SH_ALPHA_VS,JOINT_INVERSION_PSV_SH_ALPHA_RHO;
     extern float XREC1, XREC2, YREC1, YREC2, FPML;
     extern float REC_ARRAY_DEPTH, REC_ARRAY_DIST;
     extern int SEISMO, NDT, NGEOPH, SEIS_FORMAT, FREE_SURF, READMOD, READREC, SRCREC, RUN_MULTIPLE_SHOTS;
@@ -41,7 +41,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern char SEIS_FILE[STRING_SIZE];
     extern char JACOBIAN[STRING_SIZE],DATA_DIR[STRING_SIZE],FREQ_FILE[STRING_SIZE];
     extern int  NPROCX, NPROCY, MYID, IDX, IDY;
-    extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, QUELLTYPB;
+    extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, ADJOINT_TYPE;
     extern int  GRAD_METHOD;
     extern float TSHIFT_back;
     extern int FILT_SIZE, MODEL_FILTER;
@@ -172,7 +172,7 @@ void read_par_json(FILE *fp, char *fileinp){
         fprintf(fp,"The following default values are set:\n");
         fprintf(fp,"=====================================\n\n");
         
-        if (get_int_from_objectlist("QUELLTYP",number_readobjects,&QUELLTYP,varname_list, value_list))
+        if (get_int_from_objectlist("SOURCE_TYPE",number_readobjects,&SOURCE_TYPE,varname_list, value_list))
             err("Variable SOURCE_TYPE could not be retrieved from the json input file!");
         
         /* Definition of inversion for source time function */
@@ -223,10 +223,10 @@ void read_par_json(FILE *fp, char *fileinp){
             }
         }
         
-        if (get_int_from_objectlist("QUELLART",number_readobjects,&QUELLART,varname_list, value_list))
-            err("Variable QUELLART could not be retrieved from the json input file!");
+        if (get_int_from_objectlist("SOURCE_SHAPE",number_readobjects,&SOURCE_SHAPE,varname_list, value_list))
+            err("Variable SOURCE_SHAPE could not be retrieved from the json input file!");
         else {
-            if ((QUELLART==3)||(QUELLART==7)||(INV_STF==1)) {
+            if ((SOURCE_SHAPE==3)||(SOURCE_SHAPE==7)||(INV_STF==1)) {
                 if (WAVETYPE==1 || WAVETYPE==3){
                     if (get_string_from_objectlist("SIGNAL_FILE",number_readobjects,SIGNAL_FILE,varname_list, value_list))
                         err("Variable SIGNAL_FILE could not be retrieved from the json input file!");
@@ -237,9 +237,9 @@ void read_par_json(FILE *fp, char *fileinp){
                 }
             }
         }
-        if (get_int_from_objectlist("QUELLART_SH",number_readobjects,&QUELLART_SH,varname_list, value_list)){
+        if (get_int_from_objectlist("SOURCE_SHAPE_SH",number_readobjects,&SOURCE_SHAPE_SH,varname_list, value_list)){
             if (WAVETYPE==2 || WAVETYPE==3){
-                err("Variable QUELLART_SH could not be retrieved from the json input file!");
+                err("Variable SOURCE_SHAPE_SH could not be retrieved from the json input file!");
             }
         }
         if (get_int_from_objectlist("SRCREC",number_readobjects,&SRCREC,varname_list, value_list)){
@@ -277,8 +277,8 @@ void read_par_json(FILE *fp, char *fileinp){
             err("Variable BOUNDARY could not be retrieved from the json input file!");
         if (get_int_from_objectlist("FW",number_readobjects,&FW,varname_list, value_list))
             err("Variable FW could not be retrieved from the json input file!");
-        if (get_float_from_objectlist("DAMPING",number_readobjects,&DAMPING,varname_list, value_list))
-            err("Variable DAMPING could not be retrieved from the json input file!");
+        if (get_float_from_objectlist("VPPML",number_readobjects,&VPPML,varname_list, value_list))
+            err("Variable VPPML could not be retrieved from the json input file!");
         if (get_float_from_objectlist("FPML",number_readobjects,&FPML,varname_list, value_list))
             err("Variable FPML could not be retrieved from the json input file!");
         if (get_float_from_objectlist("npower",number_readobjects,&npower,varname_list, value_list))
@@ -451,8 +451,8 @@ void read_par_json(FILE *fp, char *fileinp){
                 if (get_int_from_objectlist("INVTYPE",number_readobjects,&INVTYPE,varname_list, value_list)){
                     INVTYPE=2;
                     fprintf(fp,"\nVariable INVTYPE is set to default value %d.\n",INVTYPE);}
-                if (get_int_from_objectlist("QUELLTYPB",number_readobjects,&QUELLTYPB,varname_list, value_list))
-                    err("Variable QUELLTYPB could not be retrieved from the json input file!");
+                if (get_int_from_objectlist("ADJOINT_TYPE",number_readobjects,&ADJOINT_TYPE,varname_list, value_list))
+                    err("Variable ADJOINT_TYPE could not be retrieved from the json input file!");
                 
                 if (get_string_from_objectlist("MISFIT_LOG_FILE",number_readobjects,MISFIT_LOG_FILE,varname_list, value_list)){
                     strcpy(MISFIT_LOG_FILE,"L2_LOG.dat");
@@ -843,7 +843,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 }
                 
                 
-                /* Time windowing and damping */
+                /* Time windowing and VPPML */
                 if (get_int_from_objectlist("TIMEWIN",number_readobjects,&TIMEWIN,varname_list, value_list)){
                     TIMEWIN=0;
                     fprintf(fp,"Variable TIMEWIN is set to default value %d.\n",TIMEWIN);}
@@ -888,7 +888,7 @@ void read_par_json(FILE *fp, char *fileinp){
         /********************************************/
         
         /* signal file */
-        if (QUELLART == 3)
+        if (SOURCE_SHAPE == 3)
         {
             if (access(SIGNAL_FILE,0) != 0)
             {

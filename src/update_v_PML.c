@@ -41,7 +41,7 @@ void update_v_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 	
 	extern float DT, DH;
 	double time1, time2;
-	extern int MYID, QUELLTYP, QUELLTYPB, FDORDER;
+	extern int MYID, SOURCE_TYPE, ADJOINT_TYPE, FDORDER;
         extern int FDORDER, INVMAT1;
         extern int FREE_SURF, BOUNDARY, FW;
         extern int NPROCX, NPROCY, POS[3];
@@ -556,11 +556,11 @@ void update_v_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 		i=(int)srcpos_loc[1][l];
 		j=(int)srcpos_loc[2][l];
 		azi_rad=srcpos_loc[7][l]*PI/180;
-		QUELLTYP=(int)srcpos_loc[8][l];
+		SOURCE_TYPE=(int)srcpos_loc[8][l];
 	
-		if(QUELLTYP==2){vx[j][i] += (DT*rip[j][i]*signals1[l][nt])/(DH*DH);}  /* single force in x */
-		if(QUELLTYP==3){vy[j][i] += (DT*rjp[j][i]*signals1[l][nt])/(DH*DH);}  /* single force in y */
-		if(QUELLTYP==4){vx[j][i] += (DT*rip[j][i]*sin(azi_rad) * signals[l][nt])/(DH*DH);    /* rotated force in x */
+		if(SOURCE_TYPE==2){vx[j][i] += (DT*rip[j][i]*signals1[l][nt])/(DH*DH);}  /* single force in x */
+		if(SOURCE_TYPE==3){vy[j][i] += (DT*rjp[j][i]*signals1[l][nt])/(DH*DH);}  /* single force in y */
+		if(SOURCE_TYPE==4){vx[j][i] += (DT*rip[j][i]*sin(azi_rad) * signals[l][nt])/(DH*DH);    /* rotated force in x */
 				vy[j][i] += (DT*rjp[j][i]*cos(azi_rad) * signals[l][nt])/(DH*DH);}  /* rotated force in y */          
 	}}
 	
@@ -570,11 +570,11 @@ void update_v_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 		i=(int)srcpos_loc[1][l];
 		j=(int)srcpos_loc[2][l];
 		
-		if(QUELLTYPB==1){vx[j][i] += signals[l][nt];    /* single force in x */
+		if(ADJOINT_TYPE==1){vx[j][i] += signals[l][nt];    /* single force in x */
 				vy[j][i] += signals1[l][nt];}  /* + single force in y */
 
-		if(QUELLTYPB==2){vy[j][i] += signals1[l][nt];}  /* single force in y */
-		if(QUELLTYPB==3){vx[j][i] += signals[l][nt];}   /* single force in x */
+		if(ADJOINT_TYPE==2){vy[j][i] += signals1[l][nt];}  /* single force in y */
+		if(ADJOINT_TYPE==3){vx[j][i] += signals[l][nt];}   /* single force in x */
 
 	}}                         
 			

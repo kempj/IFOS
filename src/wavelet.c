@@ -31,7 +31,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
     
     
     /* extern variables */
-    extern int QUELLART,QUELLART_SH, NT, MYID,VERBOSE;
+    extern int SOURCE_SHAPE,SOURCE_SHAPE_SH, NT, MYID,VERBOSE;
     extern float  DT;
     extern char SIGNAL_FILE[STRING_SIZE];
     extern char SIGNAL_FILE_SH[STRING_SIZE];
@@ -48,8 +48,8 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
     /*   P SV Source                */
     /* ---------------------------- */
     if (SH==0) {
-        if (QUELLART==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
-        if (QUELLART==7){
+        if (SOURCE_SHAPE==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
+        if (SOURCE_SHAPE==7){
             psource=vector(1,NT);
             inseis_source_wavelet(psource,NT,ishot);}
         
@@ -65,7 +65,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
                 ts=1.0/fc;
                 ag = PI*PI*fc*fc;
                 
-                switch (QUELLART){
+                switch (SOURCE_SHAPE){
                     case 1 :
                         /* Old Ricker Wavelet */
                         /* tau=PI*(t-ts-tshift)/(1.5*ts);
@@ -137,7 +137,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
             fprintf(FP," have been assigned with a source signal. \n");
         }
         
-        if (QUELLART==3 || QUELLART==7) free_vector(psource,1,NT);
+        if (SOURCE_SHAPE==3 || SOURCE_SHAPE==7) free_vector(psource,1,NT);
         
         return signals;	
         
@@ -148,8 +148,8 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
     /* ---------------------------- */
 
     if (SH==1) {
-        if (QUELLART_SH==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE_SH,"r"));
-        if (QUELLART_SH==7){
+        if (SOURCE_SHAPE_SH==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE_SH,"r"));
+        if (SOURCE_SHAPE_SH==7){
             psource=vector(1,NT);
             inseis_source_wavelet(psource,NT,ishot);}
         
@@ -165,7 +165,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
                 ts=1.0/fc;
                 ag = PI*PI*fc*fc;
                 
-                switch (QUELLART_SH){
+                switch (SOURCE_SHAPE_SH){
                     case 1 :
                         /* Old Ricker Wavelet */
                         /* tau=PI*(t-ts-tshift)/(1.5*ts);
@@ -236,7 +236,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
             fprintf(FP," have been assigned with a source signal. \n");
         }
         
-        if (QUELLART_SH==3 || QUELLART_SH==7) free_vector(psource,1,NT);
+        if (SOURCE_SHAPE_SH==3 || SOURCE_SHAPE_SH==7) free_vector(psource,1,NT);
         
         return signals;	
         

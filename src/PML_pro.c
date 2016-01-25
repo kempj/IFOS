@@ -88,7 +88,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
 
 	/* extern variables */
 
-	extern float DH, DAMPING, DT, FPML;
+	extern float DH, VPPML, DT, FPML;
 	extern int FREE_SURF, NX, NY, BOUNDARY, NXG, NYG;
 	extern int NPROCX, NPROCY, MYID, POS[3], FW;
 	extern FILE *FP;
@@ -118,10 +118,10 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
       Rcoef = 0.001;
 
       /* compute d0 from INRIA report section 6.1 */
-      d0_x = - (npower + 1) * DAMPING * log(Rcoef) / (2.0 * thickness_PML_x);
-      d0_y = - (npower + 1) * DAMPING * log(Rcoef) / (2.0 * thickness_PML_y);
+      d0_x = - (npower + 1) * VPPML * log(Rcoef) / (2.0 * thickness_PML_x);
+      d0_y = - (npower + 1) * VPPML * log(Rcoef) / (2.0 * thickness_PML_y);
 	
-      /* damping in the X direction */
+      /* VPPML in the X direction */
       /* -------------------------- */
 
       /* origin of the PML layer (position of right edge minus thickness, in meters) */
@@ -136,7 +136,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
           K_x_half[i] = 1.0;
           xval = DH * (i-1);
 
-            /* define damping profile at the grid points */
+            /* define VPPML profile at the grid points */
             abscissa_in_PML = xoriginleft - xval;
       
             if(abscissa_in_PML >= 0.0){
@@ -148,7 +148,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
                alpha_prime_x[i] = alpha_max_PML * (1.0 - abscissa_normalized);
             }
 
-            /* define damping profile at half the grid points */
+            /* define VPPML profile at half the grid points */
             abscissa_in_PML = xoriginleft - (xval + DH/2.0);
 
             if(abscissa_in_PML >= 0.0){
@@ -183,7 +183,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
 	     K_x_half[h] = 1.0;
 	     xval = DH * (i-1);                                 
               
-            /* define damping profile at the grid points */
+            /* define VPPML profile at the grid points */
             abscissa_in_PML = xval - xoriginright;
       
             if(abscissa_in_PML >= 0.0){
@@ -195,7 +195,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
                alpha_prime_x[h] = alpha_max_PML * (1.0 - abscissa_normalized);
             }
 
-            /* define damping profile at half the grid points */
+            /* define VPPML profile at half the grid points */
             abscissa_in_PML = xval + DH/2.0 - xoriginright;
 
             if(abscissa_in_PML >= 0.0){
@@ -223,7 +223,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
 
 
 	
-      /* damping in the Y direction */
+      /* VPPML in the Y direction */
       /* -------------------------- */
 
       /* origin of the PML layer (position of right edge minus thickness, in meters) */
@@ -238,7 +238,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
 
           /* left boundary */
 
-            /* define damping profile at the grid points */
+            /* define VPPML profile at the grid points */
             abscissa_in_PML = yoriginbottom - yval;
       
             if(abscissa_in_PML >= 0.0){
@@ -250,7 +250,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
                alpha_prime_y[i] = alpha_max_PML * (1.0 - abscissa_normalized);
             }
 
-            /* define damping profile at half the grid points */
+            /* define VPPML profile at half the grid points */
             abscissa_in_PML = yoriginbottom - (yval + DH/2.0);
 
             if(abscissa_in_PML >= 0.0){
@@ -279,7 +279,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
             K_y_half[h] = 1.0;
             yval = DH * (i-1);
 
-            /* define damping profile at the grid points */
+            /* define VPPML profile at the grid points */
             abscissa_in_PML = yval - yorigintop;
       
             if(abscissa_in_PML >= 0.0){
@@ -291,7 +291,7 @@ void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float
                alpha_prime_y[h] = alpha_max_PML * (1.0 - abscissa_normalized);
             }
 
-            /* define damping profile at half the grid points */
+            /* define VPPML profile at half the grid points */
             abscissa_in_PML = yval + DH/2.0 - yorigintop;
 
             if(abscissa_in_PML >= 0.0){

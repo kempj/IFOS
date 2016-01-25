@@ -30,7 +30,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 
 	/* declaration of global variables */
 	extern float DT, DH;
-	extern int SEIS_FORMAT, MYID, NT, QUELLART, TIME_FILT, TIMEWIN, TAPER_STF;
+	extern int SEIS_FORMAT, MYID, NT, SOURCE_SHAPE, TIME_FILT, TIMEWIN, TAPER_STF;
 	extern char  PARA[STRING_SIZE], DATA_DIR[STRING_SIZE];
 	extern int TRKILL_STF, NORMALIZE, USE_WORKFLOW, WORKFLOW_STAGE;
 	extern char TRKILL_FILE_STF[STRING_SIZE];
@@ -175,8 +175,8 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	
 	psource=vector(1,ns);
 	
-	if (QUELLART==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
-	if (QUELLART==7){
+	if (SOURCE_SHAPE==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
+	if (SOURCE_SHAPE==7){
 		inseis_source_wavelet(psource,ns,ishot);
 	}
 	
@@ -186,7 +186,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	ts=1.0/fc;
 	for (nt=1;nt<=ns;nt++){
 		t=(float)nt*DT;
-		switch (QUELLART){
+		switch (SOURCE_SHAPE){
 					case 1 : 
 						/* Old Ricker Wavelet */
 						/* tau=PI*(t-ts-tshift)/(1.5*ts);
@@ -247,7 +247,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 						err("Which source-wavelet ? ");
 					
 					
-		}/* end of switch (QUELLART)  */
+		}/* end of switch (SOURCE_SHAPE)  */
 		wavelet[nt]=amp;
 		
 	}/*  end of for (nt=1;nt<=ns;nt++) */	

@@ -29,8 +29,8 @@
 void exchange_par(void){
     
     /* declaration of extern variables */
-    extern int   NX, NY, FDORDER, MAXRELERROR, QUELLART, QUELLTYP, SNAP, SNAP_FORMAT, L;
-    extern float DH, TIME, DT, TS, *FL, TAU, DAMPING, PLANE_WAVE_DEPTH, PHI, F_REF;
+    extern int   NX, NY, FDORDER, MAXRELERROR, SOURCE_SHAPE, SOURCE_TYPE, SNAP, SNAP_FORMAT, L;
+    extern float DH, TIME, DT, TS, *FL, TAU, VPPML, PLANE_WAVE_DEPTH, PHI, F_REF;
     extern float XREC1, XREC2, YREC1, YREC2, FPML;
     extern float REC_ARRAY_DEPTH, REC_ARRAY_DIST, MUN, EPSILON, EPSILON_u, EPSILON_rho;
     extern int SEISMO, NDT, NGEOPH, SEIS_FORMAT, FREE_SURF, READMOD, READREC, SRCREC;
@@ -43,7 +43,7 @@ void exchange_par(void){
     extern char JACOBIAN[STRING_SIZE], DATA_DIR[STRING_SIZE], INV_MODELFILE[STRING_SIZE], FREQ_FILE[STRING_SIZE];
     extern int RUN_MULTIPLE_SHOTS, TAPERLENGTH, INVTYPE;
     extern int NPROC, NPROCX, NPROCY, MYID, IDX, IDY;
-    extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, QUELLTYPB;
+    extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, ADJOINT_TYPE;
     extern int GRAD_METHOD;
     extern float TSHIFT_back;
     extern int MODEL_FILTER, FILT_SIZE;
@@ -88,7 +88,7 @@ void exchange_par(void){
     
     // Parameter for inversion of SH waves and joint inversion
     extern int WAVETYPE;
-    extern int QUELLART_SH;
+    extern int SOURCE_SHAPE_SH;
     extern int JOINT_INVERSION_PSV_SH_TYPE;
     /* Workflow  */
     extern char FILE_WORKFLOW[STRING_SIZE];
@@ -147,7 +147,7 @@ void exchange_par(void){
         fdum[19]  = XREC2;
         fdum[20]  = YREC2;
         
-        fdum[22]  = DAMPING;
+        fdum[22]  = VPPML;
         fdum[23]  = REC_ARRAY_DEPTH;
         fdum[24]  = REC_ARRAY_DIST;
         fdum[25]  = PLANE_WAVE_DEPTH;
@@ -219,8 +219,8 @@ void exchange_par(void){
         idum[5]  = NX;
         idum[6]  = NY;
         
-        idum[8]  = QUELLART;
-        idum[9]  = QUELLTYP;
+        idum[8]  = SOURCE_SHAPE;
+        idum[9]  = SOURCE_TYPE;
         idum[10]  = READMOD;
         idum[11]  = L;
         idum[12]  = FREE_SURF;
@@ -255,7 +255,7 @@ void exchange_par(void){
         idum[41]  = INVMAT1;
         idum[42]  = FW;
         idum[43]  = INVMAT;
-        idum[44]  = QUELLTYPB;
+        idum[44]  = ADJOINT_TYPE;
         
         idum[45]  = TESTSHOT_START;
         idum[46]  = TESTSHOT_END;
@@ -330,7 +330,7 @@ void exchange_par(void){
         
         idum[93]  = WAVETYPE;
         
-        idum[94]  = QUELLART_SH;
+        idum[94]  = SOURCE_SHAPE_SH;
         
         idum[95] = JOINT_INVERSION_PSV_SH_TYPE;
         
@@ -420,7 +420,7 @@ void exchange_par(void){
     XREC2=fdum[19];
     YREC2=fdum[20];
     
-    DAMPING=fdum[22];
+    VPPML=fdum[22];
     REC_ARRAY_DEPTH=fdum[23];
     REC_ARRAY_DIST=fdum[24];
     PLANE_WAVE_DEPTH=fdum[25];
@@ -494,8 +494,8 @@ void exchange_par(void){
     NX = idum[5];
     NY = idum[6];
     
-    QUELLART = idum[8];
-    QUELLTYP = idum[9];
+    SOURCE_SHAPE = idum[8];
+    SOURCE_TYPE = idum[9];
     READMOD = idum[10];
     L = idum[11];
     FREE_SURF = idum[12];
@@ -530,7 +530,7 @@ void exchange_par(void){
     INVMAT1 = idum[41];
     FW = idum[42];
     INVMAT  = idum[43];  
-    QUELLTYPB = idum[44];
+    ADJOINT_TYPE = idum[44];
     
     TESTSHOT_START = idum[45];
     TESTSHOT_END = idum[46];
@@ -606,7 +606,7 @@ void exchange_par(void){
     
     WAVETYPE = idum[93];
     
-    QUELLART_SH = idum[94];
+    SOURCE_SHAPE_SH = idum[94];
     
     JOINT_INVERSION_PSV_SH_TYPE = idum[95];
     

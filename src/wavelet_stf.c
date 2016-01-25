@@ -28,7 +28,7 @@ float ** wavelet_stf(int nsrc, int ishot, float ** signals_stf){
 
 
 	/* extern variables */
-	extern int QUELLART, NT, MYID, INV_STF;
+	extern int SOURCE_SHAPE, NT, MYID, INV_STF;
 	extern float  DT;
 	extern FILE *FP;
 

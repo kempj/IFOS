@@ -30,9 +30,9 @@
 void write_par(FILE *fp){
 
 	/* declaration of extern variables */
-	extern int   NX, NY, NT, QUELLART, QUELLTYP, FDORDER, MAXRELERROR;
+	extern int   NX, NY, NT, SOURCE_SHAPE, SOURCE_TYPE, FDORDER, MAXRELERROR;
 	extern int  SNAP, SNAP_FORMAT, ACOUSTIC, L, SRCREC, TAPER;
-	extern float DH, TIME, DT, TS, *FL, TAU, DAMPING, PLANE_WAVE_DEPTH, PHI, FPML, npower, k_max_PML, F_REF;
+	extern float DH, TIME, DT, TS, *FL, TAU, VPPML, PLANE_WAVE_DEPTH, PHI, FPML, npower, k_max_PML, F_REF;
 	extern float REC_ARRAY_DEPTH, REC_ARRAY_DIST;
 	extern float XREC1, XREC2, YREC1, YREC2;
 	extern int SEISMO, NDT, NGEOPH, SEIS_FORMAT, FREE_SURF, FW;
@@ -44,7 +44,7 @@ void write_par(FILE *fp){
 	extern char  MFILE[STRING_SIZE], JACOBIAN[STRING_SIZE], DATA_DIR[STRING_SIZE],FREQ_FILE[STRING_SIZE];
 	extern int NP, NPROCX, NPROCY, MYID;
 	
-	extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, QUELLTYPB;
+	extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, ADJOINT_TYPE;
 	extern int  GRAD_METHOD;
 	extern float TSHIFT_back;
 	extern int FILT_SIZE, MODEL_FILTER;
@@ -132,7 +132,7 @@ void write_par(FILE *fp){
 
 	fprintf(fp," wavelet of source:");
 
-	switch (QUELLART){
+	switch (SOURCE_SHAPE){
 	case 1 :
 		fprintf(fp," Ricker\n");
 		break;
@@ -162,7 +162,7 @@ void write_par(FILE *fp){
 	}
 
 	fprintf(fp," Type of source:");
-	switch (QUELLTYP){
+	switch (SOURCE_TYPE){
 	case 1 :
 		fprintf(fp," explosive source \n");
 		break;
@@ -212,8 +212,8 @@ void write_par(FILE *fp){
 	fprintf(fp," ------------------------- CPML ---------------------\n");
 	if (FW>0.0){
 		fprintf(fp," width of absorbing frame is %i gridpoints.\n",FW);
-		fprintf(fp," CPML damping applied. \n");
-		fprintf(fp," Damping velocity in the PML frame in m/s: %f .\n",DAMPING);
+		fprintf(fp," CPML VPPML applied. \n");
+		fprintf(fp," VPPML velocity in the PML frame in m/s: %f .\n",VPPML);
 		fprintf(fp," Frequency within the PML frame in Hz: %f \n",FPML);
 		fprintf(fp," npower: %f \n",npower);
 		fprintf(fp," k_max: %f \n",k_max_PML); 
@@ -365,14 +365,14 @@ void write_par(FILE *fp){
 	if (INVMAT1==3){
 		fprintf(fp," INVMAT1=%d: Inversion parameters are lambda, mu and rho.\n",INVMAT1);}
 	fprintf(fp,"\n INVTYPE = %d\n\n",INVTYPE);
-	if (QUELLTYPB==1){
-		fprintf(fp," QUELLTYPB=%d: Inversion of x and y component.\n\n",QUELLTYPB);}
-	if (QUELLTYPB==2){
-		fprintf(fp," QUELLTYPB=%d: Inversion of y component.\n\n",QUELLTYPB);}
-	if (QUELLTYPB==3){
-		fprintf(fp," QUELLTYPB=%d: Inversion of x component.\n\n",QUELLTYPB);}
-	if (QUELLTYPB==4){
-		fprintf(fp," QUELLTYPB=%d: Inversion of pressure component.\n\n",QUELLTYPB);}
+	if (ADJOINT_TYPE==1){
+		fprintf(fp," ADJOINT_TYPE=%d: Inversion of x and y component.\n\n",ADJOINT_TYPE);}
+	if (ADJOINT_TYPE==2){
+		fprintf(fp," ADJOINT_TYPE=%d: Inversion of y component.\n\n",ADJOINT_TYPE);}
+	if (ADJOINT_TYPE==3){
+		fprintf(fp," ADJOINT_TYPE=%d: Inversion of x component.\n\n",ADJOINT_TYPE);}
+	if (ADJOINT_TYPE==4){
+		fprintf(fp," ADJOINT_TYPE=%d: Inversion of pressure component.\n\n",ADJOINT_TYPE);}
 	
 	if (VELOCITY==1){
 		fprintf(fp," VELOCITY=%d: Minimization of misfit in velocity seismograms.\n\n",VELOCITY);}
@@ -541,14 +541,14 @@ void write_par(FILE *fp){
 	
 	
 	fprintf(fp,"\n\n");
-	fprintf(fp," --------------- Time windowing and damping -------------------\n");
+	fprintf(fp," --------------- Time windowing and VPPML -------------------\n");
 	if (TIMEWIN){
-		fprintf(fp," TIMEWIN=%d: Time windowing and damping is applied \n",TIMEWIN);
+		fprintf(fp," TIMEWIN=%d: Time windowing and VPPML is applied \n",TIMEWIN);
 		fprintf(fp," Reading picked times from files: %s \n",PICKS_FILE);
 		fprintf(fp," length of window after pick in s is: %f \n",TWLENGTH_PLUS);
 		fprintf(fp," length of window befor pick in s is: %f \n",TWLENGTH_MINUS);
 		fprintf(fp," gamma is : %f \n\n",GAMMA);}
-	else fprintf(fp," TIMEWIN=%d: No time windowing and damping is applied \n",TIMEWIN);
+	else fprintf(fp," TIMEWIN=%d: No time windowing and VPPML is applied \n",TIMEWIN);
 	
 	
 	
