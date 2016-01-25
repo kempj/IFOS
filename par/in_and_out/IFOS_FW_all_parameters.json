@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------
-#      JSON PARAMETER FILE FOR DENISE
+#      JSON PARAMETER FILE FOR IFOS
 #-----------------------------------------------------------------
 # description:
 # description/name of the model: 2 layer example, model grid created by ../genmod/2layer.c
@@ -68,7 +68,7 @@
 "Seismograms" : "comment",
 			"NDT" : "1",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE" : "su/DENISE",
+			"SEIS_FILE" : "su/IFOS",
 
 "Q-approximation" : "comment",
 			"L" : "0",

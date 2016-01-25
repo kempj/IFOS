@@ -1,6 +1,6 @@
 {\color{blue}\begin{verbatim}
 #-----------------------------------------------------------------
-#      JSON PARAMETER FILE FOR DENISE
+#      JSON PARAMETER FILE FOR IFOS
 #-----------------------------------------------------------------
 # description:
 # description/name of the model: model grid created by ../genmod/2layer.c
@@ -59,7 +59,7 @@
 
 "Seismograms" : "comment",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE" : "su/DENISE",
+			"SEIS_FILE" : "su/IFOS",
 
 
 "General inversion parameters" : "comment",

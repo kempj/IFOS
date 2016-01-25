@@ -1,7 +1,7 @@
-README for DENISE
+README for IFOS
 =================
 
-DENISE (subwavelength DEtail resolving Nonlinear Iterative SEismic inversion) 
+IFOS (subwavelength DEtail resolving Nonlinear Iterative SEismic inversion) 
 is a 2D elastic full waveform inversion code. The inversion problem is solved 
 by a conjugate gradient method. The gradients are computed in the time domain 
 with the adjoint method. The forward modeling is also done in the time domain 
@@ -26,11 +26,11 @@ iteration steps in this example)
 Installation instructions can be found in the file INSTALL.
 
 
-A detailed documentation is provided in manual_DENISE.pdf.
+A detailed documentation is provided in manual_IFOS.pdf.
 
 
 To get started with this code try to run the toy example that is described in
-chapter 9 in the documentation (manual_DENISE.pdf).
+chapter 9 in the documentation (manual_IFOS.pdf).
 
 
 If you use this code for your own research please cite at least one article

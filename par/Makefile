@@ -1,4 +1,4 @@
-default: ../ denise
+default: ../ IFOS
 
 .PHONY: aff
 aff: 
@@ -17,18 +17,18 @@ libcseife:
 	$(MAKE) -C ../contrib/libcseife install
 
 
-.PHONY: denise 
-denise: aff fourier stfinv libcseife
+.PHONY: IFOS 
+IFOS: aff fourier stfinv libcseife
 ifdef MODEL
-	$(MAKE) -C ../src/ denise MODEL=$(MODEL)
+	$(MAKE) -C ../src/ IFOS MODEL=$(MODEL)
 else
-	$(MAKE) -C ../src/ denise 
+	$(MAKE) -C ../src/ IFOS 
 endif
 
 
 .PHONY: clean
 clean: 
-	rm -rf ../bin/denise
+	rm -rf ../bin/IFOS
 	$(MAKE) -C ../contrib/aff clean
 	$(MAKE) -C ../contrib/fourier clean
 	$(MAKE) -C ../contrib/stfinv clean

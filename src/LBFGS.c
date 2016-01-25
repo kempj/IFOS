@@ -1,13 +1,13 @@
 /*------------------------------------------------------------------------
  * Copyright (C) 2016 For the list of authors, see file AUTHORS.
  *
- * This file is part of DENISE.
+ * This file is part of IFOS.
  *
- * DENISE is free software: you can redistribute it and/or modify
+ * IFOS is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 2.0 of the License only.
  *
- * DENISE is distributed in the hope that it will be useful,
+ * IFOS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.

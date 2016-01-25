@@ -17,12 +17,12 @@ cd ./latex
 /bin/rm -rf *.tit >  /dev/null
 /bin/rm -rf *.spl >  /dev/null
 
-	pdflatex manual_DENISE
-	bibtex manual_DENISE
-	pdflatex manual_DENISE
-	pdflatex manual_DENISE
-	pdflatex manual_DENISE
-	pdflatex manual_DENISE
+	pdflatex manual_IFOS
+	bibtex manual_IFOS
+	pdflatex manual_IFOS
+	pdflatex manual_IFOS
+	pdflatex manual_IFOS
+	pdflatex manual_IFOS
 
 /bin/rm -rf *.dvi >  /dev/null
 /bin/rm -rf *.log >  /dev/null
@@ -39,5 +39,5 @@ cd ./latex
 /bin/rm -rf *.tit >  /dev/null
 /bin/rm -rf *.spl >  /dev/null
 
-mv manual_DENISE.pdf ../
+mv manual_IFOS.pdf ../
 cd ..

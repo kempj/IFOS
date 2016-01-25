@@ -33,7 +33,7 @@ const int TAG1=1,TAG2=2, TAG3=3, TAG4=4, TAG5=5,TAG6=6;
 int   check_id, cfgt_id, cfgt, jumpid;
 float DH1;
 
-/* TDFWI Code DENISE_elastic*/
+/* TDFWI Code IFOS_elastic*/
 char JACOBIAN[STRING_SIZE], DATA_DIR[STRING_SIZE], FREQ_FILE[STRING_SIZE];
 
 int USE_WORKFLOW;

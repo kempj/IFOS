@@ -1,23 +1,23 @@
 /*-----------------------------------------------------------------------------------------
  * Copyright (C) 2016  For the list of authors, see file AUTHORS.
  *
- * This file is part of DENISE.
+ * This file is part of IFOS.
  *
- * DENISE is free software: you can redistribute it and/or modify
+ * IFOS is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 2.0 of the License only.
  *
- * DENISE is distributed in the hope that it will be useful,
+ * IFOS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with DENISE. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
+ * along with IFOS. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
  -----------------------------------------------------------------------------------------*/
 
 /* ----------------------------------------------------------------------
- * This is program DENISE.
+ * This is program IFOS.
  * subwavelength DEtail resolving Nonlinear Iterative SEismic inversion
  *
  * If you use this code for your own research please cite at least one article
@@ -200,7 +200,7 @@ int main(int argc, char **argv){
     if(FP==NULL) {
         if (MYID == 0){
             printf("\n==================================================================\n");
-            printf(" Cannot open Denise input file %s \n",fileinp);
+            printf(" Cannot open IFOS input file %s \n",fileinp);
             printf("\n==================================================================\n\n");
             err(" --- ");
         }
@@ -2096,14 +2096,14 @@ int main(int argc, char **argv){
                                 if (SEISMO&&VERBOSE){
                                     if(WAVETYPE==1 || WAVETYPE==3){
                                         if ((QUELLTYPB==1)|| (QUELLTYPB==3)){
-                                            catseis(sectionvxdiff, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        catseis(sectionvxdiff, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
                                         }
                                         if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
-                                            catseis(sectionvydiff, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        catseis(sectionvydiff, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
                                         }
                                         if (QUELLTYPB==4){
                                             catseis(sectionpdiff, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
-                                        }
+                                    }
                                     }
                                     if(WAVETYPE==2 || WAVETYPE==3){
                                         catseis(sectionvzdiff, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
@@ -2117,14 +2117,14 @@ int main(int argc, char **argv){
                                 if (SEISMO && TIME_FILT && WRITE_FILTERED_DATA){
                                     if(WAVETYPE==1 || WAVETYPE==3){
                                         if ((QUELLTYPB==1)|| (QUELLTYPB==3)){
-                                            catseis(sectionvxdata, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        catseis(sectionvxdata, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
                                         }
                                         if ((QUELLTYPB==1)|| (QUELLTYPB==2)){
-                                            catseis(sectionvydata, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        catseis(sectionvydata, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
                                         }
                                         if (QUELLTYPB==4){
                                             catseis(sectionpdata, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
-                                        }
+                                    }
                                     }
                                     if(WAVETYPE==2 || WAVETYPE==3){
                                         catseis(sectionvzdata, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
@@ -2733,169 +2733,170 @@ int main(int argc, char **argv){
                     
                 }
                 
-                /* ----------------------------------------- */
-                /*     Applying and output approx hessian    */
-                /* ----------------------------------------- */
-                if((EPRECOND==1)||(EPRECOND==3)){
-                    
-                    if(!EPRECOND_PER_SHOT && (WAVETYPE==1 || WAVETYPE==3)){
-                        fprintf(FP,"\n Applying approx. Hessian to summed gradient PSV. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
+                if(INVMAT==0){
+                    /* ----------------------------------------- */
+                    /*     Applying and output approx hessian    */
+                    /* ----------------------------------------- */
+                    if((EPRECOND==1)||(EPRECOND==3)){
                         
-                        We_sum_max1=global_maximum(We_sum);
-                        for (j=1;j<=NY;j=j+IDY){
-                            for (i=1;i<=NX;i=i+IDX){
-                                We_sum[j][i]=We_sum[j][i]/We_sum_max1;
-                                waveconv[j][i] = waveconv[j][i]*We_sum[j][i];
-                                if(!ACOUSTIC){
-                                    waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i];
+                        if(!EPRECOND_PER_SHOT && (WAVETYPE==1 || WAVETYPE==3)){
+                            fprintf(FP,"\n Applying approx. Hessian to summed gradient PSV. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
+                            
+                            We_sum_max1=global_maximum(We_sum);
+                            for (j=1;j<=NY;j=j+IDY){
+                                for (i=1;i<=NX;i=i+IDX){
+                                    We_sum[j][i]=We_sum[j][i]/We_sum_max1;
+                                    waveconv[j][i] = waveconv[j][i]*We_sum[j][i];
+                                    if(!ACOUSTIC){
+                                        waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i];
+                                    }
+                                    waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i];
                                 }
-                                waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i];
                             }
+                        }
+                        
+                        if(!EPRECOND_PER_SHOT_SH && (WAVETYPE==2 || WAVETYPE==3)){
+                            fprintf(FP,"\n Applying approx. Hessian to summed gradient SH. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
+                            
+                            We_sum_max1=global_maximum(We_sum_SH);
+                            for (j=1;j<=NY;j=j+IDY){
+                                for (i=1;i<=NX;i=i+IDX){
+                                    We_sum_SH[j][i]=We_sum_SH[j][i]/We_sum_max1;
+                                    waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i];
+                                    waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i];
+                                }
+                            }
+                        }
+                        
+                        if (WAVETYPE==1 || WAVETYPE==3) {
+                            sprintf(jac,"%s_approx_hessian_it%i",JACOBIAN,iter);
+                            write_matrix_disk(We_sum, jac);
+                        }
+                        
+                        if (WAVETYPE==2 || WAVETYPE==3) {
+                            sprintf(jac,"%s_approx_hessian_SH_it%i",JACOBIAN,iter);
+                            write_matrix_disk(We_sum_SH, jac);
                         }
                     }
                     
-                    if(!EPRECOND_PER_SHOT_SH && (WAVETYPE==2 || WAVETYPE==3)){
-                        fprintf(FP,"\n Applying approx. Hessian to summed gradient SH. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
-                        
-                        We_sum_max1=global_maximum(We_sum_SH);
+                    /* ----------------------------------------- */
+                    /*  Set gradient to zero if no inversion     */
+                    /* ----------------------------------------- */
+                    if (WAVETYPE==1 || WAVETYPE==3) {
                         for (j=1;j<=NY;j=j+IDY){
                             for (i=1;i<=NX;i=i+IDX){
-                                We_sum_SH[j][i]=We_sum_SH[j][i]/We_sum_max1;
-                                waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i];
-                                waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i];
+                                if(iter<INV_VP_ITER) waveconv[j][i] = 0.0;
+                                if(iter<INV_VS_ITER && !ACOUSTIC) waveconv_u[j][i] = 0.0;
+                                if(iter<INV_RHO_ITER) waveconv_rho[j][i] = 0.0;
+                            }
+                        }
+                    }
+                    if (WAVETYPE==2 || WAVETYPE==3) {
+                        for (j=1;j<=NY;j=j+IDY){
+                            for (i=1;i<=NX;i=i+IDX){
+                                if(iter<INV_VS_ITER) waveconv_u_z[j][i] = 0.0;
+                                if(iter<INV_RHO_ITER) waveconv_rho_z[j][i] = 0.0;
                             }
                         }
                     }
                     
-                    if (WAVETYPE==1 || WAVETYPE==3) {
-                        sprintf(jac,"%s_approx_hessian_it%i",JACOBIAN,iter);
-                        write_matrix_disk(We_sum, jac);
-                    }
-                    
-                    if (WAVETYPE==2 || WAVETYPE==3) {
-                        sprintf(jac,"%s_approx_hessian_SH_it%i",JACOBIAN,iter);
-                        write_matrix_disk(We_sum_SH, jac);
-                    }
-                }
-                
-                /* ----------------------------------------- */
-                /*  Set gradient to zero if no inversion     */
-                /* ----------------------------------------- */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    for (j=1;j<=NY;j=j+IDY){
-                        for (i=1;i<=NX;i=i+IDX){
-                            if(iter<INV_VP_ITER) waveconv[j][i] = 0.0;
-                            if(iter<INV_VS_ITER && !ACOUSTIC) waveconv_u[j][i] = 0.0;
-                            if(iter<INV_RHO_ITER) waveconv_rho[j][i] = 0.0;
-                        }
-                    }
-                }
-                if (WAVETYPE==2 || WAVETYPE==3) {
-                    for (j=1;j<=NY;j=j+IDY){
-                        for (i=1;i<=NX;i=i+IDX){
-                            if(iter<INV_VS_ITER) waveconv_u_z[j][i] = 0.0;
-                            if(iter<INV_RHO_ITER) waveconv_rho_z[j][i] = 0.0;
-                        }
-                    }
-                }
-                
-                /* ------------------------------*/
-                /* calculate L2 norm of all CPUs */
-                /* ------------------------------*/
-                if(WAVETYPE==1||WAVETYPE==3){
-                    L2sum = 0.0;
-                    MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    energy_sum = 0.0;
-                    MPI_Allreduce(&energy,&energy_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    L2sum_all_shots = 0.0;
-                    MPI_Allreduce(&L2_all_shots,&L2sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    energy_sum_all_shots = 0.0;
-                    MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    
+                    /* ------------------------------*/
+                    /* calculate L2 norm of all CPUs */
+                    /* ------------------------------*/
+                    if(WAVETYPE==1||WAVETYPE==3){
+                        L2sum = 0.0;
+                        MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        energy_sum = 0.0;
+                        MPI_Allreduce(&energy,&energy_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        L2sum_all_shots = 0.0;
+                        MPI_Allreduce(&L2_all_shots,&L2sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        energy_sum_all_shots = 0.0;
+                        MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        
                     if(MYID==0&&(WAVETYPE==3)) printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
-                }
-                if(WAVETYPE==2||WAVETYPE==3){
-                    L2sum_SH = 0.0;
-                    MPI_Allreduce(&L2_SH,&L2sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    energy_sum_SH = 0.0;
-                    MPI_Allreduce(&energy_SH,&energy_sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    L2sum_all_shots_SH = 0.0;
-                    MPI_Allreduce(&L2_all_shots_SH,&L2sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    energy_sum_all_shots_SH = 0.0;
-                    MPI_Allreduce(&energy_all_shots_SH,&energy_sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    
+                    }
+                    if(WAVETYPE==2||WAVETYPE==3){
+                        L2sum_SH = 0.0;
+                        MPI_Allreduce(&L2_SH,&L2sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        energy_sum_SH = 0.0;
+                        MPI_Allreduce(&energy_SH,&energy_sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        L2sum_all_shots_SH = 0.0;
+                        MPI_Allreduce(&L2_all_shots_SH,&L2sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        energy_sum_all_shots_SH = 0.0;
+                        MPI_Allreduce(&energy_all_shots_SH,&energy_sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        
                     if(MYID==0&&(WAVETYPE==3)) printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
-                }
-                sum_killed_traces=0;
-                MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
-                sum_killed_traces_testshots=0;
-                MPI_Allreduce(&killed_traces_testshots,&sum_killed_traces_testshots,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
-                
-                
-                switch (LNORM){
-                    case 2:
-                        L2t[1]=0.0; L2t[4]=0.0;
-                        
-                        if(WAVETYPE==1||WAVETYPE==3){
-                            L2t[1]+=L2sum/energy_sum;
-                            L2t[4]+=L2sum_all_shots/energy_sum_all_shots;
-                        }
-                        
-                        if(WAVETYPE==2||WAVETYPE==3){
-                            L2t[1]+=L2sum_SH/energy_sum_SH;
-                            L2t[4]+=L2sum_all_shots_SH/energy_sum_all_shots_SH;
-                        }
+                    }
+                    sum_killed_traces=0;
+                    MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
+                    sum_killed_traces_testshots=0;
+                    MPI_Allreduce(&killed_traces_testshots,&sum_killed_traces_testshots,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
+                    
+                    
+                    switch (LNORM){
+                            case 2:
+                            L2t[1]=0.0; L2t[4]=0.0;
+                            
+                            if(WAVETYPE==1||WAVETYPE==3){
+                                L2t[1]+=L2sum/energy_sum;
+                                L2t[4]+=L2sum_all_shots/energy_sum_all_shots;
+                            }
+                            
+                            if(WAVETYPE==2||WAVETYPE==3){
+                                L2t[1]+=L2sum_SH/energy_sum_SH;
+                                L2t[4]+=L2sum_all_shots_SH/energy_sum_all_shots_SH;
+                            }
                         if(MYID==0&&(WAVETYPE==3)) printf("\n Sum: L2=%f",L2t[4]);
-                        
-                        break;
-                    case 7:
-                        if (TRKILL){
-                            if(QUELLTYPB==1){	/* x and y component are used in the inversion */
-                                L2t[1]=2.0*(1.0+(L2sum/((float)((NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots)*2.0))));
-                                L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)((nsrc_glob*ntr_glob-sum_killed_traces)*2.0))));
-                                if (MYID==0){
-                                    printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
-                                    printf("sum_killed_traces=%d\n",sum_killed_traces);}}
+                            
+                            break;
+                            case 7:
+                            if (TRKILL){
+                                if(QUELLTYPB==1){	/* x and y component are used in the inversion */
+                                    L2t[1]=2.0*(1.0+(L2sum/((float)((NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots)*2.0))));
+                                    L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)((nsrc_glob*ntr_glob-sum_killed_traces)*2.0))));
+                                    if (MYID==0){
+                                        printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
+                                        printf("sum_killed_traces=%d\n",sum_killed_traces);}}
+                                else{
+                                    L2t[1]=2.0*(1.0+(L2sum/((float)(NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots))));
+                                    L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)(nsrc_glob*ntr_glob-sum_killed_traces))));
+                                    if (MYID==0){
+                                        printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
+                                        printf("sum_killed_traces=%d\n",sum_killed_traces);
+                                        printf("ntr_glob=%d\n",ntr_glob);
+                                        printf("nsrc_glob=%d\n",nsrc_glob);}}}
                             else{
-                                L2t[1]=2.0*(1.0+(L2sum/((float)(NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots))));
-                                L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)(nsrc_glob*ntr_glob-sum_killed_traces))));
-                                if (MYID==0){
-                                    printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
-                                    printf("sum_killed_traces=%d\n",sum_killed_traces);
-                                    printf("ntr_glob=%d\n",ntr_glob);
-                                    printf("nsrc_glob=%d\n",nsrc_glob);}}}
-                        else{
-                            if(QUELLTYPB==1){	/* x and y component are used in the inversion */
-                                L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob*2.0)));
-                                L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob*2.0)));}
-                            else{
-                                L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob)));
-                                L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob)));}
-                        }
-                        break;
-                    case 8:
-                        L2t[1]=L2sum/energy_sum;
-                        L2t[4]=L2sum_all_shots/energy_sum_all_shots;
-                        break;
-                    default:
-                        L2t[1]=L2sum;
-                        L2t[4]=L2sum_all_shots;
-                        break;
+                                if(QUELLTYPB==1){	/* x and y component are used in the inversion */
+                                    L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob*2.0)));
+                                    L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob*2.0)));}
+                                else{
+                                    L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob)));
+                                    L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob)));}
+                            }
+                            break;
+                            case 8:
+                            L2t[1]=L2sum/energy_sum;
+                            L2t[4]=L2sum_all_shots/energy_sum_all_shots;
+                            break;
+                        default:
+                            L2t[1]=L2sum;
+                            L2t[4]=L2sum_all_shots;
+                            break;
+                    }
+                    
+                    if(!steplength_search) {
+                        L2_SL_old=L2t[4];
+                    } else {
+                        L2_SL_new=L2t[4];
+                    }
+                    
+                    if(MYID==0&&VERBOSE){
+                        fprintf(FP,"\n\nL2sum: %f\n", L2sum);
+                        fprintf(FP,"energy_sum: %e\n\n", energy_sum);
+                        fprintf(FP,"L2sum_all_shots: %f\n", L2sum_all_shots);
+                        fprintf(FP,"energy_sum_all_shots: %e\n\n", energy_sum_all_shots);
+                    }
                 }
-                
-                if(!steplength_search) {
-                    L2_SL_old=L2t[4];
-                } else {
-                    L2_SL_new=L2t[4];
-                }
-                
-                if(MYID==0&&VERBOSE){
-                    fprintf(FP,"\n\nL2sum: %f\n", L2sum);
-                    fprintf(FP,"energy_sum: %e\n\n", energy_sum);
-                    fprintf(FP,"L2sum_all_shots: %f\n", L2sum_all_shots);
-                    fprintf(FP,"energy_sum_all_shots: %e\n\n", energy_sum_all_shots);
-                }
-                
                 /* Count how often this loop runs */
                 if(GRAD_METHOD==2 && iter>LBFGS_iter_start) {
                     wolfe_sum_FWI++;

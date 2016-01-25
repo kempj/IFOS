@@ -11,23 +11,23 @@ rm jacobian/toy_example/jac_toy_example*
 rm su/toy_example/toy_example*
 rm su/measured_data/toy_example*
 
-# compiling all libraries and  DENISE
+# compiling all libraries and  IFOS
 make clean
-make denise MODEL_AC=../genmod/toy_example_ac_true.c
+make IFOS MODEL_AC=../genmod/toy_example_ac_true.c
 
-# starting DENISE for forward modeling
-mpirun -np 4 nice -19 ../bin/denise in_and_out/toy_example/toy_example_ac_FW.json | tee in_and_out/toy_example/toy_example_ac_FW.out
+# starting IFOS for forward modeling
+mpirun -np 4 nice -19 ../bin/IFOS in_and_out/toy_example/toy_example_ac_FW.json | tee in_and_out/toy_example/toy_example_ac_FW.out
 
 ###############################################################
 #                    running the inversion                    #
 ###############################################################
 
-# compiling DENISE
+# compiling IFOS
 make clean
-make denise MODEL_AC=../genmod/toy_example_ac_start.c
+make IFOS MODEL_AC=../genmod/toy_example_ac_start.c
 
-# starting DENISE
-mpirun -np 4 nice -19 ../bin/denise in_and_out/toy_example/toy_example_ac_INV.json | tee in_and_out/toy_example/toy_example_ac_INV.out
+# starting IFOS
+mpirun -np 4 nice -19 ../bin/IFOS in_and_out/toy_example/toy_example_ac_INV.json | tee in_and_out/toy_example/toy_example_ac_INV.out
 
 make clean
 

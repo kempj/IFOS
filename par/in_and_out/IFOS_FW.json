@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------
-#      JSON PARAMETER FILE FOR DENISE
+#      JSON PARAMETER FILE FOR IFOS
 #-----------------------------------------------------------------
 # description:
 # description/name of the model: 2 layer example, model grid created by ../genmod/2layer.c
@@ -61,42 +61,11 @@
 
 "Seismograms" : "comment",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE" : "su/DENISE",
+			"SEIS_FILE" : "su/IFOS",
 
 "General inversion parameters" : "comment",
-			"ITERMAX" : "10",
-			"DATA_DIR" : "su/measured_data/DENISE_real",
 			"INVMAT1" : "1",
-			"INVMAT" : "0",
-			"QUELLTYPB" : "1",
-			
-"Output of inverted models" : "comment",
-			"INV_MODELFILE" : "model/modelTest",
-			"nfstart" : "1",
-			"nf" : "1",
-
-"Output of gradients" : "comment",
-			"JACOBIAN" : "jacobian/jacobian_Test",
-			"nfstart_jac" : "1",
-			"nf_jac" : "1",
-
-"Hessian and Gradient-Method" : "comment",
-			"GRAD_METHOD" : "1",
-
-"Gradient calculation" : "comment",
-			"LNORM" : "2",
-			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, normalized L2 norm=7" : "comment",
-			"NORMALIZE" : "0",
-			"DTINV" : "2",
-
-"Step length estimation" : "comment", 
-			"EPS_SCALE" : "0.01", 
-			"STEPMAX" : "4",
-			"SCALEFAC" : "4.0",
-			"TESTSHOT_START , TESTSHOT_END , TESTSHOT_INCR" : "1 , 2 , 1",
-
-"Termination of the programmme" : "comment",
-			"PRO" : "0.01",
+			"INVMAT" : "10",
 
 "Verbose mode" : "comment",
 			"VERBOSE" : "0",

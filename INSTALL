@@ -1,23 +1,23 @@
-INSTALL for DENISE
+INSTALL for IFOS
 ==================
 
 A detailed installation instruction is provided in the chapter 5 of the 
-documentation (DENISE/doc/manual_DENISE.pdf). If the manual is not compiled,
-please use the script DENISE/doc/compile_LaTeX_manual.sh
+documentation (IFOS/doc/manual_IFOS.pdf). If the manual is not compiled,
+please use the script IFOS/doc/compile_LaTeX_manual.sh
 
-To compile DENISE a MAKEFILE is available in the DENISE/par directory. To
+To compile IFOS a MAKEFILE is available in the IFOS/par directory. To
 use the MAKEFILE type
 
 make
 
-in the DENISE/par directory. The MAKEFILE compiles the additional libaries
+in the IFOS/par directory. The MAKEFILE compiles the additional libaries
 
 lib cseife
 lib stfinv
 lib aff
 lib fourier
 
-before compiling the main program DENISE.
+before compiling the main program IFOS.
 
 -------------------------------------------
 

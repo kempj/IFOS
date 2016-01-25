@@ -1,4 +1,4 @@
-# Makefile for DENISE
+# Makefile for IFOS
 
 #--------------------------------------------------------
 # edit here:
@@ -49,8 +49,8 @@ SNAPMERGE_SCR = \
 	util.c 
 
 
-DENISE= \
-	denise.c \
+IFOS= \
+	ifos.c \
 	stf.c \
 	window_cos.c \
 	calc_mat_change_test.c \
@@ -166,13 +166,13 @@ DENISE= \
     
 SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)
 
-DENISE_OBJ = $(DENISE:%.c=%.o)
+IFOS_OBJ = $(IFOS:%.c=%.o)
 
 snapmerge:	$(SNAPMERGE_OBJ)
 	$(CC) $(SFLAGS) $(SNAPMERGE_OBJ) -o ../bin/snapmerge $(LFLAGS)
 
-denise:		$(DENISE_OBJ)
-	$(CC) $(SFLAGS) $(DENISE_OBJ) -o $(EXEC)/denise $(LFLAGS)
+IFOS:		$(IFOS_OBJ)
+	$(CC) $(SFLAGS) $(IFOS_OBJ) -o $(EXEC)/IFOS $(LFLAGS)
 
 
 clean:
