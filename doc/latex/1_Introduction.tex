@@ -5,8 +5,8 @@
 %------------------------------------------------------------------------------------------------%
 
 The aim of Full Waveform Tomography (FWT) is to estimate the elastic material parameters in the underground. This can be achieved by minimizing the misfit energy 
-between the modelled and field data using a gradient optimization approach. Because the FWT uses the full information content of each seismogram, structures below the seismic 
-wavelength can be resolved. This is a tremendous improvement in resolution compared to traveltime tomography (\cite{prattgao:2002}).\\ 
+between the modeled and field data using a gradient optimization approach. Because the FWT uses the full information content of each seismogram, structures below the seismic 
+wavelength can be resolved. This is a tremendous improvement in resolution compared to travel time tomography (\cite{prattgao:2002}).\\ 
 The concept of full waveform tomography was originally developed by Albert Tarantola in the  1980s  for the acoustic, isotropic elastic, and 
 viscoelastic case (\cite{tarantola:84a,tarantola:84,tarantola:86,tarantola:88}). First numerical implementations were realized at the end of the 1980s 
 (\cite{gauthier:86}, \cite{mora:87}, \cite{pica:90}), but due to limited computational resources, the application was restricted to simple 
@@ -17,7 +17,7 @@ sized problems could be inverted with frequency domain approaches.\\ A spectacul
 In order to extract information about the structure and composition of the crust from seismic observations, it is necessary to be able to predict how seismic wavefields are affected by complex structures.
 Since exact analytical solutions to the wave equations do not exist for most subsurface configurations, the solutions can be obtained only by numerical methods. For iterative calculations of synthetic seismograms with limited computer resources fast and accurate modeling methods are needed. 
 
-The FD modeling/inversion program IFOS (\textbf{I}nversion of \textbf{F}ully \textbf{O}bserved \textbf{S}eismograms), is based on the FD approach described by \cite{virieux:86} and \cite{levander:88}. The present program IFOS has the following extensions
+The FD modeling/inversion program IFOS (\textbf{I}nversion of \textbf{F}ull \textbf{O}bserved \textbf{S}eismograms), is based on the FD approach described by \cite{virieux:86} and \cite{levander:88}. The present program IFOS has the following extensions
 
 \begin{itemize}
 \item is efficently parallelized using domain decomposition with MPI (\cite{bohlen:02}),

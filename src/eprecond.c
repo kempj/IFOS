@@ -1,4 +1,8 @@
+/*                          Acknowledgement                         */
 /* This function is copied from DENISE Black Edition from D. Koehn  */
+/* Licence: GNU GENERAL PUBLIC LICENSE Version 2, June 1991         */
+/* https://github.com/daniel-koehn/DENISE-Black-Edition             */
+
 
 #include "fd.h"
 void eprecond(float ** W, float ** vx, float ** vy){
