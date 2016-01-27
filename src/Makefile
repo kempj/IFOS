@@ -1,4 +1,4 @@
-# Makefile for IFOS
+# Makefile for IFOS2D
 
 #--------------------------------------------------------
 # edit here:
@@ -49,8 +49,8 @@ SNAPMERGE_SCR = \
 	util.c 
 
 
-IFOS= \
-	ifos.c \
+IFOS2D= \
+	IFOS2D.c \
 	stf.c \
 	window_cos.c \
 	calc_mat_change_test.c \
@@ -166,14 +166,13 @@ IFOS= \
     
 SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)
 
-IFOS_OBJ = $(IFOS:%.c=%.o)
+IFOS_OBJ = $(IFOS2D:%.c=%.o)
 
 snapmerge:	$(SNAPMERGE_OBJ)
 	$(CC) $(SFLAGS) $(SNAPMERGE_OBJ) -o ../bin/snapmerge $(LFLAGS)
 
-IFOS:		$(IFOS_OBJ)
+IFOS2D:		$(IFOS_OBJ)
 	$(CC) $(SFLAGS) $(IFOS_OBJ) -o $(EXEC)/IFOS $(LFLAGS)
-
 
 clean:
 	find . -name "*.o" -exec rm {} \; 

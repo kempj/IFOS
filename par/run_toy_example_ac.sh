@@ -13,10 +13,10 @@ rm su/measured_data/toy_example*
 
 # compiling all libraries and  IFOS
 make clean
-make IFOS MODEL_AC=../genmod/toy_example_ac_true.c
+make IFOS2D MODEL_AC=../genmod/toy_example_ac_true.c
 
 # starting IFOS for forward modeling
-mpirun -np 4 nice -19 ../bin/IFOS in_and_out/toy_example/toy_example_ac_FW.json | tee in_and_out/toy_example/toy_example_ac_FW.out
+mpirun -np 4 nice -19 ../bin/IFOS2D in_and_out/toy_example/toy_example_ac_FW.json | tee in_and_out/toy_example/toy_example_ac_FW.out
 
 ###############################################################
 #                    running the inversion                    #
@@ -24,10 +24,10 @@ mpirun -np 4 nice -19 ../bin/IFOS in_and_out/toy_example/toy_example_ac_FW.json 
 
 # compiling IFOS
 make clean
-make IFOS MODEL_AC=../genmod/toy_example_ac_start.c
+make IFOS2D MODEL_AC=../genmod/toy_example_ac_start.c
 
 # starting IFOS
-mpirun -np 4 nice -19 ../bin/IFOS in_and_out/toy_example/toy_example_ac_INV.json | tee in_and_out/toy_example/toy_example_ac_INV.out
+mpirun -np 4 nice -19 ../bin/IFOS2D in_and_out/toy_example/toy_example_ac_INV.json | tee in_and_out/toy_example/toy_example_ac_INV.out
 
 make clean
 

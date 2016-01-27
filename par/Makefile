@@ -1,4 +1,4 @@
-default: ../ IFOS
+default: ../ IFOS2D
 
 .PHONY: aff
 aff: 
@@ -17,18 +17,18 @@ libcseife:
 	$(MAKE) -C ../contrib/libcseife install
 
 
-.PHONY: IFOS 
-IFOS: aff fourier stfinv libcseife
+.PHONY: IFOS2D 
+IFOS2D: aff fourier stfinv libcseife
 ifdef MODEL
-	$(MAKE) -C ../src/ IFOS MODEL=$(MODEL)
+	$(MAKE) -C ../src/ IFOS2D MODEL=$(MODEL)
 else
-	$(MAKE) -C ../src/ IFOS 
+	$(MAKE) -C ../src/ IFOS2D 
 endif
 
 
 .PHONY: clean
 clean: 
-	rm -rf ../bin/IFOS
+	rm -rf ../bin/IFOS2D
 	$(MAKE) -C ../contrib/aff clean
 	$(MAKE) -C ../contrib/fourier clean
 	$(MAKE) -C ../contrib/stfinv clean

@@ -2,7 +2,7 @@ rm -f su/IFOS* su/measured_data/IFOS*
 
 lamboot
 #lamboot -v lamhosts
-mpirun -np 8 nice -19 ../bin/IFOS in_and_out/IFOS_FW.json | tee in_and_out/IFOS_FW.out
+mpirun -np 8 nice -19 ../bin/IFOS2D in_and_out/IFOS_FW.json | tee in_and_out/IFOS_FW.out
 cd model
 cp model_Test_rho_it_0.bin model_Test_vp_it_0.bin model_Test_vs_it_0.bin ../model_true/.
 cd ..

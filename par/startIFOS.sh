@@ -1,6 +1,6 @@
 #lamboot -v lamhosts  
 lamboot
-mpirun -np 8 nice -19 ../bin/IFOS in_and_out/IFOS_INV.json | tee in_and_out/IFOS_INV.out
+mpirun -np 8 nice -19 ../bin/IFOS2D in_and_out/IFOS_INV.json | tee in_and_out/IFOS_INV.out
 
 #cd su
 

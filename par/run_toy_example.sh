@@ -6,13 +6,13 @@
 
 # compiling all libraries and  IFOS
 make clean
-make IFOS MODEL=../genmod/toy_example_true.c
+make IFOS2D MODEL=../genmod/toy_example_true.c
 
 # starting IFOS for forward modeling
 # (depending on the MPI package you maybe have to adjust the following programme call, 
 #  e.g. when using openMPI you do not have to use the 'lamboot' command)
 #lamboot
-mpirun -np 4 nice -19 ../bin/IFOS in_and_out/toy_example/toy_example_FW.json | tee in_and_out/toy_example/toy_example_FW.out
+mpirun -np 4 nice -19 ../bin/IFOS2D in_and_out/toy_example/toy_example_FW.json | tee in_and_out/toy_example/toy_example_FW.out
 
 ###############################################################
 #                    running the inversion                    #
@@ -20,8 +20,8 @@ mpirun -np 4 nice -19 ../bin/IFOS in_and_out/toy_example/toy_example_FW.json | t
 
 # compiling IFOS
 make clean
-make IFOS MODEL=../genmod/toy_example_start.c
+make IFOS2D MODEL=../genmod/toy_example_start.c
 
 # starting IFOS
 #lamboot
-mpirun -np 4 nice -19 ../bin/IFOS in_and_out/toy_example/toy_example_INV.json | tee in_and_out/toy_example/toy_example_INV.out
+mpirun -np 4 nice -19 ../bin/IFOS2D in_and_out/toy_example/toy_example_INV.json | tee in_and_out/toy_example/toy_example_INV.out
