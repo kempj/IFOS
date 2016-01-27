@@ -172,7 +172,7 @@ snapmerge:	$(SNAPMERGE_OBJ)
 	$(CC) $(SFLAGS) $(SNAPMERGE_OBJ) -o ../bin/snapmerge $(LFLAGS)
 
 IFOS2D:		$(IFOS_OBJ)
-	$(CC) $(SFLAGS) $(IFOS_OBJ) -o $(EXEC)/IFOS $(LFLAGS)
+	$(CC) $(SFLAGS) $(IFOS_OBJ) -o $(EXEC)/IFOS2D $(LFLAGS)
 
 clean:
 	find . -name "*.o" -exec rm {} \; 
