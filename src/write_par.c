@@ -44,7 +44,7 @@ void write_par(FILE *fp){
 	extern char  MFILE[STRING_SIZE], JACOBIAN[STRING_SIZE], DATA_DIR[STRING_SIZE],FREQ_FILE[STRING_SIZE];
 	extern int NP, NPROCX, NPROCY, MYID;
 	
-	extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, ADJOINT_TYPE;
+	extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, PARAMETERIZATION, FORWARD_ONLY, ADJOINT_TYPE;
 	extern int  GRAD_METHOD;
 	extern float TSHIFT_back;
 	extern int FILT_SIZE, MODEL_FILTER;
@@ -349,21 +349,21 @@ void write_par(FILE *fp){
 	}
 	fprintf(fp,"\n");
         fprintf(fp," -----------------------  IFOS elastic specific parameters  ----------------------\n");
-	if (INVMAT==10){
-		fprintf(fp," INVMAT=%d: Only forward modeling is applied.\n",INVMAT);}
+	if (FORWARD_ONLY==1){
+		fprintf(fp," FORWARD_ONLY=%d: Only forward modeling is applied.\n",FORWARD_ONLY);}
 	else {
-		if (INVMAT==0){
-			fprintf(fp," INVMAT=%d: FWI is applied.\n",INVMAT);}
+		if (FORWARD_ONLY==0){
+			fprintf(fp," FORWARD_ONLY=%d: FWI is applied.\n",FORWARD_ONLY);}
 			
 	fprintf(fp,"\n Maximum number of iterations: %d\n",ITERMAX);
 	fprintf(fp," location of the measured seismograms : \n ");
 	fprintf(fp,"\t%s\n\n",DATA_DIR);
-	if (INVMAT1==1){
-		fprintf(fp," INVMAT1=%d: Inversion parameters are vp, vs and rho.\n",INVMAT1);}
-	if (INVMAT1==2){
-		fprintf(fp," INVMAT1=%d: Inversion parameters are Zp, Zs and rho.\n",INVMAT1);}
-	if (INVMAT1==3){
-		fprintf(fp," INVMAT1=%d: Inversion parameters are lambda, mu and rho.\n",INVMAT1);}
+	if (PARAMETERIZATION==1){
+		fprintf(fp," PARAMETERIZATION=%d: Inversion parameters are vp, vs and rho.\n",PARAMETERIZATION);}
+	if (PARAMETERIZATION==2){
+		fprintf(fp," PARAMETERIZATION=%d: Inversion parameters are Zp, Zs and rho.\n",PARAMETERIZATION);}
+	if (PARAMETERIZATION==3){
+		fprintf(fp," PARAMETERIZATION=%d: Inversion parameters are lambda, mu and rho.\n",PARAMETERIZATION);}
 	fprintf(fp,"\n INVTYPE = %d\n\n",INVTYPE);
 	if (ADJOINT_TYPE==1){
 		fprintf(fp," ADJOINT_TYPE=%d: Inversion of x and y component.\n\n",ADJOINT_TYPE);}

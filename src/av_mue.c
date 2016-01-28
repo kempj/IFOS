@@ -21,11 +21,11 @@
 
 void av_mue(float ** u, float ** uipjp,float ** rho){
     
-    extern int NX, NY, INVMAT1;
+    extern int NX, NY, PARAMETERIZATION;
     int i, j;
     float u1, u2, u3, u4;
     
-    if(INVMAT1==3){
+    if(PARAMETERIZATION==3){
         
         for (j=1;j<=NY;j++){
             for (i=1;i<=NX;i++){
@@ -42,7 +42,7 @@ void av_mue(float ** u, float ** uipjp,float ** rho){
         
     }
     
-    if(INVMAT1==1){
+    if(PARAMETERIZATION==1){
         
         for (j=1;j<=NY;j++){
             for (i=1;i<=NX;i++){

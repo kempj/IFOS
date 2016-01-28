@@ -31,7 +31,7 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 
 	extern float DH, DT, TS;
 	extern float XREC1, XREC2, YREC1, YREC2;
-        extern int NX, NY, MYID, INVMAT1, FW, L, NT, NDT, ACOUSTIC;
+        extern int NX, NY, MYID, PARAMETERIZATION, FW, L, NT, NDT, ACOUSTIC;
 	extern int READREC, NPROCX,NPROCY, SRCREC, FREE_SURF;
         extern int SEISMO, SEIS_FORMAT[6];
 	extern char SOURCE_FILE[STRING_SIZE], REC_FILE[STRING_SIZE];
@@ -70,9 +70,9 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 						sumu=sumu+((ws*ws*ts*ts*ptaus[j][i])/(1.0+ws*ws*ts*ts));
 					}
 					
-					if(INVMAT1==1){
+					if(PARAMETERIZATION==1){
 						pu_ref=prho[j][i]*pu[j][i]*pu[j][i];}
-					if(INVMAT1==3){
+					if(PARAMETERIZATION==3){
 						pu_ref=pu[j][i];}
 						
 					
@@ -92,10 +92,10 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 			for (i=1+nfw;i<=(nx-nfw);i++){
 				for (j=ny1;j<=(ny-nfw);j++){
 
-					if(INVMAT1==3){
+					if(PARAMETERIZATION==3){
 						c=sqrt(pu[j][i]/prho[j][i]);}
 
-					if(INVMAT1==1){
+					if(PARAMETERIZATION==1){
 						c=pu[j][i];
 					}
 
@@ -119,9 +119,9 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 					sumpi=sumpi+((ws*ws*ts*ts*ptaup[j][i])/(1.0+ws*ws*ts*ts));
 				}
 				
-				if(INVMAT1==1){
+				if(PARAMETERIZATION==1){
 					ppi_ref=prho[j][i]*ppi[j][i]*ppi[j][i];}
-				if(INVMAT1==3){
+				if(PARAMETERIZATION==3){
 					ppi_ref=ppi[j][i]+2*pu[j][i];}
 					
 				/* minimum phase velocity of P waves */
@@ -141,10 +141,10 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 		for (i=1+nfw;i<=(nx-nfw);i++){
 			for (j=ny1;j<=(ny-nfw);j++){
 
-				if(INVMAT1==3){
+				if(PARAMETERIZATION==3){
 					c=sqrt((ppi[j][i]+2.0*pu[j][i])/prho[j][i]);}
 
-				if(INVMAT1==1){
+				if(PARAMETERIZATION==1){
 					c=ppi[j][i];}
 
 				if (cmax_p<c) cmax_p=c;

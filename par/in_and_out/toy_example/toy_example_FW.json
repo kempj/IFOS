@@ -79,8 +79,8 @@
 
 "General inversion parameters" : "comment",
 			"ITERMAX" : "1",
-			"INVMAT1" : "1",
-			"INVMAT" : "10",
+			"PARAMETERIZATION" : "1",
+			"FORWARD_ONLY" : "10",
 
 "Verbose mode" : "comment",
 			"VERBOSE" : "0",

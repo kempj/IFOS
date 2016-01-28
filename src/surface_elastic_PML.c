@@ -34,7 +34,7 @@ void surface_elastic_PML(int ndepth, float ** vx, float ** vy, float ** sxx, flo
     float  vxx, vyy;
     float  dh24, dthalbe;
     extern float DT, DH;
-    extern int NX, INVMAT1;
+    extern int NX, PARAMETERIZATION;
     extern int FW, BOUNDARY;
     extern int NPROCX, NPROCY, POS[3], MYID;
     extern int FDORDER, WAVETYPE;
@@ -92,11 +92,11 @@ void surface_elastic_PML(int ndepth, float ** vx, float ** vy, float ** sxx, flo
             }
             
             
-            if(INVMAT1==3){
+            if(PARAMETERIZATION==3){
                 fjm=u[j][i]*2.0;
                 g=pi[j][i];}
             
-            if(INVMAT1==1){
+            if(PARAMETERIZATION==1){
                 fjm=rho[j][i] * u[j][i] * u[j][i] * 2.0;
                 g=rho[j][i] * ((pi[j][i] * pi[j][i]) - 2 * u[j][i] * u[j][i]);}
             

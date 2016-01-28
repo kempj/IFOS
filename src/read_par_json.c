@@ -41,7 +41,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern char SEIS_FILE[STRING_SIZE];
     extern char JACOBIAN[STRING_SIZE],DATA_DIR[STRING_SIZE],FREQ_FILE[STRING_SIZE];
     extern int  NPROCX, NPROCY, MYID, IDX, IDY;
-    extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, ADJOINT_TYPE;
+    extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, PARAMETERIZATION, FORWARD_ONLY, ADJOINT_TYPE;
     extern int  GRAD_METHOD;
     extern float TSHIFT_back;
     extern int FILT_SIZE, MODEL_FILTER;
@@ -431,17 +431,17 @@ void read_par_json(FILE *fp, char *fileinp){
          section inversion parameters
          =================================*/
         
-        if (get_int_from_objectlist("INVMAT1",number_readobjects,&INVMAT1,varname_list, value_list))
-            err("Variable INVMAT1 could not be retrieved from the json input file!");
+        if (get_int_from_objectlist("PARAMETERIZATION",number_readobjects,&PARAMETERIZATION,varname_list, value_list))
+            err("Variable PARAMETERIZATION could not be retrieved from the json input file!");
         else
             if(ACOUSTIC){
-                INVMAT1=1;
-                fprintf(fp,"For acoustic modelling only INVMAT1=%d possible.\n",INVMAT1);}
+                PARAMETERIZATION=1;
+                fprintf(fp,"For acoustic modelling only PARAMETERIZATION=%d possible.\n",PARAMETERIZATION);}
         
-        if (get_int_from_objectlist("INVMAT",number_readobjects,&INVMAT,varname_list, value_list))
-            err("Variable INVMAT could not be retrieved from the json input file!");
+        if (get_int_from_objectlist("FORWARD_ONLY",number_readobjects,&FORWARD_ONLY,varname_list, value_list))
+            err("Variable FORWARD_ONLY could not be retrieved from the json input file!");
         else {
-            if (INVMAT==0) {	/* FWI is calculated */
+            if (FORWARD_ONLY==0) {	/* FWI is calculated */
                 
                 /* General inversion parameters */
                 if (get_int_from_objectlist("ITERMAX",number_readobjects,&ITERMAX,varname_list, value_list))
@@ -862,9 +862,10 @@ void read_par_json(FILE *fp, char *fileinp){
                             err("Variable GAMMA could not be retrieved from the json input file!");
                     }
                 }
-            } /* end if (INVMAT==0) */
+            } /* end if (FORWARD_ONLY==0) */
             else {
-                if (INVMAT==10){	/* only forward modeling is applied */
+                if (FORWARD_ONLY>0){	/* only forward modeling is applied */
+                    FORWARD_ONLY=1;
                     ITERMAX=1;
                     strcpy(INV_MODELFILE,MFILE);
                     DTINV=1;

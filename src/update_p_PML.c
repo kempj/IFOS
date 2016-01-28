@@ -35,7 +35,7 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 	float  vxx, vyy;
 	float  dhi;
 	extern float DT, DH;
-	extern int MYID, FDORDER, INVMAT1, FW;
+	extern int MYID, FDORDER, PARAMETERIZATION, FW;
         extern int FREE_SURF, BOUNDARY;
 	extern int NPROCX, NPROCY, POS[3];
 	extern FILE *FP;
@@ -94,7 +94,7 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 			}
 			
 			/* lambda - mu relationship*/
-			if (INVMAT1==1){
+			if (PARAMETERIZATION==1){
 				g = rho[j][i] * (pi[j][i] * pi[j][i]);
 			}
 			
@@ -147,7 +147,7 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 				vyy = vyy / K_y[h1] + psi_vyy[h1][i];
 			}
 			
-			if (INVMAT1==1){
+			if (PARAMETERIZATION==1){
 				g = rho[j][i] * (pi[j][i] * pi[j][i]);}
 			
 			sp[j][i] += g*(vxx+vyy);
@@ -202,7 +202,7 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 				vyy = vyy / K_y[h1] + psi_vyy[h1][i];
 			}
 			
-			if (INVMAT1==1){
+			if (PARAMETERIZATION==1){
 				g = rho[j][i] * (pi[j][i] * pi[j][i]);}
 			
 			sp[j][i] += g*(vxx+vyy);
@@ -260,7 +260,7 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 				vyy = vyy / K_y[h1] + psi_vyy[h1][i];
 			}
 			
-			if (INVMAT1==1){
+			if (PARAMETERIZATION==1){
 				g = rho[j][i] * (pi[j][i] * pi[j][i]);}
 			
 			sp[j][i] += g*(vxx+vyy);

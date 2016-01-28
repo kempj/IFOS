@@ -30,7 +30,7 @@
 void checkfd_ssg_visc(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus, float ** ptaup, float *peta, float *hc){
 
 	extern float DH, DT, TS;
-        extern int NX, NY, MYID, INVMAT1, FW, L, NT, NDT;
+        extern int NX, NY, MYID, PARAMETERIZATION, FW, L, NT, NDT;
         extern int SEISMO, SEIS_FORMAT[6];
 
 	/* local variables */
@@ -63,9 +63,9 @@ void checkfd_ssg_visc(FILE *fp, float ** prho, float ** ppi, float ** pu, float 
 					sumu=sumu+((ws*ws*ts*ts*ptaus[j][i])/(1.0+ws*ws*ts*ts));
 				}
 				
-				if(INVMAT1==1){
+				if(PARAMETERIZATION==1){
 					pu_ref=prho[j][i]*pu[j][i]*pu[j][i];}
-				if(INVMAT1==3){
+				if(PARAMETERIZATION==3){
 					pu_ref=pu[j][i];}
 					
 				
@@ -96,9 +96,9 @@ void checkfd_ssg_visc(FILE *fp, float ** prho, float ** ppi, float ** pu, float 
 					sumpi=sumpi+((ws*ws*ts*ts*ptaup[j][i])/(1.0+ws*ws*ts*ts));
 				}
 				
-				if(INVMAT1==1){
+				if(PARAMETERIZATION==1){
 					ppi_ref=prho[j][i]*ppi[j][i]*ppi[j][i];}
-				if(INVMAT1==3){
+				if(PARAMETERIZATION==3){
 					ppi_ref=ppi[j][i]+2*pu[j][i];}
 					
 				/* minimum phase velocity of P waves */

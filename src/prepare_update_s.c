@@ -23,7 +23,7 @@ void prepare_update_s(float *etajm, float *etaip, float *peta, float **fipjp, fl
 		float **ptausipjp, float **f, float **g, float *bip, float *bjm,
 		float *cip, float *cjm, float ***dip, float ***d, float ***e) {
 
-	extern int NX, NY, L, INVMAT1, MYID;
+	extern int NX, NY, L, PARAMETERIZATION, MYID;
 	extern float DT, *FL;
 	int i, j, l;
 	extern char  MFILE[STRING_SIZE];
@@ -57,7 +57,7 @@ void prepare_update_s(float *etajm, float *etaip, float *peta, float **fipjp, fl
 		etaip[l] = peta[l];
 	}
 	
-	if (INVMAT1==1){
+	if (PARAMETERIZATION==1){
 		for (j=1;j<=NY;j++){
 			for (i=1;i<=NX;i++){
 				mu=(pu[j][i]*pu[j][i]*prho[j][i])/(1.0+sumu*ptaus[j][i]);
@@ -80,7 +80,7 @@ void prepare_update_s(float *etajm, float *etaip, float *peta, float **fipjp, fl
 		}
 	}
 	
-	if (INVMAT1==3){
+	if (PARAMETERIZATION==3){
 		for (j=1;j<=NY;j++){
 			for (i=1;i<=NX;i++){
 				mu=pu[j][i]/(1.0+sumu*ptaus[j][i]);

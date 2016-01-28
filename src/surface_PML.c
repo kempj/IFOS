@@ -37,7 +37,7 @@ void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** sy
     float  dh24, dthalbe;
     float *pts, ws, sumu, sumpi, mu, pi;
     extern float DT, DH, *FL;
-    extern int NX, INVMAT1, L;
+    extern int NX, PARAMETERIZATION, L;
     extern int FW, BOUNDARY;
     extern int NPROCX, NPROCY, POS[3], MYID;
     extern int FDORDER,WAVETYPE;
@@ -125,11 +125,11 @@ void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** sy
                 vxx = vxx / K_x[h1] + psi_vxx[j][h1];
             }
             
-            if (INVMAT1==1){
+            if (PARAMETERIZATION==1){
                 mu=(pu[j][i]*pu[j][i]*prho[j][i])/(1.0+sumu*ptaus[j][i]);
                 pi=(ppi[j][i]*ppi[j][i]*prho[j][i])/(1.0+sumpi*ptaup[j][i]);
             }
-            if (INVMAT1==3){
+            if (PARAMETERIZATION==3){
                 mu=pu[j][i]/(1.0+sumu*ptaus[j][i]);
                 pi=(ppi[j][i]+2*pu[j][i])/(1.0+sumpi*ptaup[j][i]);
             }

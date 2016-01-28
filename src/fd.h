@@ -65,7 +65,7 @@ void calc_mat_change(float  **  waveconv, float ** waveconv_rho, float ** waveco
                      float **  unp1, int iter, int epstest, int calcneweps, float eps_scale_vp, float eps_scale_vs);
 
 void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_u, float  **  rho, float  **  rhonp1, float **  pi, float **  pinp1, float **  u, float **  unp1, int iter,
-                          int epstest, int INVMAT, float eps_scale, int itest, int nfstart, float ** u_start, float ** pi_start, float ** rho_start,int wavetype_start,float **bfgsmod,int bfgsnum,int bfgspar,float Vs_avg,float Vp_avg,float rho_avg,int LBFGS_iter_start);
+                          int epstest, int FORWARD_ONLY, float eps_scale, int itest, int nfstart, float ** u_start, float ** pi_start, float ** rho_start,int wavetype_start,float **bfgsmod,int bfgsnum,int bfgspar,float Vs_avg,float Vp_avg,float rho_avg,int LBFGS_iter_start);
 
 double calc_res(float **sectiondata, float **section, float **sectiondiff, float **sectiondiffold, int ntr, int ns, int LNORM, float L2, int itest, int sws, int swstestshot, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int iter);
 

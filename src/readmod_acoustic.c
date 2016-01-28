@@ -31,7 +31,7 @@
 
 void readmod_acoustic(float  **  rho, float **  pi){
 
-	extern int NX, NY, NXG, NYG,  POS[3], MYID, INVMAT1;
+	extern int NX, NY, NXG, NYG,  POS[3], MYID, PARAMETERIZATION;
 	extern char  MFILE[STRING_SIZE];	
 	extern FILE *FP;
 
@@ -47,7 +47,7 @@ void readmod_acoustic(float  **  rho, float **  pi){
            
 	   /* read density and seismic velocities */
 	   /* ----------------------------------- */
-	   if(INVMAT1==1){
+	   if(PARAMETERIZATION==1){
 	   fprintf(FP,"\t Vp:\n\t %s.vp\n\n",MFILE);
 	   sprintf(filename,"%s.vp",MFILE);
 	   fp_vp=fopen(filename,"r");

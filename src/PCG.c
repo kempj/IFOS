@@ -28,7 +28,7 @@
 void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int ntr_glob, int iter, float C_vp, float ** gradp, int nfstart_jac, float ** waveconv_u, float C_vs, float ** gradp_u, float ** waveconv_rho, float C_rho, float ** gradp_rho, float Vs_avg, float FC){
 	
 	extern int NX, NY, IDX, IDY, SPATFILTER, GRAD_FILTER;
-	extern int INVMAT, SWS_TAPER_GRAD_VERT, SWS_TAPER_GRAD_HOR, SWS_TAPER_GRAD_SOURCES, SWS_TAPER_FILE;
+	extern int FORWARD_ONLY, SWS_TAPER_GRAD_VERT, SWS_TAPER_GRAD_HOR, SWS_TAPER_GRAD_SOURCES, SWS_TAPER_FILE;
 	extern int POS[3], MYID, ACOUSTIC;
 	extern char JACOBIAN[STRING_SIZE];
     extern int RESTART_WORKFLOW;
@@ -48,7 +48,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 	/* ===================================================== GRADIENT ZP ================================================================================== */
 	/* ===================================================================================================================================================== */
 	
-	if((INVMAT==0)){
+	if((FORWARD_ONLY==0)){
 		
 		/* Preconditioning of the gradient */
 		/* ------------------------------- */
@@ -285,7 +285,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 	/* ===================================================== GRADIENT Zs ================================================================================== */
 	/* ===================================================================================================================================================== */
 	
-	if((INVMAT==0)&&(!ACOUSTIC)){
+	if((FORWARD_ONLY==0)&&(!ACOUSTIC)){
 			
 		/* Preconditioning of the gradient */
 		/* ------------------------------- */
@@ -515,7 +515,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 	/* ===================================================== GRADIENT rho ================================================================================== */
 	/* ===================================================================================================================================================== */
 	
-	if((INVMAT==0)){
+	if((FORWARD_ONLY==0)){
 			
 		/* Preconditioning of the gradient */
 		/* ------------------------------- */

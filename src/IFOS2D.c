@@ -533,7 +533,7 @@ int main(int argc, char **argv){
     stepmax = STEPMAX; /* number of maximum misfit calculations/steplength 2/3*/
     scalefac = SCALEFAC; /* scale factor for the step length */
     
-    if(INVMAT==0){
+    if(FORWARD_ONLY==0){
         waveconv = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         waveconv_lam = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         waveconv_shot = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
@@ -875,7 +875,7 @@ int main(int argc, char **argv){
     srcpos=sources(&nsrc);
     nsrc_glob=nsrc;
     
-    if(INVMAT==0&&USE_WORKFLOW){
+    if(FORWARD_ONLY==0&&USE_WORKFLOW){
         read_workflow(FILE_WORKFLOW,&workflow, &workflow_lines,workflow_header);
     }
     
@@ -944,13 +944,13 @@ int main(int argc, char **argv){
     for(iter=1;iter<=ITERMAX;iter++){  /* fullwaveform iteration loop */
         
         // At each iteration the workflow is applied
-        if(USE_WORKFLOW&&(INVMAT==0)){
+        if(USE_WORKFLOW&&(FORWARD_ONLY==0)){
             
             apply_workflow(workflow,workflow_lines,workflow_header,&iter,&FC,wavetype_start,&change_wavetype_iter,&LBFGS_iter_start);
             
         }
         
-        if(GRAD_METHOD==2&&(INVMAT==0)){
+        if(GRAD_METHOD==2&&(FORWARD_ONLY==0)){
             
             /* detect a change in inversion process and restart L-BFGS */
             if(iter==INV_RHO_ITER||iter==INV_VP_ITER||iter==INV_VS_ITER){
@@ -980,7 +980,7 @@ int main(int argc, char **argv){
         if (MYID==0){
             time2=MPI_Wtime();
             fprintf(FP,"\n\n\n ------------------------------------------------------------------\n");
-            if(INVMAT==0) {
+            if(FORWARD_ONLY==0) {
                 fprintf(FP,"\n\n\n                   TDFWI ITERATION %d \t of %d \n",iter,ITERMAX);
             } else {
                 fprintf(FP,"\n\n\n                        FD-SIMULATION \n");
@@ -1049,11 +1049,11 @@ int main(int argc, char **argv){
                 /* Do some initia calculations */
                 if(iter==1){
                     
-                    /* Calculationg material parameters according to INVMAT1 */
+                    /* Calculationg material parameters according to PARAMETERIZATION */
                     for (j=1;j<=NY;j=j+IDY){
                         for (i=1;i<=NX;i=i+IDX){
                             
-                            if(INVMAT1==1){
+                            if(PARAMETERIZATION==1){
                                 
                                 Vp0[j][i] = ppi[j][i];
                                 if(!ACOUSTIC) Vs0[j][i] = pu[j][i];
@@ -1061,7 +1061,7 @@ int main(int argc, char **argv){
                             
                             
                             
-                            if(INVMAT1==2){
+                            if(PARAMETERIZATION==2){
                                 
                                 Vp0[j][i] = sqrt((ppi[j][i]+2.0*pu[j][i])*prho[j][i]);
                                 Vs0[j][i] = sqrt((pu[j][i])*prho[j][i]);
@@ -1069,7 +1069,7 @@ int main(int argc, char **argv){
                                 
                             }
                             
-                            if(INVMAT1==3){
+                            if(PARAMETERIZATION==3){
                                 
                                 Vp0[j][i] = ppi[j][i];
                                 Vs0[j][i] = pu[j][i];
@@ -1094,7 +1094,7 @@ int main(int argc, char **argv){
                 }
                 
                 /* Open Log File for L2 norm */
-                if(INVMAT!=10){
+                if(FORWARD_ONLY!=1){
                     if(MYID==0){
                         if(iter==1){
                             FPL2=fopen(MISFIT_LOG_FILE,"w");
@@ -1132,7 +1132,7 @@ int main(int argc, char **argv){
                 
                 /* initialize waveconv matrix*/
                 if(WAVETYPE==1||WAVETYPE==3){
-                    if(INVMAT==0){
+                    if(FORWARD_ONLY==0){
                         for (j=1;j<=NY;j=j+IDY){
                             for (i=1;i<=NX;i=i+IDX){
                                 waveconv[j][i]=0.0;
@@ -1144,7 +1144,7 @@ int main(int argc, char **argv){
                 }
                 /* initialize waveconv matrix*/
                 if(WAVETYPE==2||WAVETYPE==3){
-                    if(INVMAT==0){
+                    if(FORWARD_ONLY==0){
                         for (j=1;j<=NY;j=j+IDY){
                             for (i=1;i<=NX;i=i+IDX){
                                 waveconv_rho_z[j][i]=0.0;
@@ -1340,7 +1340,7 @@ int main(int argc, char **argv){
                                 
                                 if(nt==hin1){
                                     
-                                    if(INVMAT==0){
+                                    if(FORWARD_ONLY==0){
                                         for (j=1;j<=NY;j=j+IDYI){
                                             for (i=1;i<=NX;i=i+IDXI){
                                                 forward_prop_rho_x[j][i][hin]=pvxp1[j][i];
@@ -1454,7 +1454,7 @@ int main(int argc, char **argv){
                             /*----------- Start of inversion of source time function -------------*/
                             if((TIME_FILT==1) ||(TIME_FILT==2)){
                                 
-                                if (INVMAT==0){
+                                if (FORWARD_ONLY==0){
                                     if((INV_STF==1)&&((iter==1)||(s==1))){
                                         
                                         if (nsrc_loc>0){
@@ -1494,7 +1494,7 @@ int main(int argc, char **argv){
                             }
                             
                             else{
-                                if (INVMAT==0){
+                                if (FORWARD_ONLY==0){
                                     if((INV_STF==1)&&(iter==N_STF_START)){
                                         
                                         if(ishot==nshots){
@@ -1634,7 +1634,7 @@ int main(int argc, char **argv){
                         
                         /*initialize gradient matrices for each shot with zeros PSV*/
                         if(WAVETYPE==1 || WAVETYPE==3) {
-                            if(INVMAT==0){
+                            if(FORWARD_ONLY==0){
                                 for(j=1;j<=NY;j=j+IDY){
                                     for(i=1;i<=NX;i=i+IDX){
                                         waveconv_shot[j][i]=0.0;
@@ -1652,7 +1652,7 @@ int main(int argc, char **argv){
                         }
                         /*initialize gradient matrices for each shot with zeros SH*/
                         if(WAVETYPE==2 || WAVETYPE==3){
-                            if(INVMAT==0){
+                            if(FORWARD_ONLY==0){
                                 for(j=1;j<=NY;j=j+IDY){
                                     for(i=1;i<=NX;i=i+IDX){
                                         waveconv_rho_shot_z[j][i]=0.0;
@@ -1822,7 +1822,7 @@ int main(int argc, char **argv){
                             
                             /* save snapshots from forward model */
                             if(nt==hin1){
-                                if(INVMAT==0){
+                                if(FORWARD_ONLY==0){
                                     
                                     if(WAVETYPE==1||WAVETYPE==3){
                                         for (j=1;j<=NY;j=j+IDYI){
@@ -1978,7 +1978,7 @@ int main(int argc, char **argv){
                         /*---------------------------------------------------------------*/
                         /*----------------------  start of inversion process ------------*/
                         /*---------------------------------------------------------------*/
-                        if(INVMAT==0){
+                        if(FORWARD_ONLY==0){
                             
                             /*-----------------------------------*/
                             /*------- Calculate residuals -------*/
@@ -2324,7 +2324,7 @@ int main(int argc, char **argv){
                                         
                                         imat=((nxnyi*(NTDTINV)) - hin*nxnyi)+1;
                                         
-                                        if((INVMAT==0)){
+                                        if((FORWARD_ONLY==0)){
                                             for (j=1;j<=NY;j=j+IDYI){
                                                 for (i=1;i<=NX;i=i+IDXI){
                                                     
@@ -2414,7 +2414,7 @@ int main(int argc, char **argv){
                             /* ------------------------------- */
                             /* calculate gradient direction pi */
                             /* ------------------------------- */
-                            if((INVMAT==0)&&(WAVETYPE==1||WAVETYPE==3)){
+                            if((FORWARD_ONLY==0)&&(WAVETYPE==1||WAVETYPE==3)){
                                 
                                 
                                 /* interpolate unknown values */
@@ -2428,7 +2428,7 @@ int main(int argc, char **argv){
                                         
                                         waveconv_lam[j][i] = - DT * waveconv_shot[j][i];
                                         
-                                        if(INVMAT1==1){
+                                        if(PARAMETERIZATION==1){
                                             if(!ACOUSTIC)
                                                 muss = prho[j][i] * pu[j][i] * pu[j][i];
                                             else
@@ -2442,11 +2442,11 @@ int main(int argc, char **argv){
                                             // 								waveconv_shot[j][i] = waveconv_lam[j][i];
                                         }
                                         
-                                        if(INVMAT1==2){
+                                        if(PARAMETERIZATION==2){
                                             /* calculate Zp gradient */
                                             waveconv_shot[j][i] = 2.0 * ppi[j][i] * waveconv_lam[j][i];}
                                         
-                                        if(INVMAT1==3){
+                                        if(PARAMETERIZATION==3){
                                             waveconv_shot[j][i] = waveconv_lam[j][i];}
                                     }
                                 }
@@ -2455,7 +2455,7 @@ int main(int argc, char **argv){
                             /* ---------------------------------- */
                             /* calculate gradient direction u PSV */
                             /* ---------------------------------- */
-                            if((WAVETYPE==1 || WAVETYPE==3)&&(INVMAT==0)&&(!ACOUSTIC)){
+                            if((WAVETYPE==1 || WAVETYPE==3)&&(FORWARD_ONLY==0)&&(!ACOUSTIC)){
                                 
                                 
                                 /* interpolate unknown values */
@@ -2470,16 +2470,16 @@ int main(int argc, char **argv){
                                         /* calculate mu gradient */
                                         waveconv_mu[j][i] = - DT * waveconv_u_shot[j][i];
                                         
-                                        if(INVMAT1==1){
+                                        if(PARAMETERIZATION==1){
                                             /* calculate Vs gradient */
                                             waveconv_u_shot[j][i] = (- 4.0 * prho[j][i] * pu[j][i] * waveconv_lam[j][i]) + 2.0 * prho[j][i] * pu[j][i] * waveconv_mu[j][i];
                                         }
                                         
-                                        if(INVMAT1==2){
+                                        if(PARAMETERIZATION==2){
                                             /* calculate Zs gradient */
                                             waveconv_u_shot[j][i] = (- 4.0 * pu[j][i] * waveconv_lam[j][i]) + (2.0 * pu[j][i] * waveconv_mu[j][i]);}
                                         
-                                        if(INVMAT1==3){
+                                        if(PARAMETERIZATION==3){
                                             /* calculate u gradient */
                                             waveconv_u_shot[j][i] = waveconv_mu[j][i];
                                         }
@@ -2490,7 +2490,7 @@ int main(int argc, char **argv){
                             /* ---------------------------------- */
                             /* calculate gradient direction u SH */
                             /* ---------------------------------- */
-                            if((WAVETYPE==2 || WAVETYPE==3)&&(INVMAT==0)&&(!ACOUSTIC)){
+                            if((WAVETYPE==2 || WAVETYPE==3)&&(FORWARD_ONLY==0)&&(!ACOUSTIC)){
                                 
                                 /* interpolate unknown values */
                                 if((IDXI>1)||(IDYI>1)){
@@ -2504,12 +2504,12 @@ int main(int argc, char **argv){
                                         /* calculate mu gradient */
                                         waveconv_mu_z[j][i] = - DT * waveconv_u_shot_z[j][i];
                                         
-                                        if(INVMAT1==1){
+                                        if(PARAMETERIZATION==1){
                                             /* calculate Vs gradient */
                                             waveconv_u_shot_z[j][i] = (2.0 * prho[j][i] * pu[j][i] * waveconv_mu_z[j][i]);
                                         }
                                         
-                                        if(INVMAT1==3){
+                                        if(PARAMETERIZATION==3){
                                             /* calculate u gradient */
                                             waveconv_u_shot_z[j][i] = waveconv_mu_z[j][i];
                                         }
@@ -2520,7 +2520,7 @@ int main(int argc, char **argv){
                             /* ------------------------------------ */
                             /* calculate gradient direction rho PSV */
                             /* ------------------------------------ */
-                            if((WAVETYPE==1 || WAVETYPE==3)&&(INVMAT==0)){
+                            if((WAVETYPE==1 || WAVETYPE==3)&&(FORWARD_ONLY==0)){
                                 
                                 
                                 /* interpolate unknown values */
@@ -2535,7 +2535,7 @@ int main(int argc, char **argv){
                                         /* calculate density gradient rho' */
                                         waveconv_rho_s[j][i]= - DT * waveconv_rho_shot[j][i];
                                         
-                                        if(INVMAT1==1){
+                                        if(PARAMETERIZATION==1){
                                             /* calculate density gradient */
                                             if(!ACOUSTIC) {
                                                 waveconv_rho_shot[j][i] = ((((ppi[j][i] * ppi[j][i])-(2.0 * pu[j][i] * pu[j][i])) * waveconv_lam[j][i]) + (pu[j][i] * pu[j][i] * waveconv_mu[j][i]) + waveconv_rho_s[j][i]);
@@ -2544,7 +2544,7 @@ int main(int argc, char **argv){
                                             }
                                         }
                                         
-                                        if(INVMAT1==3){
+                                        if(PARAMETERIZATION==3){
                                             /* calculate density gradient */
                                             waveconv_rho_shot[j][i] = waveconv_rho_s[j][i];
                                         }
@@ -2556,7 +2556,7 @@ int main(int argc, char **argv){
                             /* ------------------------------------ */
                             /* calculate gradient direction rho SH*/
                             /* ------------------------------------ */
-                            if((WAVETYPE==2 || WAVETYPE==3)&&(INVMAT==0)){
+                            if((WAVETYPE==2 || WAVETYPE==3)&&(FORWARD_ONLY==0)){
                                 
                                 
                                 /* interpolate unknown values */
@@ -2571,13 +2571,13 @@ int main(int argc, char **argv){
                                         /* calculate density gradient rho' */
                                         waveconv_rho_s_z[j][i]= - DT * waveconv_rho_shot_z[j][i];
                                         
-                                        if(INVMAT1==1){
+                                        if(PARAMETERIZATION==1){
                                             /* calculate density gradient */
                                             waveconv_rho_shot_z[j][i] = ( (pu[j][i] * pu[j][i] * waveconv_mu_z[j][i]) + waveconv_rho_s_z[j][i]);
                                             
                                         }
                                         
-                                        if(INVMAT1==3){
+                                        if(PARAMETERIZATION==3){
                                             /* calculate density gradient */
                                             waveconv_rho_shot_z[j][i] = waveconv_rho_s_z[j][i];
                                         }
@@ -2733,7 +2733,7 @@ int main(int argc, char **argv){
                     
                 }
                 
-                if(INVMAT==0){
+                if(FORWARD_ONLY==0){
                     /* ----------------------------------------- */
                     /*     Applying and output approx hessian    */
                     /* ----------------------------------------- */
@@ -2906,7 +2906,7 @@ int main(int argc, char **argv){
             /*-----------------------------------------------------*/
             /*     Gradient optimization with PCG or L-BFGS        */
             /*-----------------------------------------------------*/
-            if(gradient_optimization==1 && INVMAT==0) {
+            if(gradient_optimization==1 && FORWARD_ONLY==0) {
                 
                 /* ----------------------------------------------------------------------*/
                 /* ----------- Preconditioned Conjugate Gradient Method (PCG)  ----------*/
@@ -2921,7 +2921,7 @@ int main(int argc, char **argv){
                 /* ---------------------------------------------------------*/
                 /* ----------- Beginn Joint Inversion PSV and SH  ----------*/
                 /* ---------------------------------------------------------*/
-                if((INVMAT==0)){
+                if((FORWARD_ONLY==0)){
                     switch (WAVETYPE) {
                         case 2:
                             /* If only SH is inverted, set these gradients to the actual ones */
@@ -3029,7 +3029,7 @@ int main(int argc, char **argv){
             /*-----------------------------------------------------*/
             /*   Wolfe condition: Check and step length search     */
             /*-----------------------------------------------------*/
-            if(steplength_search==1 && (GRAD_METHOD==2 && iter>LBFGS_iter_start) && INVMAT==0 && WOLFE_CONDITION) {
+            if(steplength_search==1 && (GRAD_METHOD==2 && iter>LBFGS_iter_start) && FORWARD_ONLY==0 && WOLFE_CONDITION) {
                 
                 if(countstep>WOLFE_NUM_TEST) {
                     if(wolfe_found_lower_L2) {
@@ -3055,7 +3055,7 @@ int main(int argc, char **argv){
                     if(iter>2 && WOLFE_TRY_OLD_STEPLENGTH)  alpha_SL=alpha_SL_old;
                     
                     /* Calculate update */
-                    calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                    calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,FORWARD_ONLY,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
                     FWI_run=1;
                 }
                 
@@ -3083,7 +3083,7 @@ int main(int argc, char **argv){
                         
                         /* Current step length do not satisfy wolfe condition, try new step length */
                         wolfe_linesearch(wolfe_status, &alpha_SL_min, &alpha_SL_max, &alpha_SL);
-                        calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                        calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,FORWARD_ONLY,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
                         fprintf(FP,"; New steplength=%1.3f",alpha_SL);
                         FWI_run=1;
                     }
@@ -3096,7 +3096,7 @@ int main(int argc, char **argv){
             
             countstep++;
             
-            if(INVMAT!=0) break;
+            if(FORWARD_ONLY!=0) break;
         }
         
         if(wolfe_SLS_failed) {
@@ -3109,7 +3109,7 @@ int main(int argc, char **argv){
             
             /* No update is done here, however model fils are written to disk for easy post processing */
             alpha_SL=0.0;
-            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
             
             alpha_SL_old=1;
         }
@@ -3117,7 +3117,7 @@ int main(int argc, char **argv){
         /*-----------------------------------------------------*/
         /*       Wolfe condition: Model update                 */
         /*-----------------------------------------------------*/
-        if((GRAD_METHOD==2 && iter>LBFGS_iter_start) && INVMAT==0 && WOLFE_CONDITION && !wolfe_SLS_failed) {
+        if((GRAD_METHOD==2 && iter>LBFGS_iter_start) && FORWARD_ONLY==0 && WOLFE_CONDITION && !wolfe_SLS_failed) {
             
             /* save old step length for next iteration as first guess */
             if(WOLFE_TRY_OLD_STEPLENGTH) alpha_SL_old=alpha_SL;
@@ -3132,7 +3132,7 @@ int main(int argc, char **argv){
             }
             
             /* do the final model update */
-            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,INVMAT,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
             
             L2_hist[iter]=L2t[4];
             
@@ -3178,7 +3178,7 @@ int main(int argc, char **argv){
         /* =============================================== Step length estimation =====================================================*/
         /* ============================================================================================================================*/
         
-        if((INVMAT==0)  && (!WOLFE_CONDITION || (WOLFE_CONDITION && GRAD_METHOD==2 && iter==LBFGS_iter_start))){
+        if((FORWARD_ONLY==0)  && (!WOLFE_CONDITION || (WOLFE_CONDITION && GRAD_METHOD==2 && iter==LBFGS_iter_start))){
             
             fprintf(FP,"\n=================================================================================================\n");
             fprintf(FP,"\n *********************** Starting step length estimation at iteration %i ************************\n",iter);
@@ -3216,7 +3216,7 @@ int main(int argc, char **argv){
                 for (itest=itests;itest<=iteste;itest++){
                     
                     /* calculate change in the material parameters */
-                    calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,INVMAT,eps_scale,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                    calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,FORWARD_ONLY,eps_scale,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
                     
                     /* For the calculation of the material parameters beteween gridpoints
                      the have to be averaged. For this, values lying at 0 and NX+1,
@@ -3790,15 +3790,15 @@ int main(int argc, char **argv){
             /* -----------------------------------------------------------------------*/
             /* ----------- Do the actual update to the material parameters -----------*/
             /* -----------------------------------------------------------------------*/
-            calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,INVMAT,eps_scale,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+            calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,FORWARD_ONLY,eps_scale,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
             fprintf(FP,"=================================================================================================\n");
             
-        } /* end of if(INVMAT!=4) */
+        } /* end of if(FORWARD_ONLY!=4) */
         
         /* ------------------------------------*/
         /* smoothing the models vp, vs and rho */
         /* ------------------------------------*/
-        if (INVMAT==0 && (opteps_vp>0.0 || WOLFE_CONDITION)){
+        if (FORWARD_ONLY==0 && (opteps_vp>0.0 || WOLFE_CONDITION)){
             if(!ACOUSTIC){
                 if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vs_avg,FC);
                 if(MODEL_FILTER)smooth(pu,5,2,Vs_avg,FC);
@@ -3810,7 +3810,7 @@ int main(int argc, char **argv){
         }
         
         
-        if(INVMAT!=10){
+        if(FORWARD_ONLY!=1){
             if(MYID==0){
                 fclose(FPL2);
             }
@@ -4074,7 +4074,7 @@ int main(int argc, char **argv){
         free_vector(cip,1,L);
         free_vector(cjm,1,L);
     }
-    if(INVMAT==0){
+    if(FORWARD_ONLY==0){
         free_matrix(waveconv,-nd+1,NY+nd,-nd+1,NX+nd);
         free_matrix(waveconv_lam,-nd+1,NY+nd,-nd+1,NX+nd);
         free_matrix(waveconv_shot,-nd+1,NY+nd,-nd+1,NX+nd);
@@ -4315,7 +4315,7 @@ int main(int argc, char **argv){
         free_matrix(waveconv_rho_up,-nd+1,NY+nd,-nd+1,NX+nd);
     }
     
-    if((WAVETYPE==2 || WAVETYPE==3) && (INVMAT==0)){
+    if((WAVETYPE==2 || WAVETYPE==3) && (FORWARD_ONLY==0)){
         free_f3tensor(forward_prop_rho_z,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
         free_f3tensor(forward_prop_z_xz,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
         free_f3tensor(forward_prop_z_yz,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
@@ -4380,7 +4380,7 @@ int main(int argc, char **argv){
             fprintf(FP," stress exchange:  \t %5.3f seconds  \n",time_av_s_exchange);
             fprintf(FP," timestep:  \t %5.3f seconds  \n",time_av_timestep);
         }
-        if(INVMAT==0) {
+        if(FORWARD_ONLY==0) {
             printf("\n Inversion finished after %d iterations. \n\n",iter);
         } else {
             printf("\n Forward calculation finished. \n\n");

@@ -43,7 +43,7 @@ void exchange_par(void){
     extern char JACOBIAN[STRING_SIZE], DATA_DIR[STRING_SIZE], INV_MODELFILE[STRING_SIZE], FREQ_FILE[STRING_SIZE];
     extern int RUN_MULTIPLE_SHOTS, TAPERLENGTH, INVTYPE;
     extern int NPROC, NPROCX, NPROCY, MYID, IDX, IDY;
-    extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, INVMAT1, INVMAT, ADJOINT_TYPE;
+    extern int GRADT1, GRADT2, GRADT3, GRADT4, ITERMAX, PARAMETERIZATION, FORWARD_ONLY, ADJOINT_TYPE;
     extern int GRAD_METHOD;
     extern float TSHIFT_back;
     extern int MODEL_FILTER, FILT_SIZE;
@@ -252,9 +252,9 @@ void exchange_par(void){
         idum[38]  = GRADT3;
         idum[39]  = GRADT4;
         idum[40]  = ITERMAX;
-        idum[41]  = INVMAT1;
+        idum[41]  = PARAMETERIZATION;
         idum[42]  = FW;
-        idum[43]  = INVMAT;
+        idum[43]  = FORWARD_ONLY;
         idum[44]  = ADJOINT_TYPE;
         
         idum[45]  = TESTSHOT_START;
@@ -527,9 +527,9 @@ void exchange_par(void){
     GRADT3 = idum[38];
     GRADT4 = idum[39];
     ITERMAX = idum[40];
-    INVMAT1 = idum[41];
+    PARAMETERIZATION = idum[41];
     FW = idum[42];
-    INVMAT  = idum[43];  
+    FORWARD_ONLY  = idum[43];  
     ADJOINT_TYPE = idum[44];
     
     TESTSHOT_START = idum[45];

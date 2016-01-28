@@ -223,7 +223,7 @@ Default value is:
 
 With this option pure acoustic modelling and/or inversion can be performed (ACOUSTIC = 1). Only a P-wave and a density model need to be provided. Acoustic modelling and inversion can be a quick estimate, especially for marine environments.
 
-For acoustic modelling the option VELOCITY is not available and only INVMAT1 = 1 is possible.
+For acoustic modelling the option VELOCITY is not available and only PARAMETERIZATION = 1 is possible.
 
 \section{PSV and SH modelling}
 {\color{blue}{\begin{verbatim}
@@ -418,8 +418,8 @@ If TIME\_FILT is set to one the log file L2\_LOG.dat contains a 9th column with 
 "General inversion parameters" : "comment",
 			"ITERMAX" : "10",
 			"DATA_DIR" : "su/measured_data/IFOS2D_real",
-			"INVMAT1" : "1",
-			"INVMAT" : "0",
+			"PARAMETERIZATION" : "1",
+			"FORWARD_ONLY" : "0",
 			"ADJOINT_TYPE" : "1",
 			"MISFIT_LOG_FILE" : "L2_LOG.dat",
 			"VELOCITY" : "0",
@@ -439,9 +439,9 @@ INV_VP_ITER=0
 INV_VS_ITER=0
 \end{verbatim}}}
 
-This section covers some general inversion parameters. The maximum number of iterations is defined by ITERMAX. The switch INVMAT controls if only the forward modeling code should be used (INVMAT=10), e.\,g. to calculate synthetic seismograms or a complete FWT run (INVMAT=0). The seismic sections of the real data need to be located in DATA\_DIR and should have the ending \_x.su.shot<shotnumber> for the x-component and so on. As noted in section \ref{model parametrizations} the gradients can be expressed for different model parameterizations. The switch INVMAT1 defines which parameterization should be used, seismic velocities and density (Vp,Vs,rho, INVMAT1=1), seismic impedances (Zp,Zs,rho, INVMAT1=2) or Lam$\rm{\acute{e}}$ parameters ($\rm{\lambda,\mu,\rho}$, INVMAT1=3). Please use INVMAT1>1 with care, as current developers are only working with INVMAT1=1.
+This section covers some general inversion parameters. The maximum number of iterations is defined by ITERMAX. The switch FORWARD\_ONLY controls if only the forward modeling code should be used (FORWARD\_ONLY=1), e.\,g. to calculate synthetic seismograms or a complete FWT run (FORWARD\_ONLY=0). The seismic sections of the real data need to be located in DATA\_DIR and should have the ending \_x.su.shot<shotnumber> for the x-component and so on. As noted in section \ref{model parametrizations} the gradients can be expressed for different model parameterizations. The switch PARAMETERIZATION defines which parameterization should be used, seismic velocities and density (Vp,Vs,rho, PARAMETERIZATION=1), seismic impedances (Zp,Zs,rho, PARAMETERIZATION=2) or Lam$\rm{\acute{e}}$ parameters ($\rm{\lambda,\mu,\rho}$, PARAMETERIZATION=3). Please use PARAMETERIZATION>1 with care, as current developers are only working with PARAMETERIZATION=1.
 
-If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be backpropagated. For two component data (x- and y-component) set ADJOINT\_TYPE=1, only the y-component (ADJOINT\_TYPE=2) and only the x-component (ADJOINT\_TYPE=3). For the inversion of pressure seismograms ADJOINT\_TYPE=4 has to be used.
+If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be back propagated. For two component data (x- and y-component) set ADJOINT\_TYPE=1, only the y-component (ADJOINT\_TYPE=2) and only the x-component (ADJOINT\_TYPE=3). For the inversion of pressure seismograms ADJOINT\_TYPE=4 has to be used.
 
 During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of eight or nine columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use frequency filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step.
 
@@ -845,7 +845,7 @@ RHOUPPERLIM=25000.0
 RHOLOWERLIM=0.0
 \end{verbatim}}}
 
-The six limits for the model parameters specify the minimum and maximum values which may be achieved by the inversion. Here, known a priori information can be used. Depending on the choice of the parameter INVMAT1, either vp and vs or lambda and mu is meant.
+The six limits for the model parameters specify the minimum and maximum values which may be achieved by the inversion. Here, known a priori information can be used. Depending on the choice of the parameter PARAMETERIZATION, either vp and vs or lambda and mu is meant.
 
 \subsection{Limited update of model parameters}
 {\color{blue}{\begin{verbatim}

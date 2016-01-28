@@ -64,8 +64,8 @@
 			"SEIS_FILE" : "su/IFOS",
 
 "General inversion parameters" : "comment",
-			"INVMAT1" : "1",
-			"INVMAT" : "10",
+			"PARAMETERIZATION" : "1",
+			"FORWARD_ONLY" : "10",
 
 "Verbose mode" : "comment",
 			"VERBOSE" : "0",

@@ -37,7 +37,7 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
     
     float  dhi;
     extern float DT, DH;
-    extern int MYID, FDORDER, FW, L,INVMAT1;
+    extern int MYID, FDORDER, FW, L,PARAMETERIZATION;
     extern int FREE_SURF, BOUNDARY;
     extern int NPROCX, NPROCY, POS[3];
     extern FILE *FP;
@@ -97,8 +97,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     fipjp=uipjp[j][i];
                     
                     /* lambda - mu relationship*/
-                    if (INVMAT1==3) f = u[j][i];
-                    if (INVMAT1==1) f = rho[j][i] * u[j][i] * u[j][i];
+                    if (PARAMETERIZATION==3) f = u[j][i];
+                    if (PARAMETERIZATION==1) f = rho[j][i] * u[j][i] * u[j][i];
                     
                     /* updating components of the stress tensor, partially */
                     sxz[j][i]+=(fipjp*vzx);
@@ -153,8 +153,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     fipjp=uipjp[j][i];
                     
                     /* lambda - mu relationship*/
-                    if (INVMAT1==3) f = u[j][i];
-                    if (INVMAT1==1) f = rho[j][i] * u[j][i] * u[j][i];
+                    if (PARAMETERIZATION==3) f = u[j][i];
+                    if (PARAMETERIZATION==1) f = rho[j][i] * u[j][i] * u[j][i];
                     
                     /* updating components of the stress tensor, partially */
                     sxz[j][i]+=(fipjp*vzx);
@@ -210,8 +210,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     fipjp=uipjp[j][i];
                     
                     /* lambda - mu relationship*/
-                    if (INVMAT1==3) f = u[j][i];
-                    if (INVMAT1==1) f = rho[j][i] * u[j][i] * u[j][i];
+                    if (PARAMETERIZATION==3) f = u[j][i];
+                    if (PARAMETERIZATION==1) f = rho[j][i] * u[j][i] * u[j][i];
                     
                     /* updating components of the stress tensor, partially */
                     sxz[j][i]+=(fipjp*vzx);
@@ -269,8 +269,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     fipjp=uipjp[j][i];
                     
                     /* lambda - mu relationship*/
-                    if (INVMAT1==3) f = u[j][i];
-                    if (INVMAT1==1) f = rho[j][i] * u[j][i] * u[j][i];
+                    if (PARAMETERIZATION==3) f = u[j][i];
+                    if (PARAMETERIZATION==1) f = rho[j][i] * u[j][i] * u[j][i];
                     
                     /* updating components of the stress tensor, partially */
                     sxz[j][i]+=(fipjp*vzx);
@@ -330,8 +330,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     fipjp=uipjp[j][i];
                     
                     /* lambda - mu relationship*/
-                    if (INVMAT1==3) f = u[j][i];
-                    if (INVMAT1==1) f = rho[j][i] * u[j][i] * u[j][i];
+                    if (PARAMETERIZATION==3) f = u[j][i];
+                    if (PARAMETERIZATION==1) f = rho[j][i] * u[j][i] * u[j][i];
                     
                     /* updating components of the stress tensor, partially */
                     sxz[j][i]+=(fipjp*vzx);
@@ -393,8 +393,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     fipjp=uipjp[j][i];
                     
                     /* lambda - mu relationship*/
-                    if (INVMAT1==3) f = u[j][i];
-                    if (INVMAT1==1) f = rho[j][i] * u[j][i] * u[j][i];
+                    if (PARAMETERIZATION==3) f = u[j][i];
+                    if (PARAMETERIZATION==1) f = rho[j][i] * u[j][i] * u[j][i];
                     
                     /* updating components of the stress tensor, partially */
                     sxz[j][i]+=(fipjp*vzx);

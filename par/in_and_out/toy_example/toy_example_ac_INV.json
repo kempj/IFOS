@@ -77,8 +77,8 @@
 "General inversion parameters" : "comment",
 			"ITERMAX" : "400",
 			"DATA_DIR" : "su/measured_data/toy_example_ac",
-			"INVMAT1" : "1",
-			"INVMAT" : "0",
+			"PARAMETERIZATION" : "1",
+			"FORWARD_ONLY" : "0",
 			"ADJOINT_TYPE" : "4",
 			"MISFIT_LOG_FILE" : "LOG_toy_example_ac.dat",
 

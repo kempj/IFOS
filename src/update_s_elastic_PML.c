@@ -39,7 +39,7 @@ void update_s_elastic_PML(int nx1, int nx2, int ny1, int ny2,
 	float  vxx, vyy, vxy, vyx;
 	float  dhi;	
 	extern float DT, DH;
-	extern int MYID, FDORDER, INVMAT1, FW;
+	extern int MYID, FDORDER, PARAMETERIZATION, FW;
         extern int FREE_SURF, BOUNDARY;
 	extern int NPROCX, NPROCY, POS[3];
 	extern FILE *FP;
@@ -130,11 +130,11 @@ void update_s_elastic_PML(int nx1, int nx2, int ny1, int ny2,
 			fipjp=uipjp[j][i];
 			
 			/* lambda - mu relationship*/
-			if (INVMAT1==3){
+			if (PARAMETERIZATION==3){
 				f = u[j][i];
 				g = pi[j][i];}  
 			
-			if (INVMAT1==1){
+			if (PARAMETERIZATION==1){
 				f = rho[j][i] * u[j][i] * u[j][i];
 				g = rho[j][i] * ((pi[j][i] * pi[j][i]) - 2 * u[j][i] * u[j][i]);}
 			
@@ -222,11 +222,11 @@ void update_s_elastic_PML(int nx1, int nx2, int ny1, int ny2,
 			fipjp=uipjp[j][i];
 			
 			/* lambda - mu relationship*/
-			if (INVMAT1==3){
+			if (PARAMETERIZATION==3){
 				f = u[j][i];
 				g = pi[j][i];}  
 			
-			if (INVMAT1==1){
+			if (PARAMETERIZATION==1){
 				f = rho[j][i] * u[j][i] * u[j][i];
 				g = rho[j][i] * ((pi[j][i] * pi[j][i]) - 2 * u[j][i] * u[j][i]);}
 			
@@ -318,11 +318,11 @@ void update_s_elastic_PML(int nx1, int nx2, int ny1, int ny2,
 			fipjp=uipjp[j][i];
 			
 			/* lambda - mu relationship*/
-			if (INVMAT1==3){
+			if (PARAMETERIZATION==3){
 				f = u[j][i];
 				g = pi[j][i];}  
 			
-			if (INVMAT1==1){
+			if (PARAMETERIZATION==1){
 				f = rho[j][i] * u[j][i] * u[j][i];
 				g = rho[j][i] * ((pi[j][i] * pi[j][i]) - 2 * u[j][i] * u[j][i]);}
 			
@@ -420,11 +420,11 @@ void update_s_elastic_PML(int nx1, int nx2, int ny1, int ny2,
 			fipjp=uipjp[j][i];
 			
 			/* lambda - mu relationship*/
-			if (INVMAT1==3){
+			if (PARAMETERIZATION==3){
 				f = u[j][i];
 				g = pi[j][i];}  
 			
-			if (INVMAT1==1){
+			if (PARAMETERIZATION==1){
 				f = rho[j][i] * u[j][i] * u[j][i];
 				g = rho[j][i] * ((pi[j][i] * pi[j][i]) - 2 * u[j][i] * u[j][i]);}
 			

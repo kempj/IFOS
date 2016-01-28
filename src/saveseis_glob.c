@@ -31,7 +31,7 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
      *  3== filtered measured data
      */
     
-    extern int SEISMO, SEIS_FORMAT, RUN_MULTIPLE_SHOTS, WAVETYPE, VERBOSE,INVMAT;
+    extern int SEISMO, SEIS_FORMAT, RUN_MULTIPLE_SHOTS, WAVETYPE, VERBOSE,FORWARD_ONLY;
     extern char SEIS_FILE[STRING_SIZE];
     
     char vxf[STRING_SIZE], vyf[STRING_SIZE],vzf[STRING_SIZE], curlf[STRING_SIZE], divf[STRING_SIZE], pf[STRING_SIZE];
@@ -76,7 +76,7 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             break;
     }
     
-    if(INVMAT==10){
+    if(FORWARD_ONLY==1){
         sprintf(vxf,"%s_vx.su.shot%d",SEIS_FILE,ishot);
         sprintf(vyf,"%s_vy.su.shot%d",SEIS_FILE,ishot);
         if(WAVETYPE==2 || WAVETYPE==3) {

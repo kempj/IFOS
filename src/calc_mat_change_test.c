@@ -26,7 +26,7 @@
 
 #include "fd.h"
 void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_u, float  **  rho, float  **  rhonp1, float **  pi, float **  pinp1, float **  u, float **  unp1, int iter,
-                          int epstest, int INVMAT, float eps_scale, int itest, int nfstart, float ** u_start, float ** pi_start, float ** rho_start,int wavetype_start,float **s_LBFGS,int N_LBFGS,int LBFGS_NPAR,float Vs_avg,float Vp_avg,float rho_avg,int LBFGS_iter_start){
+                          int epstest, int FORWARD_ONLY, float eps_scale, int itest, int nfstart, float ** u_start, float ** pi_start, float ** rho_start,int wavetype_start,float **s_LBFGS,int N_LBFGS,int LBFGS_NPAR,float Vs_avg,float Vp_avg,float rho_avg,int LBFGS_iter_start){
     
     
     /*--------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
     /* extern variables */
     extern float DH, DT, VP_VS_RATIO;
     extern float EPSILON, EPSILON_u, EPSILON_rho, MUN;
-    extern int NX, NY, NXG, NYG,  POS[3], MYID, INVMAT1,WAVETYPE;
+    extern int NX, NY, NXG, NYG,  POS[3], MYID, PARAMETERIZATION,WAVETYPE;
     
     extern int INV_RHO_ITER, INV_VP_ITER, INV_VS_ITER;
     extern int VERBOSE;
@@ -228,7 +228,7 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
         for (j=1;j<=NY;j++){
             
             /* update lambda, mu, rho */
-            if((INVMAT1==3) || (INVMAT1==1)){
+            if((PARAMETERIZATION==3) || (PARAMETERIZATION==1)){
                 
                 testuplow=0;
                 

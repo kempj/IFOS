@@ -32,7 +32,7 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
     
     extern float DT, *FL, TAU;
     extern int L,WAVETYPE, VERBOSE;
-    extern int NX, NY, NXG, NYG,  POS[3], MYID, INVMAT1;
+    extern int NX, NY, NXG, NYG,  POS[3], MYID, PARAMETERIZATION;
     extern char  MFILE[STRING_SIZE];
     extern FILE *FP;
     
@@ -55,7 +55,7 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
     
 	   /* read density and seismic velocities */
 	   /* ----------------------------------- */
-	   if(INVMAT1==1){
+	   if(PARAMETERIZATION==1){
            
            if(WAVETYPE==1||WAVETYPE==3){
                fprintf(FP,"\t Vp:\n\t %s.vp\n\n",MFILE);
@@ -101,7 +101,7 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
 	   
 	   /* read density and Lame parameters */
 	   /* ----------------------------------- */
-	   if(INVMAT1==3){
+	   if(PARAMETERIZATION==3){
            fprintf(FP,"\t Lame parameter lambda:\n\t %s.lam\n\n",MFILE);
            sprintf(filename,"%s.lam",MFILE);
            fp_vp=fopen(filename,"r");
@@ -194,26 +194,26 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
     
     /* each PE writes his model to disk */
     if(WAVETYPE==1||WAVETYPE==3){
-        if(INVMAT1==1) sprintf(filename,"%s.out.vp",MFILE);
-        if(INVMAT1==3) sprintf(filename,"%s.out.pi",MFILE);
+        if(PARAMETERIZATION==1) sprintf(filename,"%s.out.vp",MFILE);
+        if(PARAMETERIZATION==3) sprintf(filename,"%s.out.pi",MFILE);
         writemod(filename,pi,3);
         MPI_Barrier(MPI_COMM_WORLD);
         if (MYID==0) mergemod(filename,3);
         MPI_Barrier(MPI_COMM_WORLD);
-        if(INVMAT1==1) sprintf(filename,"%s.out.vp.%i.%i",MFILE,POS[1],POS[2]);
-        if(INVMAT1==3) sprintf(filename,"%s.out.pi.%i.%i",MFILE,POS[1],POS[2]);
+        if(PARAMETERIZATION==1) sprintf(filename,"%s.out.vp.%i.%i",MFILE,POS[1],POS[2]);
+        if(PARAMETERIZATION==3) sprintf(filename,"%s.out.pi.%i.%i",MFILE,POS[1],POS[2]);
         remove(filename);
     }
     
-    if(INVMAT1==1) sprintf(filename,"%s.out.vs",MFILE);
-    if(INVMAT1==3) sprintf(filename,"%s.out.mu",MFILE);
+    if(PARAMETERIZATION==1) sprintf(filename,"%s.out.vs",MFILE);
+    if(PARAMETERIZATION==3) sprintf(filename,"%s.out.mu",MFILE);
     writemod(filename,u,3);
     MPI_Barrier(MPI_COMM_WORLD);
     
     if (MYID==0) mergemod(filename,3);
     MPI_Barrier(MPI_COMM_WORLD);
-    if(INVMAT1==1) sprintf(filename,"%s.out.vs.%i.%i",MFILE,POS[1],POS[2]);
-    if(INVMAT1==3) sprintf(filename,"%s.out.mu.%i.%i",MFILE,POS[1],POS[2]);
+    if(PARAMETERIZATION==1) sprintf(filename,"%s.out.vs.%i.%i",MFILE,POS[1],POS[2]);
+    if(PARAMETERIZATION==3) sprintf(filename,"%s.out.mu.%i.%i",MFILE,POS[1],POS[2]);
     remove(filename);
     
     
