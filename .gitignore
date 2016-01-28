@@ -1,5 +1,6 @@
 # Created by https://www.gitignore.io/api/c,c++,latex,kate,linux,osx,kdevelop4,fortran,windows,vim,svn,matlab,emacs,eclipse,cmake,premake-gmake
 
+*.sh
 denise
 snapmerge
 manual_DENISE.pdf
