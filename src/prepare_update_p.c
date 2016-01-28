@@ -22,7 +22,7 @@
 
 void prepare_update_p(float *etajm, float *peta, float **ppi, float **prho, float **ptaup, float **g, float *bjm, float *cjm, float ***e){
 
-	extern int NX, NY, L, INVMAT1, MYID;
+	extern int NX, NY, L, PARAMETERIZATION, MYID;
 	extern float DT, *FL;
 	int i, j, l;
 	extern char  MFILE[STRING_SIZE];
@@ -51,7 +51,7 @@ void prepare_update_p(float *etajm, float *peta, float **ppi, float **prho, floa
 		etajm[l] = peta[l];
 	}
 	
-	if (INVMAT1==1){
+	if (PARAMETERIZATION==1){
 		for (j=1;j<=NY;j++){
 		for (i=1;i<=NX;i++){
 			pi=(ppi[j][i]*ppi[j][i]*prho[j][i])/(1.0+sumpi*ptaup[j][i]);
