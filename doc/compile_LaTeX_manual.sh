@@ -17,12 +17,12 @@ cd ./latex
 /bin/rm -rf *.tit >  /dev/null
 /bin/rm -rf *.spl >  /dev/null
 
-	pdflatex manual_IFOS
-	bibtex manual_IFOS
-	pdflatex manual_IFOS
-	pdflatex manual_IFOS
-	pdflatex manual_IFOS
-	pdflatex manual_IFOS
+	pdflatex manual_IFOS2D
+	bibtex manual_IFOS2D
+	pdflatex manual_IFOS2D
+	pdflatex manual_IFOS2D
+	pdflatex manual_IFOS2D
+	pdflatex manual_IFOS2D
 
 /bin/rm -rf *.dvi >  /dev/null
 /bin/rm -rf *.log >  /dev/null
@@ -39,5 +39,5 @@ cd ./latex
 /bin/rm -rf *.tit >  /dev/null
 /bin/rm -rf *.spl >  /dev/null
 
-mv manual_IFOS.pdf ../
+mv manual_IFOS2D.pdf ../
 cd ..

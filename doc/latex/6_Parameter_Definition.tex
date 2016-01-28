@@ -3,8 +3,8 @@
 %------------------------------------------------------------------------------------------------%
 
 The geometry of the FD grid and all parameters for the wave field simulation and inversion have to be defined in a parameter file.
-IFOS uses a parameter file according to the JSON standard wich is described in this chapter. In the following we will first list a full input file for a forward modeling as an example and later explain every input parameter section in detail:
-\input{IFOS_FW.json}
+IFOS2D uses a parameter file according to the JSON standard wich is described in this chapter. In the following we will first list a full input file for a forward modeling as an example and later explain every input parameter section in detail:
+\input{IFOS2D_FW.json}
 All lines in the parameter file are formated according to the JSON standard (\href{www.json.org}{www.json.org}) and organized as follows: 
 {\color{blue}\begin{verbatim}
 "VARNAME" = "Parameter value",
@@ -19,7 +19,7 @@ where VARNAME denotes the name of the global variable in which the value is save
 
 Sometimes possible values are described in comments, feel free to add own comments. Basically all non JSON conform line will be ignored. The order of parameters can be arbitrarily organized. The built-in JSON parser will search for the need parameters and displays found values. If critical parameters are missing the code will stop and an error message will appear.\\
 
-If you use the json input file some default values for the forward modeling and the inversion are set. The default values are written in the following subsections in red. The input file \texttt{IFOS\_FW\_all\_parameters.json} in the directory \texttt{par/in\_and\_out} is an input file for a forward modeling containing all parameters that can be defined. Analog to that the input file \texttt{IFOS\_INV\_all\_parameters.json} is an example for an inversion input file. The input files \texttt{IFOS\_FW.json} and \texttt{IFOS\_INV.json} contain only the parameters that must be set by the user.\\
+If you use the json input file some default values for the forward modeling and the inversion are set. The default values are written in the following subsections in red. The input file \texttt{IFOS2D\_FW\_all\_parameters.json} in the directory \texttt{par/in\_and\_out} is an input file for a forward modeling containing all parameters that can be defined. Analog to that the input file \texttt{IFOS2D\_INV\_all\_parameters.json} is an example for an inversion input file. The input files \texttt{IFOS2D\_FW.json} and \texttt{IFOS2D\_INV.json} contain only the parameters that must be set by the user.\\
 
 
 \section{Domain decomposition}
@@ -33,10 +33,10 @@ by the program into sub grids. After decomposition each processing elements (PE)
 processors in x-, y-direction, respectively (Figure  \ref{fig_grid_json}). The total number of processors thus is NP=NPROCX*NPROCY. This value must be specified when starting the program with the mpirun command:
 \newline
 
-\textit{mpirun -np $<$NP$>$ ../bin/IFOS IFOS.json} (see section \ref{compexec1}).
+\textit{mpirun -np $<$NP$>$ ../bin/IFOS2D IFOS2D.json} (see section \ref{compexec1}).
 \newline
 
-If the total number of processors in IFOS.json and the command line differ, the program will terminate immediately with a corresponding error message. Obviously, the total number of PEs (NPROCX*NPROCY) used to decompose the model  should be less equal than the total number of CPUs which are available on your parallel machine. If you use LAM and decompose your model in more domains than CPUs are available two or more  domains will be updated on the same CPU (the program will not terminate and will produce the correct results). However, this is only efficient if more than one processor is available on each node. In order to reduce the amount of data that needs to be  exchanged between PEs, you should decompose the model into more or less cubic sub grids. In our example, we use 2 PEs in each direction: NPROCX=NPROCY=2. The total number of PEs used by the program is NPROC=NPROCX*NPROCY=4. 
+If the total number of processors in IFOS2D.json and the command line differ, the program will terminate immediately with a corresponding error message. Obviously, the total number of PEs (NPROCX*NPROCY) used to decompose the model  should be less equal than the total number of CPUs which are available on your parallel machine. If you use LAM and decompose your model in more domains than CPUs are available two or more  domains will be updated on the same CPU (the program will not terminate and will produce the correct results). However, this is only efficient if more than one processor is available on each node. In order to reduce the amount of data that needs to be  exchanged between PEs, you should decompose the model into more or less cubic sub grids. In our example, we use 2 PEs in each direction: NPROCX=NPROCY=2. The total number of PEs used by the program is NPROC=NPROCX*NPROCY=4. 
 
 \begin{figure}
 \begin{center}
@@ -73,7 +73,7 @@ FD operators used in the simulation (see section \ref{grid-dispersion}). In the 
 \begin{equation}
 DH\le\frac{v_{s,\text{min}}}{2 f_c n} \label{eq_dispersion_json}
 \end{equation}
-where $\frac{v_{s,\text{min}}}{2 f_c}$ is the smallest wavelength propagating through the model and $v_{s,\text{min}}$ denotes the minimum shear wave velocity in the model, and $f_c=1/TS$ is the center frequency of the source wavelet. The program assumes that the maximum frequency of the source signal is approximately two times the center frequency. The center frequency is approximately one over the duration time TS. The value of n for different FD operators is tabulated in table \ref{grid_disp.2}. The criterion \ref{eq_dispersion_json} is checked by the FD software. If the criterion is violated a warning message will be displayed in the IFOS output section ``--- CHECK FOR GRID DISPERSION ---``. Please note, that the FD-code will NOT terminate due to grid dispersion, only a warning is given in the output file.
+where $\frac{v_{s,\text{min}}}{2 f_c}$ is the smallest wavelength propagating through the model and $v_{s,\text{min}}$ denotes the minimum shear wave velocity in the model, and $f_c=1/TS$ is the center frequency of the source wavelet. The program assumes that the maximum frequency of the source signal is approximately two times the center frequency. The center frequency is approximately one over the duration time TS. The value of n for different FD operators is tabulated in table \ref{grid_disp.2}. The criterion \ref{eq_dispersion_json} is checked by the FD software. If the criterion is violated a warning message will be displayed in the IFOS2D output section ``--- CHECK FOR GRID DISPERSION ---``. Please note, that the FD-code will NOT terminate due to grid dispersion, only a warning is given in the output file.
 
 
 \section{Time stepping}
@@ -189,7 +189,7 @@ NSRC
 \end{verbatim}}}
 
 In the following lines, you can define certain parameters for each source point:\\
-The first line must be the overall number of sources (NSRC). XSRC is the x-coordinate of a source point (in meter), YSRC is the y-coordinate of a source point (in meter). ZSRC is the z-coordinate should always be set to 0.0, because IFOS is a 2D code. TD is the excitation time (time-delay) for the source point (in seconds), FC is the center frequency of the source signal (in Hz), and AMP is the maximum amplitude of the source signal.
+The first line must be the overall number of sources (NSRC). XSRC is the x-coordinate of a source point (in meter), YSRC is the y-coordinate of a source point (in meter). ZSRC is the z-coordinate should always be set to 0.0, because IFOS2D is a 2D code. TD is the excitation time (time-delay) for the source point (in seconds), FC is the center frequency of the source signal (in Hz), and AMP is the maximum amplitude of the source signal.
 \newline
 
 \textbf{Optional parameter:} The SOURCE\_AZIMUTH if SOURCE\_TYPE is 4. The SOURCE\_AZIMUTH is the angle between the y- and x-direction in degree and with SOURCE\_TYPE if SOURCE\_TYPE is set here, the value of SOURCE\_TYPE in the input file is ignored.
@@ -204,7 +204,7 @@ If the option RUN\_MULTIPLE\_SHOTS=0 in the parameter file all shot points defin
 
 % Instead of a single source or multiple sources specified in the SOURCE\_FILE, you can also specify to excite a plane wave parallel (or tilted by an angle PHI) to the top of the model. This plane wave is approximated by a plane of single sources at every grid point at a depth of PLANE\_WAVE\_DEPTH below. The center source frequency $f_c$ is specified by the inverse of the duration of the source signal TS. SOURCE\_SHAPE and SOURCE\_TYPE are taken from the parameters as described above. If you choose the plane wave option by specifying a PLANE\_WAVE\_DEPTH$>$0, the parameters SRCREC and SOURCE\_FILE will be ignored.
 % 
-% This option will not be supported in future releases of IFOS.    
+% This option will not be supported in future releases of IFOS2D.    
 
 \newpage
 
@@ -221,9 +221,9 @@ Default value is:
 	ACOUSTIC=0
 \end{verbatim}}}
 
-With this option pure acoustic modelling and/or inversion can be performed (ACOUSTIC = 1). Only a P-wave and a density model need to be provided. Acoustic modelling and inversion can be a quick estimate especially for marine environments. Acoustic gradients are derived from pressure wavefields, therefore the option ADJOINT\_TYPE = 4 has to be used and only the inversion of hydrophone data is possible at the moment.
+With this option pure acoustic modelling and/or inversion can be performed (ACOUSTIC = 1). Only a P-wave and a density model need to be provided. Acoustic modelling and inversion can be a quick estimate, especially for marine environments.
 
-For acoustic modelling the option HESSIAN is not available (GRAD\_METHOD needs to be 1), as well as the option VELOCITY. Only FDORDER = 2 and INVMAT1 = 1 are possible.
+For acoustic modelling the option VELOCITY is not available and only INVMAT1 = 1 is possible.
 
 \section{PSV and SH modelling}
 {\color{blue}{\begin{verbatim}
@@ -254,7 +254,7 @@ In these files, each material parameter value must be saved as 32 bit (4 byte) n
 
 It is also possible to read Qp, and Qs grid files to allow for spatial variable attenuation. If no models are provided, the value TAU is used to generate Q-Models (see section \ref{q_approx}).
 
-If READMOD=0 the model is generated ''on the fly'' by IFOS, i.e. it is generated internally before the time loop starts. See \texttt{genmod/1D\_linear\_gradient\_el.c} for an example function that generates a simple model with a linear vertical gradient ''on the fly''. If READMOD=0 this function is called in \texttt{src/IFOS.c} and therefore must be specified in \texttt{src/Makefile} (at the top of \texttt{src/Makefile}, see section \ref{compexec}). If you change this file, for example to change the model structure, you need to re-compile IFOS by changing to the src directory and ''make IFOS''.
+If READMOD=0 the model is generated ''on the fly'' by IFOS2D, i.e. it is generated internally before the time loop starts. See \texttt{genmod/1D\_linear\_gradient\_el.c} for an example function that generates a simple model with a linear vertical gradient ''on the fly''. If READMOD=0 this function is called in \texttt{src/IFOS2D.c} and therefore must be specified in \texttt{src/Makefile} (at the top of \texttt{src/Makefile}, see section \ref{compexec}). If you change this file, for example to change the model structure, you need to re-compile IFOS2D by changing to the src directory and ''make IFOS2D''.
 
 
 \section{Free surface}  
@@ -300,7 +300,7 @@ In some cases, it is usefull to apply periodic boundary conditions (see section 
 If SEISMO$>$0, seismograms are saved on hard disk. If SEISMO equals 1 x- and y-component of particle velocity will be written according to parameters specified in Chapter \ref{seismograms_json}.
 If SEISMO = 2 pressure (sum of the diagonal components of the stress tensor) recorded at the receiver locations (receivers are hydrophones!) is written. If SEISMO = 3 the curl and divergence are saved. For SEISMO = 4 everthying is saved and for SEISMO = 5 everything except curl and divergence is saved.
 
-The curl and divergence of the particle velocities are useful to separate between P- and S-waves in the snapshots of the wavefield. IFOS calculates the divergence and the magnitude of the curl of the particle velocity field according to \cite{dougherty:88}. The motivation for this is as follows. According to Morse and Feshbach \cite{morse:53} the energy of P- and S-wave particle velocities is, respectively,
+The curl and divergence of the particle velocities are useful to separate between P- and S-waves in the snapshots of the wavefield. IFOS2D calculates the divergence and the magnitude of the curl of the particle velocity field according to \cite{dougherty:88}. The motivation for this is as follows. According to Morse and Feshbach \cite{morse:53} the energy of P- and S-wave particle velocities is, respectively,
 \begin{equation}
 E_p=\left(\lambda + 2 \mu\right) (div(\vec{v}))^2 \quad \mbox{and} \quad E_s=\mu \left|rot(\vec{v})\right|^2 \quad\mbox{.}
 \label{eq_E}
@@ -320,7 +320,7 @@ If READREC=0 the receiver locations must be specified in the parameter file. In 
 Receivers are always located on full grid indices, i.e. a receiver that is located between two grid points will be shifted by the FD program to the closest next grid point. It is not yet possible
 to output seismograms for arbitrary receiver locations since this would require a certain wavefield interpolation.
 
-\textbf{It is important to note that the actual receiver positions defined in REC\_FILE or in IFOS.json may vary by DH/2 due to the staggered positions of the particle velocities and stress tensor components. }
+\textbf{It is important to note that the actual receiver positions defined in REC\_FILE or in IFOS2D.json may vary by DH/2 due to the staggered positions of the particle velocities and stress tensor components. }
 
 In our example, we specify 100 receiver location. Due to the small size of the model, most of the specified receiver positions will be located inside this absorbing boundary (if ABS=2, see Chapter \ref{abs}). A corresponding warning message will appear. If you choose to read the receiver location from REC\_FILE receiver.dat (READREC=1), only 10 receivers locations are considered. The list of receivers specified in file receiver.dat is equivalent to the parameters in the input file with only a larger distance between adjacent receivers (NGEOPH = 10.)
 
@@ -331,7 +331,7 @@ In our example, we specify 100 receiver location. Due to the small size of the m
 "Seismograms" : "comment",
 			"NDT" : "1",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE" : "su/IFOS",
+			"SEIS_FILE" : "su/IFOS2D",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
@@ -339,7 +339,7 @@ Default values are:
 	NDT=1
 \end{verbatim}}}
 
-If SEISMO$>$0 seismograms recorded at the receiver positions are written to the corresponding output files. The sampling rate of the seismograms is NDT*DT seconds. In case of a small time step interval and a high number of time steps, it might be useful to choose a high NDT in order to avoid a unnecessary detailed sampling of the seismograms and consequently large files of seismogram data. Possible output formats of the seismograms are SU, ASCII and BINARY. It is recommended to use SU format for saving the seismograms. The main advantage of this format is that the time step interval (NDT*DT) and the acquisition geometry (shot and receiver locations) are stored in the corresponding SU header words. Also additional header words like offset are set by IFOS. This format thus facilitates a further visualization and processing of the synthetic seismograms. Note, however, that SU cannot handle sampling rates smaller than 1.0e-6 seconds and the number of samples is limited to about 32.000. In such cases, you should increase the sampling rate by increasing NDT. If this is impossible (for example because the Nyquist criterion is violated) you must choose a different output format (ASCII or binary). File endings will be added to SEIS\_FILE automatically. 
+If SEISMO$>$0 seismograms recorded at the receiver positions are written to the corresponding output files. The sampling rate of the seismograms is NDT*DT seconds. In case of a small time step interval and a high number of time steps, it might be useful to choose a high NDT in order to avoid a unnecessary detailed sampling of the seismograms and consequently large files of seismogram data. Possible output formats of the seismograms are SU, ASCII and BINARY. It is recommended to use SU format for saving the seismograms. The main advantage of this format is that the time step interval (NDT*DT) and the acquisition geometry (shot and receiver locations) are stored in the corresponding SU header words. Also additional header words like offset are set by IFOS2D. This format thus facilitates a further visualization and processing of the synthetic seismograms. Note, however, that SU cannot handle sampling rates smaller than 1.0e-6 seconds and the number of samples is limited to about 32.000. In such cases, you should increase the sampling rate by increasing NDT. If this is impossible (for example because the Nyquist criterion is violated) you must choose a different output format (ASCII or binary). File endings will be added to SEIS\_FILE automatically. 
 
 
 \section{Q-approximation}
@@ -361,7 +361,7 @@ Default values are:
 
 These lines may be used to define an overall level of intrinsic (viscoelastic) attenuation of seismic waves. In case of L=0, a purely elastic simulation is performed (no absorption). The frequency dependence of the (intrinsic) Quality factor $Q(\omega)$ is defined by the L relaxation frequencies (FL=$f_l=2\pi/\tau_{\sigma l}$) and one value $\tau$ (see equation 5 in \cite{bohlen:02}). For a single relaxation mechanism (L=1) $Q \approx 2/\tau$ \citep{bohlen:98,blanch:95,bohlen:02}. If the model is generated ''on the fly'' the value of TAU can be assigned to all gridpoints for both P- and S-waves. Thus, intrinsic attenuation is homogeneous and equal for P- and S-waves ($Q_p(\omega)=Q_s(\omega)$). However, it is possible to simulate any spatial distribution of absorption by assigning the gridpoints with different Q-values by reading external grid files for $Q_p$ (P-waves) and $Q_s$ (S-waves) (see \texttt{src/readmod.c}) or by generating these files ''on the fly'' (see section \ref{gen_of_mod} or exemplary model function \texttt{genmod/1D\_linear\_gradient\_visc.c}).  
 
-Small $Q$ values ($Q<50$) may lead to significant amplitude decay and velocity dispersion. Please note, that due to dispersive media properties the viscoelastic velocity model is defined for the reference frequency only. In IFOS, this reference frequency is specified as the center source frequency. With F\_REF one can set the reference frequency manually. At the exact reference frequency, elastic and viscoelastic models are equivalent. As a consequence, slightly smaller and larger minimum and maximum velocity values occure in the viscoelastic model.
+Small $Q$ values ($Q<50$) may lead to significant amplitude decay and velocity dispersion. Please note, that due to dispersive media properties the viscoelastic velocity model is defined for the reference frequency only. In IFOS2D, this reference frequency is specified as the center source frequency. With F\_REF one can set the reference frequency manually. At the exact reference frequency, elastic and viscoelastic models are equivalent. As a consequence, slightly smaller and larger minimum and maximum velocity values occure in the viscoelastic model.
 
 The frequency dependence of attenuation, i.e. $Q$ and phase velocity as a function  of frequency, may be calculated using the Matlab functions in the directory mfiles. The Matlab script /mfiles/qplot.m can be used to plot $Q(\omega)$ for different values of L, $f_l$ and $\tau$. The m-file qapprox.m in the same directory finds optimal values for L, $f_l$ and $\tau$ that fit a desired function $Q(\omega)=const$ in a least-squares sense.
 
@@ -390,7 +390,7 @@ IDY=1
 If SNAP$>0$, wavefield information (particle velocities (SNAP=1), pressure (SNAP=2), or curl and divergence of particle velocities (SNAP=3), or everything (SNAP=4)) for the entire model is saved on the hard disk (assure that enough free space is on disk!). Each PE is writing his sub-volume to disk. The filenames have the basic filename SNAP\_FILE plus an extension that indicates the PE number in the logical processor array (SNAP\_FILE.<PEnumber>). The first snapshot is written at TSNAP1 seconds of seismic wave traveltime to the output files, the second at TSNAP1 + TSNAPINC seconds etc. The last snapshots contains wavefield at TSNAP2 seconds. With SNAPSHOT\_START (SNAPSHOT\_END) you can specify the first (last) shot, for which a snapshot should by generated. The increment for the shotwise output of the snapshots can be defined in the variable SNAPSHOT\_INCR. Note that the file sizes increase during the simulation. The snapshot files might become quite LARGE. It may therefore be necessary to reduce the amount of snapshot data by increasing IDX, IDY and/or TSNAPINC. In order to merge the separate snapshots of each PE after the completion of the wave modeling, you can use the program snapmerge (see Chapter \ref{installation}, section \textbf{src}). The bash command line to merge the snapshot files can look like this: 
 \newline
 
-\textit{../bin/snapmerge IFOS.json}.
+\textit{../bin/snapmerge IFOS2D.json}.
 
 
 \section{Monitoring the simulation}
@@ -406,8 +406,8 @@ LOG=1
 LOG_FILE="log/LOG_FILE"
 \end{verbatim}}}
 
-IFOS can output a lot of useful information about the modeling parameters and the status of the modeling process etc. The major part of this information is output by PE 0.
-If LOG=1, PE 0 writes this info to stdout, i.e. on the screen of your shell. This is generally recommended to monitor the modeling process. You may want to save this screen info to an output file by adding ''$>$ IFOS.out'' or ''| tee IFOS.out''. to your starting command. If LOG=1 all other processes with PE number greater than zero will write their information to LOG\_FILE.<PEnumber>. If you specify LOG=2 PE 0 will also output information to LOG\_FILE.0. As a consequence only little information is written directly to the screen of your shell. On supercomputers where you submit modeling jobs to a queuing system as batch jobs LOG=2 may be advantageous. In case of LOG=2, you may still watch the simulation by checking the content of LOG\_FILE.0 for example by using the Unix commands more or tail. After finishing the program the timing information is written to the ASCII file log/test.log.0.timings. This feature is useful to benchmark your local PC cluster or supercomputer. If LOG=0 no output from node 0 will be written, neither to stdout nor to an LOG file. There will be also no output of timing information to the ASCII file log/test.log.0.timings.
+IFOS2D can output a lot of useful information about the modeling parameters and the status of the modeling process etc. The major part of this information is output by PE 0.
+If LOG=1, PE 0 writes this info to stdout, i.e. on the screen of your shell. This is generally recommended to monitor the modeling process. You may want to save this screen info to an output file by adding ''$>$ IFOS2D.out'' or ''| tee IFOS2D.out''. to your starting command. If LOG=1 all other processes with PE number greater than zero will write their information to LOG\_FILE.<PEnumber>. If you specify LOG=2 PE 0 will also output information to LOG\_FILE.0. As a consequence only little information is written directly to the screen of your shell. On supercomputers where you submit modeling jobs to a queuing system as batch jobs LOG=2 may be advantageous. In case of LOG=2, you may still watch the simulation by checking the content of LOG\_FILE.0 for example by using the Unix commands more or tail. After finishing the program the timing information is written to the ASCII file log/test.log.0.timings. This feature is useful to benchmark your local PC cluster or supercomputer. If LOG=0 no output from node 0 will be written, neither to stdout nor to an LOG file. There will be also no output of timing information to the ASCII file log/test.log.0.timings.
 If TIME\_FILT is set to one the log file L2\_LOG.dat contains a 9th column with the corner frequency in Hz used in the iteration step.
 
 \newpage
@@ -417,7 +417,7 @@ If TIME\_FILT is set to one the log file L2\_LOG.dat contains a 9th column with 
 {\color{blue}{\begin{verbatim}
 "General inversion parameters" : "comment",
 			"ITERMAX" : "10",
-			"DATA_DIR" : "su/measured_data/IFOS_real",
+			"DATA_DIR" : "su/measured_data/IFOS2D_real",
 			"INVMAT1" : "1",
 			"INVMAT" : "0",
 			"ADJOINT_TYPE" : "1",
@@ -439,11 +439,13 @@ INV_VP_ITER=0
 INV_VS_ITER=0
 \end{verbatim}}}
 
-This section covers some general inversion parameters. The maximum number of iterations is defined by ITERMAX. The switch INVMAT controls if only the forward modeling code should be used (INVMAT=10), e.\,g. to calculate synthetic seismograms or a complete FWT run (INVMAT=0). The seismic sections of the real data need to be located in DATA\_DIR and should have the ending \_x.su.shot<shotnumber> for the x-component and so on. As noted in section \ref{model parametrizations} the gradients can be expressed for different model parameterizations. The switch INVMAT1 defines which parameterization should be used, seismic velocities and density (Vp,Vs,rho, INVMAT1=1), seismic impedances (Zp,Zs,rho, INVMAT1=2) or Lam$\rm{\acute{e}}$ parameters ($\rm{\lambda,\mu,\rho}$, INVMAT1=3). If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be backpropagated. For two component data (x- and y-component) set ADJOINT\_TYPE=1, only the y-component (ADJOINT\_TYPE=2) and only the x-component (ADJOINT\_TYPE=3). For acoustic modelling pressure seismograms and ADJOINT\_TYPE=4 have to be used.
+This section covers some general inversion parameters. The maximum number of iterations is defined by ITERMAX. The switch INVMAT controls if only the forward modeling code should be used (INVMAT=10), e.\,g. to calculate synthetic seismograms or a complete FWT run (INVMAT=0). The seismic sections of the real data need to be located in DATA\_DIR and should have the ending \_x.su.shot<shotnumber> for the x-component and so on. As noted in section \ref{model parametrizations} the gradients can be expressed for different model parameterizations. The switch INVMAT1 defines which parameterization should be used, seismic velocities and density (Vp,Vs,rho, INVMAT1=1), seismic impedances (Zp,Zs,rho, INVMAT1=2) or Lam$\rm{\acute{e}}$ parameters ($\rm{\lambda,\mu,\rho}$, INVMAT1=3). Please use INVMAT1>1 with care, as current developers are only working with INVMAT1=1.
+
+If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be backpropagated. For two component data (x- and y-component) set ADJOINT\_TYPE=1, only the y-component (ADJOINT\_TYPE=2) and only the x-component (ADJOINT\_TYPE=3). For the inversion of pressure seismograms ADJOINT\_TYPE=4 has to be used.
 
 During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of eight or nine columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use frequency filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step.
 
-In general IFOS tries to minimize the misfit in the particle displacement between the observed data and the synthetic data. If you set the switch VELOCITY to 1 the misfit in the particle velocity seismograms is minimized.
+In general IFOS2D tries to minimize the misfit in the particle displacement between the observed data and the synthetic data. If you set the switch VELOCITY to 1 the misfit in the particle velocity seismograms is minimized.
 
 The parameters INV\_RHO\_ITER, INV\_VP\_ITER and INV\_VS\_ITER define from which inversion step on an inversion for density, Vp and Vs, respectively, is applied. To invert for one parameter from the beginning of an inversion set it to 0 or 1.
 
@@ -502,7 +504,7 @@ Default values are:
 
 With the variable EPRECOND it is possible to activate an approximated Hessian for preconditioning. There are two different approximations available. EPRECOND==1 will be an approximation after \cite{shin2001efficient}, and EPRECOND==3 after \cite{plessix2004frequency}. EPSILON\_WE defines a water level to stabilize the approximated Hessian. The use of an approximated Hessian can significantly influence the speed of convergence. The Hessian is calculated for each shot individually and will be applied to the gradient from each shot directly if the switch EPRECOND\_PER\_SHOT is set to 1. Otherwise (EPRECOND\_PER\_SHOT==0) the Hessian will be summed up for each shot and will be applied to the total gradient. 
 Up to now there is no rule of tumb wether EPRECOND==1 or ==3 should be chosen,  so it is recommended to try both. After each iteration the Hessian will be outputted in the folder JACOBIAN with the syntax \*approx\_hessian\* in the file name.\\
-The corresponding functions are copied out of IFOS Black Edition, which is maintained by Daniel Koehn. 
+The corresponding functions are copied out of DENISE Black Edition, which is maintained by Daniel Koehn. 
 
 \section{PCG and L-BFGS}
 {\color{blue}{\begin{verbatim}
@@ -524,7 +526,7 @@ Default values are:
 	"GRAD_METHOD" : "1",
 \end{verbatim}}}
 
-IFOS contains the option to chose between a preconditioned conjugate gradient (PCG) method or a quasi-newton L-BFGS method.
+IFOS2D contains the option to chose between a preconditioned conjugate gradient (PCG) method or a quasi-newton L-BFGS method.
 
 The preconditioned conjugate gradient (PCG), which can be used by GRAD\_METHOD==1, is very robust, however in general shows slow convergence. For a quick-and-dirty inversion or if you want to run an inversion without worry about a stable L-BFGS inversion it is recommended to use PCG, due to the higher stability and robustness of convergence.
 
@@ -563,11 +565,11 @@ EPSILON = EPS\_SCALE * m\_max/grad\_max
 EPSILON = epst[i] * m\_max/grad\_max\\
 where m\_max is the maximum value of the corresponding model parameter in the whole model and grad\_max is the maximum absolute value of the gradient.\\
 
-For a better definition of the parabola the improved line search is now trying to estimate a steplength epst(2) with L2t(2)<L2t(1). If the code is not able to find an appropiate steplength using the user-defined value EPS\_SCALE (f.e. EPS\_SCALE = 0.01 = 1\% change in terms of m\_max/grad\_max), the code divides this steplength by the variable SCALEFAC and calculates the misfit norm again. If this search fails after STEPMAX attempts IFOS exits with an error message. If the algorithm has found an appropriate value for epst(2), it is trying to estimate a steplength epst(3) with L2t(3)> L2t(2), by increasing the steplength\\
+For a better definition of the parabola the improved line search is now trying to estimate a steplength epst(2) with L2t(2)<L2t(1). If the code is not able to find an appropiate steplength using the user-defined value EPS\_SCALE (f.e. EPS\_SCALE = 0.01 = 1\% change in terms of m\_max/grad\_max), the code divides this steplength by the variable SCALEFAC and calculates the misfit norm again. If this search fails after STEPMAX attempts IFOS2D exits with an error message. If the algorithm has found an appropriate value for epst(2), it is trying to estimate a steplength epst(3) with L2t(3)> L2t(2), by increasing the steplength\\
 
 EPS\_SCALE += EPS\_SCALE/SCALEFAC.\\
 
-If a corresponding value epst(3) can be found after STEPMAX forward modellings, IFOS can fit a parabola through the 3 points (L2t(i),epst(i)) and estimates an optimum step length at the minimum of the parabola. If the L2-value L2t(3) after STEPMAX forward models is still smaller than L2t(2) the optimum steplength estimated by parabolic fitting will be not larger than epst(3).\\
+If a corresponding value epst(3) can be found after STEPMAX forward modellings, IFOS2D can fit a parabola through the 3 points (L2t(i),epst(i)) and estimates an optimum step length at the minimum of the parabola. If the L2-value L2t(3) after STEPMAX forward models is still smaller than L2t(2) the optimum steplength estimated by parabolic fitting will be not larger than epst(3).\\
 
 Please note: This step length search is only available wenn PCG method (GRAD\_METHOD==1) is used and will be automatically selected.
 
@@ -611,7 +613,7 @@ To reduce the memory requirements during an inversion one can define that only e
 "Termination of the programmme" : "comment",
 			"PRO" : "0.01",
 \end{verbatim}}}
-Additionally to the parameter ITERMAX a second abort criterion is implemented in IFOS which is using the relative misfit change within the last two iterations. The relative misfit of
+Additionally to the parameter ITERMAX a second abort criterion is implemented in IFOS2D which is using the relative misfit change within the last two iterations. The relative misfit of
 the current iteration step and the misfit of the second to last iteration step is calculated with regard to the misfit of the second to last iteration step. If this relative change is
 smaller than PRO the inversion aborts or in case of using frequency filtering (TIME\_FILT==1) it increases the corner frequency of the low pass filter and therefore switches to next higher bandwidth. 
 
@@ -778,9 +780,9 @@ SWS_TAPER_FILE_PER_SHOT=0
 
 Different preconditioning matrices can be created and applied to the gradients (using the function \texttt{taper\_grad.c}). To apply a vertical taper one has to set the switch SWS\_TAPER\_GRAD\_VERT to one and for a horizontaltaper SWS\_TAPER\_GRAD\_HOR has to be 1. The parameters for the vertical and the horizontal window are defined by the input file paramters GRADT1, GRADT2, GRADT3 and GRADT4. Please have a look at the function \texttt{taper\_grad.c} directly to obtain more information about the actual definition of the tapers. It is also possible to apply cylindrical tapers around the source positions. This can be done by either setting the switch SWS\_TAPER\_GRAD\_SOURCES or SWS\_TAPER\_CIRCULAR\_PER\_SHOT to 1. If one uses SWS\_TAPER\_GRAD\_SOURCES=1 only the final gradients (that means the gradients obtained by the summation of the gradients of each shots) are multiplied with a taper that decreases the gradients at all shot positions. Therefore, one looses the update information at the source positions. To avoid this one can use SWS\_TAPER\_CIRCULAR\_PER\_SHOT=1. In this case the gradients of the single shots are preconditioned with a window that only decreases at the current shot position. This is done before the summation of all gradients to keep model update information also at the shot positions. The actual tapers are generated by the function \texttt{taper\_grad.c} and \texttt{taper\_grad\_shot.c}, respectively. The circular taper around the source positions decrease from a value of one at the edge of the taper to a value of zero at the source position. The shape of the decrease can be defined by an error function (SRTSHAPE=1) or a log-function (SRTSHAPE=2). The radius of the taper is defined in meter by SRTRADIUS. Note, that this radius must be at least 5 gridpoints. With the parameter FILTSIZE one can extend the region where the taper is zero around the source. The taper is set to zero in a square region of (2*FILTSIZE+1 times 2*FILTSIZE+1) gridpoints. All preconditioning matrices that are applied are saved in the par directory with the file names taper\_coeff\_vert.bin, taper\_coeff\_horz.bin and taper\_coeff\_sources.bin.\\
 
-To apply an externally defined taper on the gradients in IFOS, the parameter SWS\_TAPER\_FILE has to be set to 1. Each model parameter requires a taper file which needs to be located in TAPER\_FILE\_NAME for vp, in TAPER\_FILE\_NAME\_U for vs and in TAPER\_FILE\_NAME\_RHO for the density.\\
+To apply an externally defined taper on the gradients in IFOS2D, the parameter SWS\_TAPER\_FILE has to be set to 1. Each model parameter requires a taper file which needs to be located in TAPER\_FILE\_NAME for vp, in TAPER\_FILE\_NAME\_U for vs and in TAPER\_FILE\_NAME\_RHO for the density.\\
 
-It is also possible to apply externally defined taper files to the gradients of the single shots before summation of these gradients. This can be done by setting SWS\_TAPER\_FILE\_PER\_SHOT to one. IFOS expects the tapers in TAPER\_FILE\_NAME.shot<shotnumber> for the vp gradients, in TAPER\_FILE\_NAME\_U.shot<shotnumber> for the vs gradients and in TAPER\_FILE\_NAME\_RHO.shot<shotnumber> for the density gradients.
+It is also possible to apply externally defined taper files to the gradients of the single shots before summation of these gradients. This can be done by setting SWS\_TAPER\_FILE\_PER\_SHOT to one. IFOS2D expects the tapers in TAPER\_FILE\_NAME.shot<shotnumber> for the vp gradients, in TAPER\_FILE\_NAME\_U.shot<shotnumber> for the vs gradients and in TAPER\_FILE\_NAME\_RHO.shot<shotnumber> for the density gradients.
 
 \subsection{Spatial filtering of the gradients}
 {\color{blue}{\begin{verbatim}
@@ -882,5 +884,4 @@ Default values are:
 	MODEL_FILTER=0
 \end{verbatim}}}
 
-If MODEL\_FILTER = 1 vp- and vs-models are smoothed with a 2D median filter after every iterationstep. With FILT\_SIZE you can set the filter length in gridpoints. 
-IFOS
+If MODEL\_FILTER = 1 vp- and vs-models are smoothed with a 2D median filter after every iterationstep. With FILT\_SIZE you can set the filter length in gridpoints.

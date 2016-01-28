@@ -1,6 +1,6 @@
 {\color{blue}\begin{verbatim}
 #-----------------------------------------------------------------
-#      JSON PARAMETER FILE FOR IFOS
+#      JSON PARAMETER FILE FOR IFOS2D
 #-----------------------------------------------------------------
 # description:
 # description/name of the model: model grid created by ../genmod/2layer.c
