@@ -23,21 +23,25 @@
 #include "fd.h"
 #include "segy.h"
 
-void  inseis_source_wavelet(float *section, int ns, int ishot){
+void  inseis_source_wavelet(float *section, int ns, int ishot, int SH){
 
 	/* declaration of extern variables */
 	extern int MYID;
 	extern char SIGNAL_FILE[STRING_SIZE];
-	
+    extern char SIGNAL_FILE_SH[STRING_SIZE];
 	/* declaration of local variables */
 	int j;
 	float dump;
 	segy tr;
 	char data[STRING_SIZE];
-	FILE *fpdata;
-	        
-	sprintf(data,"%s.shot%d",SIGNAL_FILE,ishot);
-	
+    FILE *fpdata;
+    
+    if(SH==0) {
+        sprintf(data,"%s.shot%d",SIGNAL_FILE,ishot);
+    } else {
+        sprintf(data,"%s.shot%d",SIGNAL_FILE_SH,ishot);
+    }
+    
 	fpdata = fopen(data,"r");
 	if (fpdata==NULL) err(" Source wavelet not found ");
 

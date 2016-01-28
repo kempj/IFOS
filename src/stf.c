@@ -26,7 +26,7 @@
 #include "segy.h"
 
 void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy_conv, float * source_time_function, int  **recpos, int  **recpos_loc, 
-int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float FC){ 
+int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float FC, int SH){
 
 	/* declaration of global variables */
 	extern float DT, DH;
@@ -35,7 +35,8 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	extern int TRKILL_STF, NORMALIZE, USE_WORKFLOW, WORKFLOW_STAGE;
 	extern char TRKILL_FILE_STF[STRING_SIZE];
 	extern char SIGNAL_FILE[STRING_SIZE];
-	
+    extern char SIGNAL_FILE_SH[STRING_SIZE];
+    
 	/* declaration of variables for trace killing */
 	int ** kill_tmp, *kill_vector, h, j;
 	char trace_kill_file[STRING_SIZE];
@@ -177,7 +178,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	
 	if (SOURCE_SHAPE==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
 	if (SOURCE_SHAPE==7){
-		inseis_source_wavelet(psource,ns,ishot);
+		inseis_source_wavelet(psource,ns,ishot,SH);
 	}
 	
 	/* calculating wavelet SIN**3 for convoling with STF */
@@ -269,15 +270,22 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 // 	printf(" PE %d is writing %d modelled seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,mod_y_tmp);
 // 	outseis_glob(fp,fopen(mod_y_tmp,"w"),1,sectionvy,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);
 	
-	
 	/* --------------- writing out the source time function --------------- */
 	if((TIME_FILT==1)||(TIME_FILT==2)){
-		sprintf(qw,"%s.shot%d_%dHz",SIGNAL_FILE,ishot,(int)FC);
+        if(SH==0) {
+            sprintf(qw,"%s.shot%d_%dHz",SIGNAL_FILE,ishot,(int)FC);
+        } else {
+            sprintf(qw,"%s.shot%d_%dHz",SIGNAL_FILE_SH,ishot,(int)FC);
+        }
 		printf(" PE %d is writing source time function for shot = %d to\n\t %s \n",MYID,ishot,qw);
 		outseis_vector(fp,fopen(qw,"w"),1,stf_conv_wavelet,recpos,recpos_loc,ntr,srcpos,0,ns,SEIS_FORMAT,ishot,0);
 	}
-	
-	sprintf(qw,"%s.shot%d",SIGNAL_FILE,ishot);
+    
+    if(SH==0) {
+        sprintf(qw,"%s.shot%d",SIGNAL_FILE,ishot);
+    } else {
+        sprintf(qw,"%s.shot%d",SIGNAL_FILE_SH,ishot);
+    }
 	printf(" PE %d is writing source time function for shot = %d to\n\t %s \n",MYID,ishot,qw);
 	outseis_vector(fp,fopen(qw,"w"),1,stf_conv_wavelet,recpos,recpos_loc,ntr,srcpos,0,ns,SEIS_FORMAT,ishot,0);
 	

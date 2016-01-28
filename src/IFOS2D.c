@@ -1177,21 +1177,18 @@ int main(int argc, char **argv){
                     /*------------------------------------------------------------------------------*/
                     
                     for (ishot=1;ishot<=nshots;ishot+=SHOTINC){
-                        /*for (ishot=1;ishot<=1;ishot+=1){*/
+
                         SOURCE_SHAPE = SOURCE_SHAPE_OLD;
-                        
-                        if (INV_STF==1 && WAVETYPE !=1) {
-                            fprintf(FP,"\n==================================================================================\n");
-                            fprintf(FP,"\n====== Source time function inversion and WAVETYPE !=1 not supported    ==========\n");
-                            fprintf(FP,"\n==================================================================================\n");
-                            err(" NO STFI and WAVETYPE !=1 ");
-                        }
-                        
+
                         /*------------------------------------------------------------------------------*/
                         /*----------- Start of inversion of source time function -----------------------*/
                         /*------------------------------------------------------------------------------*/
                         
-                        if((INV_STF==1)&&((iter==1)||(s==1))){
+                        /* Do not Excute STF if this is a step length search run for Wolfe condition
+                         * Therefore (gradient_optimization==1) is added.
+                         */
+                        
+                        if(((INV_STF==1)&&((iter==1)||(s==1))) && (gradient_optimization==1)){
                             fprintf(FP,"\n==================================================================================\n");
                             fprintf(FP,"\n MYID=%d *****  Forward simulation for inversion of source time function ******** \n",MYID);
                             fprintf(FP,"\n MYID=%d * Starting simulation (forward model) for shot %d of %d. Iteration %d ** \n",MYID,ishot,nshots,iter);
@@ -1210,9 +1207,21 @@ int main(int argc, char **argv){
                             
                             if((SOURCE_SHAPE==7)||(SOURCE_SHAPE==3))err("SOURCE_SHAPE==7 or SOURCE_SHAPE==3 isn't possible with INV_STF==1");
                             MPI_Barrier(MPI_COMM_WORLD);
-                            /* calculate wavelet for each source point */
-                            signals=NULL;
-                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
+                            
+                            
+                            /*-------------------*/
+                            /* calculate wavelet */
+                            /*-------------------*/
+                            /* calculate wavelet for each source point P SV */
+                            if(WAVETYPE==1||WAVETYPE==3){
+                                signals=NULL;
+                                signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
+                            }
+                            /* calculate wavelet for each source point SH */
+                            if(WAVETYPE==2||WAVETYPE==3){
+                                signals_SH=NULL;
+                                signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1);
+                            }
                             
                             
                             /* initialize wavefield with zero */
@@ -1229,8 +1238,11 @@ int main(int argc, char **argv){
                                     zero_fdveps_ac(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,psp,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
                             }
                             
+                            if((!VERBOSE)&&(MYID==0)) fprintf(FP,"\n ****************************************\n ");
                             
-                            /*----------------------  loop over timesteps (forward model) ------------------*/
+                            /*------------------------------------------------------------------------------*/
+                            /*----------------------  start loop over timesteps ( STF ) --------------------*/
+                            /*------------------------------------------------------------------------------*/
                             
                             lsnap=iround(TSNAP1/DT);
                             lsamp=NDT;
@@ -1247,21 +1259,42 @@ int main(int argc, char **argv){
                             for (nt=1;nt<=NT;nt++){
                                 
                                 infoout = !(nt%nt_out);
-                                /* Check if simulation is still stable */
-                                if (isnan(pvy[NY/2][NX/2])) {
-                                    fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                    err(" Simulation is unstable !");}
+                                if((!VERBOSE)&&(MYID==0)) if(!(nt%(NT/40))) fprintf(FP,"*");
                                 
+                                /* Check if simulation is still stable P and SV */
+                                if (WAVETYPE==1 || WAVETYPE==3) {
+                                    if (isnan(pvy[NY/2][NX/2])) {
+                                        fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
+                                        err(" Simulation is unstable !");
+                                    }
+                                }
+                                
+                                /* Check if simulation is still stable SH */
+                                if (WAVETYPE==2 || WAVETYPE==3) {
+                                    if (isnan(pvz[NY/2][NX/2])) {
+                                        fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
+                                        err(" Simulation is unstable !");
+                                    }
+                                }
                                 
                                 if (MYID==0){
                                     if (infoout)  fprintf(FP,"\n Computing timestep %d of %d \n",nt,NT);
                                     time3=MPI_Wtime();
                                 }
                                 
-                                if(!ACOUSTIC)
-                                    update_v_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, uttx, utty, psxx, psyy, psxy, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,absorb_coeff,hc,infoout,0, K_x, a_x,b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
-                                else
+                                /* update of particle velocities */
+                                if(!ACOUSTIC) {
+                                    if (WAVETYPE==1 || WAVETYPE==3) {
+                                        update_v_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, uttx, utty, psxx, psyy, psxy, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,absorb_coeff,hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
+                                    }
+                                    
+                                    if (WAVETYPE==2 || WAVETYPE==3) {
+                                        update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, srcpos_loc, signals, signals_SH, nsrc_loc, absorb_coeff,hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
+                                    }
+                                } else {
                                     update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, psp, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,absorb_coeff,hc,infoout,0, K_x_half, a_x_half, b_x_half, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
+                                }
+
                                 
                                 if (MYID==0){
                                     time4=MPI_Wtime();
@@ -1279,22 +1312,34 @@ int main(int argc, char **argv){
                                 }
                                 
                                 if (L) {   /* viscoelastic */
-                                    if(!ACOUSTIC) {
-                                        update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, prho, hc, infoout,pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip,K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-                                    }else{
-                                        update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    if (WAVETYPE==1 || WAVETYPE==3) {
+                                        if(!ACOUSTIC) {
+                                            update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, prho, hc, infoout, pr, pp, pq, fipjp, f, g, bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        }else{
+                                            update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        }
                                     }
-                                }else{
-                                    if(!ACOUSTIC)
-                                        update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho, hc, infoout,K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-                                    else
-                                        update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    if (WAVETYPE==2 || WAVETYPE==3) {
+                                        update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, cip, cjm, d, dip,fipjp, f, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
+                                    }
+                                } else {   /* elastic */
+                                    if (WAVETYPE==1 || WAVETYPE==3) {
+                                        if(!ACOUSTIC) {
+                                            update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        } else {
+                                            update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        }
+                                    }
+                                    if (WAVETYPE==2 || WAVETYPE==3) {
+                                        update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy,puipjp,pu,prho);
+                                    }
                                 }
                                 
                                 /* explosive source */
                                 if ((SOURCE_TYPE==1))
                                     psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
                                 
+
                                 /* Applying free surface condition */
                                 if ((FREE_SURF) && (POS[2]==0)){
                                     if (!ACOUSTIC){
@@ -1310,7 +1355,6 @@ int main(int argc, char **argv){
                                         surface_acoustic_PML(1, psp);
                                     }
                                 }
-                                
                                 
                                 if (MYID==0){
                                     time6=MPI_Wtime();
@@ -1337,79 +1381,33 @@ int main(int argc, char **argv){
                                     /*lsamp+=NDT;*/
                                 }
                                 
-                                
-                                if(nt==hin1){
-                                    
-                                    if(FORWARD_ONLY==0){
-                                        for (j=1;j<=NY;j=j+IDYI){
-                                            for (i=1;i<=NX;i=i+IDXI){
-                                                forward_prop_rho_x[j][i][hin]=pvxp1[j][i];
-                                                forward_prop_rho_y[j][i][hin]=pvyp1[j][i];
-                                            }
-                                        }
-                                        
-                                        /* save snapshots from forward model */
-                                        if(!ACOUSTIC){
-                                            for (j=1;j<=NY;j=j+IDYI){
-                                                for (i=1;i<=NX;i=i+IDXI){
-                                                    if(VELOCITY==0){
-                                                        forward_prop_x[j][i][hin]=psxx[j][i];
-                                                        forward_prop_y[j][i][hin]=psyy[j][i];
-                                                    } else {
-                                                        forward_prop_x[j][i][hin]=ux[j][i];
-                                                        forward_prop_y[j][i][hin]=uy[j][i];}
-                                                }
-                                            }
-                                        }else{
-                                            for (j=1;j<=NY;j=j+IDYI){
-                                                for (i=1;i<=NX;i=i+IDXI){
-                                                    forward_prop_p[j][i][hin]=psp[j][i];
-                                                }
-                                            }
-                                        }
-                                        if(!ACOUSTIC){
-                                            for (j=1;j<=NY;j=j+IDYI){
-                                                for (i=1;i<=NX;i=i+IDXI){
-                                                    if(VELOCITY==0){
-                                                        forward_prop_u[j][i][hin]=psxy[j][i];}
-                                                    else{
-                                                        forward_prop_u[j][i][hin]=uxy[j][i];}
-                                                }
-                                            }
-                                        }
-                                        
-                                        hin++;
-                                        hin1=hin1+DTINV;
-                                        
-                                    }
-                                    DTINV_help[nt]=1;
-                                    
-                                }
-                                
-                                /* WRITE SNAPSHOTS TO DISK */
-                                if ((SNAP) && (nt==lsnap) && (nt<=TSNAP2/DT)){
-                                    snap(FP,nt,++nsnap,pvx,pvy,psxx,psyy,psp,pu,ppi,hc,ishot);
-                                    lsnap=lsnap+iround(TSNAPINC/DT);
-                                }
-                                
-                                
                                 if (MYID==0){
                                     time8=MPI_Wtime();
                                     time_av_timestep+=(time8-time3);
                                     if (infoout)  fprintf(FP," total real time for timestep %d : %4.2f s.\n",nt,time8-time3);
                                 }
                                 
-                                
-                            }/*--------------------  End  of loop over timesteps (forward model) ----------*/
+                            }
                             
+                            /*------------------------------------------------------------------------------*/
+                            /*--------------------  End  of loop over timesteps (   STF   ) ----------------*/
+                            /*------------------------------------------------------------------------------*/
+                            
+                            if((!VERBOSE)&&(MYID==0)) fprintf(FP,"\n");
+                            
+                            // Exchange measured seismogramms and save it to file
                             switch (SEISMO){
-                                    
                                 case 1 : 	/* particle velocities only */
-                                    catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    catseis(sectionvy, fulldata_vy, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if(WAVETYPE==2 || WAVETYPE==3) {
+                                    if (WAVETYPE==1 || WAVETYPE==3) {
+                                        catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_WORLD);
+                                        catseis(sectionvy, fulldata_vy, recswitch, ntr_glob, MPI_COMM_WORLD);
+                                    }
+                                    if (WAVETYPE==2 || WAVETYPE==3) {
                                         catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     }
+                                    if(LNORM==8){
+                                        calc_envelope(fulldata_vy,fulldata_vy,ns,ntr_glob);
+                                        calc_envelope(fulldata_vx,fulldata_vx,ns,ntr_glob);}
                                     if (MYID==0){
                                         saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);}
                                     break;
@@ -1426,21 +1424,25 @@ int main(int argc, char **argv){
                                     break;
                                     
                                 case 4 :	/* everything */
-                                    catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    catseis(sectionvy, fulldata_vy, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if(WAVETYPE==2 || WAVETYPE==3) {
+                                    if (WAVETYPE==1 || WAVETYPE==3) {
+                                        catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_WORLD);
+                                        catseis(sectionvy, fulldata_vy, recswitch, ntr_glob, MPI_COMM_WORLD);
+                                    }
+                                    if (WAVETYPE==2 || WAVETYPE==3) {
                                         catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     }
+                                    catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                                 case 5 :	/* everything except curl and div*/
-                                    catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    catseis(sectionvy, fulldata_vy, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if(WAVETYPE==2 || WAVETYPE==3) {
+                                    if (WAVETYPE==1 || WAVETYPE==3) {
+                                        catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_WORLD);
+                                        catseis(sectionvy, fulldata_vy, recswitch, ntr_glob, MPI_COMM_WORLD);
+                                    }
+                                    if (WAVETYPE==2 || WAVETYPE==3) {
                                         catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     }
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
@@ -1449,24 +1451,31 @@ int main(int argc, char **argv){
                                     
                             } /* end of switch (SEISMO) */
                             
-                            /* end of Forward simulation for inversion of source time function */
-                            
-                            /*----------- Start of inversion of source time function -------------*/
+                            /*------------------------------------------------------------------------------*/
+                            /*----------- Start of inversion of source time function -----------------------*/
+                            /*------------------------------------------------------------------------------*/
                             if((TIME_FILT==1) ||(TIME_FILT==2)){
                                 
-                                if (FORWARD_ONLY==0){
+                                if (!FORWARD_ONLY){
                                     if((INV_STF==1)&&((iter==1)||(s==1))){
                                         
                                         if (nsrc_loc>0){
                                             
                                             /*time domain filtering of the observed data sectionvy_obs */
-                                            if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                                inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
-                                                timedomain_filt(sectionvy_obs,FC,ORDER,ntr_glob,ns,1);
+                                            if(WAVETYPE==1 || WAVETYPE==3){
+                                                if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
+                                                    inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
+                                                    timedomain_filt(sectionvy_obs,FC,ORDER,ntr_glob,ns,1);
+                                                }
+                                                if (ADJOINT_TYPE==4){
+                                                    inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
+                                                    timedomain_filt(sectionp_obs,FC,ORDER,ntr_glob,ns,1);
+                                                }
                                             }
-                                            if (ADJOINT_TYPE==4){
-                                                inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
-                                                timedomain_filt(sectionp_obs,FC,ORDER,ntr_glob,ns,1);
+                                            
+                                            if(WAVETYPE==2 || WAVETYPE==3){
+                                                inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
+                                                timedomain_filt(sectionvz_obs,FC,ORDER,ntr_glob,ns,1);
                                             }
                                             
                                             printf("\n ====================================================================================================== \n");
@@ -1482,18 +1491,23 @@ int main(int argc, char **argv){
                                                 printf("\n MYID = %d: STF inversion because of frequency step at the end of the last iteration \n",MYID);
                                             }
                                             
-                                            if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                                stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC);
+                                            if(WAVETYPE==1 || WAVETYPE==3){
+                                                if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
+                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0);
+                                                }
+                                                if (ADJOINT_TYPE==4){
+                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0);
+                                                }
                                             }
-                                            if (ADJOINT_TYPE==4){
-                                                stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC);
+                                            
+                                            if(WAVETYPE==2 || WAVETYPE==3){
+                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1);
                                             }
                                         }
                                     }
                                 }
-                            }
                             
-                            else{
+                            } else {
                                 if (FORWARD_ONLY==0){
                                     if((INV_STF==1)&&(iter==N_STF_START)){
                                         
@@ -1505,18 +1519,24 @@ int main(int argc, char **argv){
                                             printf("\n ====================================================== \n");
                                             printf("\n MYID = %d: STF inversion due to the increment N_STF \n",MYID);
                                             
-                                            if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                                inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
+                                            if(WAVETYPE==1 || WAVETYPE==3){
+                                                if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
+                                                    inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
+                                                }
+                                                if (ADJOINT_TYPE==4){
+                                                    inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
+                                                }
+                                                
+                                                if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
+                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0);
+                                                }
+                                                if (ADJOINT_TYPE==4){
+                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0);
+                                                }
                                             }
-                                            if (ADJOINT_TYPE==4){
-                                                inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
-                                            }
-                                            
-                                            if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                                stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC);
-                                            }
-                                            if (ADJOINT_TYPE==4){
-                                                stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC);
+                                            if(WAVETYPE==2 || WAVETYPE==3){
+                                                inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
+                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1);
                                             }
                                         }
                                     }

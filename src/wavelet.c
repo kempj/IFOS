@@ -51,7 +51,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
         if (SOURCE_SHAPE==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
         if (SOURCE_SHAPE==7){
             psource=vector(1,NT);
-            inseis_source_wavelet(psource,NT,ishot);}
+            inseis_source_wavelet(psource,NT,ishot,SH);}
         
         signals=fmatrix(1,nsrc,1,NT);
         
@@ -151,7 +151,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
         if (SOURCE_SHAPE_SH==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE_SH,"r"));
         if (SOURCE_SHAPE_SH==7){
             psource=vector(1,NT);
-            inseis_source_wavelet(psource,NT,ishot);}
+            inseis_source_wavelet(psource,NT,ishot,SH);}
         
         signals=fmatrix(1,nsrc,1,NT);
         

@@ -36,7 +36,7 @@ void window_cos(float **win, int npad, int nsrc, float it1, float it2, float it3
 void catseis(float **data, float **fulldata, int *recswitch, int ntr_glob, MPI_Comm newcomm_nodentr);
 
 void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy_conv, float * source_time_function, int  **recpos, int  **recpos_loc,
-         int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float FC);
+         int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float FC, int SH);
 
 int **splitrec(int **recpos,int *ntr_loc, int ntr, int *recswitch);
 
@@ -181,7 +181,7 @@ void  outseis_vector(FILE *fp, FILE *fpdata, int comp, float *section,
 
 void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int iter);
 
-void  inseis_source_wavelet(float *section, int ns, int ishot);
+void  inseis_source_wavelet(float *section, int ns, int ishot, int SH);
 
 void  taper(float *section, int ns, float fc);
 
