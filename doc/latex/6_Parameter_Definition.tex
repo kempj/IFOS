@@ -736,6 +736,10 @@ If you use the option "Workflow" (section \ref{sec:workflow}) it is possible to 
 "Trace killing" : "comment",
 			"TRKILL" : "0",
 			"TRKILL_FILE" : "./trace_kill/trace_kill",
+			
+			"TRKILL_OFFSET" : "0",
+			"TRKILL_OFFSET_LOWER" : "20",
+			"TRKILL_OFFSET_UPPER" : "100",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
@@ -747,6 +751,7 @@ If you don't want to use single traces or a subset of your data, the parameter T
 
 If you use the option "Workflow" (section \ref{sec:workflow}) it is possible to define separate files for each workflow stage. They have to be named TRKILL\_FILE\_<workflowstage>.dat. If you don't provide separate files for some or all stages the standard file (TRKILL\_FILE.dat) is used. This means a standard file should exist in any case.
 
+Moreover, you can directly define a offset range that should be killed. Simply set TRKILL\_OFFSET and TRKILL to one and all traces with a offset between TRKILL\_OFFSET\_LOWER and TRKILL\_OFFSET\_UPPER will be killed.
 
 \section{Gradient manipulation}
 \subsection{Definition of a gradient taper}

@@ -162,6 +162,7 @@ IFOS2D= \
     prepare_update_p.c \
     readmod_viscac.c \
     time_window_glob.c \
+    create_trkill_table.c \
     filter_frequencies.c
     
 SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)

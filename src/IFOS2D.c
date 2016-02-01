@@ -2032,10 +2032,10 @@ int main(int argc, char **argv){
                                             }
                                             h++;
                                         }
-                                        L2=calc_res(sectionvxdata,sectionvx,sectionvxdiff,sectionvxdiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
-                                        if(swstestshot==1){energy=calc_energy(sectionvxdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);}
-                                        L2_all_shots=calc_misfit(sectionvxdata,sectionvx,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
-                                        energy_all_shots=calc_energy(sectionvxdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
+                                        L2=calc_res(sectionvxdata,sectionvx,sectionvxdiff,sectionvxdiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
+                                        if(swstestshot==1){energy=calc_energy(sectionvxdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);}
+                                        L2_all_shots=calc_misfit(sectionvxdata,sectionvx,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        energy_all_shots=calc_energy(sectionvxdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         /*fprintf(FP,"Energy vxdata for PE %d:   %f\n\n", MYID,energy);*/
                                     } /* end ADJOINT_TYPE */
                                     
@@ -2055,10 +2055,10 @@ int main(int argc, char **argv){
                                             }
                                             h++;
                                         }
-                                        L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
-                                        if(swstestshot==1){energy=calc_energy(sectionvydata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);}
-                                        L2_all_shots=calc_misfit(sectionvydata,sectionvy,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
-                                        energy_all_shots=calc_energy(sectionvydata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
+                                        L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
+                                        if(swstestshot==1){energy=calc_energy(sectionvydata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);}
+                                        L2_all_shots=calc_misfit(sectionvydata,sectionvy,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        energy_all_shots=calc_energy(sectionvydata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         /*fprintf(FP,"Energy vydata for PE %d:   %f\n\n", MYID,energy);	*/
                                     } /* end ADJOINT_TYPE */
                                     
@@ -2077,10 +2077,10 @@ int main(int argc, char **argv){
                                             }
                                             h++;
                                         }
-                                        L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
-                                        if(swstestshot==1){energy=calc_energy(sectionpdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);}
-                                        L2_all_shots=calc_misfit(sectionpdata,sectionp,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
-                                        energy_all_shots=calc_energy(sectionpdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
+                                        L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
+                                        if(swstestshot==1){energy=calc_energy(sectionpdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);}
+                                        L2_all_shots=calc_misfit(sectionpdata,sectionp,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        energy_all_shots=calc_energy(sectionpdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                     } /* end ADJOINT_TYPE */
                                 }
                                 
@@ -2096,17 +2096,17 @@ int main(int argc, char **argv){
                                         }
                                         h++;
                                     }
-                                    L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2_SH,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
-                                    if(swstestshot==1){energy_SH=calc_energy(sectionvzdata,ntr,ns,energy_SH, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);}
-                                    L2_all_shots_SH=calc_misfit(sectionvzdata,sectionvz,ntr,ns,LNORM,L2_all_shots_SH,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
-                                    energy_all_shots_SH=calc_energy(sectionvzdata,ntr,ns,energy_all_shots_SH, ntr_glob, recpos_loc, nsrc_glob, ishot,iter);
+                                    L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2_SH,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
+                                    if(swstestshot==1){energy_SH=calc_energy(sectionvzdata,ntr,ns,energy_SH, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);}
+                                    L2_all_shots_SH=calc_misfit(sectionvzdata,sectionvz,ntr,ns,LNORM,L2_all_shots_SH,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                    energy_all_shots_SH=calc_energy(sectionvzdata,ntr,ns,energy_all_shots_SH, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                 }
                                 
                                 // Tracekill
                                 if (TRKILL){
-                                    count_killed_traces(ntr,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,ptr_killed_traces,ptr_killed_traces_testshots);
+                                    count_killed_traces(ntr,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,ptr_killed_traces,ptr_killed_traces_testshots,srcpos,recpos);
                                 }
-                                
+                                                                
                                 if((ishot==itestshot)&&(ishot<=TESTSHOT_END)){
                                     swstestshot=0;
                                     itestshot+=TESTSHOT_INCR;
@@ -3523,7 +3523,7 @@ int main(int argc, char **argv){
                                         }
                                         h++;
                                     }
-                                    L2=calc_res(sectionvxdata,sectionvx,sectionvxdiff,sectionvxdiffold,ntr,ns,LNORM,L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
+                                    L2=calc_res(sectionvxdata,sectionvx,sectionvxdiff,sectionvxdiffold,ntr,ns,LNORM,L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
                                 }
                                 
                                 /* --------------------------------- */
@@ -3542,7 +3542,7 @@ int main(int argc, char **argv){
                                         }
                                         h++;
                                     }
-                                    L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,ns,LNORM,L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
+                                    L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,ns,LNORM,L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
                                 }
                                 
                                 /* --------------------------------- */
@@ -3560,7 +3560,7 @@ int main(int argc, char **argv){
                                         }
                                         h++;
                                     }
-                                    L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,ns,LNORM,L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
+                                    L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,ns,LNORM,L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
                                 }
                             }
                             
@@ -3576,7 +3576,7 @@ int main(int argc, char **argv){
                                     }
                                     h++;
                                 }
-                                L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2_SH,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter);
+                                L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2_SH,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
                             }
                         }
                         

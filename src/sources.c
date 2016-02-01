@@ -77,6 +77,7 @@ float **sources(int *nsrc){
 						err("Missing parameter in SOURCE_FILE!");
 					case 6: srcpos[7][l]=0.0;
 					case 7: srcpos[8][l]=SOURCE_TYPE;
+                        
 				}
 				if ((srcpos[8][l]!=4) && (nvarin>6)) {
 				current_source=(int)srcpos[8][l];
@@ -93,15 +94,6 @@ float **sources(int *nsrc){
 				srcpos[4][l]=tshift;
 				fc=srcpos[5][l];
 			}
-
-/*	fscanf(fpsrc,"%f%f%f%f%f%f",&xsrc, &zsrc, &ysrc, &tshift, &fc, &amp);*/ 	/* old implementation */
-			/*	srcpos[1][l]=xsrc;
-				srcpos[2][l]=ysrc;
-				srcpos[3][l]=zsrc;
-				srcpos[4][l]=tshift;
-				srcpos[5][l]=fc;
-				srcpos[6][l]=amp;
-			} */
 
 			fclose(fpsrc);
 
@@ -122,9 +114,17 @@ float **sources(int *nsrc){
 				else fprintf(FP," All sources will be modelled simultaneously because of RUN_MULTIPLE_SHOTS=0!\n");
 	      		}
 
-
+            /*
+             * srcpos[1][l] X-Position in m
+             * srcpos[2][l] Y-Position in m
+             * srcpos[3][l] tshift
+             * srcpos[4][l] fv
+             * srcpos[5][l] amp
+             * srcpos[6][l] azimuth
+             * srcpos[7][l] type
+             */
 		} 
-		else if (PLANE_WAVE_DEPTH > 0) {  /* plane wave excitation */
+    else if (PLANE_WAVE_DEPTH > 0) {  /* plane wave excitation */
 				fprintf(FP," Computing source nodes for plane wave excitation.\n");
 				fprintf(FP," depth= %5.2f meter, incidence angle= %5.2f degrees.\n",PLANE_WAVE_DEPTH, PHI);
 

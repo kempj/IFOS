@@ -86,6 +86,14 @@ void exchange_par(void){
     extern int ACOUSTIC;
     extern int VERBOSE;
     
+    extern int TRKILL_STF_OFFSET;
+    extern float TRKILL_STF_OFFSET_LOWER;
+    extern float TRKILL_STF_OFFSET_UPPER;
+    
+    extern int TRKILL_OFFSET;
+    extern float TRKILL_OFFSET_LOWER;
+    extern float TRKILL_OFFSET_UPPER;
+    
     // Parameter for inversion of SH waves and joint inversion
     extern int WAVETYPE;
     extern int SOURCE_SHAPE_SH;
@@ -209,6 +217,11 @@ void exchange_par(void){
         fdum[64]=WOLFE_C1_SL;
         fdum[65]=WOLFE_C2_SL;
         
+        fdum[66]=TRKILL_STF_OFFSET_LOWER;
+        fdum[67]=TRKILL_STF_OFFSET_UPPER;
+        fdum[68]=TRKILL_OFFSET_LOWER;
+        fdum[69]=TRKILL_OFFSET_UPPER;
+
         /***********/
         /* Integer */
         /***********/
@@ -360,6 +373,9 @@ void exchange_par(void){
         idum[112]=TAPER_STF;
         idum[113]=TW_IND;
         
+        idum[114]=TRKILL_OFFSET;
+        idum[115]=TRKILL_STF_OFFSET;
+        
     } /** if (MYID == 0) **/
     
     if (MYID != 0) FL=vector(1,L);
@@ -483,6 +499,11 @@ void exchange_par(void){
     
     WOLFE_C1_SL=fdum[64];
     WOLFE_C2_SL=fdum[65];
+    
+    TRKILL_STF_OFFSET_LOWER=fdum[66];
+    TRKILL_STF_OFFSET_UPPER=fdum[67];
+    TRKILL_OFFSET_LOWER=fdum[68];
+    TRKILL_OFFSET_UPPER=fdum[69];
     
     /***********/
     /* Integer */
@@ -638,6 +659,8 @@ void exchange_par(void){
     TAPER_STF=idum[112];
     TW_IND=idum[113];
     
+    TRKILL_OFFSET=idum[114];
+    TRKILL_STF_OFFSET=idum[115];
     
     MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
     

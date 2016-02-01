@@ -2,27 +2,27 @@
  * Copyright (C) 2016  For the list of authors, see file AUTHORS.
  *
  * This file is part of IFOS.
- * 
+ *
  * IFOS is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 2.0 of the License only.
- * 
+ *
  * IFOS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with IFOS. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
------------------------------------------------------------------------------------------*/
+ -----------------------------------------------------------------------------------------*/
 
 /*  Computation of local source coordinates
- * 
- *	 
+ *
+ *
  *   last update 12.02.02, T. Bohlen
  */
- 
- #include "fd.h"
+
+#include "fd.h"
 float **splitsrc(float **srcpos,int *nsrc_loc, int nsrc)
 {
     
@@ -65,17 +65,17 @@ float **splitsrc(float **srcpos,int *nsrc_loc, int nsrc)
     }
     free_matrix(srcpos_dummy,1,8,1,nsrc);
     
-//    if (i>0){
-//        printf("\n **Message from splitsrc:\n");
-//        printf(" Splitting of source positions from global to local grids finished.\n");
-//        printf(" MYID= %d \t \t no. of sources= %d\n",MYID,i);
-//        printf("\n **Message from splitsrc:\n");
-//        printf(" Table of local source positions (in gridpoints), time-shift, centre frequency and amplitude:\n");
-//        printf(" MYID\t  x\t  y\t  z\t  tshift  fc\t  amp\n");
-//        for (j=1;j<=i;j++)
-//            printf(" %3d\t%4.0f\t%4.0f\t%4.0f\t%6.2f\t%6.2f\t%6.2f\n",MYID,srcpos_local[1][j],srcpos_local[2][j],srcpos_local[3][j],
-//                   srcpos_local[4][j],srcpos_local[5][j],srcpos_local[6][j]);
-//    }
+    //    if (i>0){
+    //        printf("\n **Message from splitsrc:\n");
+    //        printf(" Splitting of source positions from global to local grids finished.\n");
+    //        printf(" MYID= %d \t \t no. of sources= %d\n",MYID,i);
+    //        printf("\n **Message from splitsrc:\n");
+    //        printf(" Table of local source positions (in gridpoints), time-shift, centre frequency and amplitude:\n");
+    //        printf(" MYID\t  x\t  y\t  z\t  tshift  fc\t  amp\n");
+    //        for (j=1;j<=i;j++)
+    //            printf(" %3d\t%4.0f\t%4.0f\t%4.0f\t%6.2f\t%6.2f\t%6.2f\n",MYID,srcpos_local[1][j],srcpos_local[2][j],srcpos_local[3][j],
+    //                   srcpos_local[4][j],srcpos_local[5][j],srcpos_local[6][j]);
+    //    }
     
     *nsrc_loc=i;
     return srcpos_local;

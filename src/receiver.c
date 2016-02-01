@@ -45,7 +45,7 @@ int **receiver(FILE *fp, int *ntr){
 	{
      	if (READREC){ /* read receiver positions from file */
      		fprintf(fp,"\n Reading receiver positions from file: \n\t%s\n",REC_FILE);
-		fpr=fopen(REC_FILE,"r");
+		    fpr=fopen(REC_FILE,"r");
      		if (fpr==NULL) err(" Receiver file could not be opened !");
      		*ntr=0;
      		while ((c=fgetc(fpr)) != EOF)
@@ -62,7 +62,12 @@ int **receiver(FILE *fp, int *ntr){
      		fclose(fpr);
      		fprintf(fp," Message from function receiver (written by PE %d):\n",MYID);/***/
      		fprintf(fp," Number of receiver positions found: %i\n",*ntr);
-     
+            
+            /* recpos1[1][itr] X in m
+             * recpos1[2][itr] Y in m
+             *
+             */
+            
      		/* check if more than one receiver is located
      				         at the same gridpoint */
      		for (itr=1;itr<=(*ntr-1);itr++)

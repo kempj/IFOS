@@ -21,7 +21,7 @@
 #define fsign(x) ((x<0.0)?(-1):1)    
 
 #define PI (3.141592653589793)
-#define NPAR 119
+#define NPAR 120
 #define STRING_SIZE 74
 #define STRING_SIZE2 256
 #define REQUEST_COUNT 4
@@ -67,15 +67,15 @@ void calc_mat_change(float  **  waveconv, float ** waveconv_rho, float ** waveco
 void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_u, float  **  rho, float  **  rhonp1, float **  pi, float **  pinp1, float **  u, float **  unp1, int iter,
                           int epstest, int FORWARD_ONLY, float eps_scale, int itest, int nfstart, float ** u_start, float ** pi_start, float ** rho_start,int wavetype_start,float **bfgsmod,int bfgsnum,int bfgspar,float Vs_avg,float Vp_avg,float rho_avg,int LBFGS_iter_start);
 
-double calc_res(float **sectiondata, float **section, float **sectiondiff, float **sectiondiffold, int ntr, int ns, int LNORM, float L2, int itest, int sws, int swstestshot, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int iter);
+double calc_res(float **sectiondata, float **section, float **sectiondiff, float **sectiondiffold, int ntr, int ns, int LNORM, float L2, int itest, int sws, int swstestshot, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int iter, float ** srcpos, int ** recpos);
 
-double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LNORM, float L2, int itest, int sws, int swstestshot, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int iter);
+double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LNORM, float L2, int itest, int sws, int swstestshot,int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int iter, float ** srcpos, int ** recpos);
 
 float calc_opt_step(float *  L2t, float ** waveconv, float ** gradp, float * epst, int sws, float C_vp);
 
 float calc_opt_step_test(float *  L2t, float ** waveconv, float ** gradp, float * epst, int sws, float C_vp);
 
-double calc_energy(float **sectiondata, int ntr, int ns, float energy, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int iter);
+double calc_energy(float **sectiondata, int ntr, int ns, float energy, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int iter, float ** srcpos, int ** recpos);
 
 void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus, float ** ptaup, float * peta, float *hc, float **srcpos, int nsrc, int **recpos, int ntr);
 
@@ -94,7 +94,9 @@ void comm_ini(float ** bufferlef_to_rig, float ** bufferrig_to_lef,
 
 void conv_FD(float * temp_TS, float * temp_TS1, float * temp_conv, int ns);
 
-void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int* ptr_killed_traces, int* ptr_killed_traces_testsshots);
+void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int* ptr_killed_traces, int* ptr_killed_traces_testshots,float ** srcpos, int ** recpos);
+
+void create_trkill_table(int ** killtable, int ntr_glob, int **recpos, int nsrc_glob, float **srcpos, int ishot, float kill_offset_lower, float kill_offset_upper);
 
 float exchange_L2(float L2, int sw, int bcast_l2);
 
