@@ -1,25 +1,24 @@
 /*-----------------------------------------------------------------------------------------
- * Copyright (C) 2005  <name of author>
+ * Copyright (C) 2016  For the list of authors, see file AUTHORS.
  *
- * This file is part of DENISE.
+ * This file is part of IFOS.
  * 
- * DENISE is free software: you can redistribute it and/or modify
+ * IFOS is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 2.0 of the License only.
  * 
- * DENISE is distributed in the hope that it will be useful,
+ * IFOS is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with DENISE. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
+ * along with IFOS. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
 -----------------------------------------------------------------------------------------*/
 
-/* $Id: hh_el.c,v 2.3 2007/08/21 13:16:19 tbohlen Exp $*/
-/*
+/*------------------------------------------------------------------------
  *   Model defined by flnode file. 
- */
+ ------------------------------------------------------------------------*/
 
 #include "fd.h"
 #include "../src/fd.h"
@@ -31,7 +30,7 @@ void model_acoustic(float **rho, float **pi){
 	extern float DH, DT;
 	extern char MFILE[STRING_SIZE];
 	extern char INV_MODELFILE[STRING_SIZE];
-	extern char TAPER_FILE_NAME[STRING_SIZE], TAPER_FILE_NAME_RHO[STRING_SIZE];
+	extern char TAPER_FILE_NAME[STRING_SIZE];
 	extern int SWS_TAPER_FILE;
 
 	/* local variables */
@@ -261,7 +260,7 @@ void model_acoustic(float **rho, float **pi){
 	free_vector(flvp,1,nodes);	
 	
 	
-        sprintf(modfile,"%s_rho_it0.bin",INV_MODELFILE);
+    sprintf(modfile,"%s_rho_it0.bin",INV_MODELFILE);
 	writemod(modfile,rho,3);
 	MPI_Barrier(MPI_COMM_WORLD);
 	if (MYID==0) mergemod(modfile,3);
@@ -278,20 +277,20 @@ void model_acoustic(float **rho, float **pi){
 	remove(modfile);
 	
 	if(SWS_TAPER_FILE){
-		sprintf(modfile,"%s",TAPER_FILE_NAME);
+		sprintf(modfile,"%s.vp",TAPER_FILE_NAME);
 		writemod(modfile,taper,3);
 		MPI_Barrier(MPI_COMM_WORLD);
 		if (MYID==0) mergemod(modfile,3);
 		MPI_Barrier(MPI_COMM_WORLD); 
-		sprintf(modfile,"%s.%i%i",TAPER_FILE_NAME,POS[1],POS[2]);
+		sprintf(modfile,"%s.vp.%i%i",TAPER_FILE_NAME,POS[1],POS[2]);
 		remove(modfile);
 		
-		sprintf(modfile,"%s",TAPER_FILE_NAME_RHO);
+		sprintf(modfile,"%s.rho",TAPER_FILE_NAME);
 		writemod(modfile,taper,3);
 		MPI_Barrier(MPI_COMM_WORLD);
 		if (MYID==0) mergemod(modfile,3);
 		MPI_Barrier(MPI_COMM_WORLD); 
-		sprintf(modfile,"%s.%i%i",TAPER_FILE_NAME_RHO,POS[1],POS[2]);
+		sprintf(modfile,"%s.rho.%i%i",TAPER_FILE_NAME,POS[1],POS[2]);
 		remove(modfile);
 	}
 	

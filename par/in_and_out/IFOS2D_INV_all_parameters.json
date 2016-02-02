@@ -201,9 +201,7 @@
 			"FILTSIZE" : "1",
 			"SWS_TAPER_FILE" : "0",
 			"SWS_TAPER_FILE_PER_SHOT" : "0",
-			"TAPER_FILE_NAME" : "taper.bin",
-			"TAPER_FILE_NAME_U" : "taper_u.bin",
-			"TAPER_FILE_NAME_RHO" : "taper_rho.bin",
+			"TAPER_FILE_NAME" : "taper",
 
 "Definition of spatial filtering of the gradients" : "comment",
 			"SPATFILTER" : "0",

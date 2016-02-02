@@ -51,7 +51,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int SWS_TAPER_GRAD_VERT, SWS_TAPER_GRAD_HOR, SWS_TAPER_GRAD_SOURCES, SWS_TAPER_CIRCULAR_PER_SHOT, SRTSHAPE, FILTSIZE;
     extern int SWS_TAPER_FILE, SWS_TAPER_FILE_PER_SHOT;
     extern float SRTRADIUS;
-    extern char TAPER_FILE_NAME[STRING_SIZE], TAPER_FILE_NAME_U[STRING_SIZE], TAPER_FILE_NAME_RHO[STRING_SIZE];
+    extern char TAPER_FILE_NAME[STRING_SIZE];
     extern int SPATFILTER, SPAT_FILT_SIZE, SPAT_FILT_1, SPAT_FILT_ITER;
     extern int INV_RHO_ITER, INV_VS_ITER, INV_VP_ITER;
     extern char INV_MODELFILE[STRING_SIZE];
@@ -563,26 +563,20 @@ void read_par_json(FILE *fp, char *fileinp){
                 }
                 if (get_int_from_objectlist("SWS_TAPER_FILE",number_readobjects,&SWS_TAPER_FILE,varname_list, value_list)){
                     SWS_TAPER_FILE=0;
-                    fprintf(fp,"Variable SWS_TAPER_FILE is set to default value %d.\n",SWS_TAPER_FILE);}
+                    fprintf(fp,"Variable SWS_TAPER_FILE is set to default value %d.\n",SWS_TAPER_FILE);
+                }
                 if (SWS_TAPER_FILE==1){
                     if (get_string_from_objectlist("TAPER_FILE_NAME",number_readobjects,TAPER_FILE_NAME,varname_list, value_list))
                         err("Variable TAPER_FILE_NAME could not be retrieved from the json input file!");
-                    if(!ACOUSTIC){
-                        if (get_string_from_objectlist("TAPER_FILE_NAME_U",number_readobjects,TAPER_FILE_NAME_U,varname_list, value_list))
-                            err("Variable TAPER_FILE_NAME_U could not be retrieved from the json input file!");
-                    }
-                    if (get_string_from_objectlist("TAPER_FILE_NAME_RHO",number_readobjects,TAPER_FILE_NAME_RHO,varname_list, value_list))
-                        err("Variable TAPER_FILE_NAME_RHO could not be retrieved from the json input file!");}
+                }
                 if (get_int_from_objectlist("SWS_TAPER_FILE_PER_SHOT",number_readobjects,&SWS_TAPER_FILE_PER_SHOT,varname_list, value_list)){
                     SWS_TAPER_FILE_PER_SHOT=0;
-                    fprintf(fp,"Variable SWS_TAPER_FILE_PER_SHOT is set to default value %d.\n",SWS_TAPER_FILE_PER_SHOT);}
+                    fprintf(fp,"Variable SWS_TAPER_FILE_PER_SHOT is set to default value %d.\n",SWS_TAPER_FILE_PER_SHOT);
+                }
                 if (SWS_TAPER_FILE_PER_SHOT==1){
                     if (get_string_from_objectlist("TAPER_FILE_NAME",number_readobjects,TAPER_FILE_NAME,varname_list, value_list))
                         err("Variable TAPER_FILE_NAME could not be retrieved from the json input file!");
-                    if (get_string_from_objectlist("TAPER_FILE_NAME_U",number_readobjects,TAPER_FILE_NAME_U,varname_list, value_list))
-                        err("Variable TAPER_FILE_NAME_U could not be retrieved from the json input file!");
-                    if (get_string_from_objectlist("TAPER_FILE_NAME_RHO",number_readobjects,TAPER_FILE_NAME_RHO,varname_list, value_list))
-                        err("Variable TAPER_FILE_NAME_RHO could not be retrieved from the json input file!");}
+                }
                 
                 
                 

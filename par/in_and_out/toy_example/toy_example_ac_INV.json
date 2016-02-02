@@ -171,9 +171,7 @@
 			"SRTRADIUS" : "3.0",
 			"FILTSIZE" : "1",
 			"SWS_TAPER_FILE" : "1",
-			"TAPER_FILE_NAME" : "taper_te_ac.bin",
-			"TAPER_FILE_NAME_U" : "taper_te_ac_u.bin",
-			"TAPER_FILE_NAME_RHO" : "taper_te_ac_rho.bin",
+			"TAPER_FILE_NAME" : "taper_te_ac",
 
 "Upper and lower limits for model parameters" : "comment",
 			"VPUPPERLIM" : "5000",

@@ -18,9 +18,6 @@
 
 /*------------------------------------------------------------------------
  *   Write FD-Parameters to stdout
- *   last update 20/02/2001
- *
- *  See COPYING file for copying and redistribution conditions.
  *  ----------------------------------------------------------------------*/
 
 #include "fd.h"
@@ -53,7 +50,7 @@ void write_par(FILE *fp){
     extern int SWS_TAPER_GRAD_VERT, SWS_TAPER_GRAD_HOR, SWS_TAPER_GRAD_SOURCES, SWS_TAPER_CIRCULAR_PER_SHOT, SRTSHAPE, FILTSIZE;
     extern int SWS_TAPER_FILE, SWS_TAPER_FILE_PER_SHOT;
     extern float SRTRADIUS;
-    extern char TAPER_FILE_NAME[STRING_SIZE], TAPER_FILE_NAME_U[STRING_SIZE], TAPER_FILE_NAME_RHO[STRING_SIZE];
+    extern char TAPER_FILE_NAME[STRING_SIZE];
     extern int SPATFILTER, SPAT_FILT_SIZE, SPAT_FILT_1, SPAT_FILT_ITER;
     extern int INV_RHO_ITER, INV_VP_ITER, INV_VS_ITER;
     extern int MIN_ITER;;
@@ -447,9 +444,9 @@ void write_par(FILE *fp){
         
         if (SWS_TAPER_FILE_PER_SHOT==1){
             fprintf(fp," SWS_TAPER_FILE_PER_SHOT=%d: Taper files for single shots are read in and applied to the gradients.\n",SWS_TAPER_FILE_PER_SHOT);
-            fprintf(fp,"     File for vp or lambda gradients: %s\n",TAPER_FILE_NAME);
-            fprintf(fp,"     File for vs or mu gradients: %s\n",TAPER_FILE_NAME_U);
-            fprintf(fp,"     File for rho gradients: %s\n",TAPER_FILE_NAME_RHO);}
+            fprintf(fp,"     File for vp or lambda gradients: %s.vp\n",TAPER_FILE_NAME);
+            fprintf(fp,"     File for vs or mu gradients: %s.vs\n",TAPER_FILE_NAME);
+            fprintf(fp,"     File for rho gradients: %s.rho\n",TAPER_FILE_NAME);}
         else	fprintf(fp," SWS_TAPER_FILE_PER_SHOT=%d: No taper files are applied to the gradients before summation.\n\n",SWS_TAPER_FILE_PER_SHOT);
         
         fprintf(fp,"\n");
@@ -551,14 +548,14 @@ void write_par(FILE *fp){
         
         
         fprintf(fp,"\n\n");
-        fprintf(fp," --------------- Time windowing and VPPML -------------------\n");
+        fprintf(fp," --------------- Time windowing and damping -------------------\n");
         if (TIMEWIN){
-            fprintf(fp," TIMEWIN=%d: Time windowing and VPPML is applied \n",TIMEWIN);
+            fprintf(fp," TIMEWIN=%d: Time windowing and damping is applied \n",TIMEWIN);
             fprintf(fp," Reading picked times from files: %s \n",PICKS_FILE);
             fprintf(fp," length of window after pick in s is: %f \n",TWLENGTH_PLUS);
             fprintf(fp," length of window befor pick in s is: %f \n",TWLENGTH_MINUS);
             fprintf(fp," gamma is : %f \n\n",GAMMA);}
-        else fprintf(fp," TIMEWIN=%d: No time windowing and VPPML is applied \n",TIMEWIN);
+        else fprintf(fp," TIMEWIN=%d: No time windowing and damping is applied \n",TIMEWIN);
         
         
         

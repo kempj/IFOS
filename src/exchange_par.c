@@ -16,11 +16,8 @@
  * along with IFOS. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
  -----------------------------------------------------------------------------------------*/
 
-/**/
 /*------------------------------------------------------------------------
  *   Exchange FD-Parameters between PEs
- *   last update 29/06/2002
- *
  *  ----------------------------------------------------------------------*/
 
 #include "fd.h"
@@ -52,7 +49,7 @@ void exchange_par(void){
     extern int SWS_TAPER_GRAD_VERT, SWS_TAPER_GRAD_HOR, SWS_TAPER_GRAD_SOURCES, SWS_TAPER_CIRCULAR_PER_SHOT, SRTSHAPE, FILTSIZE;
     extern int SWS_TAPER_FILE, SWS_TAPER_FILE_PER_SHOT;
     extern float SRTRADIUS;
-    extern char TAPER_FILE_NAME[STRING_SIZE], TAPER_FILE_NAME_U[STRING_SIZE], TAPER_FILE_NAME_RHO[STRING_SIZE];
+    extern char TAPER_FILE_NAME[STRING_SIZE];
     extern int SPATFILTER, SPAT_FILT_SIZE, SPAT_FILT_1, SPAT_FILT_ITER;
     extern int INV_RHO_ITER, INV_VP_ITER, INV_VS_ITER;
     extern int MIN_ITER;
@@ -409,8 +406,6 @@ void exchange_par(void){
     MPI_Bcast(&PICKS_FILE,STRING_SIZE,MPI_CHAR,0,MPI_COMM_WORLD);
     
     MPI_Bcast(&TAPER_FILE_NAME,STRING_SIZE,MPI_CHAR,0,MPI_COMM_WORLD);
-    MPI_Bcast(&TAPER_FILE_NAME_U,STRING_SIZE,MPI_CHAR,0,MPI_COMM_WORLD);
-    MPI_Bcast(&TAPER_FILE_NAME_RHO,STRING_SIZE,MPI_CHAR,0,MPI_COMM_WORLD);
     
     MPI_Barrier(MPI_COMM_WORLD);
     
