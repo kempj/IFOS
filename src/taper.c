@@ -18,7 +18,6 @@
 
 /*------------------------------------------------------------------------
  *   Taper function now adapted for use in stf.c, only for single traces!
- *   last update 21/10/15, L. Gassner
  *  ----------------------------------------------------------------------*/
 #include "fd.h"
 #include "segy.h"

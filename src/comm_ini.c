@@ -20,7 +20,6 @@
  *   initialisation of repeated comunications. This may reduce the
  *   network overhead. Communication is started later
  *   with MPI_START(request)
- *   last update 31/07/00, T. Bohlen
  *  ----------------------------------------------------------------------*/
 
 #include "fd.h"

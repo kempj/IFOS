@@ -20,7 +20,6 @@
    Dividing the 3-D FD grid into domains and assigning the
    PEs to these domains,
    
-   written by T. Bohlen 
    last update: 20.04.2000
 */
 

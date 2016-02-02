@@ -21,7 +21,6 @@
  * at the indices 0 and NX+1 etc. These lie on the neighbouring processes.
  * Thus, they have to be copied which is done by this function.
  *
- *   last update 12/02/02, T. Bohlen
  *
  *  ----------------------------------------------------------------------*/
 

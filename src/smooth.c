@@ -18,7 +18,6 @@
 
 /*
  * Smoothing gradient / model with a median filter
- * M. Schaefer - May 2011
  * Update - August 2013
  */
 

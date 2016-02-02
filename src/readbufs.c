@@ -20,7 +20,6 @@
  *   read values of components of stress tensor at the edges of the
  *   local grid from buffer arrays (which have been exchanged between
  *   processes)
- *   last update 12/02/02, T. Bohlen
  *
  *  ----------------------------------------------------------------------*/
 

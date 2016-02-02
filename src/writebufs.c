@@ -20,7 +20,6 @@
  *   write values of stress tensor components at the edges of the
  *   local grid into buffer arrays (which will be exchanged between
  *   processes)
- *   last update 12/02/02, T. Bohlen
  *
  *  ----------------------------------------------------------------------*/
 

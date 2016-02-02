@@ -22,8 +22,6 @@
  *   waveconv = conjugated gradient direction
  *   gradp    = preconditionated gradient
  *   
- *   Daniel Koehn
- *   last update 9.11.2007
  *
  *  ---------------------------------------------------------------------*/
 

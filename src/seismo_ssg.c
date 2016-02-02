@@ -19,7 +19,6 @@
 /*------------------------------------------------------------------------
  *   store amplitudes (particle velocities or pressure or curl and div) 
  *    at receiver positions in arrays
- *   last update 27/12/01, T. Bohlen
  *  ----------------------------------------------------------------------*/
 
 #include "fd.h"

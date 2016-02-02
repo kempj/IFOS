@@ -18,9 +18,7 @@
 
 /*------------------------------------------------------------------------
  *   Write 2D snapshot for current timestep  to file
- *   last update 2015 F.Wittkamp, SH Version
  *
- *  T. Bohlen
  *  See COPYING file for copying and redistribution conditions.
  *  ----------------------------------------------------------------------*/
 

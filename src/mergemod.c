@@ -19,7 +19,6 @@
 /*------------------------------------------------------------------------
  *   merge model files written by the different processes to 
  *   a single file                                 
- *   last update Oct 2015 Florian Wittkamp
  *   - If VERBOSE==1, then this function will be silent
  *
  *  ----------------------------------------------------------------------*/

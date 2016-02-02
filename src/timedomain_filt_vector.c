@@ -19,7 +19,6 @@
 /*------------------------------------------------------------------------
  *   Filter seismograms in time domain with a Butterworth filter
  *   Lowpass or highpass filtering can be applied                                  
- *   last update 14/06/11, L. Rehor
  *  ----------------------------------------------------------------------*/
 #include "fd.h"
 #include "segy.h"

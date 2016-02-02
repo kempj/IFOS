@@ -19,7 +19,6 @@
 /*
  * Normalize Gradient
  *
- * Daniel Koehn
  */
 
 #include "fd.h"

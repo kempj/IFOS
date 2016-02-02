@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with IFOS. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
  -----------------------------------------------------------------------------------------*/
-/* Florian Wittkamp */
 /* Return values:
  * 1: condition 1 not fullfilled
  * 2: condition 2 not fullfilled

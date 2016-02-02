@@ -17,7 +17,6 @@
  -----------------------------------------------------------------------------------------*/
 /*
  * This function provides several matrix operations
- * Florian Wittkamp
  */
 
 #include "fd.h"

@@ -1,6 +1,5 @@
 /*------------------------------------------------------------------------
- *   globvar.h - global variables of viscoelastic FD programs   
- *   last update 05/04/02 T. Bohlen
+ *   globvar.h - global variables of viscoelastic FD programs
  *
  *  ----------------------------------------------------------------------*/
 

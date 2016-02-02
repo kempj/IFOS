@@ -20,7 +20,6 @@
  * json_parser.c
  *
  *  Created on: Sep 9, 2011
- *      Author: sjetschny
  */
 
 #include "fd.h"

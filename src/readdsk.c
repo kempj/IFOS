@@ -20,7 +20,6 @@
  *   Read one single amplitude from file                                   
  *   last update 05/12/00
  *
- *  T. Bohlen
  *  ----------------------------------------------------------------------*/
 
 #include "fd.h"

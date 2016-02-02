@@ -18,12 +18,7 @@
 
 /* ----------------------------------------------------------------------
  * This is program IFOS.
- * subwavelength DEtail resolving Nonlinear Iterative SEismic inversion
- *
- * If you use this code for your own research please cite at least one article
- * written by the developers of the package, e.g.
- * D. K�hn. Time domain 2D elastic full waveform tomography. PhD Thesis, Kiel
- * University, 2011.
+ * Inversion of Full Observerd Seismograms
  *
  *  ----------------------------------------------------------------------*/
 

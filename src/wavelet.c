@@ -21,7 +21,6 @@
 *   time-shift, centre frequency and amplitude (as specified in SOURCE_FILE).
 *   Source signals are written to array signals 
 *
-*   last update 19/01/02, T. Bohlen
 *  ----------------------------------------------------------------------*/
 
 #include "fd.h"

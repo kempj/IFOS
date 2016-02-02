@@ -19,7 +19,6 @@
 /*------------------------------------------------------------------------
  *  Read extern workflow                          
  *
- *  written by Wittkamp Oct 2015
  *
  *  If you want to adjust the workflow, I think it is not necessary to
  *  modify this file. Have a look at apply_workflow.c and adjust

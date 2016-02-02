@@ -20,7 +20,6 @@
  * Module for the Preconditioned Conjugate Gradient Method (PCG)
  * for the material parameters vp, vs, rho and lambda, mu, rho respectively
  *
- * Daniel Koehn
  * ----------------------------------------------------------------------*/
 
 #include "fd.h"

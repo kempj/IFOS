@@ -18,8 +18,6 @@
 
 /*------------------------------------------------------------------------
  *   Write seismograms to disk                                  
- *   last update 19/01/02, T. Bohlen
- *   UPDATE: 1. September 2011 M. Schäfer
  *   Function outseis_vector estimate a vector NOT a matrix
  *  ----------------------------------------------------------------------*/
 #include "fd.h"

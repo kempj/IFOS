@@ -18,9 +18,6 @@
 
 /*  Computation of local receiver coordinates
  *  (within each subgrid)
- *
- *   update 11.02.02, T. Bohlen
- *   last update 02.09.11 M. Schäfer
  */
 
 #include "fd.h"

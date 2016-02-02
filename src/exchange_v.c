@@ -20,7 +20,6 @@
  *   write values of dynamic field variables at the edges of the
  *   local grid into buffer arrays and  exchanged between
  *   processes.
- *   last update 21/09/02, T. Bohlen
  *
  *  ----------------------------------------------------------------------*/
 

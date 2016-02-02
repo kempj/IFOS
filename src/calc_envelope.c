@@ -18,8 +18,6 @@
 
 /*------------------------------------------------------------------------
  *   Calculate the envelope of a seismogram via Hilbert transform                                  
- *   last update 27/1/10, L. Rehor
- *   update to FFTW3 01/07/2013 Martin Schaefer
  *  ----------------------------------------------------------------------*/
 #include "fd.h"
 #include <fftw3.h>

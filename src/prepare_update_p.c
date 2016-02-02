@@ -16,7 +16,6 @@
  * along with DENISE. See file COPYING and/or <http://www.gnu.org/licenses/gpl-2.0.html>.
 -----------------------------------------------------------------------------------------*/
 
-/* $Id: prepare_update_s.c,v 2.2 2007/08/21 13:16:19 tbohlen Exp $*/
 
 #include "fd.h"
 

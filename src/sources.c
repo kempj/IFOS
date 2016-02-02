@@ -20,7 +20,6 @@
    Reading (distributed) source positions, timeshift, centre frequency 
    and amplitude from SOURCE_FILE.
    
-   written by T. Bohlen 
    last update: 12.02.2002
 */
 

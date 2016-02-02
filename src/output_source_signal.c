@@ -18,7 +18,6 @@
 
 /*------------------------------------------------------------------------
  *   output source signal e.g. for cross-correlation of comparison with analytical solutions                                  
- *   last update 08/06/05, T. Bohlen
  *  ----------------------------------------------------------------------*/
 #include "fd.h"
 #include "segy.h"

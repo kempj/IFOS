@@ -1,8 +1,5 @@
 /*------------------------------------------------------------------------
  *  fd.h - include file for viscoelastic FD programs          
- *  last update  03/12/2000 
- *
- *  Copyright (c) 1998 T. Bohlen 
  *  See COPYING file for copying and redistribution conditions.
  *  ---------------------------------------------------------------------*/
 

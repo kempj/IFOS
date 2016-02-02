@@ -19,7 +19,6 @@
 /*------------------------------------------------------------------------
  *   merge snapshots files written by the different processes to
  *   a single file
- *   last update 25/05/02   T. Bohlen
  *
  *  ----------------------------------------------------------------------*/
 

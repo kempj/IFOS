@@ -20,9 +20,7 @@
  *   updating stress components at gridpoints [nx1...nx2][ny1...ny2]
  *   by a staggered grid finite difference scheme of arbitrary (FDORDER) order accuracy in space
  *   and second order accuracy in time
- *   T. Bohlen
  *
- *   SH-Version F. Wittkamp
  *
  *  ----------------------------------------------------------------------*/
 

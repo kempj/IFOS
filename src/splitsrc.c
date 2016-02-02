@@ -19,7 +19,6 @@
 /*  Computation of local source coordinates
  *
  *
- *   last update 12.02.02, T. Bohlen
  */
 
 #include "fd.h"

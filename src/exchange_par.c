@@ -21,7 +21,6 @@
  *   Exchange FD-Parameters between PEs
  *   last update 29/06/2002
  *
- *  T. Bohlen
  *  ----------------------------------------------------------------------*/
 
 #include "fd.h"

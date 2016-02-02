@@ -19,7 +19,6 @@
 /* 
    Reading filter frequencies for the time domain filter from FREQ_FILE.
    
-   T. Metz 02,2014 
 */
 
 #include "fd.h"
