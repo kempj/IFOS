@@ -19,8 +19,6 @@
 /* This is function initproc.
    Dividing the 3-D FD grid into domains and assigning the
    PEs to these domains,
-   
-   last update: 20.04.2000
 */
 
 #include "fd.h"

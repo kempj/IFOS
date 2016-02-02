@@ -18,7 +18,6 @@
 
 /*------------------------------------------------------------------------
  *   Write FD-Parameters to stdout
- *   last update 20/02/2001
  *
  *  See COPYING file for copying and redistribution conditions.
  *  ----------------------------------------------------------------------*/

@@ -21,9 +21,6 @@
  *		Recommended Standards for Digital Tape Formats",
  *		Geophysics, vol. 40, no. 2 (April 1975), P. 344-352.
  *	
- * $Author: john $
- * $Source: /usr/local/cwp/src/su/include/RCS/segy.h,v $
- * $Revision: 1.33 $ ; $Date: 2011/11/11 23:56:14 $
  */ 
 
 #include <limits.h>

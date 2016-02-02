@@ -18,7 +18,6 @@
 
 /*------------------------------------------------------------------------
  *  compute receiver positions or read them from external file        
- *  last update: 11.02.02
  *
  *  See COPYING file for copying and redistribution conditions.
  *  ----------------------------------------------------------------------*/

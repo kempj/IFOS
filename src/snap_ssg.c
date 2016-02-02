@@ -18,7 +18,6 @@
 
 /*------------------------------------------------------------------------
  *   Write 2D snapshot for current timestep  to file                                   
- *   last update 24/05/2002
  *
  *  See COPYING file for copying and redistribution conditions.
  *  ----------------------------------------------------------------------*/

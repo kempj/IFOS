@@ -20,7 +20,6 @@
    Reading (distributed) source positions, timeshift, centre frequency 
    and amplitude from SOURCE_FILE.
    
-   last update: 12.02.2002
 */
 
 #include "fd.h"

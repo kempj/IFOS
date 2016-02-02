@@ -19,7 +19,6 @@
 /*
  * json_parser.c
  *
- *  Created on: Sep 9, 2011
  */
 
 #include "fd.h"
