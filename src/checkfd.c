@@ -20,7 +20,6 @@
  *  Check FD-Grid for stability and grid dispersion.
  *  If the stability criterion is not fullfilled the program will
  *  terminate.                   
- *  last update  14/01/2014 
  *
  *  ----------------------------------------------------------*/
 

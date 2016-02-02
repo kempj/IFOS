@@ -18,7 +18,6 @@
 
 /*------------------------------------------------------------------------
  *   Write one single amplitude on disk                                   
- *   last update 07/10/98
  *
  *  See COPYING file for copying and redistribution conditions.
  *  ----------------------------------------------------------------------*/

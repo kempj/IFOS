@@ -18,7 +18,6 @@
 
 /*
  * Smoothing gradient / model with a median filter
- * Update - August 2013
  */
 
 #include "fd.h"
