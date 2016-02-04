@@ -222,40 +222,40 @@ void taper_grad_shot(float ** waveconv,float ** taper_coeff, float **srcpos, int
         
         if(sws==2){
         if(USE_WORKFLOW){
-            sprintf(taper_file,"%s.shot%d_%i.vp",TAPER_FILE_NAME,WORKFLOW_STAGE);
+            sprintf(taper_file,"%s.shot%d_%i.vp",TAPER_FILE_NAME,ishot,WORKFLOW_STAGE);
             fp_taper=fopen(taper_file,"r");
             if(fp_taper==NULL){
-                sprintf(taper_file,"%s.shot%d.vp",TAPER_FILE_NAME);
+                sprintf(taper_file,"%s.shot%d.vp",TAPER_FILE_NAME,ishot);
                 fp_taper=fopen(taper_file,"r");
             }
         }else{
-            sprintf(taper_file,"%s.shot%d.vp",TAPER_FILE_NAME);
+            sprintf(taper_file,"%s.shot%d.vp",TAPER_FILE_NAME,ishot);
             fp_taper=fopen(taper_file,"r");
         }
         }
         if(sws==3){   
         if(USE_WORKFLOW){
-            sprintf(taper_file,"%s.shot%d_%i.vs",TAPER_FILE_NAME,WORKFLOW_STAGE);
+            sprintf(taper_file,"%s.shot%d_%i.vs",TAPER_FILE_NAME,ishot,WORKFLOW_STAGE);
             fp_taper=fopen(taper_file,"r");
             if(fp_taper==NULL){
-                sprintf(taper_file,"%s.shot%d.vs",TAPER_FILE_NAME);
+                sprintf(taper_file,"%s.shot%d.vs",TAPER_FILE_NAME,ishot);
                 fp_taper=fopen(taper_file,"r");
             }
         }else{
-            sprintf(taper_file,"%s.shot%d.vs",TAPER_FILE_NAME);
+            sprintf(taper_file,"%s.shot%d.vs",TAPER_FILE_NAME,ishot);
             fp_taper=fopen(taper_file,"r");
         }
         }
         if(sws==4){
         if(USE_WORKFLOW){
-            sprintf(taper_file,"%s.shot%d_%i.rho",TAPER_FILE_NAME,WORKFLOW_STAGE);
+            sprintf(taper_file,"%s.shot%d_%i.rho",TAPER_FILE_NAME,ishot,WORKFLOW_STAGE);
             fp_taper=fopen(taper_file,"r");
             if(fp_taper==NULL){
-                sprintf(taper_file,"%s.shot%d.rho",TAPER_FILE_NAME);
+                sprintf(taper_file,"%s.shot%d.rho",TAPER_FILE_NAME,ishot);
                 fp_taper=fopen(taper_file,"r");
             }
         }else{
-            sprintf(taper_file,"%s.shot%d.rho",TAPER_FILE_NAME);
+            sprintf(taper_file,"%s.shot%d.rho",TAPER_FILE_NAME,ishot);
             fp_taper=fopen(taper_file,"r");
         }
         }

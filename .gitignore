@@ -3,7 +3,7 @@
 *.sh
 IFOS2D
 snapmerge
-manual_IFOS.pdf
+manual_IFOS2D.pdf
 *.d
 *.hd
 *.strip
