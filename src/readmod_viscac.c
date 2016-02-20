@@ -50,7 +50,7 @@ void readmod_viscac(float  **  rho, float **  pi, float ** taup, float * eta){
 		eta[l]=DT/pts[l];
 	}
 	
-	fprintf(FP,"\n...reading model information from modell-files...\n");
+	fprintf(FP,"\n...reading model information from model-files...\n");
 	
 	/* read density and seismic velocities */
 	/* ----------------------------------- */
@@ -81,9 +81,20 @@ void readmod_viscac(float  **  rho, float **  pi, float ** taup, float * eta){
 	/* loop over global grid */
 	for (i=1;i<=NXG;i++){
 	for (j=1;j<=NYG;j++){
-		fread(&vp, sizeof(float), 1, fp_vp);
+        
+        if(feof(fp_vp) && feof(fp_rho)){
+            err("Model file VP or RHO is to small. Check dimensions NX*NY of file.");
+        }
+		
+        fread(&vp, sizeof(float), 1, fp_vp);
 		fread(&rhov, sizeof(float), 1, fp_rho);
-		if (sw_Qp){
+		
+        if (sw_Qp){
+            
+            if(feof(fp_qp)){
+                err("Model file QP is to small. Check dimensions NX*NY of file.");
+            }
+            
 			fread(&qp, sizeof(float), 1, fp_qp);
 		}
 		
@@ -104,24 +115,36 @@ void readmod_viscac(float  **  rho, float **  pi, float ** taup, float * eta){
 	}
 	}
 	
-	
-	fclose(fp_vp);
-	fclose(fp_rho);
-	if (sw_Qp)  fclose(fp_qp);
-	
-	
-	/* each PE writes his model to disk */
-	sprintf(filename,"%s.fdveps.pi",MFILE);
-	writemod(filename,pi,3);
-	MPI_Barrier(MPI_COMM_WORLD);
+    fread(&vp, sizeof(float), 1, fp_vp);
+    if(!feof(fp_vp)){
+        err("Model file VP is to big. Check dimensions NX*NY of file.");
+    }
+    fclose(fp_vp);
+    
+    fread(&rho, sizeof(float), 1, fp_rho);
+    if(!feof(fp_rho)){
+        err("Model file RHO is to big. Check dimensions NX*NY of file.");
+    }
+    fclose(fp_rho);
 
-	if (MYID==0) mergemod(filename,3);
+    if (sw_Qp){
+        fread(&qp, sizeof(float), 1, fp_qp);
+        if(!feof(fp_qp)){
+            err("Model file QP is to big. Check dimensions NX*NY of file.");
+        }
+        fclose(fp_qp);
+    }
+    
 	
-	sprintf(filename,"%s.fdveps.rho",MFILE);
-	writemod(filename,rho,3);
-	MPI_Barrier(MPI_COMM_WORLD);
-	                        
-	if (MYID==0) mergemod(filename,3);
-
+	/* write model to disk */
+	sprintf(filename,"%s.out.vp",MFILE);
+    write_matrix_disk(pi,filename);
+    
+    sprintf(filename,"%s.out.rho",MFILE);
+    write_matrix_disk(rho,filename);
+    
+    sprintf(filename,"%s.out.qp",MFILE);
+    write_matrix_disk(taup,filename);
+    
 	free_vector(pts,1,L);
 }

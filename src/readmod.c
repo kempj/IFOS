@@ -50,7 +50,7 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
         eta[l]=DT/pts[l];
     }
     
-	   fprintf(FP,"\n...reading model information from modell-files...\n");
+	   fprintf(FP,"\n...reading model information from model-files...\n");
     
 	   /* read density and seismic velocities */
 	   /* ----------------------------------- */
@@ -144,15 +144,42 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
         for (j=1;j<=NYG;j++){
             
             if(WAVETYPE==1||WAVETYPE==3){
+                
+                if(feof(fp_vp)){
+                    err("Model file VP is to small. Check dimensions NX*NY of file.");
+                }
                 fread(&vp, sizeof(float), 1, fp_vp);
+                
                 if (sw_Qp){
-                    fread(&qp, sizeof(float), 1, fp_qp);}
+                    
+                    if(feof(fp_qp)){
+                        err("Model file QP is to small. Check dimensions NX*NY of file.");
+                    }
+                    
+                    fread(&qp, sizeof(float), 1, fp_qp);
+                }
+            }
+            
+            if(feof(fp_vs)){
+                err("Model file VS is to small. Check dimensions NX*NY of file.");
             }
             
             fread(&vs, sizeof(float), 1, fp_vs);
+            
+            if(feof(fp_rho)){
+                err("Model file RHO is to small. Check dimensions NX*NY of file.");
+            }
+            
             fread(&rhov, sizeof(float), 1, fp_rho);
+            
             if (sw_Qs){
-                fread(&qs, sizeof(float), 1, fp_qs);}
+                
+                if(feof(fp_vs)){
+                    err("Model file QS is to small. Check dimensions NX*NY of file.");
+                }
+                
+                fread(&qs, sizeof(float), 1, fp_qs);
+            }
             
             /* only the PE which belongs to the current global gridpoint
              is saving model parameters in his local arrays */
@@ -179,51 +206,65 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
         }
     }
     
-    
-    
+
     
     if(WAVETYPE==1||WAVETYPE==3){
+        
+        fread(&vp, sizeof(float), 1, fp_vp);
+        if(!feof(fp_vp)){
+            err("Model file VP is to big. Check dimensions NX*NY of file.");
+        }
         fclose(fp_vp);
-        if (sw_Qp)  fclose(fp_qp);
+        
+        if (sw_Qp) {
+            fread(&qp, sizeof(float), 1, fp_qp);
+            if(!feof(fp_qp)){
+                err("Model file QP is to big. Check dimensions NX*NY of file.");
+            }
+            fclose(fp_qp);
+        }
+    }
+    
+    fread(&vs, sizeof(float), 1, fp_vs);
+    if(!feof(fp_vs)){
+        err("Model file VS is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_vs);
+    
+    fread(&rho, sizeof(float), 1, fp_rho);
+    if(!feof(fp_rho)){
+        err("Model file RHO is to big. Check dimensions NX*NY of file.");
+    }
     fclose(fp_rho);
-    if (sw_Qs)  fclose(fp_qs);
+    
+    if (sw_Qs){
+        fread(&qs, sizeof(float), 1, fp_qs);
+        if(!feof(fp_qs)){
+            err("Model file QS is to big. Check dimensions NX*NY of file.");
+        }
+        fclose(fp_qs);
+    }
     
     
     /* each PE writes his model to disk */
     if(WAVETYPE==1||WAVETYPE==3){
         if(PARAMETERIZATION==1) sprintf(filename,"%s.out.vp",MFILE);
         if(PARAMETERIZATION==3) sprintf(filename,"%s.out.pi",MFILE);
-        writemod(filename,pi,3);
-        MPI_Barrier(MPI_COMM_WORLD);
-        if (MYID==0) mergemod(filename,3);
-        MPI_Barrier(MPI_COMM_WORLD);
-        if(PARAMETERIZATION==1) sprintf(filename,"%s.out.vp.%i.%i",MFILE,POS[1],POS[2]);
-        if(PARAMETERIZATION==3) sprintf(filename,"%s.out.pi.%i.%i",MFILE,POS[1],POS[2]);
-        remove(filename);
+        write_matrix_disk(pi, filename);
+        
+        sprintf(filename,"%s.out.qp",MFILE);
+        write_matrix_disk(taup, filename);
     }
     
     if(PARAMETERIZATION==1) sprintf(filename,"%s.out.vs",MFILE);
     if(PARAMETERIZATION==3) sprintf(filename,"%s.out.mu",MFILE);
-    writemod(filename,u,3);
-    MPI_Barrier(MPI_COMM_WORLD);
-    
-    if (MYID==0) mergemod(filename,3);
-    MPI_Barrier(MPI_COMM_WORLD);
-    if(PARAMETERIZATION==1) sprintf(filename,"%s.out.vs.%i.%i",MFILE,POS[1],POS[2]);
-    if(PARAMETERIZATION==3) sprintf(filename,"%s.out.mu.%i.%i",MFILE,POS[1],POS[2]);
-    remove(filename);
-    
+    write_matrix_disk(u, filename);
     
     sprintf(filename,"%s.out.rho",MFILE);
-    writemod(filename,rho,3);
-    MPI_Barrier(MPI_COMM_WORLD);
+    write_matrix_disk(rho, filename);
     
-    if (MYID==0) mergemod(filename,3);
-    MPI_Barrier(MPI_COMM_WORLD);
-    sprintf(filename,"%s.out.rho.%i.%i",MFILE,POS[1],POS[2]);
-    remove(filename);
+    sprintf(filename,"%s.out.qs",MFILE);
+    write_matrix_disk(taus, filename);
     
     free_vector(pts,1,L);
 }
