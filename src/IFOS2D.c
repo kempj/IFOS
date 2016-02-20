@@ -97,10 +97,6 @@ int main(int argc, char **argv){
     
     /* Variables for Pseudo-Hessian calculation */
     int RECINC, ntr1;
-    float * jac_rho, * jac_u, * jac_lam_x, * jac_lam_y;
-    float * temp_TS, * temp_TS1, * temp_TS2, * temp_TS3, * temp_TS4, * temp_TS5, * temp_conv, * temp_conv1, * temp_conv2;
-    float temp_hess, temp_hess_lambda, temp_hess_mu, mulamratio;
-    float ** hessian, ** hessian_u, ** hessian_rho, **hessian_shot, **hessian_u_shot, **hessian_rho_shot;
     int SOURCE_SHAPE_OLD;
     
     /* Variables for L-BFGS */
@@ -1599,40 +1595,12 @@ int main(int argc, char **argv){
                             if(WAVETYPE==1||WAVETYPE==3) timedomain_filt(signals,FC,ORDER,nsrc_loc,ns,1);
                             if(WAVETYPE==2||WAVETYPE==3) timedomain_filt(signals_SH,FC,ORDER,nsrc_loc,ns,1);
                             
-                            if(WAVETYPE==1||WAVETYPE==3){
-                                if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                    /*time domain filtering of the observed data sectionvy_obs */
-                                    inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
-                                    timedomain_filt(sectionvy_obs,FC,ORDER,ntr_glob,ns,1);
-                                }
-                                
-                                if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==3)){
-                                    /*time domain filtering of the observed data sectionvx_obs */
-                                    inseis(fprec,ishot,sectionvx_obs,ntr_glob,ns,1,iter);
-                                    timedomain_filt(sectionvx_obs,FC,ORDER,ntr_glob,ns,1);
-                                }
-                                
-                                if (ADJOINT_TYPE==4){
-                                    /*time domain filtering of the observed data sectionp_obs */
-                                    inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
-                                    timedomain_filt(sectionp_obs,FC,ORDER,ntr_glob,ns,1);
-                                }
-                            }
-                            
-                            if(WAVETYPE==2||WAVETYPE==3){
-                                /*time domain filtering of the observed data sectionvx_obs */
-                                inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
-                                timedomain_filt(sectionvz_obs,FC,ORDER,ntr_glob,ns,1);
-                            }
-                            
                         }
                         /*------------------------------------------------------------------------------*/
                         /*----------- End of Time Domain Filtering -------------------------------------*/
                         /*------------------------------------------------------------------------------*/
                         
                         MPI_Barrier(MPI_COMM_WORLD);
-                        
-                        
                         
                         /* initialize wavefield with zero */
                         if (L){
