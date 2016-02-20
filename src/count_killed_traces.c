@@ -46,7 +46,8 @@ void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_lo
     if(TRKILL_OFFSET) {
         
         if(MYID==0) {
-            printf("Automatic offset based TraceKill: Experimental feature");
+            printf("\n\n ----- Offset based Tracekill ------");
+            printf("\n Kill offsets between %.1f m and %.1f m",TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
         }
         
         /* Generate TraceKill file on the fly */

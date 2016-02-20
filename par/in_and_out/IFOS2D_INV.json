@@ -1,10 +1,3 @@
-#-----------------------------------------------------------------
-#      JSON PARAMETER FILE FOR IFOS
-#-----------------------------------------------------------------
-# description:
-# description/name of the model: 2 layer example, model grid created by ../genmod/2layer.c
-#
-
 {
 "Domain Decomposition" : "comment",
 			"NPROCX" : "4",
@@ -99,5 +92,5 @@
 			"PRO" : "0.01",
 
 "Verbose mode" : "comment",
-			"VERBOSE" : "0",
+			"VERBOSE" : "0"
 }

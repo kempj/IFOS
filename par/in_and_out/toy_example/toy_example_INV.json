@@ -1,10 +1,3 @@
-#-----------------------------------------------------------------
-#      JSON PARAMETER FILE FOR IFOS
-#-----------------------------------------------------------------
-# description:
-# description/name of the model: genmod/toy_example_start.c with flnodes.toy_example.start
-#
-
 {
 "Domain Decomposition" : "comment",
 			"NPROCX" : "4",
@@ -161,5 +154,5 @@
 			"FILT_SIZE" : "3",
 
 "Verbose mode" : "comment",
-			"VERBOSE" : "0",
+			"VERBOSE" : "0"
 }

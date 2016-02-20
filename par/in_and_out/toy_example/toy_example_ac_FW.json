@@ -1,10 +1,3 @@
-#-----------------------------------------------------------------
-#      JSON PARAMETER FILE FOR IFOS
-#-----------------------------------------------------------------
-# description:
-# description/name of the model: toy_example_true.c with flnodes.toy_example
-#
-
 {
 "Domain Decomposition" : "comment",
 			"NPROCX" : "2",
@@ -89,5 +82,5 @@
 			"FORWARD_ONLY" : "10",
 
 "Verbose mode" : "comment",
-			"VERBOSE" : "0",
+			"VERBOSE" : "0"
 }

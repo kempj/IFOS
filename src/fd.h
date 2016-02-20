@@ -468,7 +468,7 @@ int *ivector(int nl, int nh);
 double *dvector(int nl, int nh);
 float **fmatrix(int nrl, int nrh, int ncl, int nch);
 int *ivector(int nl, int nh);
-
+void quicksort(float *arr, int dummy, int elements);
 float **matrix(int nrl, int nrh, int ncl, int nch);
 int **imatrix(int nrl, int nrh, int ncl, int nch);
 float ***f3tensor(int nrl, int nrh, int ncl, int nch,int ndl, int ndh);

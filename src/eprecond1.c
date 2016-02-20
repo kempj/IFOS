@@ -9,7 +9,7 @@ void eprecond1(float ** We, float ** Ws, float ** Wr, float epsilon){
     extern int NX, NY, IDX, IDY, DTINV, EPRECOND, VERBOSE;
     extern int POS[3], NXG;
     extern float DH;
-    int i, j, k, l, ii, jj;
+    int i, j, ii, jj;
     float maxWetmp, maxWe, x, y, xmin, xmax;
     xmin = DH;
     xmax = NXG*DH;
