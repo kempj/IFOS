@@ -42,7 +42,7 @@ void  inseis_source_wavelet(float *section, int ns, int ishot, int SH){
     }
     
 	fpdata = fopen(data,"r");
-	if (fpdata==NULL) err(" Source wavelet not found ");
+	if (fpdata==NULL) declare_error(" Source wavelet not found ");
 
 	/* SEGY (without file-header) */
 	fread(&tr,240,1,fpdata);

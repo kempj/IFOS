@@ -35,14 +35,10 @@ float norm(float ** waveconv, int iter, int sws)
 	extern FILE *FP;
 	
 	/* local variables */
-	int i, j, h, ifw, ii, jj, n, xb, yb, xe, ye, taperlength,taperlength2, SPAT_FILT_SIZE, SPAT_FILT_1;
-	int ijc, iy, ix, iii, jjj, xx, yy, srctaper_gridpt, i1, j1, filtsize;
+    int i, j;
 
-	float **waveconvtmp, **waveconvtmps, grad, normgauss;
-	int winx, winy;
-	float min2, max2, min1, max1, norm;
+	float min2, max2, norm;
 	float tmp_max, tmp_min;
-	FILE *fp_grad;
 	
 	min2 = waveconv[1][1];
 	max2 = waveconv[1][1];

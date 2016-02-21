@@ -37,7 +37,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
     extern char SIGNAL_FILE_SH[STRING_SIZE];
     
 	/* declaration of variables for trace killing */
-	int ** kill_tmp, *kill_vector, h, j;
+	int ** kill_tmp = NULL, *kill_vector = NULL, h, j;
 	char trace_kill_file[STRING_SIZE];
 	FILE *ftracekill;
 	
@@ -46,10 +46,10 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	float dt;
 	float xr=0.0, yr=0.0;
 	float XS=0.0, YS=0.0;
-	char conv_y[STRING_SIZE], qw[STRING_SIZE], conv_y_tmp[STRING_SIZE], obs_y_tmp[STRING_SIZE], mod_y_tmp[STRING_SIZE];
+	char qw[STRING_SIZE];
 	
 	/* variables for wavelet */
-	int nt, nts;
+	int nt, nts = 0;
 	float tshift, amp=0.0, fc, tau, t, ts, ag;
 	float * wavelet, * stf_conv_wavelet, *psource=NULL;
 	
@@ -71,14 +71,14 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
                 sprintf(trace_kill_file,"%s.dat",TRKILL_FILE_STF);
                 ftracekill=fopen(trace_kill_file,"r");
                 if (ftracekill==NULL){
-                    err(" Trace kill file could not be opened!");
+                    declare_error(" Trace kill file could not be opened!");
                 }
             }
         }else{
             sprintf(trace_kill_file,"%s.dat",TRKILL_FILE_STF);
             ftracekill=fopen(trace_kill_file,"r");
             if (ftracekill==NULL){
-                err(" Trace kill file could not be opened!");
+                declare_error(" Trace kill file could not be opened!");
             }
         }
 		
@@ -244,7 +244,7 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 							{amp=ts/(0.75*PI);}
 						break;                                                                                                                                           	
 					default : 
-						err("Which source-wavelet ? ");
+						declare_error("Which source-wavelet ? ");
 					
 					
 		}/* end of switch (SOURCE_SHAPE)  */

@@ -89,14 +89,14 @@ double calc_res(float **sectiondata, float **section, float **sectiondiff, float
                     sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
                     ftracekill=fopen(trace_kill_file,"r");
                     if (ftracekill==NULL){
-                        err(" Trace kill file could not be opened!");
+                        declare_error(" Trace kill file could not be opened!");
                     }
                 }
             }else{
                 sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
                 ftracekill=fopen(trace_kill_file,"r");
                 if (ftracekill==NULL){
-                    err(" Trace kill file could not be opened!");
+                    declare_error(" Trace kill file could not be opened!");
                 }
             }
             

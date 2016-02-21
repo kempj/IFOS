@@ -52,14 +52,14 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
             sprintf(pickfile_char,"%s_%i.dat",PICKS_FILE,ishot);
             fptime=fopen(pickfile_char,"r");
             if (fptime == NULL) {
-                err(" picks_?.dat could not be opened !");
+                declare_error(" picks_?.dat could not be opened !");
             }
         }
     }else{
         sprintf(pickfile_char,"%s_%i.dat",PICKS_FILE,ishot);
         fptime=fopen(pickfile_char,"r");
         if (fptime == NULL) {
-            err(" picks_?.dat could not be opened !");
+            declare_error(" picks_?.dat could not be opened !");
         }
     }
 	

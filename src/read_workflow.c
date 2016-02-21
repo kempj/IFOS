@@ -44,7 +44,7 @@ void read_workflow(char file_in[STRING_SIZE],float *** workflow, int *workflow_l
     
     /* Open Workflow file */
     fwork=fopen(file_in,"r");
-    if (fwork==NULL) err(" Workflow file could no be opened !");
+    if (fwork==NULL) declare_error(" Workflow file could no be opened !");
     
     /* Count how many lines the work flow file has */
     fgets(header, 200, fwork); /* Read header */
@@ -59,7 +59,7 @@ void read_workflow(char file_in[STRING_SIZE],float *** workflow, int *workflow_l
     
     /* Allocate memory for workflow */
     (*workflow) = matrix(1,nw,1,WORKFLOW_MAX_VAR);
-    if ((*workflow)==NULL) err(" Was not able to allocate memory for workflow file !");
+    if ((*workflow)==NULL) declare_error(" Was not able to allocate memory for workflow file !");
     
     /* Read workflow */
     fprintf(FP,"\n %s",header);

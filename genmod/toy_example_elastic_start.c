@@ -38,7 +38,7 @@ void model_elastic(float  **  rho, float **  pi, float **  u){
 	extern char INV_MODELFILE[STRING_SIZE];	
 
 		/* local variables */
-	float muv, piv, vp, vs, rhov, ts, tp, *pts;
+	float muv, piv, vp, vs, rhov, ts, tp;
 	int i, j, ii, jj, l;
 	char modfile[STRING_SIZE];
 	
@@ -62,7 +62,7 @@ void model_elastic(float  **  rho, float **  pi, float **  u){
 	flrho=vector(1,nodes);
 	flvp=vector(1,nodes);	
 	flfile=fopen("model_true/flnodes.toy_example.start","r");
-	if (flfile==NULL) err(" FL-file could not be opened !");
+	if (flfile==NULL) declare_error(" FL-file could not be opened !");
 	
 	
 	
@@ -154,7 +154,7 @@ void model_elastic(float  **  rho, float **  pi, float **  u){
 	flrho=vector(1,nodes);
 	flvp=vector(1,nodes);	
 	flfile=fopen("model_true/flnodes.toy_example","r");
-	if (flfile==NULL) err(" FL-file could not be opened !");
+	if (flfile==NULL) declare_error(" FL-file could not be opened !");
 	
 	for (l=1;l<=nodes;l++){
 		fgets(cline,255,flfile);

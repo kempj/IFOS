@@ -31,13 +31,13 @@ void update_s_elastic_hc(int nx1, int nx2, int ny1, int ny2,
 
 
 	int i,j, m, fdoh;
-	float fipjp, f, g;
+	float fipjp, f = 0.0, g = 0.0;
 	float  vxx, vyy, vxy, vyx;
 	float  dhi;	
 	extern float DT, DH;
 	extern int MYID, FDORDER, PARAMETERIZATION;
 	extern FILE *FP;
-	double time1, time2;
+	double time1 = 0.0, time2;
 	
 	
 

@@ -29,7 +29,6 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
     extern char DATA_DIR[STRING_SIZE];
 	extern float  TIME, DH, DT, REFREC[4];
         char data[STRING_SIZE];
-	const float xshift=800.0, yshift=800.0;
         FILE *fpdata;
 	
 	if(sws==1){  /* open seismic data vx */
@@ -62,14 +61,14 @@ void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int 
 	fpdata = fopen(data,"r");
     if (fpdata==NULL) {
         if(MYID==0) printf(" Was not able to read %s",data);
-        err(" Seismograms for inversion were not found ");
+        declare_error(" Seismograms for inversion were not found ");
     }
 
 	/* declaration of local variables */
-	int i,j;
+	int j;
 	segy tr;
 	int tracl1 ;
-	float xr, yr, x, y, dump;
+	float dump;
 
 		for(tracl1=1;tracl1<=ntr;tracl1++){        /* SEGY (without file-header) */
                         

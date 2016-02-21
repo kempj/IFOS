@@ -155,23 +155,23 @@ void read_par_json(FILE *fp, char *fileinp){
          section general grid and discretization parameters
          =================================*/
         if (get_int_from_objectlist("NPROCX",number_readobjects,&NPROCX,varname_list, value_list))
-            err("Variable NPROCX could not be retrieved from the json input file!");
+            declare_error("Variable NPROCX could not be retrieved from the json input file!");
         if (get_int_from_objectlist("NPROCY",number_readobjects,&NPROCY,varname_list, value_list))
-            err("Variable NPROCY could not be retrieved from the json input file!");
+            declare_error("Variable NPROCY could not be retrieved from the json input file!");
         if (get_int_from_objectlist("FDORDER",number_readobjects,&FDORDER,varname_list, value_list))
-            err("Variable FDORDER could not be retrieved from the json input file!");
+            declare_error("Variable FDORDER could not be retrieved from the json input file!");
         if (get_int_from_objectlist("MAXRELERROR",number_readobjects,&MAXRELERROR,varname_list, value_list))
-            err("Variable MAXRELERROR could not be retrieved from the json input file!");
+            declare_error("Variable MAXRELERROR could not be retrieved from the json input file!");
         if (get_int_from_objectlist("NX",number_readobjects,&NX,varname_list, value_list))
-            err("Variable NX could not be retrieved from the json input file!");
+            declare_error("Variable NX could not be retrieved from the json input file!");
         if (get_int_from_objectlist("NY",number_readobjects,&NY,varname_list, value_list))
-            err("Variable NY could not be retrieved from the json input file!");
+            declare_error("Variable NY could not be retrieved from the json input file!");
         if (get_float_from_objectlist("DH",number_readobjects,&DH,varname_list, value_list))
-            err("Variable DH could not be retrieved from the json input file!");
+            declare_error("Variable DH could not be retrieved from the json input file!");
         if (get_float_from_objectlist("TIME",number_readobjects,&TIME,varname_list, value_list))
-            err("Variable TIME could not be retrieved from the json input file!");
+            declare_error("Variable TIME could not be retrieved from the json input file!");
         if (get_float_from_objectlist("DT",number_readobjects,&DT,varname_list, value_list))
-            err("Variable DT could not be retrieved from the json input file!");
+            declare_error("Variable DT could not be retrieved from the json input file!");
         
         /*=================================
          section source parameters
@@ -180,7 +180,7 @@ void read_par_json(FILE *fp, char *fileinp){
         fprintf(fp,"=====================================\n\n");
         
         if (get_int_from_objectlist("SOURCE_TYPE",number_readobjects,&SOURCE_TYPE,varname_list, value_list))
-            err("Variable SOURCE_TYPE could not be retrieved from the json input file!");
+            declare_error("Variable SOURCE_TYPE could not be retrieved from the json input file!");
         
         /* Definition of inversion for source time function */
         if (get_int_from_objectlist("INV_STF",number_readobjects,&INV_STF,varname_list, value_list)){
@@ -189,11 +189,11 @@ void read_par_json(FILE *fp, char *fileinp){
         else {
             if (INV_STF==1) {
                 if (get_string_from_objectlist("PARA",number_readobjects,PARA,varname_list, value_list))
-                    err("Variable PARA could not be retrieved from the json input file!");
+                    declare_error("Variable PARA could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("N_STF",number_readobjects,&N_STF,varname_list, value_list))
-                    err("Variable N_STF could not be retrieved from the json input file!");
+                    declare_error("Variable N_STF could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("N_STF_START",number_readobjects,&N_STF_START,varname_list, value_list))
-                    err("Variable N_STF_START could not be retrieved from the json input file!");
+                    declare_error("Variable N_STF_START could not be retrieved from the json input file!");
             }
         }
         
@@ -231,22 +231,22 @@ void read_par_json(FILE *fp, char *fileinp){
         }
         
         if (get_int_from_objectlist("SOURCE_SHAPE",number_readobjects,&SOURCE_SHAPE,varname_list, value_list))
-            err("Variable SOURCE_SHAPE could not be retrieved from the json input file!");
+            declare_error("Variable SOURCE_SHAPE could not be retrieved from the json input file!");
         else {
             if ((SOURCE_SHAPE==3)||(SOURCE_SHAPE==7)||(INV_STF==1)) {
                 if (WAVETYPE==1 || WAVETYPE==3){
                     if (get_string_from_objectlist("SIGNAL_FILE",number_readobjects,SIGNAL_FILE,varname_list, value_list))
-                        err("Variable SIGNAL_FILE could not be retrieved from the json input file!");
+                        declare_error("Variable SIGNAL_FILE could not be retrieved from the json input file!");
                 }
                 if (WAVETYPE==2 || WAVETYPE==3){
                     if (get_string_from_objectlist("SIGNAL_FILE_SH",number_readobjects,SIGNAL_FILE_SH,varname_list, value_list))
-                        err("Variable SIGNAL_FILE_SH could not be retrieved from the json input file!");
+                        declare_error("Variable SIGNAL_FILE_SH could not be retrieved from the json input file!");
                 }
             }
         }
         if (get_int_from_objectlist("SOURCE_SHAPE_SH",number_readobjects,&SOURCE_SHAPE_SH,varname_list, value_list)){
             if (WAVETYPE==2 || WAVETYPE==3){
-                err("Variable SOURCE_SHAPE_SH could not be retrieved from the json input file!");
+                declare_error("Variable SOURCE_SHAPE_SH could not be retrieved from the json input file!");
             }
         }
         if (get_int_from_objectlist("SRCREC",number_readobjects,&SRCREC,varname_list, value_list)){
@@ -255,19 +255,19 @@ void read_par_json(FILE *fp, char *fileinp){
         
         if (SRCREC==1) {
             if (get_string_from_objectlist("SOURCE_FILE",number_readobjects,SOURCE_FILE,varname_list, value_list))
-                err("Variable SOURCE_FILE could not be retrieved from the json input file!");
+                declare_error("Variable SOURCE_FILE could not be retrieved from the json input file!");
             if (get_int_from_objectlist("RUN_MULTIPLE_SHOTS",number_readobjects,&RUN_MULTIPLE_SHOTS,varname_list, value_list))
-                err("Variable RUN_MULTIPLE_SHOTS could not be retrieved from the json input file!");
+                declare_error("Variable RUN_MULTIPLE_SHOTS could not be retrieved from the json input file!");
         }
         if (SRCREC==2) {
             if (get_float_from_objectlist("PLANE_WAVE_DEPTH",number_readobjects,&PLANE_WAVE_DEPTH,varname_list, value_list))
-                err("Variable PLANE_WAVE_DEPTH could not be retrieved from the json input file!");
+                declare_error("Variable PLANE_WAVE_DEPTH could not be retrieved from the json input file!");
             else {
                 if (PLANE_WAVE_DEPTH>0.0) {
                     if (get_float_from_objectlist("PHI",number_readobjects,&PHI,varname_list, value_list))
-                        err("Variable PHI could not be retrieved from the json input file!");
+                        declare_error("Variable PHI could not be retrieved from the json input file!");
                     if (get_float_from_objectlist("TS",number_readobjects,&TS,varname_list, value_list))
-                        err("Variable TS could not be retrieved from the json input file!");
+                        declare_error("Variable TS could not be retrieved from the json input file!");
                 }
             }
         }
@@ -279,19 +279,19 @@ void read_par_json(FILE *fp, char *fileinp){
          =================================*/
         
         if (get_int_from_objectlist("FREE_SURF",number_readobjects,&FREE_SURF,varname_list, value_list))
-            err("Variable FREE_SURF could not be retrieved from the json input file!");
+            declare_error("Variable FREE_SURF could not be retrieved from the json input file!");
         if (get_int_from_objectlist("BOUNDARY",number_readobjects,&BOUNDARY,varname_list, value_list))
-            err("Variable BOUNDARY could not be retrieved from the json input file!");
+            declare_error("Variable BOUNDARY could not be retrieved from the json input file!");
         if (get_int_from_objectlist("FW",number_readobjects,&FW,varname_list, value_list))
-            err("Variable FW could not be retrieved from the json input file!");
+            declare_error("Variable FW could not be retrieved from the json input file!");
         if (get_float_from_objectlist("VPPML",number_readobjects,&VPPML,varname_list, value_list))
-            err("Variable VPPML could not be retrieved from the json input file!");
+            declare_error("Variable VPPML could not be retrieved from the json input file!");
         if (get_float_from_objectlist("FPML",number_readobjects,&FPML,varname_list, value_list))
-            err("Variable FPML could not be retrieved from the json input file!");
+            declare_error("Variable FPML could not be retrieved from the json input file!");
         if (get_float_from_objectlist("npower",number_readobjects,&npower,varname_list, value_list))
-            err("Variable npower could not be retrieved from the json input file!");
+            declare_error("Variable npower could not be retrieved from the json input file!");
         if (get_float_from_objectlist("k_max_PML",number_readobjects,&k_max_PML,varname_list, value_list))
-            err("Variable k_max_PML could not be retrieved from the json input file!");
+            declare_error("Variable k_max_PML could not be retrieved from the json input file!");
         
         
         /*=================================
@@ -303,21 +303,21 @@ void read_par_json(FILE *fp, char *fileinp){
         else {
             if (SNAP>0) {
                 if (get_int_from_objectlist("SNAP_FORMAT",number_readobjects,&SNAP_FORMAT,varname_list, value_list))
-                    err("Variable SNAP_FORMAT could not be retrieved from the json input file!");
+                    declare_error("Variable SNAP_FORMAT could not be retrieved from the json input file!");
                 if (get_float_from_objectlist("TSNAP1",number_readobjects,&TSNAP1,varname_list, value_list))
-                    err("Variable TSNAP1 could not be retrieved from the json input file!");
+                    declare_error("Variable TSNAP1 could not be retrieved from the json input file!");
                 if (get_float_from_objectlist("TSNAP2",number_readobjects,&TSNAP2,varname_list, value_list))
-                    err("Variable TSNAP2 could not be retrieved from the json input file!");
+                    declare_error("Variable TSNAP2 could not be retrieved from the json input file!");
                 if (get_float_from_objectlist("TSNAPINC",number_readobjects,&TSNAPINC,varname_list, value_list))
-                    err("Variable TSNAPINC could not be retrieved from the json input file!");
+                    declare_error("Variable TSNAPINC could not be retrieved from the json input file!");
                 if (get_string_from_objectlist("SNAP_FILE",number_readobjects,SNAP_FILE,varname_list, value_list))
-                    err("Variable SNAP_FILE could not be retrieved from the json input file!");
+                    declare_error("Variable SNAP_FILE could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("SNAPSHOT_START",number_readobjects,&SNAPSHOT_START,varname_list, value_list))
-                    err("Variable SNAPSHOT_START could not be retrieved from the json input file!");
+                    declare_error("Variable SNAPSHOT_START could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("SNAPSHOT_END",number_readobjects,&SNAPSHOT_END,varname_list, value_list))
-                    err("Variable SNAPSHOT_START could not be retrieved from the json input file!");
+                    declare_error("Variable SNAPSHOT_START could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("SNAPSHOT_INCR",number_readobjects,&SNAPSHOT_INCR,varname_list, value_list))
-                    err("Variable SNAPSHOT_INCR could not be retrieved from the json input file!");
+                    declare_error("Variable SNAPSHOT_INCR could not be retrieved from the json input file!");
             }
         }
         /* increments are read in any case, because they will be also used as increment for model output */
@@ -332,37 +332,37 @@ void read_par_json(FILE *fp, char *fileinp){
          section seismogramm parameters
          =================================*/
         if (get_int_from_objectlist("SEISMO",number_readobjects,&SEISMO,varname_list, value_list))
-            err("Variable SEISMO could not be retrieved from the json input file!");
+            declare_error("Variable SEISMO could not be retrieved from the json input file!");
         else {
             if (SEISMO>0){
                 if (get_string_from_objectlist("SEIS_FILE",number_readobjects,SEIS_FILE,varname_list, value_list))
-                    err("Variable SEIS_FILE could not be retrieved from the json input file!");
+                    declare_error("Variable SEIS_FILE could not be retrieved from the json input file!");
                 
                 if (get_int_from_objectlist("READREC",number_readobjects,&READREC,varname_list, value_list))
-                    err("Variable READREC could not be retrieved from the json input file!");
+                    declare_error("Variable READREC could not be retrieved from the json input file!");
                 else {
                     if (READREC==0) {
                         if (get_float_from_objectlist("XREC1",number_readobjects,&XREC1,varname_list, value_list))
-                            err("Variable XREC1 could not be retrieved from the json input file!");
+                            declare_error("Variable XREC1 could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("XREC2",number_readobjects,&XREC2,varname_list, value_list))
-                            err("Variable XREC2T could not be retrieved from the json input file!");
+                            declare_error("Variable XREC2T could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("YREC1",number_readobjects,&YREC1,varname_list, value_list))
-                            err("Variable YREC1 could not be retrieved from the json input file!");
+                            declare_error("Variable YREC1 could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("YREC2",number_readobjects,&YREC2,varname_list, value_list))
-                            err("Variable YREC2 could not be retrieved from the json input file!");
+                            declare_error("Variable YREC2 could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("NGEOPH",number_readobjects,&NGEOPH,varname_list, value_list))
-                            err("Variable NGEOPH could not be retrieved from the json input file!");
+                            declare_error("Variable NGEOPH could not be retrieved from the json input file!");
                     }
                     else {
                         if (get_string_from_objectlist("REC_FILE",number_readobjects,REC_FILE,varname_list, value_list))
-                            err("Variable REC_FILE could not be retrieved from the json input file!");
+                            declare_error("Variable REC_FILE could not be retrieved from the json input file!");
                     }
                 }
                 if (get_int_from_objectlist("NDT",number_readobjects,&NDT,varname_list, value_list)){
                     NDT=1;
                     fprintf(fp,"Variable NDT is set to default value %d.\n",NDT);}
                 if (get_int_from_objectlist("SEIS_FORMAT",number_readobjects,&SEIS_FORMAT,varname_list, value_list))
-                    err("Variable SEIS_FORMAT could not be retrieved from the json input file!");
+                    declare_error("Variable SEIS_FORMAT could not be retrieved from the json input file!");
                 
                 if (get_int_from_objectlist("REC_ARRAY",number_readobjects,&REC_ARRAY,varname_list, value_list)){
                     REC_ARRAY=0;
@@ -370,17 +370,17 @@ void read_par_json(FILE *fp, char *fileinp){
                 else {
                     if (REC_ARRAY>0) {
                         if (get_int_from_objectlist("DRX",number_readobjects,&DRX,varname_list, value_list))
-                            err("Variable DRX could not be retrieved from the json input file!");
+                            declare_error("Variable DRX could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("REC_ARRAY_DEPTH",number_readobjects,&REC_ARRAY_DEPTH,varname_list, value_list))
-                            err("Variable REC_ARRAY_DEPTH could not be retrieved from the json input file!");
+                            declare_error("Variable REC_ARRAY_DEPTH could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("REC_ARRAY_DIST",number_readobjects,&REC_ARRAY_DIST,varname_list, value_list))
-                            err("Variable REC_ARRAY_DIST could not be retrieved from the json input file!");
+                            declare_error("Variable REC_ARRAY_DIST could not be retrieved from the json input file!");
                     }
                 }
                 if (get_float_from_objectlist("REFRECX",number_readobjects,&REFREC[1],varname_list, value_list))
-                    err("Variable REFRECX could not be retrieved from the json input file!");
+                    declare_error("Variable REFRECX could not be retrieved from the json input file!");
                 if (get_float_from_objectlist("REFRECY",number_readobjects,&REFREC[2],varname_list, value_list))
-                    err("Variable REFRECY could not be retrieved from the json input file!");
+                    declare_error("Variable REFRECY could not be retrieved from the json input file!");
             }
         }
         
@@ -393,9 +393,9 @@ void read_par_json(FILE *fp, char *fileinp){
         } else {
         }
         if (get_string_from_objectlist("MFILE",number_readobjects,MFILE,varname_list, value_list))
-            err("Variable MFILE could not be retrieved from the json input file!");
+            declare_error("Variable MFILE could not be retrieved from the json input file!");
         if (get_int_from_objectlist("READMOD",number_readobjects,&READMOD,varname_list, value_list))
-            err("Variable READMOD could not be retrieved from the json input file!");
+            declare_error("Variable READMOD could not be retrieved from the json input file!");
         
         if (get_int_from_objectlist("L",number_readobjects,&L,varname_list, value_list)){
             L=0;
@@ -408,26 +408,26 @@ void read_par_json(FILE *fp, char *fileinp){
                     break;
                 case 5:
                     if (get_float_from_objectlist("FL5",number_readobjects,&FL[5],varname_list, value_list))
-                        err("Variable FL5 could not be retrieved from the json input file!");
+                        declare_error("Variable FL5 could not be retrieved from the json input file!");
                 case 4:
                     if (get_float_from_objectlist("FL4",number_readobjects,&FL[4],varname_list, value_list))
-                        err("Variable FL4 could not be retrieved from the json input file!");
+                        declare_error("Variable FL4 could not be retrieved from the json input file!");
                 case 3:
                     if (get_float_from_objectlist("FL3",number_readobjects,&FL[3],varname_list, value_list))
-                        err("Variable FL3 could not be retrieved from the json input file!");
+                        declare_error("Variable FL3 could not be retrieved from the json input file!");
                 case 2:
                     if (get_float_from_objectlist("FL2",number_readobjects,&FL[2],varname_list, value_list))
-                        err("Variable FL2 could not be retrieved from the json input file!");
+                        declare_error("Variable FL2 could not be retrieved from the json input file!");
                 case 1:
                     if (get_float_from_objectlist("FL1",number_readobjects,&FL[1],varname_list, value_list))
-                        err("Variable FL1 could not be retrieved from the json input file!");
+                        declare_error("Variable FL1 could not be retrieved from the json input file!");
                     break;
                 default:
-                    err("More than four relaxation Parameter (L>5) are not implemented yet!");
+                    declare_error("More than four relaxation Parameter (L>5) are not implemented yet!");
                     break;
             }
             if (get_float_from_objectlist("TAU",number_readobjects,&TAU,varname_list, value_list))
-                err("Variable TAU could not be retrieved from the json input file!");
+                declare_error("Variable TAU could not be retrieved from the json input file!");
             if (get_float_from_objectlist("F_REF",number_readobjects,&F_REF,varname_list, value_list)){
                 F_REF=-1.0;
                 fprintf(fp,"Reference frequency for viscoelastic modeling is set to center frequency of the source wavelet.\n");}
@@ -439,27 +439,27 @@ void read_par_json(FILE *fp, char *fileinp){
          =================================*/
         
         if (get_int_from_objectlist("PARAMETERIZATION",number_readobjects,&PARAMETERIZATION,varname_list, value_list))
-            err("Variable PARAMETERIZATION could not be retrieved from the json input file!");
+            declare_error("Variable PARAMETERIZATION could not be retrieved from the json input file!");
         else
             if(ACOUSTIC){
                 PARAMETERIZATION=1;
                 fprintf(fp,"For acoustic modelling only PARAMETERIZATION=%d possible.\n",PARAMETERIZATION);}
         
         if (get_int_from_objectlist("FORWARD_ONLY",number_readobjects,&FORWARD_ONLY,varname_list, value_list))
-            err("Variable FORWARD_ONLY could not be retrieved from the json input file!");
+            declare_error("Variable FORWARD_ONLY could not be retrieved from the json input file!");
         else {
             if (FORWARD_ONLY==0) {	/* FWI is calculated */
                 
                 /* General inversion parameters */
                 if (get_int_from_objectlist("ITERMAX",number_readobjects,&ITERMAX,varname_list, value_list))
-                    err("Variable ITERMAX could not be retrieved from the json input file!");
+                    declare_error("Variable ITERMAX could not be retrieved from the json input file!");
                 if (get_string_from_objectlist("DATA_DIR",number_readobjects,DATA_DIR,varname_list, value_list))
-                    err("Variable DATA_DIR could not be retrieved from the json input file!");
+                    declare_error("Variable DATA_DIR could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("INVTYPE",number_readobjects,&INVTYPE,varname_list, value_list)){
                     INVTYPE=2;
                     fprintf(fp,"\nVariable INVTYPE is set to default value %d.\n",INVTYPE);}
                 if (get_int_from_objectlist("ADJOINT_TYPE",number_readobjects,&ADJOINT_TYPE,varname_list, value_list))
-                    err("Variable ADJOINT_TYPE could not be retrieved from the json input file!");
+                    declare_error("Variable ADJOINT_TYPE could not be retrieved from the json input file!");
                 
                 if (get_string_from_objectlist("MISFIT_LOG_FILE",number_readobjects,MISFIT_LOG_FILE,varname_list, value_list)){
                     strcpy(MISFIT_LOG_FILE,"L2_LOG.dat");
@@ -470,14 +470,14 @@ void read_par_json(FILE *fp, char *fileinp){
                     fprintf(fp,"Variable VELOCITY is set to default value %d.\n",VELOCITY);
                 }else
                     if(ACOUSTIC && VELOCITY==1)
-                        err("For acoustic inversion option VELOCITY not available");
+                        declare_error("For acoustic inversion option VELOCITY not available");
                 
                 if (get_int_from_objectlist("USE_WORKFLOW",number_readobjects,&USE_WORKFLOW,varname_list, value_list)){
                     USE_WORKFLOW=0;
                 } else {
                     
                     if (get_string_from_objectlist("FILE_WORKFLOW",number_readobjects,FILE_WORKFLOW,varname_list, value_list))
-                        err("Variable FILE_WORKFLOW could not be retrieved from the json input file!");
+                        declare_error("Variable FILE_WORKFLOW could not be retrieved from the json input file!");
                 }
                 
                 if (get_int_from_objectlist("EPRECOND",number_readobjects,&EPRECOND,varname_list, value_list)){
@@ -502,7 +502,7 @@ void read_par_json(FILE *fp, char *fileinp){
                         fprintf(fp,"Variable EPRECOND_PER_SHOT_SH is set to default value %d.\n",EPRECOND_PER_SHOT_SH);
                     }
                     if (get_float_from_objectlist("EPSILON_WE",number_readobjects,&EPSILON_WE,varname_list, value_list))
-                        err("Variable EPSILON_WE could not be retrieved from the json input file!");
+                        declare_error("Variable EPSILON_WE could not be retrieved from the json input file!");
                     
                     if (get_float_from_objectlist("EPSILON_WE_SH",number_readobjects,&EPSILON_WE_SH,varname_list, value_list)) {
                         EPSILON_WE_SH=EPSILON_WE;
@@ -512,11 +512,11 @@ void read_par_json(FILE *fp, char *fileinp){
                 }
                 
                 if (get_int_from_objectlist("TESTSHOT_START",number_readobjects,&TESTSHOT_START,varname_list, value_list))
-                    err("Variable TESTSHOT_START could not be retrieved from the json input file!");
+                    declare_error("Variable TESTSHOT_START could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("TESTSHOT_END",number_readobjects,&TESTSHOT_END,varname_list, value_list))
-                    err("Variable TESTSHOT_START could not be retrieved from the json input file!");
+                    declare_error("Variable TESTSHOT_START could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("TESTSHOT_INCR",number_readobjects,&TESTSHOT_INCR,varname_list, value_list))
-                    err("Variable TESTSHOT_INCR could not be retrieved from the json input file!");
+                    declare_error("Variable TESTSHOT_INCR could not be retrieved from the json input file!");
                 NO_OF_TESTSHOTS=(TESTSHOT_END-TESTSHOT_START)/TESTSHOT_INCR+1;	/* calculation of number of testsshots */
                 
                 
@@ -538,13 +538,13 @@ void read_par_json(FILE *fp, char *fileinp){
                     fprintf(fp,"Variable SWS_TAPER_GRAD_HOR is set to default value %d.\n",SWS_TAPER_GRAD_HOR);}
                 if ((SWS_TAPER_GRAD_VERT==1) || (SWS_TAPER_GRAD_HOR==1)){
                     if (get_int_from_objectlist("GRADT1",number_readobjects,&GRADT1,varname_list, value_list))
-                        err("Variable GRADT1 could not be retrieved from the json input file!");
+                        declare_error("Variable GRADT1 could not be retrieved from the json input file!");
                     if (get_int_from_objectlist("GRADT2",number_readobjects,&GRADT2,varname_list, value_list))
-                        err("Variable GRADT2 could not be retrieved from the json input file!");
+                        declare_error("Variable GRADT2 could not be retrieved from the json input file!");
                     if (get_int_from_objectlist("GRADT3",number_readobjects,&GRADT3,varname_list, value_list))
-                        err("Variable GRADT3 could not be retrieved from the json input file!");
+                        declare_error("Variable GRADT3 could not be retrieved from the json input file!");
                     if (get_int_from_objectlist("GRADT4",number_readobjects,&GRADT4,varname_list, value_list))
-                        err("Variable GRADT4 could not be retrieved from the json input file!");
+                        declare_error("Variable GRADT4 could not be retrieved from the json input file!");
                 }
                 if (get_int_from_objectlist("SWS_TAPER_GRAD_SOURCES",number_readobjects,&SWS_TAPER_GRAD_SOURCES,varname_list, value_list)){
                     SWS_TAPER_GRAD_SOURCES=0;
@@ -554,11 +554,11 @@ void read_par_json(FILE *fp, char *fileinp){
                     fprintf(fp,"Variable SWS_TAPER_CIRCULAR_PER_SHOT is set to default value %d.\n",SWS_TAPER_CIRCULAR_PER_SHOT);}
                 if ((SWS_TAPER_GRAD_SOURCES==1) || (SWS_TAPER_CIRCULAR_PER_SHOT==1)){
                     if (get_int_from_objectlist("SRTSHAPE",number_readobjects,&SRTSHAPE,varname_list, value_list))
-                        err("Variable SRTSHAPE could not be retrieved from the json input file!");
+                        declare_error("Variable SRTSHAPE could not be retrieved from the json input file!");
                     if (get_float_from_objectlist("SRTRADIUS",number_readobjects,&SRTRADIUS,varname_list, value_list))
-                        err("Variable SRTRADIUS could not be retrieved from the json input file!");
+                        declare_error("Variable SRTRADIUS could not be retrieved from the json input file!");
                     if (get_int_from_objectlist("FILTSIZE",number_readobjects,&FILTSIZE,varname_list, value_list))
-                        err("Variable FILTSIZE could not be retrieved from the json input file!");
+                        declare_error("Variable FILTSIZE could not be retrieved from the json input file!");
                 }
                 if (get_int_from_objectlist("SWS_TAPER_FILE",number_readobjects,&SWS_TAPER_FILE,varname_list, value_list)){
                     SWS_TAPER_FILE=0;
@@ -566,7 +566,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 }
                 if (SWS_TAPER_FILE==1){
                     if (get_string_from_objectlist("TAPER_FILE_NAME",number_readobjects,TAPER_FILE_NAME,varname_list, value_list))
-                        err("Variable TAPER_FILE_NAME could not be retrieved from the json input file!");
+                        declare_error("Variable TAPER_FILE_NAME could not be retrieved from the json input file!");
                 }
                 if (get_int_from_objectlist("SWS_TAPER_FILE_PER_SHOT",number_readobjects,&SWS_TAPER_FILE_PER_SHOT,varname_list, value_list)){
                     SWS_TAPER_FILE_PER_SHOT=0;
@@ -574,7 +574,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 }
                 if (SWS_TAPER_FILE_PER_SHOT==1){
                     if (get_string_from_objectlist("TAPER_FILE_NAME",number_readobjects,TAPER_FILE_NAME,varname_list, value_list))
-                        err("Variable TAPER_FILE_NAME could not be retrieved from the json input file!");
+                        declare_error("Variable TAPER_FILE_NAME could not be retrieved from the json input file!");
                 }
                 
                 
@@ -587,11 +587,11 @@ void read_par_json(FILE *fp, char *fileinp){
                 else {
                     if (SPATFILTER==1) {
                         if (get_int_from_objectlist("SPAT_FILT_SIZE",number_readobjects,&SPAT_FILT_SIZE,varname_list, value_list))
-                            err("Variable SPAT_FILT_SIZE could not be retrieved from the json input file!");
+                            declare_error("Variable SPAT_FILT_SIZE could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("SPAT_FILT_1",number_readobjects,&SPAT_FILT_1,varname_list, value_list))
-                            err("Variable SPAT_FILT_1 could not be retrieved from the json input file!");
+                            declare_error("Variable SPAT_FILT_1 could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("SPAT_FILT_ITER",number_readobjects,&SPAT_FILT_ITER,varname_list, value_list))
-                            err("Variable SPAT_FILT_ITER could not be retrieved from the json input file!");
+                            declare_error("Variable SPAT_FILT_ITER could not be retrieved from the json input file!");
                     }
                 }
                 
@@ -610,27 +610,27 @@ void read_par_json(FILE *fp, char *fileinp){
                 else{
                     if (GRAD_FILT_WAVELENGTH==1) {
                         if (get_float_from_objectlist("A",number_readobjects,&A,varname_list, value_list))
-                            err("Variable A could not be retrieved from the json input file!");
+                            declare_error("Variable A could not be retrieved from the json input file!");
                     }
                 }
                 
                 
                 /* Output of inverted models */
                 if (get_string_from_objectlist("INV_MODELFILE",number_readobjects,INV_MODELFILE,varname_list, value_list))
-                    err("Variable INV_MODELFILE could not be retrieved from the json input file!");
+                    declare_error("Variable INV_MODELFILE could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("nfstart",number_readobjects,&nfstart,varname_list, value_list))
-                    err("Variable nfstart could not be retrieved from the json input file!");
+                    declare_error("Variable nfstart could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("nf",number_readobjects,&nf,varname_list, value_list))
-                    err("Variable nf could not be retrieved from the json input file!");
+                    declare_error("Variable nf could not be retrieved from the json input file!");
                 
                 
                 /* Output of gradients */
                 if (get_string_from_objectlist("JACOBIAN",number_readobjects,JACOBIAN,varname_list, value_list))
-                    err("Variable JACOBIAN could not be retrieved from the json input file!");
+                    declare_error("Variable JACOBIAN could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("nfstart_jac",number_readobjects,&nfstart_jac,varname_list, value_list))
-                    err("Variable nfstart_jac could not be retrieved from the json input file!");
+                    declare_error("Variable nfstart_jac could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("nf_jac",number_readobjects,&nf_jac,varname_list, value_list))
-                    err("Variable nf_jac could not be retrieved from the json input file!");
+                    declare_error("Variable nf_jac could not be retrieved from the json input file!");
                 
                 
                 /* Inversion for density */
@@ -660,11 +660,11 @@ void read_par_json(FILE *fp, char *fileinp){
                 else {
                     if (S==1) {
                         if (get_float_from_objectlist("S_VS",number_readobjects,&S_VS,varname_list, value_list))
-                            err("Variable S_VS could not be retrieved from the json input file!");
+                            declare_error("Variable S_VS could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("S_VP",number_readobjects,&S_VP,varname_list, value_list))
-                            err("Variable S_VP could not be retrieved from the json input file!");
+                            declare_error("Variable S_VP could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("S_RHO",number_readobjects,&S_RHO,varname_list, value_list))
-                            err("Variable S_RHO could not be retrieved from the json input file!");
+                            declare_error("Variable S_RHO could not be retrieved from the json input file!");
                     }
                 }
                 
@@ -692,7 +692,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 
                 /* Hessian and Gradient-Method */
                 if (get_int_from_objectlist("GRAD_METHOD",number_readobjects,&GRAD_METHOD,varname_list, value_list))
-                    err("Variable GRAD_METHOD could not be retrieved from the json input file!");
+                    declare_error("Variable GRAD_METHOD could not be retrieved from the json input file!");
                 else {
                     if(GRAD_METHOD==1) {
                         WOLFE_CONDITION=0;
@@ -702,7 +702,7 @@ void read_par_json(FILE *fp, char *fileinp){
                         if (get_int_from_objectlist("LBFGS_SURFACE",number_readobjects,&LBFGS_SURFACE,varname_list, value_list)){
                             LBFGS_SURFACE=0;
                             fprintf(fp,"Variable LBFGS_SURFACE is set to default value %d.\n",LBFGS_SURFACE);
-                        } else { err("LBFGS_SURFACE not supported anymore"); }
+                        } else { declare_error("LBFGS_SURFACE not supported anymore"); }
                         if (get_int_from_objectlist("LBFGS_STEP_LENGTH",number_readobjects,&LBFGS_STEP_LENGTH,varname_list, value_list)){
                             LBFGS_STEP_LENGTH=1;
                             fprintf(fp,"Variable LBFGS_SURFACE is set to default value %d.\n",LBFGS_STEP_LENGTH);
@@ -743,7 +743,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 else {
                     if (MODEL_FILTER==1) {
                         if (get_int_from_objectlist("FILT_SIZE",number_readobjects,&FILT_SIZE,varname_list, value_list))
-                            err("Variable FILT_SIZE could not be retrieved from the json input file!");
+                            declare_error("Variable FILT_SIZE could not be retrieved from the json input file!");
                     }
                 }
                 
@@ -757,13 +757,13 @@ void read_par_json(FILE *fp, char *fileinp){
                             if (get_int_from_objectlist("TRKILL_STF_OFFSET",number_readobjects,&TRKILL_STF_OFFSET,varname_list, value_list)){
                                 TRKILL_STF_OFFSET=0;
                                 if (get_string_from_objectlist("TRKILL_FILE_STF",number_readobjects,TRKILL_FILE_STF,varname_list, value_list))
-                                    err("Variable TRKILL_FILE_STF could not be retrieved from the json input file!");
+                                    declare_error("Variable TRKILL_FILE_STF could not be retrieved from the json input file!");
                             } else {
                                 if (get_float_from_objectlist("TRKILL_STF_OFFSET_LOWER",number_readobjects,&TRKILL_STF_OFFSET_LOWER,varname_list, value_list)){
                                     TRKILL_STF_OFFSET_LOWER=0.0;
                                 }
                                 if (get_float_from_objectlist("TRKILL_STF_OFFSET_UPPER",number_readobjects,&TRKILL_STF_OFFSET_UPPER,varname_list, value_list)){
-                                    err("Variable TRKILL_STF_OFFSET_UPPER could not be retrieved from the json input file!");
+                                    declare_error("Variable TRKILL_STF_OFFSET_UPPER could not be retrieved from the json input file!");
                                 }
                             }
                         }
@@ -786,13 +786,13 @@ void read_par_json(FILE *fp, char *fileinp){
                         F_HP=0.0;
                         fprintf(fp,"Variable F_HP is set to default value %f.\n",F_HP);}
                     if (get_float_from_objectlist("FC_START",number_readobjects,&FC_START,varname_list, value_list))
-                        if (TIME_FILT==1)err("Variable FC_START could not be retrieved from the json input file!");
+                        if (TIME_FILT==1)declare_error("Variable FC_START could not be retrieved from the json input file!");
                     if (get_float_from_objectlist("FC_END",number_readobjects,&FC_END,varname_list, value_list))
-                        if (TIME_FILT==1)err("Variable FC_END could not be retrieved from the json input file!");
+                        if (TIME_FILT==1)declare_error("Variable FC_END could not be retrieved from the json input file!");
                     if (get_float_from_objectlist("FC_INCR",number_readobjects,&FC_INCR,varname_list, value_list))
-                        if (TIME_FILT==1)err("Variable FC_INCR could not be retrieved from the json input file!");
+                        if (TIME_FILT==1)declare_error("Variable FC_INCR could not be retrieved from the json input file!");
                     if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list))
-                        if (TIME_FILT==1)err("Variable ORDER could not be retrieved from the json input file!");
+                        if (TIME_FILT==1)declare_error("Variable ORDER could not be retrieved from the json input file!");
                     if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
                         ZERO_PHASE=0;
                         fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
@@ -801,9 +801,9 @@ void read_par_json(FILE *fp, char *fileinp){
                             F_HP=0.0;
                             fprintf(fp,"Variable F_HP is set to default value %f.\n",F_HP);}
                         if (get_string_from_objectlist("FREQ_FILE",number_readobjects,FREQ_FILE,varname_list, value_list))
-                            err("Variable FREQ_FILE could not be retrieved from the json input file!");
+                            declare_error("Variable FREQ_FILE could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list))
-                            err("Variable ORDER could not be retrieved from the json input file!");
+                            declare_error("Variable ORDER could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
                             ZERO_PHASE=0;
                             fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
@@ -814,29 +814,29 @@ void read_par_json(FILE *fp, char *fileinp){
                 
                 /* Gradient calculation */
                 if (get_int_from_objectlist("LNORM",number_readobjects,&LNORM,varname_list, value_list))
-                    err("Variable LNORM could not be retrieved from the json input file!");
+                    declare_error("Variable LNORM could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("NORMALIZE",number_readobjects,&NORMALIZE,varname_list, value_list))
-                    err("Variable NORMALIZE could not be retrieved from the json input file!");
+                    declare_error("Variable NORMALIZE could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("DTINV",number_readobjects,&DTINV,varname_list, value_list))
-                    err("Variable DTINV could not be retrieved from the json input file!");
+                    declare_error("Variable DTINV could not be retrieved from the json input file!");
                 if (LNORM==8){
                     if (get_float_from_objectlist("WATERLEVEL_LNORM8",number_readobjects,&WATERLEVEL_LNORM8,varname_list, value_list))
-                        err("Variable WATERLEVEL_LNORM8 could not be retrieved from the json input file!");
+                        declare_error("Variable WATERLEVEL_LNORM8 could not be retrieved from the json input file!");
                 }
                 
                 
                 /* Step length estimation */
                 if (get_float_from_objectlist("EPS_SCALE",number_readobjects,&EPS_SCALE,varname_list, value_list))
-                    err("Variable EPS_SCALE could not be retrieved from the json input file!");
+                    declare_error("Variable EPS_SCALE could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("STEPMAX",number_readobjects,&STEPMAX,varname_list, value_list))
-                    err("Variable STEPMAX could not be retrieved from the json input file!");
+                    declare_error("Variable STEPMAX could not be retrieved from the json input file!");
                 if (get_float_from_objectlist("SCALEFAC",number_readobjects,&SCALEFAC,varname_list, value_list))
-                    err("Variable SCALEFAC could not be retrieved from the json input file!");
+                    declare_error("Variable SCALEFAC could not be retrieved from the json input file!");
                 
                 
                 /* Termination of the program */
                 if (get_float_from_objectlist("PRO",number_readobjects,&PRO,varname_list, value_list))
-                    err("Variable PRO could not be retrieved from the json input file!");
+                    declare_error("Variable PRO could not be retrieved from the json input file!");
                 if (get_int_from_objectlist("MIN_ITER",number_readobjects,&MIN_ITER,varname_list, value_list)){
                     MIN_ITER=0;
                     fprintf(fp,"Variable MIN_ITER is set to default value %d.\n",MIN_ITER);}
@@ -852,13 +852,13 @@ void read_par_json(FILE *fp, char *fileinp){
                         if (get_int_from_objectlist("TRKILL_OFFSET",number_readobjects,&TRKILL_OFFSET,varname_list, value_list)){
                             TRKILL_OFFSET=0;
                             if (get_string_from_objectlist("TRKILL_FILE",number_readobjects,TRKILL_FILE,varname_list, value_list))
-                                err("Variable TRKILL_FILE could not be retrieved from the json input file!");
+                                declare_error("Variable TRKILL_FILE could not be retrieved from the json input file!");
                         } else {
                             if (get_float_from_objectlist("TRKILL_OFFSET_LOWER",number_readobjects,&TRKILL_OFFSET_LOWER,varname_list, value_list)){
                                 TRKILL_OFFSET_LOWER=0.0;
                             }
                             if (get_float_from_objectlist("TRKILL_OFFSET_UPPER",number_readobjects,&TRKILL_OFFSET_UPPER,varname_list, value_list)){
-                                err("Variable TRKILL_OFFSET_UPPER could not be retrieved from the json input file!");
+                                declare_error("Variable TRKILL_OFFSET_UPPER could not be retrieved from the json input file!");
                             }
                         }
                     }
@@ -875,13 +875,13 @@ void read_par_json(FILE *fp, char *fileinp){
                             TW_IND=0;
                             fprintf(fp,"Variable TW_IND is set to default value %d.\n",TW_IND);}
                         if (get_string_from_objectlist("PICKS_FILE",number_readobjects,PICKS_FILE,varname_list, value_list))
-                            err("Variable PICKS_FILE could not be retrieved from the json input file!");
+                            declare_error("Variable PICKS_FILE could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("TWLENGTH_PLUS",number_readobjects,&TWLENGTH_PLUS,varname_list, value_list))
-                            err("Variable TWLENGTH_PLUS could not be retrieved from the json input file!");
+                            declare_error("Variable TWLENGTH_PLUS could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("TWLENGTH_MINUS",number_readobjects,&TWLENGTH_MINUS,varname_list, value_list))
-                            err("Variable TWLENGTH_MINUS could not be retrieved from the json input file!");
+                            declare_error("Variable TWLENGTH_MINUS could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("GAMMA",number_readobjects,&GAMMA,varname_list, value_list))
-                            err("Variable GAMMA could not be retrieved from the json input file!");
+                            declare_error("Variable GAMMA could not be retrieved from the json input file!");
                     }
                 }
             } /* end if (FORWARD_ONLY==0) */
@@ -1081,7 +1081,7 @@ void read_par_json(FILE *fp, char *fileinp){
         {
             fprintf(fp, "\n");
             sprintf(errormessage, "\n  in: <read_par_json.c> \n");
-            err(errormessage);
+            declare_error(errormessage);
         }
         
         

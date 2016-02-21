@@ -37,7 +37,7 @@ void merge(int nsnap, int type){
     char file[STRING_SIZE], mfile[STRING_SIZE], outfile[STRING_SIZE], ext[10];
     FILE *fp[NPROCY][NPROCX], *fpout;
     int i, j, ip, jp, n;
-    float a, max;
+    float a, max = 0.0;
     int shot;
     
     
@@ -81,7 +81,7 @@ void merge(int nsnap, int type){
             strcat(ext,".z");
             break;
         default:
-            err(" merge: cannot find snapfiles! ");
+            declare_error(" merge: cannot find snapfiles! ");
             break;
     }
     
@@ -101,7 +101,7 @@ void merge(int nsnap, int type){
             for (jp=0;jp<=NPROCY-1; jp++){
                 sprintf(file,"%s.shot%i.%i.%i",mfile,shot,ip,jp);
                 fp[jp][ip]=fopen(file,"r");
-                if (fp[jp][ip]==NULL) err("merge: can't read snapfile !");
+                if (fp[jp][ip]==NULL) declare_error("merge: can't read snapfile !");
             }
         
         

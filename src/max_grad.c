@@ -27,7 +27,6 @@ void max_grad(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_
 
 
 	/*--------------------------------------------------------------------------*/
-	FILE *FP1;
 	/* extern variables */
 	extern float DH, DT;
 	extern float EPSILON, EPSILON_u, EPSILON_rho;
@@ -36,10 +35,9 @@ void max_grad(float  **  waveconv, float  **  waveconv_rho, float  **  waveconv_
 
 	/* local variables */
 
-	float Rho, Vp, Vs, Vsnp1, Vpnp1, x, y, undf, r, pi0, K, mu, Zp, Zs;
-	float dpi, pimax, rhomax, umax, gradmax, gradmax_rho, gradmax_u, epsilon1, pimaxr, gradmaxr, gradmaxr_u, umaxr, gradmaxr_rho, rhomaxr;
-	int i, j, ii, jj;
-	char modfile[STRING_SIZE];
+	float  Zp, Zs;
+	float  pimax, rhomax, umax, gradmax, gradmax_rho, gradmax_u, epsilon1, pimaxr, gradmaxr, gradmaxr_u, umaxr, gradmaxr_rho, rhomaxr;
+	int i, j;
 
 
         /* invert for Zp and Zs */

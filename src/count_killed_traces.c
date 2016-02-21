@@ -64,14 +64,14 @@ void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_lo
                 sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
                 ftracekill=fopen(trace_kill_file,"r");
                 if (ftracekill==NULL){
-                    err(" Trace kill file could not be opened!");
+                    declare_error(" Trace kill file could not be opened!");
                 }
             }
         }else{
             sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
             ftracekill=fopen(trace_kill_file,"r");
             if (ftracekill==NULL){
-                err(" Trace kill file could not be opened!");
+                declare_error(" Trace kill file could not be opened!");
             }
         }
         

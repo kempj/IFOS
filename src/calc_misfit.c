@@ -32,8 +32,8 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
     
     int i,j;
     float l2;
-    int umax=0, h;
-    float abs_section, abs_sectiondata;
+    int h;
+    float abs_section = 0.0, abs_sectiondata = 0.0;
     float intseis_s, intseis_sd;
     float *picked_times=NULL;
     float **intseis_section=NULL, **intseis_sectiondata=NULL;
@@ -47,7 +47,7 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
     if(TIMEWIN) picked_times = vector(1,ntr); /* declaration of variables for TIMEWIN */
     
     /* TRACE KILLING */
-    int ** kill_tmp, *kill_vector;	/* declaration of variables for trace killing */
+    int ** kill_tmp = NULL, *kill_vector = NULL;	/* declaration of variables for trace killing */
     char trace_kill_file[STRING_SIZE];
     FILE *ftracekill;
     extern int TRKILL_OFFSET;
@@ -81,14 +81,14 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
                     sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
                     ftracekill=fopen(trace_kill_file,"r");
                     if (ftracekill==NULL){
-                        err(" Trace kill file could not be opened!");
+                        declare_error(" Trace kill file could not be opened!");
                     }
                 }
             }else{
                 sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
                 ftracekill=fopen(trace_kill_file,"r");
                 if (ftracekill==NULL){
-                    err(" Trace kill file could not be opened!");
+                    declare_error(" Trace kill file could not be opened!");
                 }
             }
             

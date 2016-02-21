@@ -43,7 +43,7 @@ void update_s_visc_PML(int nx1, int nx2, int ny1, int ny2,
         extern int FREE_SURF, BOUNDARY;
 	extern int NPROCX, NPROCY, POS[3];
 	extern FILE *FP;
-	double time1, time2;
+	double time1 = 0.0, time2;
 	
 	float sumr=0.0, sump=0.0, sumq=0.0;
 	

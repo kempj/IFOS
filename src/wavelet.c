@@ -122,7 +122,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
                         {amp=ts/(0.75*PI);}
                         break;
                     default :
-                        err("Which source-wavelet ? ");
+                        declare_error("Which source-wavelet ? ");
                 }
                 
                 
@@ -222,7 +222,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
                         {amp=ts/(0.75*PI);}
                         break;
                     default :
-                        err("Which source-wavelet ? ");
+                        declare_error("Which source-wavelet ? ");
                 }
                 
                 
@@ -240,4 +240,6 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
         return signals;	
         
     }
+    declare_error("Wrong input argument wavelet.c");
+    return NULL;
 }

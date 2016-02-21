@@ -40,18 +40,18 @@ void taper_grad_shot(float ** waveconv,float ** taper_coeff, float **srcpos, int
     extern int USE_WORKFLOW, WORKFLOW_STAGE;
     
     /* local variables */
-    int i, j, h, ifw, ii, jj, n, xb, yb, xe, ye, taperlength,taperlength2, VTON, SRTON;
-    int ijc, iy, ix, iii, jjj, xx, yy, srctaper_gridpt, i1, j1;
+    int i, j, ii, jj, n;
+    int ijc, iy, ix, xx, yy, srctaper_gridpt, i1, j1;
     
     /*extern int GRADT1, GRADT2, GRADT3, GRADT4;*/
-    float amp, a, *window, grad_tap, **waveconvtmp;
-    char modfile[STRING_SIZE], taper_file[STRING_SIZE];
+    float  a, grad_tap, **waveconvtmp;
+    char  taper_file[STRING_SIZE];
     
     extern float SRTRADIUS;
     extern int SRTSHAPE, FILTSIZE;
     float **m, **edgemat, **mm, **msum, minm, maxm, x, y, rad, **taper_coeff_glob;
     float maxrad;
-    FILE *fp_taper;
+    FILE *fp_taper = NULL;
     
     
     if(sws==1){
@@ -261,7 +261,7 @@ void taper_grad_shot(float ** waveconv,float ** taper_coeff, float **srcpos, int
         }
         
         if(fp_taper==NULL) {
-            err("Taper file could not be opened");
+            declare_error("Taper file could not be opened");
         }
         
         /* loop over global grid */

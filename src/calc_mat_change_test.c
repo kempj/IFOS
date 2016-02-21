@@ -28,7 +28,6 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
     
     
     /*--------------------------------------------------------------------------*/
-    FILE *FP1;
     /* extern variables */
     extern float DH, DT, VP_VS_RATIO;
     extern float EPSILON, EPSILON_u, EPSILON_rho, MUN;
@@ -45,15 +44,15 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
     extern int GRAD_METHOD;
     /* local variables */
     
-    float Rho, Vp, Vs, Vsnp1, Vpnp1, x, y, undf, r, pi0, K, mu, Zp, Zs, pro_vs, pro_vp, pro_rho;
-    float dpi, pimax, rhomax, umax, gradmax, gradmax_rho, gradmax_u, epsilon1, pimaxr, gradmaxr, gradmaxr_u, umaxr, gradmaxr_rho, rhomaxr;
-    int i, j, ii, jj, testuplow, pr=0;
+    float  Zp, Zs, pro_vs, pro_vp, pro_rho;
+    float  pimax, rhomax, umax, gradmax, gradmax_rho, gradmax_u, epsilon1, pimaxr, gradmaxr, gradmaxr_u = 0.0, umaxr = 0.0, gradmaxr_rho, rhomaxr;
+    int i, j, testuplow, pr=0;
     char modfile[STRING_SIZE];
     int w=0,l=0;
     
     extern char JACOBIAN[STRING_SIZE];
     char jac[225],jac2[225];
-    FILE *FP_JAC,*FP_JAC2,*FP_JAC3;
+    FILE *FP_JAC = NULL,*FP_JAC2 = NULL,*FP_JAC3 = NULL;
     
     if(GRAD_METHOD==2&&(itest==0)){
         w=iter%N_LBFGS;

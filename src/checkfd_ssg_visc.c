@@ -36,7 +36,7 @@ void checkfd_ssg_visc(FILE *fp, float ** prho, float ** ppi, float ** pu, float 
 
 	float  c, cmax_p=0.0, cmin_p=1e9, cmax_s=0.0, cmin_s=1e9, fmax, gamma;
 	float  cmax=0.0, cmin=1e9, dtstab, dhstab, cmax_r, cmin_r;
-	float sumu, sumpi, ws, ts, ppi_ref, pu_ref;
+	float sumu, sumpi, ws, ts, ppi_ref = 0.0, pu_ref = 0.0;
 	int nfw=iround(FW/DH);
 	int i, j, l, ny1=1, nx, ny, nx_min, ny_min;
 	
@@ -174,7 +174,7 @@ void checkfd_ssg_visc(FILE *fp, float ** prho, float ** ppi, float ** pu, float 
 	fprintf(fp," In this simulation the stability limit for timestep DT is %e seconds .\n",dtstab);
 	fprintf(fp," You have specified DT= %e s.\n", DT);
 	if (DT>dtstab)
-		err(" The simulation will get unstable, choose smaller DT. ");
+		declare_error(" The simulation will get unstable, choose smaller DT. ");
 	else fprintf(fp," The simulation will be stable.\n");
 
 
@@ -192,14 +192,14 @@ void checkfd_ssg_visc(FILE *fp, float ** prho, float ** ppi, float ** pu, float 
 
 		if ((SEIS_FORMAT[0]==1) && (NT/NDT)>(32767)) {
 			fprintf(fp," Maximum allowed number of samples per trace in SU format: 32767 \n");
-			err(" Sorry. Too many samples per receiver! \n");
+			declare_error(" Sorry. Too many samples per receiver! \n");
 		}
 	}
 
 
 	fprintf(fp,"\n\n ----------------------- ABSORBING BOUNDARY ------------------------\n");
         if((FW>nx_min)||(FW>ny_min)){
-	  err(" The width of the absorbing boundary is larger than one computational domain. Choose smaller FW or use less CPUs.");
+	  declare_error(" The width of the absorbing boundary is larger than one computational domain. Choose smaller FW or use less CPUs.");
 	}
 
 	fprintf(fp," Width (FW) of absorbing frame should be at least 10 gridpoints.\n");

@@ -32,7 +32,7 @@ int **receiver(FILE *fp, int *ntr){
 	extern int READREC, NGEOPH, DRX, REC_ARRAY, NX;
 	extern int MYID;
 
-	int **recpos1, **recpos, nxrec=0, nyrec=0, nzrec=0;
+	int **recpos1, **recpos = NULL, nxrec=0, nyrec=0, nzrec=0;
 	int   itr=1, itr1=0, itr2=0, recflag=0, c, ifw, n, i, j;
 	int nxrec1, nxrec2, nyrec1, nyrec2, nzrec1=1, nzrec2=1;
 	extern float XREC1, YREC1, XREC2, YREC2;
@@ -44,7 +44,7 @@ int **receiver(FILE *fp, int *ntr){
      	if (READREC){ /* read receiver positions from file */
      		fprintf(fp,"\n Reading receiver positions from file: \n\t%s\n",REC_FILE);
 		    fpr=fopen(REC_FILE,"r");
-     		if (fpr==NULL) err(" Receiver file could not be opened !");
+     		if (fpr==NULL) declare_error(" Receiver file could not be opened !");
      		*ntr=0;
      		while ((c=fgetc(fpr)) != EOF)
      			if (c=='\n') ++(*ntr);

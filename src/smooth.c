@@ -121,7 +121,7 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float FC)
             sprintf(jac_tmp,"%s_rho.bin",INV_MODELFILE);}
         
         model=fopen(jac_tmp,"rb");
-        if (model==NULL) err(" Could not open file !");
+        if (model==NULL) declare_error(" Could not open file !");
         
         /* load merged model */
         for (i=1;i<=NXG;i++){
@@ -250,7 +250,7 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float FC)
         sprintf(jac_tmp,"%s_rho_tmp.bin",INV_MODELFILE);}
 				
     model=fopen(jac_tmp,"rb");
-    if (model==NULL) err(" Could not open file! (distribute)");
+    if (model==NULL) declare_error(" Could not open file! (distribute)");
     for (i=1;i<=NXG;i++){
         for (j=1;j<=NYG;j++){
             

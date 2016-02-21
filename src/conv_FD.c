@@ -27,8 +27,7 @@
 void  conv_FD(float * temp_TS, float * temp_TS1, float * temp_conv, int ns){
 
 	/* declaration of local variables */
-	int i,j, h, nfreq, npad;
-	float xr, yr, x, y, dump, a;
+	int i,j, npad;
 	double npadd;
 		
 	/* declaration of variables for FFTW3*/

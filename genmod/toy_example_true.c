@@ -65,7 +65,7 @@ void model(float  **  rho, float **  pi, float **  u, float **  taus, float **  
 	/*read FL nodes from File*/
 	
 	flfile=fopen("model_true/flnodes.toy_example","r");
-	if (flfile==NULL) err(" FL-file could not be opened !");
+	if (flfile==NULL) declare_error(" FL-file could not be opened !");
 	
 	
 	

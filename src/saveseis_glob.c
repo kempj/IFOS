@@ -71,7 +71,7 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             break;
             
         default:
-            err("saveseis_glob: Unkown type_switch");
+            declare_error("saveseis_glob: Unkown type_switch");
             break;
     }
     

@@ -33,7 +33,7 @@ void model(float  **  rho, float **  pi, float **  u, float **  taus, float **  
 	extern char INV_MODELFILE[STRING_SIZE];
 	extern float DH, *FL, TAU, DT;
 		/* local variables */
-	float vp, vs, rhov, grad, y1, y2, ts, tp, muv, piv, *pts;
+	float vp, vs, rhov, grad, y1, y2, ts, tp, *pts;
 	int i, j, ii, jj, l;
 	char modfile[STRING_SIZE]; 
 	
@@ -53,7 +53,7 @@ void model(float  **  rho, float **  pi, float **  u, float **  taus, float **  
 	
 	y1=h/DH;
 	y2=layer/DH;
-	if(y1==NYG) err(" \n y is equal NYG !! see src/model_grad.c  \n ");
+	if(y1==NYG) declare_error(" \n y is equal NYG !! see src/model_grad.c  \n ");
 	grad=(vs2-vs1)/y1;	
 	
 	

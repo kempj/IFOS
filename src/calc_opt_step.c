@@ -30,8 +30,8 @@ float calc_opt_step(float *  L2t, float ** waveconv, float ** gradg, float * eps
 
 extern int NX, NY, IDX, IDY, MYID;
 extern float EPSILON, EPSILON_u, EPSILON_rho;
-int i, j, n;
-float opteps, H1, H2, critmult;
+int i, n;
+float opteps, critmult;
 float *x, *b, **A;
 
 critmult = 5.0;
@@ -58,7 +58,7 @@ H2=exchange_L2(H2,1,1);*/
 /*if(sws==1){
 opteps = (H2/((L2t[sws]*L2t[sws]/(EPSILON*EPSILON))+H1));
 if(fabs(opteps) > (10.0 * fabs(EPSILON)) ){opteps=EPSILON;}
-/*opteps = EPSILON;*/
+opteps = EPSILON;*/
 /*}*/ 
 
 /* calculate optimal step length for Vs update */

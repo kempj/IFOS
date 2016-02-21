@@ -32,9 +32,9 @@ float **sources(int *nsrc){
 	extern int MYID, NXG, NYG, SRCREC, RUN_MULTIPLE_SHOTS, SOURCE_TYPE;
 	extern FILE *FP;
 
-	float **srcpos;
-	int   i, l, isrc=0, current_source=0, current_azimuth=0, nvarin=0,nsrc_dummy;
-	float xsrc, ysrc, zsrc, tshift, fc, amp, tan_phi, dz, x;
+	float **srcpos = NULL;
+	int   i, l, isrc=0, current_source=0, current_azimuth=0, nvarin=0;
+	float xsrc, ysrc, zsrc, tshift, fc = 0.0, tan_phi, dz, x;
 	char  cline[256];
 	FILE *fpsrc;
 
@@ -45,7 +45,7 @@ float **sources(int *nsrc){
 			fprintf(FP," and amplitude from file: %s\n",SOURCE_FILE);
 			fpsrc=fopen(SOURCE_FILE,"r");
 	
-			if (fpsrc==NULL) err(" Source file could not be opened !");
+			if (fpsrc==NULL) declare_error(" Source file could not be opened !");
 			*nsrc=0;
 
 			
@@ -68,11 +68,11 @@ float **sources(int *nsrc){
 					case 1: zsrc=0.0;
 					case 2: ysrc=0.0;
 					case 3: if (MYID==0) fprintf(FP," No time shift defined for source %i in %s!\n",l, SOURCE_FILE);
-						err("Missing parameter in SOURCE_FILE!");
+						declare_error("Missing parameter in SOURCE_FILE!");
 					case 4: if (MYID==0) fprintf(FP," No frequency defined for source %i in %s!\n",l, SOURCE_FILE);
-						err("Missing parameter in SOURCE_FILE!");
+						declare_error("Missing parameter in SOURCE_FILE!");
 					case 5: if (MYID==0) fprintf(FP," No amplitude defined for source %i in %s!\n",l, SOURCE_FILE);
-						err("Missing parameter in SOURCE_FILE!");
+						declare_error("Missing parameter in SOURCE_FILE!");
 					case 6: srcpos[7][l]=0.0;
 					case 7: srcpos[8][l]=SOURCE_TYPE;
                         
@@ -147,7 +147,7 @@ float **sources(int *nsrc){
 						srcpos[6][isrc]=1.0;
 					}
 				}
-				else err(" Maximum depth of plane wave exceeds model depth. ");
+				else declare_error(" Maximum depth of plane wave exceeds model depth. ");
 			}
 				
 			fprintf(FP," Message from function sources (written by PE %d):\n",MYID);

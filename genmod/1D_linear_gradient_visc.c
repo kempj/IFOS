@@ -52,7 +52,7 @@ void model(float  **  rho, float **  pi, float **  u, float **  taus, float **  
 	
 	
 	y=h/DH;
-	if(y==NYG) err(" \n y is equal NYG !! see src/model_grad.c  \n ");
+	if(y==NYG) declare_error(" \n y is equal NYG !! see src/model_grad.c  \n ");
 	grad1=(vp2-vp1)/y;
 	grad2=(vs2-vs1)/y;
 	grad3=(rho2-rho1)/y;	

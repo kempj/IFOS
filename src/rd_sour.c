@@ -29,7 +29,7 @@ float *rd_sour(int *nts,FILE* fp_source){
 	float *psource;
 	int i, c;
 
-	if (fp_source==NULL) err(" Source file could no be opened !");
+	if (fp_source==NULL) declare_error(" Source file could no be opened !");
 	/* fscanf(fp_source,"%i", nts); */
         *nts=0;
         while ((c=fgetc(fp_source)) != EOF)

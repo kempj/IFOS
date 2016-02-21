@@ -63,7 +63,7 @@ void model_acoustic(float **rho, float **pi){
 	/*read FL nodes from File*/
 	
 	flfile=fopen("model_true/flnodes.toy_example_ac","r");
-	if (flfile==NULL) err(" FL-file could not be opened !");
+	if (flfile==NULL) declare_error(" FL-file could not be opened !");
 	
 	
 	for (l=1;l<=nodes;l++){

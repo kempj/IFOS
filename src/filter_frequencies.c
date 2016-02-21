@@ -39,7 +39,7 @@ fprintf(FP,"\n\n ------------------- FREQUENCY FILTERING -----------------------
 
 freqf=fopen(FREQ_FILE,"r");
 
-if (freqf==NULL) err(" Freqency file could not be opened !");
+if (freqf==NULL) declare_error(" Freqency file could not be opened !");
 *nfrq=0;
 
 fprintf(FP,"\n Reading frequencies from %s \n",FREQ_FILE);

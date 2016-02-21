@@ -477,7 +477,7 @@ void update_s_visc_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, floa
             }
             break;
         default:
-            err("\n FDORDER not supported");
+            declare_error("\n FDORDER not supported");
             break;
             
     } /* end of switch(FDORDER) */

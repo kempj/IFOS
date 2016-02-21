@@ -32,7 +32,7 @@ void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** sy
     float bjm, djm, e, fjm, g;
     float  vxx, vyy, sump=0.0;
     float  dh24, dthalbe;
-    float *pts, ws, sumu, sumpi, mu, pi;
+    float *pts = NULL, ws, sumu = 0.0, sumpi = 0.0, mu = 0.0, pi = 0.0;
     extern float DT, DH, *FL;
     extern int NX, PARAMETERIZATION, L;
     extern int FW, BOUNDARY;

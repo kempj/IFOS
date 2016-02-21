@@ -39,7 +39,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 	extern FILE *FP;
     int use_conjugate_1=1;
     int use_conjugate_2=1;
-	FILE *FP3, *FP4, *FP6, *FP5;
+	FILE *FP3, *FP4, *FP6, *FP5 = NULL;
 	
 
 
@@ -47,7 +47,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 	/* ===================================================== GRADIENT ZP ================================================================================== */
 	/* ===================================================================================================================================================== */
 	
-	if((FORWARD_ONLY==0)){
+	if(FORWARD_ONLY==0){
 		
 		/* Preconditioning of the gradient */
 		/* ------------------------------- */
@@ -154,7 +154,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 				
 				fread(&gradplastiter,sizeof(float),1,FP6);
 				
-				/*if(gradglastiter==gradg[j][i]) err("TEST1");*/
+				/*if(gradglastiter==gradg[j][i]) declare_error("TEST1");*/
 				/*if (MYID==10)  printf("TEST beta (MYID=%d) bei (j,i)=(%i,%i): gradg(k-1) = %e, gradg(k) = %e\n",MYID,j,i,gradglastiter,gradg[j][i]);*/
 				
 				/*
@@ -384,7 +384,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 			for (j=1;j<=NY;j=j+IDY){
 				
 				fread(&gradplastiter,sizeof(float),1,FP6);
-				/*if(gradglastiter==gradg[j][i]) err("TEST1");*/
+				/*if(gradglastiter==gradg[j][i]) declare_error("TEST1");*/
 				/*if (MYID==10)  printf("TEST beta (MYID=%d) bei (j,i)=(%i,%i): gradg(k-1) = %e, gradg(k) = %e\n",MYID,j,i,gradglastiter,gradg[j][i]);*/
 				
 				/*
@@ -514,7 +514,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 	/* ===================================================== GRADIENT rho ================================================================================== */
 	/* ===================================================================================================================================================== */
 	
-	if((FORWARD_ONLY==0)){
+	if(FORWARD_ONLY==0){
 			
 		/* Preconditioning of the gradient */
 		/* ------------------------------- */
@@ -612,7 +612,7 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
 				
 				fread(&gradplastiter,sizeof(float),1,FP6);
 				
-				/*if(gradglastiter==gradg[j][i]) err("TEST1");*/
+				/*if(gradglastiter==gradg[j][i]) declare_error("TEST1");*/
 				/*if (MYID==10)  printf("TEST beta (MYID=%d) bei (j,i)=(%i,%i): gradg(k-1) = %e, gradg(k) = %e\n",MYID,j,i,gradglastiter,gradg[j][i]);*/
 				
 				/*

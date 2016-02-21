@@ -32,24 +32,24 @@
 
 int main(int argc, char **argv){
     /* variables in main */
-    int ns, nseismograms=0, nt, nd, fdo3, j, i, ii, jj, shotid, recid, k, nc, iter, h, infoout, SHOTINC, TIMEWIN, test_eps, lq, iq, jq, hin, hin1, s=0;
-    int NTDTINV, nxny, nxnyi, imat, imat1, imat2, IDXI, IDYI, hi, NTST, NTSTI, partest;
-    int lsnap, nsnap=0, lsamp=0, buffsize, invtime, invtimer, sws, swstestshot, snapseis, snapseis1, PML;
-    int ntr=0, ntr_loc=0, ntr_glob=0, nsrc=0, nsrc_loc=0, nsrc_glob=0, ishot, irec, nshots=0, nshots1, Lcount, itest, Lcountsum, itestshot;
+    int ns, nseismograms=0, nt, nd, fdo3, j, i, iter, h, infoout, SHOTINC,  hin, hin1, s=0;
+    int NTDTINV, nxny, nxnyi, imat, imat1, imat2, IDXI, IDYI, hi, NTST, NTSTI;
+    int lsnap, nsnap=0, lsamp=0, buffsize,  swstestshot, snapseis, snapseis1;
+    int ntr=0, ntr_loc=0, ntr_glob=0, nsrc=0, nsrc_loc=0, nsrc_glob=0, ishot, irec, nshots=0, nshots1, Lcount, itest, itestshot;
     
-    float pum, ppim, ppim1, ppim2, thetaf, thetab, e33, e33b, e11, e11b, muss, lamss;
-    float memdyn, memmodel, memseismograms, membuffer, memtotal, dngn, fphi, sum, avggrad, beta, betan, betaz, betaLog, betaVp, betaVs, betarho, eps_scale, L2old;
-    float fac1, fac2, wavefor, waverecipro, dump, dump1, epsilon, gradsign, mun, eps1, gradplastiter, gradglastiter, gradclastiter, betar, sig_max, sig_max1;
-    float signL1, RMS, opteps_vp, opteps_vs, opteps_rho, Vs, Vp, Vp_avg, C_vp, Vs_avg, C_vs, Cd, rho_avg, C_rho, Vs_sum, Vp_sum, rho_sum, Zp, Zs;
-    float freqshift, dfreqshift, memfwt, memfwt1, memfwtdata;
+    float muss, lamss;
+    float memdyn, memmodel, memseismograms, membuffer, memtotal, eps_scale;
+    float fac1, fac2;
+    float opteps_vp, opteps_vs, opteps_rho, Vp_avg, C_vp, Vs_avg, C_vs, rho_avg, C_rho;
+    float memfwt, memfwt1, memfwtdata;
     char *buff_addr, ext[10], *fileinp;
-    char wave_forward[225], wave_recipro[225], wave_conv[225], jac[225], jac2[225], jacsum[225], dwavelet[225], vyf[STRING_SIZE];
+    char jac[225];
     
     double time1, time2, time3, time4, time5, time6, time7, time8,
     time_av_v_update=0.0, time_av_s_update=0.0, time_av_v_exchange=0.0,
     time_av_s_exchange=0.0, time_av_timestep=0.0;
     
-    float L2, L2sum, L2_all_shots, L2sum_all_shots, *L2t, alphanomsum, alphanom, alphadenomsum, alphadenom, scaleamp ,sdummy, lamr;
+    float L2, L2sum, L2_all_shots, L2sum_all_shots, *L2t, alphanom, alphadenom;
     int sum_killed_traces=0, sum_killed_traces_testshots=0, killed_traces=0, killed_traces_testshots=0;
     int *ptr_killed_traces=&killed_traces, *ptr_killed_traces_testshots=&killed_traces_testshots;
     
@@ -58,7 +58,7 @@ int main(int argc, char **argv){
     float L2_SH, L2sum_SH, L2_all_shots_SH, L2sum_all_shots_SH;
     
     // Pointer for dynamic wavefields:
-    float  **  psxx, **  psxy, **  psyy, **  psxz, **  psyz, **psp, ** ux, ** uy, ** uz, ** uxy, ** uyx, ** Vp0, ** uttx, ** utty, ** Vs0, ** Rho0;
+    float  **  psxx, **  psxy, **  psyy, **  psxz, **  psyz, **psp, ** ux, ** uy, ** uxy, ** uyx, ** Vp0, ** uttx, ** utty, ** Vs0, ** Rho0;
     float  **  pvx, **  pvy, **  pvz, **waveconv, **waveconv_lam, **waveconv_mu, **waveconv_rho, **waveconv_rho_s, **waveconv_u, **waveconvtmp, **wcpart, **wavejac,**waveconv_rho_s_z,**waveconv_u_z,**waveconv_rho_z;
     float **waveconv_shot, **waveconv_u_shot, **waveconv_rho_shot, **waveconv_u_shot_z, **waveconv_rho_shot_z;
     float  **  pvxp1, **  pvyp1, **  pvzp1, **  pvxm1, **  pvym1, **  pvzm1;
@@ -74,7 +74,7 @@ int main(int argc, char **argv){
     ** sectionvydiff=NULL, ** sectionpn=NULL, ** sectionread=NULL, ** sectionvy_conv=NULL, ** sectionvy_obs=NULL, ** sectionvx_conv=NULL,** sectionvx_obs=NULL, ** sectionvz_conv=NULL,** sectionvz_obs=NULL,
     ** sectionp_conv=NULL,** sectionp_obs=NULL, * source_time_function=NULL;
     float  **  absorb_coeff, ** taper_coeff, * epst1, * epst2,  * epst3, * picked_times;
-    float  ** srcpos=NULL, **srcpos_loc=NULL, ** srcpos1=NULL, **srcpos_loc_back=NULL, ** signals=NULL,** signals_SH=NULL, ** signals_rec=NULL, *hc=NULL;
+    float  ** srcpos=NULL, **srcpos_loc=NULL, ** srcpos1=NULL, **srcpos_loc_back=NULL, ** signals=NULL,** signals_SH=NULL,  *hc=NULL;
     int   ** recpos=NULL, ** recpos_loc=NULL;
     /*int   ** tracekill=NULL, TRKILL, DTRKILL;*/
     int * DTINV_help;
@@ -100,12 +100,10 @@ int main(int argc, char **argv){
     int SOURCE_SHAPE_OLD;
     
     /* Variables for L-BFGS */
-    int LBFGS=0,LBFGS_NPAR=3;
+    int LBFGS_NPAR=3;
     int LBFGS_iter_start=1;
-    float LBFGS_L2_temp;
     float **s_LBFGS,**y_LBFGS, *rho_LBFGS;
     int l=0;
-    int w=0;
     int m=0;
     
     /* Check wolfe */
@@ -136,9 +134,6 @@ int main(int argc, char **argv){
     int * recswitch=NULL;
     float ** fulldata=NULL, ** fulldata_vx=NULL, ** fulldata_vy=NULL, ** fulldata_vz=NULL, ** fulldata_p=NULL, ** fulldata_curl=NULL, ** fulldata_div=NULL;
     
-    /* different modelling types */
-    int mod_type=0;
-    
     /*vector for abort criterion*/
     float * L2_hist=NULL;
     
@@ -158,11 +153,9 @@ int main(int argc, char **argv){
     float *FC_EXT=NULL;
     int nfrq=0;
     int FREQ_NR=1;
-    /* declaration of variables for trace killing */
-    int ** kill_tmp;
-    FILE *ftracekill;
+
     
-    FILE *fprec, *FP2, *FP3, *FP4, *FP5, *FPL2, *FP6, *FP7;
+    FILE *fprec, *FPL2;
     
     /* General parameters */
     int nt_out;
@@ -193,7 +186,7 @@ int main(int argc, char **argv){
             printf("\n==================================================================\n");
             printf(" Cannot open IFOS input file %s \n",fileinp);
             printf("\n==================================================================\n\n");
-            err(" --- ");
+            declare_error(" --- ");
         }
     }
     
@@ -346,7 +339,7 @@ int main(int argc, char **argv){
     
     /* allocate buffer for buffering messages */
     buff_addr=malloc(buffsize);
-    if (!buff_addr) err("allocation failure for buffer for MPI_Bsend !");
+    if (!buff_addr) declare_error("allocation failure for buffer for MPI_Bsend !");
     MPI_Buffer_attach(buff_addr,buffsize);
     
     /* allocation for request and status arrays */
@@ -1196,7 +1189,7 @@ int main(int argc, char **argv){
                                 srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
                             }
                             
-                            if((SOURCE_SHAPE==7)||(SOURCE_SHAPE==3))err("SOURCE_SHAPE==7 or SOURCE_SHAPE==3 isn't possible with INV_STF==1");
+                            if((SOURCE_SHAPE==7)||(SOURCE_SHAPE==3))declare_error("SOURCE_SHAPE==7 or SOURCE_SHAPE==3 isn't possible with INV_STF==1");
                             MPI_Barrier(MPI_COMM_WORLD);
                             
                             
@@ -1256,7 +1249,7 @@ int main(int argc, char **argv){
                                 if (WAVETYPE==1 || WAVETYPE==3) {
                                     if (isnan(pvy[NY/2][NX/2])) {
                                         fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                        err(" Simulation is unstable !");
+                                        declare_error(" Simulation is unstable !");
                                     }
                                 }
                                 
@@ -1264,7 +1257,7 @@ int main(int argc, char **argv){
                                 if (WAVETYPE==2 || WAVETYPE==3) {
                                     if (isnan(pvz[NY/2][NX/2])) {
                                         fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                        err(" Simulation is unstable !");
+                                        declare_error(" Simulation is unstable !");
                                     }
                                 }
                                 
@@ -1685,7 +1678,7 @@ int main(int argc, char **argv){
                             if (WAVETYPE==1 || WAVETYPE==3) {
                                 if (isnan(pvy[NY/2][NX/2])) {
                                     fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                    err(" Simulation is unstable !");
+                                    declare_error(" Simulation is unstable !");
                                 }
                             }
                             
@@ -1693,7 +1686,7 @@ int main(int argc, char **argv){
                             if (WAVETYPE==2 || WAVETYPE==3) {
                                 if (isnan(pvz[NY/2][NX/2])) {
                                     fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                    err(" Simulation is unstable !");
+                                    declare_error(" Simulation is unstable !");
                                 }
                             }
                             
@@ -2187,14 +2180,14 @@ int main(int argc, char **argv){
                                     if (WAVETYPE==1 || WAVETYPE==3) {
                                         if (isnan(pvy[NY/2][NX/2])) {
                                             fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                            err(" Simulation is unstable !");
+                                            declare_error(" Simulation is unstable !");
                                         }
                                     }
                                     /* Check if simulation is still stable SH */
                                     if (WAVETYPE==2 || WAVETYPE==3) {
                                         if (isnan(pvz[NY/2][NX/2])) {
                                             fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                            err(" Simulation is unstable !");
+                                            declare_error(" Simulation is unstable !");
                                         }
                                     }
                                     
@@ -3332,14 +3325,14 @@ int main(int argc, char **argv){
                             if (WAVETYPE==1 || WAVETYPE==3) {
                                 if (isnan(pvy[NY/2][NX/2])) {
                                     fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                    err(" Simulation is unstable !");
+                                    declare_error(" Simulation is unstable !");
                                 }
                             }
                             /* Check if simulation is still stable SH */
                             if (WAVETYPE==2 || WAVETYPE==3) {
                                 if (isnan(pvz[NY/2][NX/2])) {
                                     fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                    err(" Simulation is unstable !");
+                                    declare_error(" Simulation is unstable !");
                                 }
                             }
                             

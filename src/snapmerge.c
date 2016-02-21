@@ -41,7 +41,7 @@ int main(int argc, char **argv){
             printf("\n==================================================================\n");
             printf(" Cannot open IFOS input file %s \n",fileinp);
             printf("\n==================================================================\n\n");
-            err(" --- ");
+            declare_error(" --- ");
         }
     }
     

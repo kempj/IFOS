@@ -110,7 +110,7 @@ void wolfe_linesearch(int wolfe_status, float *alpha_SL_min, float *alpha_SL_max
             break;
             
         default:
-            err("\n wolfe_status not known to wolfe_linesearch");
+            declare_error("\n wolfe_status not known to wolfe_linesearch");
             break;
     }
     

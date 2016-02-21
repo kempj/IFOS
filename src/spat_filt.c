@@ -71,7 +71,7 @@ void spat_filt(float ** waveconv, int iter, int sws)
 	
 	if(MYID==0){
 	fp_grad=fopen(jac,"rb");
-	if (fp_grad==NULL) err(" Could not open gradient file ! ");
+	if (fp_grad==NULL) declare_error(" Could not open gradient file ! ");
 	
 	/* load merged gradient */
 	for (i=1;i<=NXG;i++){

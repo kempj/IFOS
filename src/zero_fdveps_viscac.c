@@ -31,7 +31,7 @@ void zero_fdveps_viscac(int ny1, int ny2, int nx1, int nx2, float ** vx, float *
 			float ** psi_sxy_y, float ** psi_vyy, float ** psi_vxy, float ** psi_vxxs, float ***pp){
 
 
-	register int i, j, k, l;
+	register int i, j, l;
 	extern int FW, NX, NY, L;
 	
 	for (j=ny1;j<=ny2;j++){

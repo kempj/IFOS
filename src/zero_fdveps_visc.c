@@ -32,7 +32,7 @@ void zero_fdveps_visc(int ny1, int ny2, int nx1, int nx2, float ** vx, float ** 
     
     
     
-    register int i, j, k, l;
+    register int i, j, l;
     extern int FW, NX, NY, L,WAVETYPE;
     
     

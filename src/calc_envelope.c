@@ -25,8 +25,8 @@
 void calc_envelope(float ** datatrace, float ** envelope, int ns, int ntr){
 
 	/* declaration of variables */
-	int i,j, nfreq, npad, k;
-	float xr, yr, x, y, dump, a, *h;
+	int i,j, npad, k;
+	float  *h;
 	double npadd;
 		
 	/* declaration of variables for FFTW3*/

@@ -36,14 +36,11 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
     extern int ACOUSTIC;
     
     /* local */
-    int m=0,v=0,w=0;
-    int i,j,k,l;
-    float beta_LBFGS=0.0;
-    float dum1=0.0, dum2=0.0, buf1=0.0, buf2=0.0;
+    int m=0,w=0;
+    int i,j,l;
     float *q_LBFGS,*alpha_LBFGS,*r_LBFGS;
-    float h0;
     char jac[225];
-    FILE *FP_JAC;
+    FILE *FP_JAC = NULL;
     
     
     /*---------------------*/
@@ -89,9 +86,6 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
         alpha_LBFGS = vector(1,N_LBFGS);
         q_LBFGS = vector(1,NPAR_LBFGS*NX*NY);
         r_LBFGS = vector(1,NPAR_LBFGS*NX*NY);
-        
-        m=iteration-N_LBFGS;
-        if(m<1) m=1;
         
         w=(iteration-1)%N_LBFGS;
         if(w==0) w=N_LBFGS;
@@ -217,7 +211,6 @@ void lbfgs_core(int iteration, int N_LBFGS, int NPAR_LBFGS,float ** s_LBFGS, flo
     float dum1=0.0, dum2=0.0, buf1=0.0, buf2=0.0;
     float h0;
     int m=0,v=0,w=0,l=0;
-    int VERBOSE_local=1;
     m=iteration-N_LBFGS;
     if(m<1) m=1;
     
@@ -253,7 +246,6 @@ void lbfgs_core(int iteration, int N_LBFGS, int NPAR_LBFGS,float ** s_LBFGS, flo
     /*       L-BFGS loop 1              */
     /*----------------------------------*/
 		  
-    l=0;
     for(v=iteration-1; v>=m;v--){
         
         w=v%N_LBFGS;

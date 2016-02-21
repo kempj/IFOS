@@ -40,7 +40,7 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
     extern int FREE_SURF, BOUNDARY;
     extern int NPROCX, NPROCY, POS[3];
     extern FILE *FP;
-    double time1, time2;
+    double time1 = 0.0, time2;
     
     
     dhi = DT/DH;

@@ -39,11 +39,11 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
     extern int USE_WORKFLOW, WORKFLOW_STAGE;
 	
 	/* local variables */
-	int i, j, h, ifw, ii, jj, n, xb, yb, xe, ye, taperlength,taperlength2, VTON, SRTON;
-	int ijc, iy, ix, iii, jjj, xx, yy, srctaper_gridpt, i1, j1;
+	int i, j, h, ifw, ii, jj, n,  taperlength,taperlength2;
+	int ijc, iy, ix,  xx, yy, srctaper_gridpt, i1, j1;
 
 	extern int GRADT1, GRADT2, GRADT3, GRADT4;
-	float amp, a, *window, grad_tap, **waveconvtmp;
+	float  a, *window, grad_tap, **waveconvtmp;
 	char modfile[STRING_SIZE];
 	
 	extern float SRTRADIUS;
@@ -52,7 +52,7 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
         float maxrad;
 	char taper_file[STRING_SIZE];
     extern int VERBOSE;
-	FILE *fp_taper;
+	FILE *fp_taper = NULL;
 
     /* =============== */
     /* Vertical taper  */
@@ -474,7 +474,7 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
         }
         
         if(fp_taper==NULL) {
-            err("Taper file could not be opened");
+            declare_error("Taper file could not be opened");
         }
 
         /* loop over global grid */
@@ -482,7 +482,7 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
             for (j=1;j<=NYG;j++){
                 
                 if(feof(fp_taper)){
-                    err("Taper file is to small. Check NX*NY of taper file.");
+                    declare_error("Taper file is to small. Check NX*NY of taper file.");
                 }
            
                 fread(&grad_tap, sizeof(float), 1, fp_taper);

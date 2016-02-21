@@ -60,7 +60,7 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
                fprintf(FP,"\t Vp:\n\t %s.vp\n\n",MFILE);
                sprintf(filename,"%s.vp",MFILE);
                fp_vp=fopen(filename,"r");
-               if (fp_vp==NULL) err(" Could not open model file for Vp ! ");
+               if (fp_vp==NULL) declare_error(" Could not open model file for Vp ! ");
                
                
                fprintf(FP,"\t Qp:\n\t %s.qp\n\n",MFILE);
@@ -79,12 +79,12 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
            fprintf(FP,"\t Vs:\n\t %s.vs\n\n",MFILE);
            sprintf(filename,"%s.vs",MFILE);
            fp_vs=fopen(filename,"r");
-           if (fp_vs==NULL) err(" Could not open model file for Vs ! ");
+           if (fp_vs==NULL) declare_error(" Could not open model file for Vs ! ");
            
            fprintf(FP,"\t Density:\n\t %s.rho\n\n",MFILE);
            sprintf(filename,"%s.rho",MFILE);
            fp_rho=fopen(filename,"r");
-           if (fp_rho==NULL) err(" Could not open model file for densities ! ");
+           if (fp_rho==NULL) declare_error(" Could not open model file for densities ! ");
            
            fprintf(FP,"\t Qs:\n\t %s.qs\n\n",MFILE);
            sprintf(filename,"%s.qs",MFILE);
@@ -104,18 +104,18 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
            fprintf(FP,"\t Lame parameter lambda:\n\t %s.lam\n\n",MFILE);
            sprintf(filename,"%s.lam",MFILE);
            fp_vp=fopen(filename,"r");
-           if (fp_vp==NULL) err(" Could not open model file for Lame parameter lambda ! ");
+           if (fp_vp==NULL) declare_error(" Could not open model file for Lame parameter lambda ! ");
            
            
            fprintf(FP,"\t Lame parameter mu:\n\t %s.mu\n\n",MFILE);
            sprintf(filename,"%s.mu",MFILE);
            fp_vs=fopen(filename,"r");
-           if (fp_vs==NULL) err(" Could not open model file for Lame parameter mu ! ");
+           if (fp_vs==NULL) declare_error(" Could not open model file for Lame parameter mu ! ");
            
            fprintf(FP,"\t Density:\n\t %s.rho\n\n",MFILE);
            sprintf(filename,"%s.rho",MFILE);
            fp_rho=fopen(filename,"r");
-           if (fp_rho==NULL) err(" Could not open model file for densities ! ");
+           if (fp_rho==NULL) declare_error(" Could not open model file for densities ! ");
            
            fprintf(FP,"\t Qp:\n\t %s.qp\n\n",MFILE);
            sprintf(filename,"%s.qp",MFILE);
@@ -146,14 +146,14 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
             if(WAVETYPE==1||WAVETYPE==3){
                 
                 if(feof(fp_vp)){
-                    err("Model file VP is to small. Check dimensions NX*NY of file.");
+                    declare_error("Model file VP is to small. Check dimensions NX*NY of file.");
                 }
                 fread(&vp, sizeof(float), 1, fp_vp);
                 
                 if (sw_Qp){
                     
                     if(feof(fp_qp)){
-                        err("Model file QP is to small. Check dimensions NX*NY of file.");
+                        declare_error("Model file QP is to small. Check dimensions NX*NY of file.");
                     }
                     
                     fread(&qp, sizeof(float), 1, fp_qp);
@@ -161,13 +161,13 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
             }
             
             if(feof(fp_vs)){
-                err("Model file VS is to small. Check dimensions NX*NY of file.");
+                declare_error("Model file VS is to small. Check dimensions NX*NY of file.");
             }
             
             fread(&vs, sizeof(float), 1, fp_vs);
             
             if(feof(fp_rho)){
-                err("Model file RHO is to small. Check dimensions NX*NY of file.");
+                declare_error("Model file RHO is to small. Check dimensions NX*NY of file.");
             }
             
             fread(&rhov, sizeof(float), 1, fp_rho);
@@ -175,7 +175,7 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
             if (sw_Qs){
                 
                 if(feof(fp_vs)){
-                    err("Model file QS is to small. Check dimensions NX*NY of file.");
+                    declare_error("Model file QS is to small. Check dimensions NX*NY of file.");
                 }
                 
                 fread(&qs, sizeof(float), 1, fp_qs);
@@ -212,14 +212,14 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
         
         fread(&vp, sizeof(float), 1, fp_vp);
         if(!feof(fp_vp)){
-            err("Model file VP is to big. Check dimensions NX*NY of file.");
+            declare_error("Model file VP is to big. Check dimensions NX*NY of file.");
         }
         fclose(fp_vp);
         
         if (sw_Qp) {
             fread(&qp, sizeof(float), 1, fp_qp);
             if(!feof(fp_qp)){
-                err("Model file QP is to big. Check dimensions NX*NY of file.");
+                declare_error("Model file QP is to big. Check dimensions NX*NY of file.");
             }
             fclose(fp_qp);
         }
@@ -227,20 +227,20 @@ void readmod(float  **  rho, float **  pi, float **  u, float ** taus, float ** 
     
     fread(&vs, sizeof(float), 1, fp_vs);
     if(!feof(fp_vs)){
-        err("Model file VS is to big. Check dimensions NX*NY of file.");
+        declare_error("Model file VS is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_vs);
     
     fread(&rho, sizeof(float), 1, fp_rho);
     if(!feof(fp_rho)){
-        err("Model file RHO is to big. Check dimensions NX*NY of file.");
+        declare_error("Model file RHO is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_rho);
     
     if (sw_Qs){
         fread(&qs, sizeof(float), 1, fp_qs);
         if(!feof(fp_qs)){
-            err("Model file QS is to big. Check dimensions NX*NY of file.");
+            declare_error("Model file QS is to big. Check dimensions NX*NY of file.");
         }
         fclose(fp_qs);
     }

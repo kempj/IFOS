@@ -35,9 +35,9 @@ void readmod_acoustic(float  **  rho, float **  pi){
     
     
     /* local variables */
-    float rhov, piv, vp;
+    float rhov, vp;
     int i, j, ii, jj;
-    FILE *fp_vp, *fp_rho;
+    FILE *fp_vp, *fp_rho = NULL;
     char filename[STRING_SIZE];
     
     
@@ -49,12 +49,12 @@ void readmod_acoustic(float  **  rho, float **  pi){
            fprintf(FP,"\t Vp:\n\t %s.vp\n\n",MFILE);
            sprintf(filename,"%s.vp",MFILE);
            fp_vp=fopen(filename,"r");
-           if (fp_vp==NULL) err(" Could not open model file for Vp ! ");
+           if (fp_vp==NULL) declare_error(" Could not open model file for Vp ! ");
            
            fprintf(FP,"\t Density:\n\t %s.rho\n\n",MFILE);
            sprintf(filename,"%s.rho",MFILE);
            fp_rho=fopen(filename,"r");
-           if (fp_rho==NULL) err(" Could not open model file for densities ! ");
+           if (fp_rho==NULL) declare_error(" Could not open model file for densities ! ");
        }
 	   
     
@@ -63,7 +63,7 @@ void readmod_acoustic(float  **  rho, float **  pi){
         for (j=1;j<=NYG;j++){
             
             if(feof(fp_vp) && feof(fp_rho)){
-                err("Model file VP or RHO is to small. Check dimensions NX*NY of file.");
+                declare_error("Model file VP or RHO is to small. Check dimensions NX*NY of file.");
             }
             
             fread(&vp, sizeof(float), 1, fp_vp);
@@ -86,13 +86,13 @@ void readmod_acoustic(float  **  rho, float **  pi){
     
     fread(&vp, sizeof(float), 1, fp_vp);
     if(!feof(fp_vp)){
-        err("Model file VP is to big. Check dimensions NX*NY of file.");
+        declare_error("Model file VP is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_vp);
     
     fread(&rho, sizeof(float), 1, fp_rho);
     if(!feof(fp_rho)){
-        err("Model file RHO is to big. Check dimensions NX*NY of file.");
+        declare_error("Model file RHO is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_rho);
     

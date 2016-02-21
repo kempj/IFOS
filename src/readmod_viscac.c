@@ -58,12 +58,12 @@ void readmod_viscac(float  **  rho, float **  pi, float ** taup, float * eta){
 		fprintf(FP,"\t Vp:\n\t %s.vp\n\n",MFILE);
 		sprintf(filename,"%s.vp",MFILE);
 		fp_vp=fopen(filename,"r");
-		if (fp_vp==NULL) err(" Could not open model file for Vp ! ");
+		if (fp_vp==NULL) declare_error(" Could not open model file for Vp ! ");
 		
 		fprintf(FP,"\t Density:\n\t %s.rho\n\n",MFILE);
 		sprintf(filename,"%s.rho",MFILE);
 		fp_rho=fopen(filename,"r");
-		if (fp_rho==NULL) err(" Could not open model file for densities ! ");
+		if (fp_rho==NULL) declare_error(" Could not open model file for densities ! ");
 		
 		fprintf(FP,"\t Qp:\n\t %s.qp\n\n",MFILE);
 		sprintf(filename,"%s.qp",MFILE);
@@ -83,7 +83,7 @@ void readmod_viscac(float  **  rho, float **  pi, float ** taup, float * eta){
 	for (j=1;j<=NYG;j++){
         
         if(feof(fp_vp) && feof(fp_rho)){
-            err("Model file VP or RHO is to small. Check dimensions NX*NY of file.");
+            declare_error("Model file VP or RHO is to small. Check dimensions NX*NY of file.");
         }
 		
         fread(&vp, sizeof(float), 1, fp_vp);
@@ -92,7 +92,7 @@ void readmod_viscac(float  **  rho, float **  pi, float ** taup, float * eta){
         if (sw_Qp){
             
             if(feof(fp_qp)){
-                err("Model file QP is to small. Check dimensions NX*NY of file.");
+                declare_error("Model file QP is to small. Check dimensions NX*NY of file.");
             }
             
 			fread(&qp, sizeof(float), 1, fp_qp);
@@ -117,20 +117,20 @@ void readmod_viscac(float  **  rho, float **  pi, float ** taup, float * eta){
 	
     fread(&vp, sizeof(float), 1, fp_vp);
     if(!feof(fp_vp)){
-        err("Model file VP is to big. Check dimensions NX*NY of file.");
+        declare_error("Model file VP is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_vp);
     
     fread(&rho, sizeof(float), 1, fp_rho);
     if(!feof(fp_rho)){
-        err("Model file RHO is to big. Check dimensions NX*NY of file.");
+        declare_error("Model file RHO is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_rho);
 
     if (sw_Qp){
         fread(&qp, sizeof(float), 1, fp_qp);
         if(!feof(fp_qp)){
-            err("Model file QP is to big. Check dimensions NX*NY of file.");
+            declare_error("Model file QP is to big. Check dimensions NX*NY of file.");
         }
         fclose(fp_qp);
     }

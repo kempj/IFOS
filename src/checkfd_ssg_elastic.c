@@ -33,7 +33,7 @@ void checkfd_ssg_elastic(FILE *fp, float ** prho, float ** ppi, float ** pu, flo
 
 	/* local variables */
 
-	float  c, cmax_p=0.0, cmin_p=1e9, cmax_s=0.0, cmin_s=1e9, fmax, gamma;
+	float  c = 0.0, cmax_p=0.0, cmin_p=1e9, cmax_s=0.0, cmin_s=1e9, fmax, gamma;
 	float  cmax=0.0, cmin=1e9, dtstab, dhstab, cmax_r, cmin_r;
 	int nfw=iround(FW/DH);
 	int i, j, ny1=1, nx, ny, nx_min, ny_min;
@@ -141,12 +141,12 @@ void checkfd_ssg_elastic(FILE *fp, float ** prho, float ** ppi, float ** pu, flo
 	fprintf(fp," In this simulation the stability limit for timestep DT is %e seconds .\n",dtstab);
 	fprintf(fp," You have specified DT= %e s.\n", DT);
 	if (DT>dtstab)
-		err(" The simulation will get unstable, choose smaller DT. ");
+		declare_error(" The simulation will get unstable, choose smaller DT. ");
 	else fprintf(fp," The simulation will be stable.\n");
 
 	fprintf(fp,"\n\n ----------------------- ABSORBING BOUNDARY ------------------------\n");
         if((FW>nx_min)||(FW>ny_min)){
-	  err(" The width of the absorbing boundary is larger than one computational domain. Choose smaller FW or use less CPUs.");
+	  declare_error(" The width of the absorbing boundary is larger than one computational domain. Choose smaller FW or use less CPUs.");
 	}
 
 	fprintf(fp," Width (FW) of absorbing frame should be at least 10 gridpoints.\n");

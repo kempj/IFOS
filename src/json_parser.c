@@ -45,7 +45,7 @@ int read_objects_from_intputfile(FILE *fp, char *input_file,char ** varname_list
         fprintf(fp, "  ERROR: Could not open input file '%s'!", input_file);
         fprintf(fp, "\n==================================================================\n");
         sprintf(errormessage, "\n  in: <read_par_json.c> \n");
-        err(errormessage);
+        declare_error(errormessage);
     }
     
     //read line by line into a string covering the whole line
@@ -74,7 +74,7 @@ int read_objects_from_intputfile(FILE *fp, char *input_file,char ** varname_list
                             //extract object name + object value from the line-string
                             if (sscanf(cline," \"%[^\"]\" : \"%[^\"]\"",varname_tmp1,value_tmp1) != 2) {
                                 sprintf(errormessage,"Error in Input file, line %i, cannot read object name and object value !",lineno);
-                                err(errormessage);
+                                declare_error(errormessage);
                             }
                             
                             //add extracted strings to object list
@@ -89,7 +89,7 @@ int read_objects_from_intputfile(FILE *fp, char *input_file,char ** varname_list
                             //extract object name + object value from the line-string
                             if (sscanf(cline," \"%[^\"]\" : \"%[^\"]\"",varname_tmp1,value_tmp1) != 2) {
                                 sprintf(errormessage,"Error in Input file, line %i, cannot read object name and object value !",lineno);
-                                err(errormessage);
+                                declare_error(errormessage);
                             }
                             
                             //add extracted strings to object list
@@ -107,7 +107,7 @@ int read_objects_from_intputfile(FILE *fp, char *input_file,char ** varname_list
                             if (sscanf(cline," \"%[^,],%[^\"]\" : \"%[^,],%[^\"]\"",
                                        varname_tmp1,varname_tmp2,value_tmp1,value_tmp2) != 4) {
                                 sprintf(errormessage,"Error in Input file, line %i, cannot read two object names and values !",lineno);
-                                err(errormessage);
+                                declare_error(errormessage);
                             }
                             
                             //add extracted strings to object list
@@ -128,7 +128,7 @@ int read_objects_from_intputfile(FILE *fp, char *input_file,char ** varname_list
                             if (sscanf(cline," \"%[^,],%[^,],%[^\"]\" : \"%[^,],%[^,],%[^\"]\"",
                                        varname_tmp1,varname_tmp2,varname_tmp3,value_tmp1,value_tmp2,value_tmp3) != 6) {
                                 sprintf(errormessage,"Error in Input file, line %i, cannot read three object names and values !",lineno);
-                                err(errormessage);
+                                declare_error(errormessage);
                             }
                             
                             add_object_tolist(varname_tmp1, value_tmp1,&number_readobject, varname_list, value_list);
@@ -152,7 +152,7 @@ int read_objects_from_intputfile(FILE *fp, char *input_file,char ** varname_list
                                        varname_tmp1,varname_tmp2,varname_tmp3,varname_tmp4,
                                        value_tmp1,value_tmp2,value_tmp3,value_tmp4) != 8) {
                                 sprintf(errormessage,"Error in Input file, line %i, cannot read three object names and values !",lineno);
-                                err(errormessage);
+                                declare_error(errormessage);
                             }
                             
                             add_object_tolist(varname_tmp1, value_tmp1,&number_readobject, varname_list, value_list);
@@ -178,7 +178,7 @@ int read_objects_from_intputfile(FILE *fp, char *input_file,char ** varname_list
                                        varname_tmp1,varname_tmp2,varname_tmp3,varname_tmp4,varname_tmp5,
                                        value_tmp1,value_tmp2,value_tmp3,value_tmp4,value_tmp5) != 10) {
                                 sprintf(errormessage,"Error in Input file, line %i, cannot read three object names and values !",lineno);
-                                err(errormessage);
+                                declare_error(errormessage);
                             }
                             
                             add_object_tolist(varname_tmp1, value_tmp1,&number_readobject, varname_list, value_list);
@@ -202,13 +202,13 @@ int read_objects_from_intputfile(FILE *fp, char *input_file,char ** varname_list
                             break;
                         default:
                             sprintf(errormessage,"Error in Input file, line %i, only 0, 1, 3, 5, 7 or 9 commas are allowed per line, but found %i !",lineno,occurence_commas );
-                            err(errormessage);
+                            declare_error(errormessage);
                             break;
                     }
                     break;
                 default:
                     sprintf(errormessage,"Error in Input file, line %i, only 4 (two pairs) of double quotes are allowed per line, but found %i !",lineno,occurence_doublequotes );
-                    err(errormessage);
+                    declare_error(errormessage);
                     break;
                     
             }
@@ -278,7 +278,7 @@ int get_int_from_objectlist(char string_in[STRING_SIZE2], int number_readobject,
         //printf("String %s found with value -%s- \n",string_in,value_list[ii]);
         if (strlen(value_list[ii])==0){
             sprintf(errormessage,"Error in Input file, value of object %s is empty!",string_in);
-            err(errormessage);
+            declare_error(errormessage);
         }
         memset(&string_buffer, '\0', sizeof(*string_buffer));
         double_buffer = strtod(value_list[ii],&string_buffer);
@@ -287,7 +287,7 @@ int get_int_from_objectlist(char string_in[STRING_SIZE2], int number_readobject,
         if (strlen(string_buffer)>0){
             /* string empty or 'garbage after double' */
             sprintf(errormessage,"Error in Input file, value of object %s contains more than one float: '%s'!",string_in,string_buffer);
-            err(errormessage);
+            declare_error(errormessage);
         }
         
         //printf("string %s found with value %f \n",string_in,double_buffer);
@@ -301,7 +301,7 @@ int get_int_from_objectlist(char string_in[STRING_SIZE2], int number_readobject,
         else {
             //double read, not an int (there are decimal places)
             sprintf(errormessage,"Error in Input file, value of object %s is not an int : %f !",string_in,double_buffer);
-            err(errormessage);
+            declare_error(errormessage);
             *int_buffer=-1;
             checkifstringfound=2;
         }
@@ -330,7 +330,7 @@ int get_float_from_objectlist(char string_in[STRING_SIZE2], int number_readobjec
         //printf("func1: String %s found with value -%s- \n",string_in,value_list[ii]);
         if (strlen(value_list[ii])==0){
             sprintf(errormessage,"Error in Input file, value of object %s is empty!",string_in);
-            err(errormessage);
+            declare_error(errormessage);
         }
         memset(&string_buffer, '\0', sizeof(*string_buffer));
         double_dummy = strtod(value_list[ii],&string_buffer);
@@ -344,7 +344,7 @@ int get_float_from_objectlist(char string_in[STRING_SIZE2], int number_readobjec
         else {
             /* string empty or 'garbage after double' */
             sprintf(errormessage,"Error in Input file, value of object %s contains more than one float: '%s'!",string_in,string_buffer);
-            err(errormessage);
+            declare_error(errormessage);
             checkifstringfound=2;
         }
         
@@ -369,7 +369,7 @@ int get_string_from_objectlist(char string_in[STRING_SIZE2], int number_readobje
         //printf("String %s found with value -%s- \n",string_in,value_list[ii]);
         if (strlen(value_list[ii])==0){
             sprintf(errormessage,"Error in Input file, value of object %s is empty!",string_in);
-            err(errormessage);
+            declare_error(errormessage);
         }
         else {
             memset(string_buffer, '\0', sizeof(&string_buffer));

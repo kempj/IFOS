@@ -31,9 +31,7 @@
 void write_workflow(float ** workflow, int iter, int workflow_lines){
     
     /* local variables */
-    int i, c;
-    int nw=0,x,y;
-    int workflow_lines_remain;
+    int x,y;
     int  workflow_line_next;
     FILE *fwork;
     char workflow_out[STRING_SIZE];
@@ -50,7 +48,7 @@ void write_workflow(float ** workflow, int iter, int workflow_lines){
     
     /* Open Workflow file */
     fwork=fopen(workflow_out,"w+");
-    if (fwork==NULL) err(" Workflow output file could no be opened !");
+    if (fwork==NULL) declare_error(" Workflow output file could no be opened !");
     
     workflow_line_next=1;
     for(y=1;y<workflow_lines;y++){

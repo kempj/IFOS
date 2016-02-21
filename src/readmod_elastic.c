@@ -35,16 +35,16 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u){
     
     
     /* local variables */
-    float rhov, muv, piv, vp, vs;
+    float rhov, vp = 0.0, vs;
     int i, j, ii, jj;
-    FILE *fp_vs, *fp_vp, *fp_rho;
+    FILE *fp_vs, *fp_vp = NULL, *fp_rho;
     char filename[STRING_SIZE];
     
     
     
     
 	   fprintf(FP,"\n...reading model information from model-files...\n");
-    
+       /* ----------------------------------- */
 	   /* read density and seismic velocities */
 	   /* ----------------------------------- */
 	   if(PARAMETERIZATION==1){
@@ -53,41 +53,40 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u){
                fprintf(FP,"\t Vp:\n\t %s.vp\n\n",MFILE);
                sprintf(filename,"%s.vp",MFILE);
                fp_vp=fopen(filename,"r");
-               if (fp_vp==NULL) err(" Could not open model file for Vp ! ");
+               if (fp_vp==NULL) declare_error(" Could not open model file for Vp ! ");
            }
            
            
            fprintf(FP,"\t Vs:\n\t %s.vs\n\n",MFILE);
            sprintf(filename,"%s.vs",MFILE);
            fp_vs=fopen(filename,"r");
-           if (fp_vs==NULL) err(" Could not open model file for Vs ! ");
+           if (fp_vs==NULL) declare_error(" Could not open model file for Vs ! ");
            
            fprintf(FP,"\t Density:\n\t %s.rho\n\n",MFILE);
            sprintf(filename,"%s.rho",MFILE);
            fp_rho=fopen(filename,"r");
-           if (fp_rho==NULL) err(" Could not open model file for densities ! ");
+           if (fp_rho==NULL) declare_error(" Could not open model file for densities ! ");
            
            
-       }
+       } else {
 	   
 	   /* read density and Lame parameters */
 	   /* ----------------------------------- */
-	   if(PARAMETERIZATION==3){
            fprintf(FP,"\t Lame parameter lambda:\n\t %s.lam\n\n",MFILE);
            sprintf(filename,"%s.lam",MFILE);
            fp_vp=fopen(filename,"r");
-           if (fp_vp==NULL) err(" Could not open model file for Lame parameter lambda ! ");
+           if (fp_vp==NULL) declare_error(" Could not open model file for Lame parameter lambda ! ");
            
            
            fprintf(FP,"\t Lame parameter mu:\n\t %s.mu\n\n",MFILE);
            sprintf(filename,"%s.mu",MFILE);
            fp_vs=fopen(filename,"r");
-           if (fp_vs==NULL) err(" Could not open model file for Lame parameter mu ! ");
+           if (fp_vs==NULL) declare_error(" Could not open model file for Lame parameter mu ! ");
            
            fprintf(FP,"\t Density:\n\t %s.rho\n\n",MFILE);
            sprintf(filename,"%s.rho",MFILE);
            fp_rho=fopen(filename,"r");
-           if (fp_rho==NULL) err(" Could not open model file for densities ! ");
+           if (fp_rho==NULL) declare_error(" Could not open model file for densities ! ");
        }
 	   
     
@@ -98,7 +97,7 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u){
             if(WAVETYPE==1||WAVETYPE==3){
                 
                 if(feof(fp_vp)){
-                    err("Model file VP is to small. Check dimensions NX*NY of file.");
+                    declare_error("Model file VP is to small. Check dimensions NX*NY of file.");
                 }
                 
                 fread(&vp, sizeof(float), 1, fp_vp);
@@ -106,7 +105,7 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u){
             }
             
             if(feof(fp_vs) && feof(fp_rho)){
-                err("Model file VS or RHO is to small. Check dimensions NX*NY of file.");
+                declare_error("Model file VS or RHO is to small. Check dimensions NX*NY of file.");
             }
             
             fread(&vs, sizeof(float), 1, fp_vs);
@@ -135,7 +134,7 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u){
         
         fread(&vp, sizeof(float), 1, fp_vp);
         if(!feof(fp_vp)){
-            err("Model file VP is to big. Check dimensions NX*NY of file.");
+            declare_error("Model file VP is to big. Check dimensions NX*NY of file.");
         }
         fclose(fp_vp);
     }
@@ -143,7 +142,7 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u){
     fread(&vs, sizeof(float), 1, fp_vs);
     fread(&rho, sizeof(float), 1, fp_rho);
     if(!feof(fp_vs) && !feof(fp_rho)){
-        err("Model file VS or RHO is to big. Check dimensions NX*NY of file.");
+        declare_error("Model file VS or RHO is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_vs);
     fclose(fp_rho);

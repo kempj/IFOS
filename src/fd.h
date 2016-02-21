@@ -460,7 +460,7 @@ void calc_hilbert(float ** datatrace, float ** envelope, int ns, int ntr);
 void calc_envelope(float ** datatrace, float ** envelope, int ns, int ntr);
 
 /* utility functions */
-void err(char err_text[]);
+void declare_error(char err_text[]);
 void warning(char warn_text[]);
 double maximum(float **a, int nx, int ny);
 float *vector(int nl, int nh);

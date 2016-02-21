@@ -67,7 +67,7 @@ void model(float  **  rho, float **  pi, float **  u, float **  taus, float **  
 	flrho=vector(1,nodes);
 	flvp=vector(1,nodes);	
 	flfile=fopen("model_true/flnodes.toy_example.start","r");
-	if (flfile==NULL) err(" FL-file could not be opened !");
+	if (flfile==NULL) declare_error(" FL-file could not be opened !");
 	
 	
 	
@@ -165,7 +165,7 @@ void model(float  **  rho, float **  pi, float **  u, float **  taus, float **  
 	flrho=vector(1,nodes);
 	flvp=vector(1,nodes);	
 	flfile=fopen("model_true/flnodes.toy_example","r");
-	if (flfile==NULL) err(" FL-file could not be opened !");
+	if (flfile==NULL) declare_error(" FL-file could not be opened !");
 	
 	for (l=1;l<=nodes;l++){
 		fgets(cline,255,flfile);

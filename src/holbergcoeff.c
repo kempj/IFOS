@@ -86,11 +86,11 @@ float *holbergcoeff() {
 	
 	if (MYID == 0) {
 		if ((FDORDER!=2) && (FDORDER!=4) && (FDORDER!=6) && (FDORDER!=8) && (FDORDER!=10) && (FDORDER!=12)) {
-			err(" Error in selection of FD coefficients: wrong FDORDER! ");
+			declare_error(" Error in selection of FD coefficients: wrong FDORDER! ");
 		}
 
 		if ((MAXRELERROR<0) || (MAXRELERROR>4)) {
-			err(" Error in selection of FD coefficients: wrong choice of maximum relative error! ");
+			declare_error(" Error in selection of FD coefficients: wrong choice of maximum relative error! ");
 		}
 	}
 

@@ -52,7 +52,7 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ntr, int ns,
 	T0=1.0/fc;
 	
 	if ((order%2)!=0){
-		err("Order of timedomain filter must be an even number!");}
+		declare_error("Order of timedomain filter must be an even number!");}
 		
 			
 	

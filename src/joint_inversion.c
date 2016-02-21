@@ -36,7 +36,7 @@ float ** joint_inversion_grad ( float ** gradiant_1,float ** gradiant_2, float a
      */
     
     /* Define local variables  */
-    float ** joint_gradiant; // This will be the merged gradiant, which will be returned
+    float ** joint_gradiant = NULL; // This will be the merged gradiant, which will be returned
     int i, j;
     float max1=0.0,max2=0.0;
     /* Define extern variables */

@@ -35,12 +35,10 @@ void PCG_SH(float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int 
     int i, j;
     float betaz, betan, gradplastiter, gradclastiter, betar, beta;
     extern FILE *FP;
-    FILE *FP3, *FP4, *FP6, *FP5;
+    FILE *FP3, *FP4, *FP6, *FP5 = NULL;
     int use_conjugate_1=1;
     int use_conjugate_2=1;
-    float sum;
-    int ii, jj;
-    float h;
+
     
     /* ===================================================================================================================================================== */
     /* ===================================================== GRADIENT Zs ================================================================================== */
@@ -147,7 +145,7 @@ void PCG_SH(float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int 
                     
                     fread(&gradplastiter,sizeof(float),1,FP6);
 
-                    /*if(gradglastiter==gradg[j][i]) err("TEST1");*/
+                    /*if(gradglastiter==gradg[j][i]) declare_error("TEST1");*/
                     /*if (MYID==10)  printf("TEST beta (MYID=%d) bei (j,i)=(%i,%i): gradg(k-1) = %e, gradg(k) = %e\n",MYID,j,i,gradglastiter,gradg[j][i]);*/
                     
                     /*
@@ -278,7 +276,7 @@ void PCG_SH(float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int 
     /* ===================================================== GRADIENT rho ================================================================================== */
     /* ===================================================================================================================================================== */
     
-    if((FORWARD_ONLY==0)){
+    if(FORWARD_ONLY==0){
         
         /* Preconditioning of the gradient */
         /* ------------------------------- */
@@ -376,7 +374,7 @@ void PCG_SH(float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int 
                     
                     fread(&gradplastiter,sizeof(float),1,FP6);
                     
-                    /*if(gradglastiter==gradg[j][i]) err("TEST1");*/
+                    /*if(gradglastiter==gradg[j][i]) declare_error("TEST1");*/
                     /*if (MYID==10)  printf("TEST beta (MYID=%d) bei (j,i)=(%i,%i): gradg(k-1) = %e, gradg(k) = %e\n",MYID,j,i,gradglastiter,gradg[j][i]);*/
                     
                     /*

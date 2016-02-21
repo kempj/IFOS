@@ -38,7 +38,7 @@ float readdsk(FILE *fp_in, int format){
 
 	switch(format){
                 case 1 : /* SU*/ 
-                        err(" Sorry, SU-format for snapshots not implemented yet. \n");
+                        declare_error(" Sorry, SU-format for snapshots not implemented yet. \n");
                         break;
 		case 2 :  /*ASCII*/
                         fscanf(fp_in,"%e\n", &amp); 
@@ -50,7 +50,7 @@ float readdsk(FILE *fp_in, int format){
 	                
 		default :
 			printf(" Don't know the format for the snapshot-data !\n");
-			err(" No output was written. ");
+			declare_error(" No output was written. ");
 	}
 
 	return amp;

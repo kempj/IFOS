@@ -57,7 +57,7 @@ void model_acoustic(float **rho, float **pi){
 	if(SWS_TAPER_FILE) taper=matrix(-nd+1,NY+nd,-nd+1,NX+nd);
 	
 	flfile=fopen("model_true/flnodes.toy_example_ac.start","r");
-	if (flfile==NULL) err(" FL-file could not be opened !");
+	if (flfile==NULL) declare_error(" FL-file could not be opened !");
 	
 	/* Read parameters */
 	for (l=1;l<=nodes;l++){
@@ -187,7 +187,7 @@ void model_acoustic(float **rho, float **pi){
 	flrho=vector(1,nodes);
 	flvp=vector(1,nodes);	
 	flfile=fopen("model_true/flnodes.toy_example_ac","r");
-	if (flfile==NULL) err(" FL-file could not be opened !");
+	if (flfile==NULL) declare_error(" FL-file could not be opened !");
 	
 	/* Read parameters */
 	for (l=1;l<=nodes;l++){

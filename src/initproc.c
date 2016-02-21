@@ -30,7 +30,7 @@ void initproc(void)	{
 	extern FILE *FP;
 
 	if (NPROC != NP)
-		err("Number of processors specified in the parameter file \n and at command line (NP) differ !");
+		declare_error("Number of processors specified in the parameter file \n and at command line (NP) differ !");
 
 
 	/*C-- determine the length of the subarray on this processor*/
@@ -40,9 +40,9 @@ void initproc(void)	{
 	/* POS(1) indicates x POSition of the processor in the 
 		     logical 3D processor array*/
 	if ((NX%NPROCX)>0)
-		err(" NX%NPROX must be zero  !");
+		declare_error(" NX%NPROX must be zero  !");
 	if ((NY%NPROCY)>0)
-		err(" NY%NPROY must be zero  !");
+		declare_error(" NY%NPROY must be zero  !");
 
 
 	if (MYID==0){

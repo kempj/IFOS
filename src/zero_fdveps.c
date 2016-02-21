@@ -29,7 +29,7 @@ void zero_fdveps(int ny1, int ny2, int nx1, int nx2, float ** vx, float ** vy, f
     
     
     
-    register int i, j, k;
+    register int i, j;
     extern int FW, NX, NY,WAVETYPE;
     
     

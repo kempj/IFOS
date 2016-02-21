@@ -159,7 +159,7 @@ void write_par(FILE *fp){
             fprintf(fp," Integral of sin^3 function\n");
             break;
         default :
-            err(" Sorry, incorrect specification of source wavelet ! ");
+            declare_error(" Sorry, incorrect specification of source wavelet ! ");
     }
     
     fprintf(fp," Type of source:");
@@ -177,7 +177,7 @@ void write_par(FILE *fp){
             fprintf(fp," rotated point source with directive force in x- and y-direction\n");
             break;
         default :
-            err(" Sorry, wrong source type specification ! ");
+            declare_error(" Sorry, wrong source type specification ! ");
     }
     
     fprintf(fp,"\n");
@@ -281,7 +281,7 @@ void write_par(FILE *fp){
                 fprintf(fp," x- and y-component of particle velocity.\n");
                 break;
             default:
-                err(" sorry, incorrect value for SNAP ! \n");
+                declare_error(" sorry, incorrect value for SNAP ! \n");
         }
         
         fprintf(fp," \t first (TSNAP1)= %8.5f s\n", TSNAP1);
@@ -292,7 +292,7 @@ void write_par(FILE *fp){
         fprintf(fp," \n name of output-file (SNAP_FILE):\n\t %s\n",SNAP_FILE);
         switch (SNAP_FORMAT){
             case 1 :
-                err(" SU-Format not yet available !!");
+                declare_error(" SU-Format not yet available !!");
                 break;
             case 2 :
                 fprintf(fp," The data is written in ASCII. \n");
@@ -301,7 +301,7 @@ void write_par(FILE *fp){
                 fprintf(fp," The data is written binary (IEEE) (4 byte per float)");
                 break;
             default:
-                err(" Don't know the format for the Snapshot-data ! \n");
+                declare_error(" Don't know the format for the Snapshot-data ! \n");
         }
         
         fprintf(fp,"\n\n");
@@ -339,7 +339,7 @@ void write_par(FILE *fp){
                 fprintf(fp," The data is written binary IEEE (4 byte per float)");
                 break;
             default:
-                err(" Sorry. I don't know the format for the seismic data ! \n");
+                declare_error(" Sorry. I don't know the format for the seismic data ! \n");
         }
         fprintf(fp," samplingrate of seismic data: %f s\n",NDT*DT);
         if (!READREC) fprintf(fp," Trace-spacing: %5.2f m\n", NGEOPH*DH);
@@ -481,7 +481,7 @@ void write_par(FILE *fp){
                 break;
             case 0: break;	/* only forward modeling is applied */
             default:
-                err(" Sorry, incorrect value for GRAD_METHOD ! \n");
+                declare_error(" Sorry, incorrect value for GRAD_METHOD ! \n");
         }
         
         
@@ -524,7 +524,7 @@ void write_par(FILE *fp){
                 fprintf(fp," TIME_FILT=%d: Time domain filtering is applied \n Frequencies will be read from file: %s\n",TIME_FILT,FREQ_FILE);}
             fprintf(fp," Order of lowpass filter is:\t%d\n",ORDER);
             if ((ORDER%2)!=0){
-                err(" Order of time domain filter must be an even number! \n");}
+                declare_error(" Order of time domain filter must be an even number! \n");}
             if (ZERO_PHASE){
                 fprintf(fp, " ZERO_PHASE=%i: Zero phase filtering is applied! \n",ZERO_PHASE);}
             else	fprintf(fp, " No zero phase filtering is applied! \n");}

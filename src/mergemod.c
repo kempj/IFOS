@@ -59,7 +59,7 @@ void mergemod(char modfile[STRING_SIZE], int format){
                 /* If it fails, try again one time */
                 fprintf(FP,"\n\n Cannot merge model files: %s.???, try again... \n",modfile);
                 fp[jp][ip]=fopen(file,"r");
-                if (fp[jp][ip]==NULL) err("merge: can't read model file !");
+                if (fp[jp][ip]==NULL) declare_error("merge: can't read model file !");
             }
     }
 

@@ -23,7 +23,7 @@
 #include "fd.h"
 
 
-void err(char err_text[]){
+void declare_error(char err_text[]){
     extern int MYID;
     
     fprintf(stdout,"Message from PE %d\n",MYID);
@@ -97,7 +97,7 @@ float *vector(int ni, int nj){
     int k;
     
     a=(float *)malloc((size_t) ((nj-ni+1+SHIFT_IND)*sizeof(float)));
-    if (!a) err("util.c: allocation failure in function vector()");
+    if (!a) declare_error("util.c: allocation failure in function vector()");
     for (k=0;k<(nj-ni+1+SHIFT_IND);k++) a[k]=0.0;
     return a-ni+SHIFT_IND;
 }
@@ -109,7 +109,7 @@ int *ivector(int ni, int nj){
     int k;
     
     a=(int *)malloc((size_t) ((nj-ni+1+SHIFT_IND)*sizeof(int)));
-    if (!a) err("util.c: allocation failure in function ivector()");
+    if (!a) declare_error("util.c: allocation failure in function ivector()");
     for (k=0;k<(nj-ni+1+SHIFT_IND);k++) a[k]=0;
     return a-ni+SHIFT_IND;
 }
@@ -120,7 +120,7 @@ unsigned short int *usvector(int ni, int nj){
     int k;
     
     a=(unsigned short int *)malloc((size_t) ((nj-ni+1+SHIFT_IND)*sizeof(unsigned short int)));
-    if (!a) err("util.c: allocation failure in function usvector()");
+    if (!a) declare_error("util.c: allocation failure in function usvector()");
     for (k=0;k<(nj-ni+1+SHIFT_IND);k++) a[k]=0;
     return a-ni+SHIFT_IND;
 }
@@ -131,7 +131,7 @@ unsigned char *cvector(int ni, int nj){
     unsigned char *a;
     
     a=(unsigned char *)malloc((size_t) ((nj-ni+1+SHIFT_IND)*sizeof(unsigned char)));
-    if (!a) err("util.c: allocation failure in function cvector()");
+    if (!a) declare_error("util.c: allocation failure in function cvector()");
     return a-ni+SHIFT_IND;
 }
 
@@ -142,7 +142,7 @@ unsigned long *lvector(int ni, int nj){
     int k;
     
     a=(unsigned long *)malloc((size_t) ((nj-ni+1+SHIFT_IND)*sizeof(unsigned long)));
-    if (!a) err("util.c: allocation failure in function lvector()");
+    if (!a) declare_error("util.c: allocation failure in function lvector()");
     for (k=0;k<(nj-ni+1+SHIFT_IND);k++) a[k]=0;
     return a-ni+SHIFT_IND;
 }
@@ -153,7 +153,7 @@ double *dvector(int ni, int nj){
     int k;
     
     a=(double *)malloc((size_t) ((nj-ni+1+SHIFT_IND)*sizeof(double)));
-    if (!a) err("util.c: allocation failure in function dvector()");
+    if (!a) declare_error("util.c: allocation failure in function dvector()");
     for (k=0;k<(nj-ni+1+SHIFT_IND);k++) a[k]=0.0;
     return a-ni+SHIFT_IND;
 }
@@ -164,12 +164,12 @@ float **fmatrix(int mrl, int mrh, int mcl, int mch){
     float **ma;
     
     ma=(float **) malloc((size_t) ((mrow+SHIFT_IND)*sizeof(float*)));
-    if (!ma) err("util.c: allocation failure 1 in function fmatrix() ");
+    if (!ma) declare_error("util.c: allocation failure 1 in function fmatrix() ");
     ma += SHIFT_IND;
     ma -= mrl;
     
     ma[mrl]=(float *) malloc((size_t)((mrow*mcol+SHIFT_IND)*sizeof(float)));
-    if (!ma[mrl]) err("util.c: allocation failure 2 in function fmatrix() ");
+    if (!ma[mrl]) declare_error("util.c: allocation failure 2 in function fmatrix() ");
     ma[mrl] += SHIFT_IND;
     ma[mrl] -= mcl;
     
@@ -187,12 +187,12 @@ float **matrix(int mrl, int mrh, int mcl, int mch){
     float **ma;
     
     ma=(float **) malloc((size_t) ((mrow+SHIFT_IND)*sizeof(float*)));
-    if (!ma) err("util.c: allocation failure 1 in function matrix() ");
+    if (!ma) declare_error("util.c: allocation failure 1 in function matrix() ");
     ma += SHIFT_IND;
     ma -= mrl;
     
     ma[mrl]=(float *) malloc((size_t)((mrow*mcol+SHIFT_IND)*sizeof(float)));
-    if (!ma[mrl]) err("util.c: allocation failure 2 in function matrix() ");
+    if (!ma[mrl]) declare_error("util.c: allocation failure 2 in function matrix() ");
     ma[mrl] += SHIFT_IND;
     ma[mrl] -= mcl;
     
@@ -211,12 +211,12 @@ double **dmatrix(int mrl, int mrh, int mcl, int mch){
     double **ma;
     
     ma=(double **) malloc((size_t) ((mrow+SHIFT_IND)*sizeof(double*)));
-    if (!ma) err("util.c: allocation failure 1 in function matrix() ");
+    if (!ma) declare_error("util.c: allocation failure 1 in function matrix() ");
     ma += SHIFT_IND;
     ma -= mrl;
     
     ma[mrl]=(double *) malloc((size_t)((mrow*mcol+SHIFT_IND)*sizeof(double)));
-    if (!ma[mrl]) err("util.c: allocation failure 2 in function dmatrix() ");
+    if (!ma[mrl]) declare_error("util.c: allocation failure 2 in function dmatrix() ");
     ma[mrl] += SHIFT_IND;
     ma[mrl] -= mcl;
     
@@ -234,12 +234,12 @@ int **imatrix(int mrl, int mrh, int mcl, int mch){
     int **ma;
     
     ma=(int **) malloc((size_t) ((mrow+SHIFT_IND)*sizeof(int*)));
-    if (!ma) err("util.c: allocation failure 1 in function imatrix() ");
+    if (!ma) declare_error("util.c: allocation failure 1 in function imatrix() ");
     ma += SHIFT_IND;
     ma -= mrl;
     
     ma[mrl]=(int *) malloc((size_t)((mrow*mcol+SHIFT_IND)*sizeof(int)));
-    if (!ma[mrl]) err("util.c: allocation failure 2 in function imatrix() ");
+    if (!ma[mrl]) declare_error("util.c: allocation failure 2 in function imatrix() ");
     ma[mrl] += SHIFT_IND;
     ma[mrl] -= mcl;
     
@@ -257,12 +257,12 @@ unsigned short int **usmatrix(int mrl, int mrh, int mcl, int mch){
     unsigned short int **ma;
     
     ma=(unsigned short int **) malloc((size_t) ((mrow+SHIFT_IND)*sizeof(unsigned short int*)));
-    if (!ma) err("util.c: allocation failure 1 in function usmatrix() ");
+    if (!ma) declare_error("util.c: allocation failure 1 in function usmatrix() ");
     ma += SHIFT_IND;
     ma -= mrl;
     
     ma[mrl]=(unsigned short int *) malloc((size_t)((mrow*mcol+SHIFT_IND)*sizeof(unsigned short int)));
-    if (!ma[mrl]) err("util.c: allocation failure 2 in function usmatrix() ");
+    if (!ma[mrl]) declare_error("util.c: allocation failure 2 in function usmatrix() ");
     ma[mrl] += SHIFT_IND;
     ma[mrl] -= mcl;
     
@@ -280,17 +280,17 @@ float ***f3tensor(int mrl, int mrh, int mcl, int mch,int mdl, int mdh){
     float ***te;
     
     te=(float ***) malloc((size_t) ((mrow+SHIFT_IND)*sizeof(float**)));
-    if (!te) err("util.c: allocation failure 1 in function f3tensor() ");
+    if (!te) declare_error("util.c: allocation failure 1 in function f3tensor() ");
     te += SHIFT_IND;
     te -= mrl;
     
     te[mrl]=(float **) malloc((size_t)((mrow*mcol+SHIFT_IND)*sizeof(float*)));
-    if (!te[mrl]) err("util.c: allocation failure 2 in function f3tensor() ");
+    if (!te[mrl]) declare_error("util.c: allocation failure 2 in function f3tensor() ");
     te[mrl] += SHIFT_IND;
     te[mrl] -= mcl;
     
     te[mrl][mcl]=(float *) malloc((size_t)((mrow*mcol*mdep+SHIFT_IND)*sizeof(float)));
-    if (!te[mrl][mcl]) err("util.c: allocation failure 3 in function f3tensor() ");
+    if (!te[mrl][mcl]) declare_error("util.c: allocation failure 3 in function f3tensor() ");
     te[mrl][mcl] += SHIFT_IND;
     te[mrl][mcl] -= mdl;
     
@@ -315,17 +315,17 @@ int ***i3tensor(int mrl, int mrh, int mcl, int mch,int mdl, int mdh){
     int ***te;
     
     te=(int ***) malloc((size_t) ((mrow+SHIFT_IND)*sizeof(int**)));
-    if (!te) err("util.c: allocation failure 1 in function i3tensor() ");
+    if (!te) declare_error("util.c: allocation failure 1 in function i3tensor() ");
     te += SHIFT_IND;
     te -= mrl;
     
     te[mrl]=(int **) malloc((size_t)((mrow*mcol+SHIFT_IND)*sizeof(int*)));
-    if (!te[mrl]) err("util.c: allocation failure 2 in function i3tensor() ");
+    if (!te[mrl]) declare_error("util.c: allocation failure 2 in function i3tensor() ");
     te[mrl] += SHIFT_IND;
     te[mrl] -= mcl;
     
     te[mrl][mcl]=(int *) malloc((size_t)((mrow*mcol*mdep+SHIFT_IND)*sizeof(int)));
-    if (!te[mrl][mcl]) err("util.c: allocation failure 3 in function i3tensor() ");
+    if (!te[mrl][mcl]) declare_error("util.c: allocation failure 3 in function i3tensor() ");
     te[mrl][mcl] += SHIFT_IND;
     te[mrl][mcl] -= mdl;
     

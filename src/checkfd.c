@@ -37,9 +37,9 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 
 	/* local variables */
 
-	float  c, cmax_p=0.0, cmin_p=1e9, cmax_s=0.0, cmin_s=1e9, fmax, gamma;
+	float  c = 0.0, cmax_p=0.0, cmin_p=1e9, cmax_s=0.0, cmin_s=1e9, fmax, gamma;
 	float  cmax=0.0, cmin=1e9, dtstab, dhstab, cmax_r, cmin_r;
-	float sumu, sumpi, ws, ts, ppi_ref, pu_ref;
+	float sumu, sumpi, ws, ts, ppi_ref = 0.0, pu_ref;
 	int nfw=iround(FW/DH);
 	int i, j, k, l, ny1=1, nx, ny, nx_min, ny_min;
 	float srec_minx=DH*NX*NPROCX+1, srec_miny=DH*NY*NPROCY+1;
@@ -70,9 +70,10 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 					}
 					
 					if(PARAMETERIZATION==1){
-						pu_ref=prho[j][i]*pu[j][i]*pu[j][i];}
-					if(PARAMETERIZATION==3){
-						pu_ref=pu[j][i];}
+						pu_ref=prho[j][i]*pu[j][i]*pu[j][i];
+                    } else {
+						pu_ref=pu[j][i];
+                    }
 						
 					
 					/* minimum phase velocity of shear waves */
@@ -92,9 +93,8 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 				for (j=ny1;j<=(ny-nfw);j++){
 
 					if(PARAMETERIZATION==3){
-						c=sqrt(pu[j][i]/prho[j][i]);}
-
-					if(PARAMETERIZATION==1){
+						c=sqrt(pu[j][i]/prho[j][i]);
+                    } else {
 						c=pu[j][i];
 					}
 
@@ -238,7 +238,7 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 	fprintf(fp," In this simulation the stability limit for timestep DT is %e seconds .\n",dtstab);
 	fprintf(fp," You have specified DT= %e s.\n", DT);
 	if (DT>dtstab)
-		err(" The simulation will get unstable, choose smaller DT. ");
+		declare_error(" The simulation will get unstable, choose smaller DT. ");
 	else fprintf(fp," The simulation will be stable.\n");
 
 
@@ -256,7 +256,7 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 
 		if ((SEIS_FORMAT[0]==1) && (NT/NDT)>( USHRT_MAX )) {
 			fprintf(fp," Maximum allowed number of samples per trace in SU format: %d \n", USHRT_MAX );
-			err(" Sorry. Too many samples per receiver! \n");
+			declare_error(" Sorry. Too many samples per receiver! \n");
 		}
 	}
 
@@ -315,10 +315,10 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 		fprintf(fp,"    Maximum receiver position coordinates : %5.2f (x) : %5.2f (y) \n",srec_maxx,srec_maxy);
 		/* checking if receiver coordinate of first receiver in line specified in input-file is inside the global grid */
 		if (((srec_maxx<0.0) || (srec_maxy<0.0)) || ((srec_minx<0.0) || (srec_miny<0.0))) {
-			err("\n\n Coordinate of at least one receiver location is outside the global grid. \n\n");
+			declare_error("\n\n Coordinate of at least one receiver location is outside the global grid. \n\n");
 		}
 		if ((srec_maxx>NX*DH*NPROCX) || (srec_maxy>NY*DH*NPROCY)) {
-			err("\n\n Coordinate of at least one receiver location is outside the global grid. \n\n");
+			declare_error("\n\n Coordinate of at least one receiver location is outside the global grid. \n\n");
 		}
 		/* checking if receiver coordinate of first receiver in line specified in input-file is outside the Absorbing Boundary  */
 		if ((srec_maxx<(FW*DH)) || (srec_minx<(FW*DH))) {
@@ -369,10 +369,10 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 		fprintf(fp,"    Maximum source position coordinates : %5.2f (x) : %5.2f (y) \n",srec_maxx,srec_maxy);
 		/* checking if receiver coordinate of first receiver in line specified in input-file is inside the global grid */
 		if (((srec_maxx<0.0) || (srec_maxy<0.0)) || ((srec_minx<0.0) || (srec_miny<0.0))) {
-			err("\n\n Coordinate of at least one source location is outside the global grid. \n\n");
+			declare_error("\n\n Coordinate of at least one source location is outside the global grid. \n\n");
 		}
 		if ((srec_maxx>NX*DH*NPROCX) || (srec_maxy>NY*DH*NPROCY)) {
-			err("\n\n Coordinate of at least one source location is outside the global grid. \n\n");
+			declare_error("\n\n Coordinate of at least one source location is outside the global grid. \n\n");
 		}
 		/* checking if receiver coordinate of first receiver in line specified in input-file is outside the Absorbing Boundary  */
 		if ((srec_maxx<(FW*DH)) || (srec_minx<(FW*DH))) {
@@ -401,7 +401,7 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
 
 	fprintf(fp,"\n\n ----------------------- ABSORBING BOUNDARY ------------------------\n");
         if((FW>nx_min)||(FW>ny_min)){
-	  err(" The width of the absorbing boundary is larger than one computational domain. Choose smaller FW or use less CPUs.");
+	  declare_error(" The width of the absorbing boundary is larger than one computational domain. Choose smaller FW or use less CPUs.");
 	}
 
 	fprintf(fp," Width (FW) of absorbing frame should be at least 10 gridpoints.\n");
