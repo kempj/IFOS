@@ -113,14 +113,16 @@ SUBS=$(patsubst %.f,%.o,$(wildcard subs/*.f))
 # Fortran include dependencies
 %.d: %.f
 	echo $<: $(addprefix subs/,$(shell cat $< | egrep '^ +include' | cut -f 2 -d \' | sort | uniq)) > $@
-include $(patsubst %.f,%.d,$(wildcard subs/*.f))
 
+ifneq ($(MAKECMDGOALS),clean)
+include $(patsubst %.f,%.d,$(wildcard subs/*.f))
+endif
 #======================================================================
 
 $(INCINSTALLPATH)/%.h: %.h
 	mkdir -p $(INCINSTALLPATH)
 	-rm -fv $@
-	/bin/cp -vpd $< $@
+	/bin/cp -vp $< $@
 
 .PHONY: install-include
 install-include: $(INSTHEADER)
@@ -152,7 +154,9 @@ reinstall:
 # library part
 # ------------
 
+ifneq ($(MAKECMDGOALS),clean)
 include $(patsubst %.c,%.d,$(CLIBSRC))
+endif
 
 libcseife.a: $(patsubst %.c,%.o,$(CLIBSRC))
 libseife.a: $(SUBS)

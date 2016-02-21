@@ -200,7 +200,9 @@ libfourierxx.so: install-include libfourier.a $(LIBOBSXX)
         > $@; \
       [ -s $@ ] || rm -f $@'
 
+ifneq ($(MAKECMDGOALS),clean)
 include $(patsubst %.cc,%.d,$(SRC)) 
+endif
 
 #======================================================================
 # header files

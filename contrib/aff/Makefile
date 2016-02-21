@@ -166,7 +166,9 @@ libaff.so: $(INSTHEADER) $(LIBOBS)
         > $@; \
       [ -s $@ ] || rm -f $@'
 
+ifneq ($(MAKECMDGOALS),clean)
 include $(patsubst %.cc,%.d,$(SRC)) 
+endif
 
 # this include will be used once we initiate the precompiled library version
 # until then it's just waiting here

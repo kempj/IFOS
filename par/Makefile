@@ -25,10 +25,12 @@ else
 	$(MAKE) -C ../src/ IFOS2D 
 endif
 
+.PHONY: install
+install: clean IFOS2D
 
 .PHONY: clean
 clean: 
-	rm -rf ../bin/IFOS2D
+	rm -rf ../bin/*
 	$(MAKE) -C ../contrib/aff clean
 	$(MAKE) -C ../contrib/fourier clean
 	$(MAKE) -C ../contrib/stfinv clean

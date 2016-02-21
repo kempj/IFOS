@@ -32,12 +32,29 @@ IFLAGS=-I./../contrib/libcseife -I./../contrib/header -I.
 #SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
 #IFLAGS=-I./../contrib/libcseife -I./../contrib/header -I.
 
+ifeq ($(TERM_PROGRAM),Apple_Terminal)
+LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lc++
+CC=mpicc
+endif
 
 # after this line, no further editing should be necessary
 # --------------------------------------------------------
 
-.c.o:
+# -------------
+# pattern rules
+# -------------
+
+%.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $< $(IFLAGS)
+	$(CC) $(CFLAGS) -MM $*.c $(IFLAGS) > $*.d
+
+SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)
+
+IFOS_OBJ = $(IFOS2D:%.c=%.o)
+
+# -------------
+# Dependencies
+# -------------
 
 SNAPMERGE_SCR = \
 	snapmerge.c \
@@ -54,9 +71,9 @@ IFOS2D= \
 	stf.c \
 	window_cos.c \
 	calc_mat_change_test.c \
-    calc_res.c \
+    	calc_res.c \
 	calc_misfit.c \
-    calc_opt_step.c \
+    	calc_opt_step.c \
 	calc_energy.c \
 	checkfd.c \
 	checkfd_ssg_elastic.c \
@@ -70,7 +87,7 @@ IFOS2D= \
 	exchange_s.c \
 	exchange_p.c \
 	snap_ssg.c \
-    snap_ssg_SH.c \
+   	snap_ssg_SH.c \
 	seismo_ssg.c \
 	surface_elastic_PML.c \
 	surface_acoustic_PML.c \
@@ -83,9 +100,9 @@ IFOS2D= \
 	update_p_PML.c \
 	update_s_elastic_ssg.c \
 	update_s_elastic_PML.c \
-    update_s_elastic_PML_SH.c \
+    	update_s_elastic_PML_SH.c \
 	update_s_visc_PML.c \
-    update_s_visc_PML_SH.c \
+    	update_s_visc_PML_SH.c \
 	av_mue.c \
 	av_rho.c \
 	av_tau.c \
@@ -102,7 +119,7 @@ IFOS2D= \
 	$(MODEL) \
 	$(MODEL_AC) \
 	$(MODEL_EL) \
-    $(MODEL_VAC) \
+    	$(MODEL_VAC) \
 	matcopy.c \
 	matcopy_elastic.c \
 	matcopy_acoustic.c \
@@ -122,10 +139,10 @@ IFOS2D= \
 	readmod.c \
 	readmod_elastic.c \
 	readmod_acoustic.c \
-    receiver.c \
+    	receiver.c \
 	rd_sour.c \
-    read_workflow.c \
-    apply_workflow.c \
+    	read_workflow.c \
+    	apply_workflow.c \
 	saveseis_glob.c \
 	sources.c \
 	solvelin.c \
@@ -150,33 +167,42 @@ IFOS2D= \
 	zero_fdveps_ac.c \
 	zero_fdveps_visc.c \
 	calc_envelope.c \
-    joint_inversion.c \
-    matrix_operations.c \
-    wolfe_condition.c \
-    calc_hilbert.c \
+    	joint_inversion.c \
+    	matrix_operations.c \
+    	wolfe_condition.c \
+    	calc_hilbert.c \
 	eprecond.c \
 	eprecond1.c \
-    zero_fdveps_viscac.c \
-    update_p_visc_PML.c \
-    matcopy_viscac.c \
-    prepare_update_p.c \
-    readmod_viscac.c \
-    time_window_glob.c \
-    create_trkill_table.c \
-    filter_frequencies.c
-    
-SNAPMERGE_OBJ = $(SNAPMERGE_SCR:%.c=%.o)
+    	zero_fdveps_viscac.c \
+    	update_p_visc_PML.c \
+    	matcopy_viscac.c \
+    	prepare_update_p.c \
+    	readmod_viscac.c \
+    	time_window_glob.c \
+    	create_trkill_table.c \
+    	filter_frequencies.c
 
-IFOS_OBJ = $(IFOS2D:%.c=%.o)
+# -------------
+# Targes
+# -------------
+
+IFOS2D:		$(IFOS_OBJ) fd.h
+	$(CC) $(SFLAGS) $(IFOS_OBJ) -o $(EXEC)/IFOS2D $(LFLAGS)
+
+all: IFOS2D snapmerge
 
 snapmerge:	$(SNAPMERGE_OBJ)
 	$(CC) $(SFLAGS) $(SNAPMERGE_OBJ) -o ../bin/snapmerge $(LFLAGS)
 
-IFOS2D:		$(IFOS_OBJ)
-	$(CC) $(SFLAGS) $(IFOS_OBJ) -o $(EXEC)/IFOS2D $(LFLAGS)
-
+.PHONY: clean
 clean:
+	find . -name "*.d" -exec rm {} \;
 	find . -name "*.o" -exec rm {} \; 
 	find . -name "*.c%" -exec rm {} \;
 	find . -name "*.bck" -exec rm {} \;
 	find ../genmod -name "*.o" -exec rm {} \;
+	find ../genmod -name "*.d" -exec rm {} \;
+
+install: clean all
+
+-include $(IFOS_OBJ:.o=.d)

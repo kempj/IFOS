@@ -170,8 +170,10 @@ clean: ;
 # library part
 # ------------
 
+ifneq ($(MAKECMDGOALS),clean)
 include $(patsubst %.cc,%.d,$(LIBCCSRC) $(TESTCCSRC)) \
         $(patsubst %.c,%.d,$(LIBCSRC) $(TESTCSRC))
+endif
 
 libstfinv.a: $(patsubst %.cc,%.o,$(LIBCCSRC)) \
              $(patsubst %.c,%.o,$(LIBCSRC))
