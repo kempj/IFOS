@@ -63,10 +63,6 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
         
         if(TRKILL_OFFSET) {
             
-            if(MYID==0) {
-                printf("Automatic offset based TraceKill: Experimental feature");
-            }
-            
             /* Generate TraceKill file on the fly */
             create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,ishot,TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
             

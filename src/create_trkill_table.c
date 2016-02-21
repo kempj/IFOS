@@ -18,7 +18,6 @@
 
 #include "fd.h"
 
-
 void create_trkill_table(int ** killtable, int ntr_glob, int **recpos, int nsrc_glob, float **srcpos, int ishot, float kill_offset_lower, float kill_offset_upper) {
     
     /* Local variables */
@@ -52,6 +51,26 @@ void create_trkill_table(int ** killtable, int ntr_glob, int **recpos, int nsrc_
                 killtable[r][s]=1;
             }
         }
+    }
+    
+    /*---------------------*/
+    /*       Debug         */
+    /*---------------------*/
+    /* Debug is declared with ishot=-100 */
+    if(ishot==-100){
+        FILE *FP_TK_OUT;
+        char filename[225];
+        
+        sprintf(filename,"tracekill_%.0f_%.0f.txt",kill_offset_lower,kill_offset_upper);
+        FP_TK_OUT=fopen(filename,"w");
+        
+        for (r=1; r<=ntr_glob; r++) {
+            for(s=1;s<=nsrc_glob;s++){
+                fprintf(FP_TK_OUT,"%i\t",killtable[r][s]);
+            }
+            fprintf(FP_TK_OUT,"\n");
+        }
+        fclose(FP_TK_OUT);
     }
     
 }

@@ -60,11 +60,7 @@ double calc_energy(float **sectiondata, int ntr, int ns, float energy, int ntr_g
         kill_vector = ivector(1,ntr);
         
         if(TRKILL_OFFSET) {
-            
-            if(MYID==0) {
-                printf("Automatic offset based TraceKill: Experimental feature");
-            }
-            
+
             /* Generate TraceKill file on the fly */
             create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,ishot,TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
             

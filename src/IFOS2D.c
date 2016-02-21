@@ -32,7 +32,7 @@
 
 int main(int argc, char **argv){
     /* variables in main */
-    int ns, nseismograms=0, nt, nd, fdo3, j, i, iter, h, infoout, SHOTINC,  hin, hin1, s=0;
+    int ns, nseismograms=0, nt, nd, fdo3, j, i, iter, h, infoout, SHOTINC,  hin, hin1, do_stf=0;
     int NTDTINV, nxny, nxnyi, imat, imat1, imat2, IDXI, IDYI, hi, NTST, NTSTI;
     int lsnap, nsnap=0, lsamp=0, buffsize,  swstestshot, snapseis, snapseis1;
     int ntr=0, ntr_loc=0, ntr_glob=0, nsrc=0, nsrc_loc=0, nsrc_glob=0, ishot, irec, nshots=0, nshots1, Lcount, itest, itestshot;
@@ -1172,7 +1172,7 @@ int main(int argc, char **argv){
                          * Therefore (gradient_optimization==1) is added.
                          */
                         
-                        if(((INV_STF==1)&&((iter==1)||(s==1))) && (gradient_optimization==1)){
+                        if(((INV_STF==1)&&( (iter==1) || (do_stf==1) )) && (gradient_optimization==1) ){
                             fprintf(FP,"\n==================================================================================\n");
                             fprintf(FP,"\n MYID=%d *****  Forward simulation for inversion of source time function ******** \n",MYID);
                             fprintf(FP,"\n MYID=%d * Starting simulation (forward model) for shot %d of %d. Iteration %d ** \n",MYID,ishot,nshots,iter);
@@ -1441,7 +1441,7 @@ int main(int argc, char **argv){
                             if((TIME_FILT==1) ||(TIME_FILT==2)){
                                 
                                 if (!FORWARD_ONLY){
-                                    if((INV_STF==1)&&((iter==1)||(s==1))){
+                                    if((INV_STF==1)&&((iter==1)||(do_stf==1))){
                                         
                                         if (nsrc_loc>0){
                                             
@@ -1477,21 +1477,26 @@ int main(int argc, char **argv){
                                             
                                             if(WAVETYPE==1 || WAVETYPE==3){
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0);
+                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0,nsrc_glob);
                                                 }
                                                 if (ADJOINT_TYPE==4){
-                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0);
+                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0,nsrc_glob);
                                                 }
                                             }
                                             
                                             if(WAVETYPE==2 || WAVETYPE==3){
-                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1);
+                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1,nsrc_glob);
                                             }
+                                            
+                                            /* do_stf controles if a STF is done or not */
+                                            do_stf=0;
+                                            /* As STF was done no, it is deactivated (do_stf=0) until it will be activated*/
                                         }
                                     }
                                 }
                             
                             } else {
+                                
                                 if (FORWARD_ONLY==0){
                                     if((INV_STF==1)&&(iter==N_STF_START)){
                                         
@@ -1512,15 +1517,15 @@ int main(int argc, char **argv){
                                                 }
                                                 
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0);
+                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0,nsrc_glob);
                                                 }
                                                 if (ADJOINT_TYPE==4){
-                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0);
+                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0,nsrc_glob);
                                                 }
                                             }
                                             if(WAVETYPE==2 || WAVETYPE==3){
                                                 inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
-                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1);
+                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1,nsrc_glob);
                                             }
                                         }
                                     }
@@ -3760,7 +3765,7 @@ int main(int argc, char **argv){
             
             /* saving history of final L2*/
             L2_hist[iter]=L2t[4];
-            s=0;
+            do_stf=0;
             
             
             /* -----------------------------------------------------------------------*/
@@ -3869,7 +3874,7 @@ int main(int argc, char **argv){
                 fprintf(FP,"\n Switching to next line in workflow");
                 
                 WORKFLOW_STAGE++;
-                s=1;
+                do_stf=1;
                 min_iter_help=0;
                 min_iter_help=iter+MIN_ITER;
                 
@@ -3899,7 +3904,7 @@ int main(int argc, char **argv){
                 }
                 
                 FC=FC+FC_INCR;
-                s=1;
+                do_stf=1;
                 min_iter_help=0;
                 min_iter_help=iter+MIN_ITER;
                 
@@ -3938,7 +3943,7 @@ int main(int argc, char **argv){
                 
                 FREQ_NR=FREQ_NR+1;
                 FC=FC_EXT[FREQ_NR];
-                s=1;
+                do_stf=1;
                 min_iter_help=0;
                 min_iter_help=iter+MIN_ITER;
                 if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",FC);

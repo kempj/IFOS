@@ -26,7 +26,7 @@ else
 endif
 
 .PHONY: install
-install: clean IFOS2D
+install: clean-bin IFOS2D
 
 .PHONY: clean
 clean: 
@@ -36,3 +36,10 @@ clean:
 	$(MAKE) -C ../contrib/stfinv clean
 	$(MAKE) -C ../contrib/libcseife clean
 	$(MAKE) -C ../src/ clean
+
+.PHONY: clean-bin
+clean-bin:
+	rm -rf ../bin/*
+
+.PHONY: reinstall
+reinstall: clean IFOS2D

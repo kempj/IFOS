@@ -5,8 +5,7 @@
 ###############################################################
 
 # compiling all libraries and  IFOS
-make clean
-make IFOS2D MODEL=../genmod/toy_example_true.c
+make install MODEL=../genmod/toy_example_true.c
 
 # starting IFOS for forward modeling
 # (depending on the MPI package you maybe have to adjust the following programme call, 
@@ -19,8 +18,7 @@ mpirun -np 4 nice -19 ../bin/IFOS2D in_and_out/toy_example/toy_example_FW.json |
 ###############################################################
 
 # compiling IFOS
-make clean
-make IFOS2D MODEL=../genmod/toy_example_start.c
+make install MODEL=../genmod/toy_example_start.c
 
 # starting IFOS
 #lamboot

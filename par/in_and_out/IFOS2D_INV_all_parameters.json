@@ -155,6 +155,8 @@
 			"N_STF_START" : "1",
 			"TAPER_STF" : "0",
 			"TRKILL_STF" : "0",
+			"TRKILL_STF_OFFSET" : "0",
+			"TRKILL_STF_OFFSET_LOWER , TRKILL_STF_OFFSET_UPPER" : "0 , 10",
 			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
 
 "Frequency filtering during inversion" : "comment",
@@ -181,6 +183,8 @@
 
 "Trace killing" : "comment",
 			"TRKILL" : "0",
+			"TRKILL_OFFSET" : "0",
+			"TRKILL_OFFSET_LOWER , TRKILL_OFFSET_UPPER" : "0 , 10",
 			"TRKILL_FILE" : "./trace_kill/trace_kill",
 
 "Definition of a gradient taper" : "comment",

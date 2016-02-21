@@ -24,8 +24,7 @@
 #include "stfinv/stfinv.h"
 #include "segy.h"
 
-void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy_conv, float * source_time_function, int  **recpos, int  **recpos_loc, 
-int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float FC, int SH){
+void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy_conv, float * source_time_function, int  **recpos, int  **recpos_loc, int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float FC, int SH,int nsrc_glob){
 
 	/* declaration of global variables */
 	extern float DT, DH;
@@ -35,6 +34,13 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	extern char TRKILL_FILE_STF[STRING_SIZE];
 	extern char SIGNAL_FILE[STRING_SIZE];
     extern char SIGNAL_FILE_SH[STRING_SIZE];
+    
+    extern int TRKILL_STF_OFFSET;
+    extern float TRKILL_STF_OFFSET_LOWER;
+    extern float TRKILL_STF_OFFSET_UPPER;
+    
+    extern int USE_WORKFLOW;
+    extern int WORKFLOW_STAGE;
     
 	/* declaration of variables for trace killing */
 	int ** kill_tmp = NULL, *kill_vector = NULL, h, j;
@@ -59,57 +65,67 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	printf("\n================================================================================================\n\n");
 	printf("\n ***** Inversion of Source Time Function - shot: %d - it: %d ***** \n\n",ishot,iter);
 	
-	/* if TRKILL_STF==1 a trace killing is applied */
-	if(TRKILL_STF){
-		kill_tmp = imatrix(1,ntr_glob,1,nshots);
-		kill_vector = ivector(1,ntr_glob);
-		
-        if(USE_WORKFLOW){
-            sprintf(trace_kill_file,"%s_%i.dat",TRKILL_FILE_STF,WORKFLOW_STAGE);
-            ftracekill=fopen(trace_kill_file,"r");
-            if (ftracekill==NULL){
+    /* if TRKILL_STF==1 a trace killing is applied */
+    if(TRKILL_STF){
+        kill_tmp = imatrix(1,ntr_glob,1,nshots);
+        kill_vector = ivector(1,ntr_glob);
+        
+        if(TRKILL_STF_OFFSET) {
+            
+            if(MYID==0) {
+                printf("Automatic offset based TraceKill for STF\n");
+            }
+            
+            /* Generate TraceKill file on the fly */
+            create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,-100,TRKILL_STF_OFFSET_LOWER,TRKILL_STF_OFFSET_UPPER);
+            
+        } else {
+            if(USE_WORKFLOW){
+                sprintf(trace_kill_file,"%s_%i.dat",TRKILL_FILE_STF,WORKFLOW_STAGE);
+                ftracekill=fopen(trace_kill_file,"r");
+                if (ftracekill==NULL){
+                    sprintf(trace_kill_file,"%s.dat",TRKILL_FILE_STF);
+                    ftracekill=fopen(trace_kill_file,"r");
+                    if (ftracekill==NULL){
+                        declare_error(" Trace kill file could not be opened!");
+                    }
+                }
+            }else{
                 sprintf(trace_kill_file,"%s.dat",TRKILL_FILE_STF);
                 ftracekill=fopen(trace_kill_file,"r");
                 if (ftracekill==NULL){
                     declare_error(" Trace kill file could not be opened!");
                 }
             }
-        }else{
-            sprintf(trace_kill_file,"%s.dat",TRKILL_FILE_STF);
-            ftracekill=fopen(trace_kill_file,"r");
-            if (ftracekill==NULL){
-                declare_error(" Trace kill file could not be opened!");
+            
+            for(i=1;i<=ntr_glob;i++){
+                for(j=1;j<=nshots;j++){
+                    fscanf(ftracekill,"%d",&kill_tmp[i][j]);
+                }
             }
+            
+            fclose(ftracekill);
         }
-		
-		for(i=1;i<=ntr_glob;i++){
-			for(j=1;j<=nshots;j++){
-				fscanf(ftracekill,"%d",&kill_tmp[i][j]);
-			}
-		}
-		
-		fclose(ftracekill);
-		
-		h=1;
-		for(i=1;i<=ntr_glob;i++){
-			kill_vector[h] = kill_tmp[i][ishot];
-			h++;
-		}
-	} /* end if(TRKILL_STF)*/
-	
-	if(TRKILL_STF){
-		for(i=1;i<=ntr_glob;i++){
-		if(i==1)printf("\n ***** Trace killing is applied for trace: ***** \n ***** \t");
-			if(kill_vector[i]==1){
-				printf("%d \t",i);
-				for(j=1;j<=ns;j++){
-					sectionvy[i][j]=0.0;
-					sectionvy_obs[i][j]=0.0;
-				}
-			}
-		if(i==ntr_glob)printf(" ***** \n\n");
-		}
-	}
+        h=1;
+        for(i=1;i<=ntr_glob;i++){
+            kill_vector[h] = kill_tmp[i][ishot];
+            h++;
+        }
+    } /* end if(TRKILL_STF)*/
+    
+    if(TRKILL_STF){
+        for(i=1;i<=ntr_glob;i++){
+            if(i==1)printf("\n ***** Trace killing is applied for trace: ***** \n ***** \t");
+            if(kill_vector[i]==1){
+                printf("%d \t",i);
+                for(j=1;j<=ns;j++){
+                    sectionvy[i][j]=0.0;
+                    sectionvy_obs[i][j]=0.0;
+                }
+            }
+            if(i==ntr_glob)printf(" ***** \n\n");
+        }
+    }
 	/* trace killing ends here */
 	
 	if(TIMEWIN==1){
@@ -272,18 +288,34 @@ int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, 
 	/* --------------- writing out the source time function --------------- */
 	if((TIME_FILT==1)||(TIME_FILT==2)){
         if(SH==0) {
-            sprintf(qw,"%s.shot%d_%dHz",SIGNAL_FILE,ishot,(int)FC);
+            if(USE_WORKFLOW){
+                sprintf(qw,"%s.stage%d.shot%d_%dHz.su",SIGNAL_FILE,WORKFLOW_STAGE,ishot,(int)FC);
+            } else {
+                sprintf(qw,"%s.shot%d_%dHz.su",SIGNAL_FILE,ishot,(int)FC);
+            }
         } else {
-            sprintf(qw,"%s.shot%d_%dHz",SIGNAL_FILE_SH,ishot,(int)FC);
+            if(USE_WORKFLOW){
+                sprintf(qw,"%s.stage%d.shot%d_%dHz.su",SIGNAL_FILE_SH,WORKFLOW_STAGE,ishot,(int)FC);
+            } else {
+                sprintf(qw,"%s.shot%d_%dHz.su",SIGNAL_FILE_SH,ishot,(int)FC);
+            }
         }
 		printf(" PE %d is writing source time function for shot = %d to\n\t %s \n",MYID,ishot,qw);
 		outseis_vector(fp,fopen(qw,"w"),1,stf_conv_wavelet,recpos,recpos_loc,ntr,srcpos,0,ns,SEIS_FORMAT,ishot,0);
 	}
     
     if(SH==0) {
-        sprintf(qw,"%s.shot%d",SIGNAL_FILE,ishot);
+        if(USE_WORKFLOW){
+            sprintf(qw,"%s.stage%d.shot%d.su",SIGNAL_FILE,WORKFLOW_STAGE,ishot);
+        } else {
+            sprintf(qw,"%s.shot%d.su",SIGNAL_FILE,ishot);
+        }
     } else {
-        sprintf(qw,"%s.shot%d",SIGNAL_FILE_SH,ishot);
+        if(USE_WORKFLOW){
+            sprintf(qw,"%s.stage%d.shot%d.su",SIGNAL_FILE_SH,WORKFLOW_STAGE,ishot);
+        } else {
+            sprintf(qw,"%s.shot%d.su",SIGNAL_FILE_SH,ishot);
+        }
     }
 	printf(" PE %d is writing source time function for shot = %d to\n\t %s \n",MYID,ishot,qw);
 	outseis_vector(fp,fopen(qw,"w"),1,stf_conv_wavelet,recpos,recpos_loc,ntr,srcpos,0,ns,SEIS_FORMAT,ishot,0);
