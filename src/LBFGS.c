@@ -34,9 +34,10 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
     extern char JACOBIAN[STRING_SIZE];
     extern int WAVETYPE;
     extern int ACOUSTIC;
+    extern float LBFGS_SCALE_GRADIENTS;
     
     /* local */
-    int m=0,w=0;
+    int w=0;
     int i,j,l;
     float *q_LBFGS,*alpha_LBFGS,*r_LBFGS;
     char jac[225];
@@ -58,6 +59,26 @@ void lbfgs(float **grad_vs, float **grad_rho, float **grad_vp,float Vs_avg,float
     if(WAVETYPE==1||WAVETYPE==3) {
         sprintf(jac,"%s_grad1_vp_it%d",JACOBIAN,iteration);
         write_matrix_disk(grad_vp, jac);
+    }
+    
+    /*---------------------*/
+    /*      Experimental   */
+    /*---------------------*/
+    /* Scale the gradients with a constant factor */
+    /* This is to avoid numerical instabilities if the gradients are to small (absolute value) */
+    /* Do not use this feature, unless you have to */
+    if(LBFGS_SCALE_GRADIENTS!=1) {
+        if(MYID==0) printf("\n\n Scaling the gradients to ensure L-BFGS stability");
+        if(MYID==0) printf("\n Scaling with %f",LBFGS_SCALE_GRADIENTS);
+        if(MYID==0) printf("\n This is an experimental feature.");
+
+        for (i=1;i<=NX;i++){
+            for (j=1;j<=NY;j++){
+                if(!ACOUSTIC) grad_vs[j][i]=grad_vs[j][i]*LBFGS_SCALE_GRADIENTS;
+                if(NPAR_LBFGS>1) grad_rho[j][i]=grad_rho[j][i]*LBFGS_SCALE_GRADIENTS;
+                if(NPAR_LBFGS>2) grad_vp[j][i]=grad_vp[j][i]*LBFGS_SCALE_GRADIENTS;
+            }
+        }
     }
     
     /*-------------------------------------------------*/

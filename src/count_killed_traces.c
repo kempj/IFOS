@@ -39,19 +39,27 @@ void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_lo
     FILE *ftracekill;
     
     
+    
     kill_tmp = imatrix(1,ntr_glob,1,nsrc_glob);
     kill_vector = ivector(1,ntr);
     
+    /*------------------*/
+    /* clear kill table */
+    /*------------------*/
+    for(i=1;i<=nsrc_glob;i++){
+        for (j=1; j<=ntr_glob; j++) {
+            kill_tmp[j][i]=0;
+        }
+    }
     
-    if(TRKILL_OFFSET) {
-        
+    /* Use ONLY offset based TraceKill */
+    if(TRKILL_OFFSET==1) {
+        /* Generate TraceKill file on the fly based on the offset from the source */
+        create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,ishot,TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
         if(MYID==0) {
             printf("\n\n ----- Offset based Tracekill ------");
             printf("\n Kill offsets between %.1f m and %.1f m",TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
         }
-        
-        /* Generate TraceKill file on the fly */
-        create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,ishot,TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
         
     } else {
         
@@ -61,6 +69,7 @@ void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_lo
             sprintf(trace_kill_file,"%s_%i.dat",TRKILL_FILE,WORKFLOW_STAGE);
             ftracekill=fopen(trace_kill_file,"r");
             if (ftracekill==NULL){
+                /* If Workflow TraceKill file not found use File without workflow extensions */
                 sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
                 ftracekill=fopen(trace_kill_file,"r");
                 if (ftracekill==NULL){
@@ -78,14 +87,26 @@ void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_lo
         for(i=1;i<=ntr_glob;i++){
             for(j=1;j<=nsrc_glob;j++){
                 fscanf(ftracekill,"%d",&kill_tmp[i][j]);
+                if(feof(ftracekill)){
+                    declare_error(" Error while reading TraceKill file. Check dimensions!");
+                }
             }
         }
         
         fclose(ftracekill);
         
+        /* Use Tracekill FILE and add the offset based TraceKill */
+        if(TRKILL_OFFSET==2) {
+            create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,-100,TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
+            if(MYID==0) {
+                printf("\n\n ----- Offset based Tracekill ------");
+                printf("\n Kill offsets between %.1f m and %.1f m",TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
+                printf("\n In addition the TraceKill File is used");
+            }
+            
+        }
     }
     
-
     
     h=1;
     for(i=1;i<=ntr;i++){

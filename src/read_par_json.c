@@ -121,6 +121,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int LBFGS_STEP_LENGTH;
     extern int N_LBFGS;
     
+    extern float LBFGS_SCALE_GRADIENTS;
     extern int WOLFE_CONDITION;
     extern int WOLFE_NUM_TEST;
     extern int WOLFE_TRY_OLD_STEPLENGTH;
@@ -712,6 +713,10 @@ void read_par_json(FILE *fp, char *fileinp){
                             fprintf(fp,"Variable N_LBFGS is set to default value %d.\n",N_LBFGS);
                         }
                         
+                        if (get_float_from_objectlist("LBFGS_SCALE_GRADIENTS",number_readobjects,&LBFGS_SCALE_GRADIENTS,varname_list, value_list)){
+                            LBFGS_SCALE_GRADIENTS=1;
+                        }
+                        
                         if (get_int_from_objectlist("WOLFE_CONDITION",number_readobjects,&WOLFE_CONDITION,varname_list, value_list)){
                             WOLFE_CONDITION=1;
                             fprintf(fp,"Variable WOLFE_CONDITION is set to default value %d.\n",WOLFE_CONDITION);
@@ -764,6 +769,10 @@ void read_par_json(FILE *fp, char *fileinp){
                                 }
                                 if (get_float_from_objectlist("TRKILL_STF_OFFSET_UPPER",number_readobjects,&TRKILL_STF_OFFSET_UPPER,varname_list, value_list)){
                                     declare_error("Variable TRKILL_STF_OFFSET_UPPER could not be retrieved from the json input file!");
+                                }
+                                if(TRKILL_STF_OFFSET==2){
+                                    if (get_string_from_objectlist("TRKILL_FILE_STF",number_readobjects,TRKILL_FILE_STF,varname_list, value_list))
+                                        declare_error("Variable TRKILL_FILE_STF could not be retrieved from the json input file!");
                                 }
                             }
                         }
@@ -848,7 +857,6 @@ void read_par_json(FILE *fp, char *fileinp){
                     fprintf(fp,"Variable TRKILL is set to default value %d.\n",TRKILL);}
                 else {
                     if (TRKILL==1) {
-                        
                         if (get_int_from_objectlist("TRKILL_OFFSET",number_readobjects,&TRKILL_OFFSET,varname_list, value_list)){
                             TRKILL_OFFSET=0;
                             if (get_string_from_objectlist("TRKILL_FILE",number_readobjects,TRKILL_FILE,varname_list, value_list))
@@ -859,6 +867,10 @@ void read_par_json(FILE *fp, char *fileinp){
                             }
                             if (get_float_from_objectlist("TRKILL_OFFSET_UPPER",number_readobjects,&TRKILL_OFFSET_UPPER,varname_list, value_list)){
                                 declare_error("Variable TRKILL_OFFSET_UPPER could not be retrieved from the json input file!");
+                            }
+                            if(TRKILL_OFFSET==2){
+                                if (get_string_from_objectlist("TRKILL_FILE",number_readobjects,TRKILL_FILE,varname_list, value_list))
+                                    declare_error("Variable TRKILL_FILE could not be retrieved from the json input file!");
                             }
                         }
                     }

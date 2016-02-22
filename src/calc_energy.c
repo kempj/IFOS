@@ -30,8 +30,8 @@ double calc_energy(float **sectiondata, int ntr, int ns, float energy, int ntr_g
     extern char TRKILL_FILE[STRING_SIZE];
     extern int VELOCITY;
     int i, j;
-    float energy_dummy, intseis;
-    int umax=0, h;
+    float energy_dummy;
+    int h;
     float intseis_sd;
     float **intseis_sectiondata=NULL;
     float *picked_times=NULL;
@@ -59,11 +59,19 @@ double calc_energy(float **sectiondata, int ntr, int ns, float energy, int ntr_g
         kill_tmp = imatrix(1,ntr_glob,1,nsrc_glob);
         kill_vector = ivector(1,ntr);
         
-        if(TRKILL_OFFSET) {
-
-            /* Generate TraceKill file on the fly */
+        /*------------------*/
+        /* clear kill table */
+        /*------------------*/
+        for(i=1;i<=nsrc_glob;i++){
+            for (j=1; j<=ntr_glob; j++) {
+                kill_tmp[j][i]=0;
+            }
+        }
+        
+        /* Use ONLY offset based TraceKill */
+        if(TRKILL_OFFSET==1) {
+            /* Generate TraceKill file on the fly based on the offset from the source */
             create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,ishot,TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
-            
         } else {
             
             /* READ TraceKill file from disk */
@@ -72,6 +80,7 @@ double calc_energy(float **sectiondata, int ntr, int ns, float energy, int ntr_g
                 sprintf(trace_kill_file,"%s_%i.dat",TRKILL_FILE,WORKFLOW_STAGE);
                 ftracekill=fopen(trace_kill_file,"r");
                 if (ftracekill==NULL){
+                    /* If Workflow TraceKill file not found use File without workflow extensions */
                     sprintf(trace_kill_file,"%s.dat",TRKILL_FILE);
                     ftracekill=fopen(trace_kill_file,"r");
                     if (ftracekill==NULL){
@@ -89,11 +98,18 @@ double calc_energy(float **sectiondata, int ntr, int ns, float energy, int ntr_g
             for(i=1;i<=ntr_glob;i++){
                 for(j=1;j<=nsrc_glob;j++){
                     fscanf(ftracekill,"%d",&kill_tmp[i][j]);
+                    if(feof(ftracekill)){
+                        declare_error(" Error while reading TraceKill file. Check dimensions!");
+                    }
                 }
             }
             
             fclose(ftracekill);
             
+            /* Use Tracekill FILE and add the offset based TraceKill */
+            if(TRKILL_OFFSET==2) {
+                create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,ishot,TRKILL_OFFSET_LOWER,TRKILL_OFFSET_UPPER);
+            }
         }
         
         /* Generate local kill vector */

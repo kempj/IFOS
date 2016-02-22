@@ -107,6 +107,7 @@ void exchange_par(void){
     extern int EPRECOND_PER_SHOT;
     extern int EPRECOND_PER_SHOT_SH;
     
+    extern float LBFGS_SCALE_GRADIENTS;
     extern int LBFGS_SURFACE;
     extern int LBFGS_STEP_LENGTH;
     
@@ -217,6 +218,8 @@ void exchange_par(void){
         fdum[67]=TRKILL_STF_OFFSET_UPPER;
         fdum[68]=TRKILL_OFFSET_LOWER;
         fdum[69]=TRKILL_OFFSET_UPPER;
+        
+        fdum[70]=LBFGS_SCALE_GRADIENTS;
 
         /***********/
         /* Integer */
@@ -498,6 +501,8 @@ void exchange_par(void){
     TRKILL_STF_OFFSET_UPPER=fdum[67];
     TRKILL_OFFSET_LOWER=fdum[68];
     TRKILL_OFFSET_UPPER=fdum[69];
+    
+    LBFGS_SCALE_GRADIENTS=fdum[70];
     
     /***********/
     /* Integer */

@@ -27,15 +27,7 @@ void create_trkill_table(int ** killtable, int ntr_glob, int **recpos, int nsrc_
     /* extern variables */
     extern float DH;
     extern int MYID;
-    
-    /*------------------*/
-    /* clear kill table */
-    /*------------------*/
-    for(s=1;s>=nsrc_glob;s++){
-        for (r=1; r<=ntr_glob; r++) {
-            killtable[r][s]=0;
-        }
-    }
+    extern char TRKILL_FILE[STRING_SIZE];
     
     /*---------------------*/
     /* Generate Killtable  */
@@ -57,11 +49,11 @@ void create_trkill_table(int ** killtable, int ntr_glob, int **recpos, int nsrc_
     /*       Debug         */
     /*---------------------*/
     /* Debug is declared with ishot=-100 */
-    if(ishot==-100){
+    if((ishot==-100) && (MYID==0)){
         FILE *FP_TK_OUT;
         char filename[225];
         
-        sprintf(filename,"tracekill_%.0f_%.0f.txt",kill_offset_lower,kill_offset_upper);
+        sprintf(filename,"%stracekill.out.%.0f_%.0f.txt",TRKILL_FILE,kill_offset_lower,kill_offset_upper);
         FP_TK_OUT=fopen(filename,"w");
         
         for (r=1; r<=ntr_glob; r++) {
