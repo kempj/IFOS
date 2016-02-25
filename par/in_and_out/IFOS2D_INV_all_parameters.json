@@ -157,7 +157,7 @@
 			"TRKILL_STF" : "0",
 			"TRKILL_STF_OFFSET" : "0",
 			"TRKILL_STF_OFFSET_LOWER , TRKILL_STF_OFFSET_UPPER" : "0 , 10",
-			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
+			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
 
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",

@@ -36,9 +36,9 @@ void  inseis_source_wavelet(float *section, int ns, int ishot, int SH){
     FILE *fpdata;
     
     if(SH==0) {
-        sprintf(data,"%s.shot%d",SIGNAL_FILE,ishot);
+        sprintf(data,"%s.shot%d.su",SIGNAL_FILE,ishot);
     } else {
-        sprintf(data,"%s.shot%d",SIGNAL_FILE_SH,ishot);
+        sprintf(data,"%s.shot%d.su",SIGNAL_FILE_SH,ishot);
     }
     
 	fpdata = fopen(data,"r");

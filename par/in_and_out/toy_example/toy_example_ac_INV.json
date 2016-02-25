@@ -132,7 +132,7 @@
 			"N_STF_START" : "1",
 			"TAPER_STF" : "1",
 			"TRKILL_STF" : "0",
-			"TRKILL_FILE_STF" : "./trace_kill/trace_kill.dat",
+			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
 
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",
