@@ -28,6 +28,9 @@ void  inseis_source_wavelet(float *section, int ns, int ishot, int SH){
 	extern int MYID;
 	extern char SIGNAL_FILE[STRING_SIZE];
     extern char SIGNAL_FILE_SH[STRING_SIZE];
+    
+    extern int USE_WORKFLOW;
+    extern int WORKFLOW_STAGE;
 	/* declaration of local variables */
 	int j;
 	float dump;
@@ -36,9 +39,17 @@ void  inseis_source_wavelet(float *section, int ns, int ishot, int SH){
     FILE *fpdata;
     
     if(SH==0) {
-        sprintf(data,"%s.shot%d.su",SIGNAL_FILE,ishot);
+        if(USE_WORKFLOW){
+            sprintf(data,"%s.stage%d.shot%d.su",SIGNAL_FILE,WORKFLOW_STAGE,ishot);
+        } else {
+            sprintf(data,"%s.shot%d.su",SIGNAL_FILE,ishot);
+        }
     } else {
-        sprintf(data,"%s.shot%d.su",SIGNAL_FILE_SH,ishot);
+        if(USE_WORKFLOW){
+            sprintf(data,"%s.stage%d.shot%d.su",SIGNAL_FILE_SH,WORKFLOW_STAGE,ishot);
+        } else {
+            sprintf(data,"%s.shot%d.su",SIGNAL_FILE_SH,ishot);
+        }
     }
     
 	fpdata = fopen(data,"r");
