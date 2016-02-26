@@ -1560,8 +1560,8 @@ int main(int argc, char **argv){
                         
                         if(INV_STF){
                             SOURCE_SHAPE=7;
-                            fprintf(FP,"\n MYID=%d *****  Due to inversion of source time function SOURCE_SHAPE is switched to 7  ********** \n",MYID);
-                            fprintf(FP,"\n MYID=%d *****  Using optimized source time function located in %s.shot%d  ********** \n\n\n",MYID,SIGNAL_FILE,ishot);
+                            if(WAVETYPE==1||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d \n",MYID,SIGNAL_FILE,ishot);
+                            if(WAVETYPE==2||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d  \n",MYID,SIGNAL_FILE_SH,ishot);
                         }
                         
                         MPI_Barrier(MPI_COMM_WORLD);
@@ -1584,7 +1584,7 @@ int main(int argc, char **argv){
                         /*----------- Start of Time Domain Filtering -----------------------------------*/
                         /*------------------------------------------------------------------------------*/
                         
-                        if (((TIME_FILT==1) || (TIME_FILT==2)) && (SOURCE_SHAPE!=6) && (INV_STF==0)){
+                        if (((TIME_FILT==1) || (TIME_FILT==2))){
                             fprintf(FP,"\n Time Domain Filter applied: Lowpass with corner frequency of %.2f Hz, order %d\n",FC,ORDER);
                             
                             /*time domain filtering of the source signal */
