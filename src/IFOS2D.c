@@ -1560,8 +1560,8 @@ int main(int argc, char **argv){
                         
                         if(INV_STF){
                             SOURCE_SHAPE=7;
-                            if(WAVETYPE==1||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d \n",MYID,SIGNAL_FILE,ishot);
-                            if(WAVETYPE==2||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d  \n",MYID,SIGNAL_FILE_SH,ishot);
+                            if(WAVETYPE==1||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d \n",SIGNAL_FILE,ishot);
+                            if(WAVETYPE==2||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d  \n",SIGNAL_FILE_SH,ishot);
                         }
                         
                         MPI_Barrier(MPI_COMM_WORLD);
