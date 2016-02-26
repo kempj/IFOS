@@ -1488,9 +1488,7 @@ int main(int argc, char **argv){
                                                 stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1,nsrc_glob);
                                             }
                                             
-                                            /* do_stf controles if a STF is done or not */
-                                            do_stf=0;
-                                            /* As STF was done no, it is deactivated (do_stf=0) until it will be activated*/
+
                                         }
                                     }
                                 }
@@ -3955,6 +3953,8 @@ int main(int argc, char **argv){
             }
             
         }
+        
+
         
     }
     /*------------------------------------------------------------------------------*/
