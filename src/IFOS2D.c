@@ -3275,7 +3275,7 @@ int main(int argc, char **argv){
                         /*------------------------------------------------------------------------------*/
                         /*time domain filtering of the source signal */
                         if(WAVETYPE==1||WAVETYPE==3){
-                            if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)){
+                            if(((TIME_FILT==1) || (TIME_FILT==2))){
                                 timedomain_filt(signals,FC,ORDER,nsrc_loc,ns,1);
                             }
                             
@@ -3283,7 +3283,7 @@ int main(int argc, char **argv){
                         
                         /*time domain filtering of the source signal */
                         if(WAVETYPE==2||WAVETYPE==3){
-                            if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)){
+                            if(((TIME_FILT==1) || (TIME_FILT==2))){
                                 timedomain_filt(signals_SH,FC,ORDER,nsrc_loc,ns,1);
                             }
                             
