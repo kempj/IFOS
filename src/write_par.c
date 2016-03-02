@@ -153,7 +153,7 @@ void write_par(FILE *fp){
             fprintf(fp," Bandlimited Spike \n");
             break;
         case 7 :
-            fprintf(fp," reading from \n\t %s.shot* in su format (one file for each shot)\n",SIGNAL_FILE);
+            fprintf(fp," reading from \n\t %s.shot*.su in su format (one file for each shot)\n",SIGNAL_FILE);
             break;
         case 8 :
             fprintf(fp," Integral of sin^3 function\n");

@@ -1187,7 +1187,7 @@ int main(int argc, char **argv){
                                 srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
                             }
                             
-                            if((SOURCE_SHAPE==7)||(SOURCE_SHAPE==3))declare_error("SOURCE_SHAPE==7 or SOURCE_SHAPE==3 isn't possible with INV_STF==1");
+                            if(SOURCE_SHAPE==3) declare_error("SOURCE_SHAPE==3 isn't possible with INV_STF==1");
                             MPI_Barrier(MPI_COMM_WORLD);
                             
                             
@@ -1197,12 +1197,12 @@ int main(int argc, char **argv){
                             /* calculate wavelet for each source point P SV */
                             if(WAVETYPE==1||WAVETYPE==3){
                                 signals=NULL;
-                                signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
+                                signals=wavelet(srcpos_loc,nsrc_loc,ishot,0,1);
                             }
                             /* calculate wavelet for each source point SH */
                             if(WAVETYPE==2||WAVETYPE==3){
                                 signals_SH=NULL;
-                                signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1);
+                                signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1,1);
                             }
                             
                             
@@ -1579,12 +1579,12 @@ int main(int argc, char **argv){
                         /* calculate wavelet for each source point P SV */
                         if(WAVETYPE==1||WAVETYPE==3){
                             signals=NULL;
-                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
+                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0,0);
                         }
                         /* calculate wavelet for each source point SH */
                         if(WAVETYPE==2||WAVETYPE==3){
                             signals_SH=NULL;
-                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1);
+                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1,0);
                         }
                         
                         /*------------------------------------------------------------------------------*/
@@ -3275,12 +3275,12 @@ int main(int argc, char **argv){
                         /* calculate wavelet for each source point P SV */
                         if(WAVETYPE==1||WAVETYPE==3){
                             signals=NULL;
-                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
+                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0,0);
                         }
                         /* calculate wavelet for each source point SH */
                         if(WAVETYPE==2||WAVETYPE==3){
                             signals_SH=NULL;
-                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1);
+                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1,0);
                         }
                         
                         /*------------------------------------------------------------------------------*/

@@ -24,10 +24,10 @@
 #include "segy.h"
 #include "cseife.h"
 
-void  timedomain_filt_vector(float * data, float fc, int order, int ntr, int ns, int method){
+void  timedomain_filt_vector(float * data, float fc, int order, int ns, int method){
 
 	/* 
-	data	: 	2-dimensional array containing seismograms (
+	data	: 	1-dimensional array containing seismograms (
 	fc	:	corner frequency in Hz
 	order	:	order of filter
 	ntr	:	number of traces
@@ -36,40 +36,82 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ntr, int ns,
 			1: lowpass filter
 			2: highpass filter
 	*/
-			
+    
+    /* declaration of external variables */
+    extern float DT, F_HP;
+    extern int ZERO_PHASE, NT,MYID;
+    
+    /* declaration of local variables */
+    int itr, j, ns_reverse;
+    double *seismogram, *seismogram_reverse, T0;
+    double *seismogram_hp, *seismogram_reverse_hp, T0_hp;
+    
+    if ((order%2)!=0){
+        declare_error("Order of timedomain filter must be an even number!");}
+    
+    seismogram = dvector(1,ns);
+    if (ZERO_PHASE==1) seismogram_reverse = dvector(1,ns);
+    
+    seismogram_hp = dvector(1,ns);
+    if (ZERO_PHASE==1) seismogram_reverse_hp = dvector(1,ns);
+    
+    T0=1.0/(double)fc;
+    if(F_HP)
+        T0_hp=1.0/(double)F_HP;
+    if(method==2)
+        T0_hp=1.0/(double)fc;
+        
+    if (method==1){    /* lowpass filter */
+        for (j=1;j<=ns;j++){
+            seismogram[j]=(double)data[j];
+        }
+        
+        seife_lpb(seismogram,ns+1,DT,T0,order); /* ns+1 because vector[0] is also allocated and otherwise seife_lpb do not filter the last sample */
+        
+        if (ZERO_PHASE==1){
+        ns_reverse=ns;
+            for (j=1;j<=ns;j++) {
+                seismogram_reverse[ns_reverse]=seismogram[j];
+                ns_reverse--;}
+        seife_lpb(seismogram_reverse,ns+1,DT,T0,order);
+        ns_reverse=ns; 
+            for (j=1;j<=ns;j++) {
+                seismogram[ns_reverse]=seismogram_reverse[j];
+                ns_reverse--;}
+        }
 
-	/* declaration of extern variables */
-	extern float DT;
-	
-	/* declaration of local variables */
-	int itr, j;
-	double *seismogram, T0;
-	
-	
-	
-	seismogram=dvector(1,ns);
-	
-	T0=1.0/fc;
-	
-	if ((order%2)!=0){
-		declare_error("Order of timedomain filter must be an even number!");}
-		
-			
-	
-		for (j=1;j<=ns;j++){
-			seismogram[j]=(double)data[j];}
-		
-		if (method==1){		/*lowpass filter*/
-			seife_lpb(seismogram,ns,DT,T0,order);}
-		
-		
-		if (method==2){		/*highpass filter*/
-			seife_hpb(seismogram,ns,DT,T0,order);}
-		
-		for (j=1;j<=ns;j++){
-			data[j]=(float)seismogram[j];}
-	
-	
-	free_dvector(seismogram,1,ns);
+        for (j=1;j<=ns;j++){
+            data[j]=(float)seismogram[j];
+        }
+    }
+
+    if ((method==2)||(F_HP)){   /*highpass filter*/
+        for (j=1;j<=ns;j++){
+            seismogram_hp[j]=(double)data[j];
+        }
+        
+        seife_hpb(seismogram_hp,ns+1,DT,T0_hp,order);
+        
+        if (ZERO_PHASE==1){
+        ns_reverse=ns;
+            for (j=1;j<=ns;j++) {
+                seismogram_reverse_hp[ns_reverse]=seismogram_hp[j];
+                ns_reverse--;}
+        seife_hpb(seismogram_reverse_hp,ns+1,DT,T0_hp,order);
+        ns_reverse=ns;
+            for (j=1;j<=ns;j++) {
+                seismogram_hp[ns_reverse]=seismogram_reverse_hp[j];
+                ns_reverse--;}
+        }
+        for (j=1;j<=ns;j++){
+            data[j]=(float)seismogram_hp[j];
+        }
+    }
+    
+    free_dvector(seismogram,1,ns);
+    if (ZERO_PHASE==1) free_dvector(seismogram_reverse,1,ns);
+
+    free_dvector(seismogram_hp,1,ns);
+    if (ZERO_PHASE==1) free_dvector(seismogram_reverse_hp,1,ns);
+
 }
-		
