@@ -3091,6 +3091,9 @@ int main(int argc, char **argv){
             calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
             
             alpha_SL_old=1;
+            
+            /* If minimum number of iterations would be enforced, L-BFGS is likely to crash */
+            min_iter_help=0;
         }
         
         /*-----------------------------------------------------*/
