@@ -95,9 +95,9 @@ int main(int argc, char **argv){
     int step1, step2, step3=0, itests, iteste, stepmax, countstep;
     float scalefac;
     
-    /* Variables for Pseudo-Hessian calculation */
     int RECINC, ntr1;
-    int SOURCE_SHAPE_OLD;
+    int SOURCE_SHAPE_OLD=0;
+    int SOURCE_SHAPE_OLD_SH=0;
     
     /* Variables for L-BFGS */
     int LBFGS_NPAR=3;
@@ -903,11 +903,6 @@ int main(int argc, char **argv){
     
     MPI_Barrier(MPI_COMM_WORLD);
     
-    /* comunication initialisation for persistent communication */
-    /*comm_ini(bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, bufferbot_to_top, req_send, req_rec);*/
-    
-    snapseis=1;
-    snapseis1=1;
     SHOTINC=1;
     RECINC=1;
     
@@ -917,7 +912,9 @@ int main(int argc, char **argv){
         case 2: FC_EXT=filter_frequencies(&nfrq); FC=FC_EXT[FREQ_NR]; break;
     }
     
+    /* Save old SOURCE_SHAPE, which is needed for STF */
     SOURCE_SHAPE_OLD = SOURCE_SHAPE;
+    if(WAVETYPE==2 || WAVETYPE==3) SOURCE_SHAPE_OLD_SH=SOURCE_SHAPE_SH;
     
     nt_out=10000;
     if(!VERBOSE) nt_out=1e5;
@@ -1163,7 +1160,8 @@ int main(int argc, char **argv){
                     for (ishot=1;ishot<=nshots;ishot+=SHOTINC){
 
                         SOURCE_SHAPE = SOURCE_SHAPE_OLD;
-
+                        if(WAVETYPE==2 || WAVETYPE==3) SOURCE_SHAPE_SH=SOURCE_SHAPE_OLD_SH;
+                        
                         /*------------------------------------------------------------------------------*/
                         /*----------- Start of inversion of source time function -----------------------*/
                         /*------------------------------------------------------------------------------*/
@@ -1558,10 +1556,19 @@ int main(int argc, char **argv){
                             srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
                         }
                         
+                        /*-------------------*/
+                        /*  Use STF wavelet  */
+                        /*-------------------*/
                         if(INV_STF){
+                            
                             SOURCE_SHAPE=7;
-                            if(WAVETYPE==1||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d \n",SIGNAL_FILE,ishot);
-                            if(WAVETYPE==2||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d  \n",SIGNAL_FILE_SH,ishot);
+                            if( WAVETYPE==1 || WAVETYPE==3 ) fprintf(FP,"\n Using optimized source time function located in %s.shot%d \n",SIGNAL_FILE,ishot);
+                            
+                            if( WAVETYPE==2 || WAVETYPE==3 ) {
+                                SOURCE_SHAPE_SH=7;
+                                fprintf(FP,"\n Using optimized source time function located in %s.shot%d  \n",SIGNAL_FILE_SH,ishot);
+                            }
+                            
                         }
                         
                         MPI_Barrier(MPI_COMM_WORLD);
@@ -2043,6 +2050,9 @@ int main(int argc, char **argv){
                                     } /* end ADJOINT_TYPE */
                                 }
                                 
+                                /* --------------------------------- */
+                                /* read seismic data from SU file vz */
+                                /* --------------------------------- */
                                 if(WAVETYPE==2 || WAVETYPE==3){
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,10,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
@@ -3526,6 +3536,9 @@ int main(int argc, char **argv){
                                 }
                             }
                             
+                            /* --------------------------------- */
+                            /* read seismic data from SU file vz */
+                            /* --------------------------------- */
                             if(WAVETYPE==2 || WAVETYPE==3){
                                 inseis(fprec,ishot,sectionread,ntr_glob,ns,10,iter);
                                 if ((TIME_FILT==1 )|| (TIME_FILT==2)){

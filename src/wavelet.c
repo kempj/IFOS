@@ -62,14 +62,9 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
                 fc=srcpos_loc[5][k];
                 a=srcpos_loc[6][k];
                 ts=1.0/fc;
-                ag = PI*PI*fc*fc;
                 
                 switch (SOURCE_SHAPE){
                     case 1 :
-                        /* Old Ricker Wavelet */
-                        /* tau=PI*(t-ts-tshift)/(1.5*ts);
-                         amp=(((1.0-4.0*tau*tau)*exp(-2.0*tau*tau))); */
-                        
                         /* New Ricker Wavelet, equal to SOFI2D */
                         tau=PI*(t-1.5*ts-tshift)/(ts);
                         amp=(((1.0-2.0*tau*tau)*exp(-tau*tau)));
@@ -78,22 +73,17 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
                         if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
                         else amp=((sin(2.0*PI*(t-tshift)*fc)
                                    -0.5*sin(4.0*PI*(t-tshift)*fc)));
-                        
-                        /*amp=((sin(2.0*PI*(t+tshift)*fc)
-                         -0.5*sin(4.0*PI*(t+tshift)*fc)));*/
                         break;
                     case 3 :
+                        /* source wavelet from file SOURCE_FILE */
                         if (nt<=nts) amp=psource[nt];
                         else amp=0.0;
-                        // 						amp=psource[nt];
-                        break;  /* source wavelet from file SOURCE_FILE */
+                        break;
                     case 4 :
-                        /*tau=PI*(t-ts-tshift)/(1.5*ts);*/ /* Ricker */
-                        /*amp=((t-ts-tshift)*exp(-2.0*tau*tau));*/
-                        
+                        /* sinus raised to the power of three */
                         if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
                         else amp=pow(sin(PI*(t+tshift)/ts),3.0);
-                        break; /* sinus raised to the power of three */
+                        break;
                         
                         break;
                     case 5 :
@@ -147,10 +137,15 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
     /* ---------------------------- */
 
     if (SH==1) {
-        if (SOURCE_SHAPE_SH==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE_SH,"r"));
+        
+        if (SOURCE_SHAPE_SH==3) {
+            psource=rd_sour(&nts,fopen(SIGNAL_FILE_SH,"r"));
+        }
+        
         if (SOURCE_SHAPE_SH==7){
             psource=vector(1,NT);
-            inseis_source_wavelet(psource,NT,ishot,SH);}
+            inseis_source_wavelet(psource,NT,ishot,SH);
+        }
         
         signals=fmatrix(1,nsrc,1,NT);
         
@@ -162,14 +157,9 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
                 fc=srcpos_loc[5][k];
                 a=srcpos_loc[6][k];
                 ts=1.0/fc;
-                ag = PI*PI*fc*fc;
                 
                 switch (SOURCE_SHAPE_SH){
                     case 1 :
-                        /* Old Ricker Wavelet */
-                        /* tau=PI*(t-ts-tshift)/(1.5*ts);
-                         amp=(((1.0-4.0*tau*tau)*exp(-2.0*tau*tau))); */
-                        
                         /* New Ricker Wavelet, equal to SOFI2D */
                         tau=PI*(t-1.5*ts-tshift)/(ts);
                         amp=(((1.0-2.0*tau*tau)*exp(-tau*tau)));
@@ -178,22 +168,17 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
                         if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
                         else amp=((sin(2.0*PI*(t-tshift)*fc)
                                    -0.5*sin(4.0*PI*(t-tshift)*fc)));
-                        
-                        /*amp=((sin(2.0*PI*(t+tshift)*fc)
-                         -0.5*sin(4.0*PI*(t+tshift)*fc)));*/
                         break;
                     case 3 :
+                         /* source wavelet from file SOURCE_FILE */
                         if (nt<=nts) amp=psource[nt];
                         else amp=0.0;
-                        // 						amp=psource[nt];
-                        break;  /* source wavelet from file SOURCE_FILE */
+                        break;
                     case 4 :
-                        /*tau=PI*(t-ts-tshift)/(1.5*ts);*/ /* Ricker */
-                        /*amp=((t-ts-tshift)*exp(-2.0*tau*tau));*/
-                        
+                        /* sinus raised to the power of three */
                         if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
                         else amp=pow(sin(PI*(t+tshift)/ts),3.0);
-                        break; /* sinus raised to the power of three */
+                        break;
                         
                         break;
                     case 5 :
