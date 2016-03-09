@@ -1584,7 +1584,7 @@ int main(int argc, char **argv){
                         /*----------- Start of Time Domain Filtering -----------------------------------*/
                         /*------------------------------------------------------------------------------*/
                         
-                        if (((TIME_FILT==1) || (TIME_FILT==2))){
+                        if (((TIME_FILT==1) || (TIME_FILT==2)) && (SOURCE_SHAPE!=6) && (INV_STF==0)){
                             fprintf(FP,"\n Time Domain Filter applied: Lowpass with corner frequency of %.2f Hz, order %d\n",FC,ORDER);
                             
                             /*time domain filtering of the source signal */
