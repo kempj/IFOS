@@ -764,13 +764,19 @@ void read_par_json(FILE *fp, char *fileinp){
                                 if (get_string_from_objectlist("TRKILL_FILE_STF",number_readobjects,TRKILL_FILE_STF,varname_list, value_list))
                                     declare_error("Variable TRKILL_FILE_STF could not be retrieved from the json input file!");
                             } else {
-                                if (get_float_from_objectlist("TRKILL_STF_OFFSET_LOWER",number_readobjects,&TRKILL_STF_OFFSET_LOWER,varname_list, value_list)){
-                                    TRKILL_STF_OFFSET_LOWER=0.0;
+                                if(TRKILL_STF_OFFSET==0) { /* Only TRKILL File */
+                                    if (get_string_from_objectlist("TRKILL_FILE_STF",number_readobjects,TRKILL_FILE_STF,varname_list, value_list))
+                                        declare_error("Variable TRKILL_FILE_STF could not be retrieved from the json input file!");
                                 }
-                                if (get_float_from_objectlist("TRKILL_STF_OFFSET_UPPER",number_readobjects,&TRKILL_STF_OFFSET_UPPER,varname_list, value_list)){
-                                    declare_error("Variable TRKILL_STF_OFFSET_UPPER could not be retrieved from the json input file!");
+                                if(TRKILL_STF_OFFSET==1) { /* Only Offset based TRKill */
+                                    if (get_float_from_objectlist("TRKILL_STF_OFFSET_LOWER",number_readobjects,&TRKILL_STF_OFFSET_LOWER,varname_list, value_list)){
+                                        TRKILL_STF_OFFSET_LOWER=0.0;
+                                    }
+                                    if (get_float_from_objectlist("TRKILL_STF_OFFSET_UPPER",number_readobjects,&TRKILL_STF_OFFSET_UPPER,varname_list, value_list)){
+                                        declare_error("Variable TRKILL_STF_OFFSET_UPPER could not be retrieved from the json input file!");
+                                    }
                                 }
-                                if(TRKILL_STF_OFFSET==2){
+                                if(TRKILL_STF_OFFSET==2){ /* Both Offset based TRKill & File */
                                     if (get_string_from_objectlist("TRKILL_FILE_STF",number_readobjects,TRKILL_FILE_STF,varname_list, value_list))
                                         declare_error("Variable TRKILL_FILE_STF could not be retrieved from the json input file!");
                                 }
@@ -862,13 +868,19 @@ void read_par_json(FILE *fp, char *fileinp){
                             if (get_string_from_objectlist("TRKILL_FILE",number_readobjects,TRKILL_FILE,varname_list, value_list))
                                 declare_error("Variable TRKILL_FILE could not be retrieved from the json input file!");
                         } else {
-                            if (get_float_from_objectlist("TRKILL_OFFSET_LOWER",number_readobjects,&TRKILL_OFFSET_LOWER,varname_list, value_list)){
-                                TRKILL_OFFSET_LOWER=0.0;
+                            if(TRKILL_OFFSET==0) { /* Only TRKILL File */
+                                if (get_string_from_objectlist("TRKILL_FILE",number_readobjects,TRKILL_FILE,varname_list, value_list))
+                                    declare_error("Variable TRKILL_FILE could not be retrieved from the json input file!");
                             }
-                            if (get_float_from_objectlist("TRKILL_OFFSET_UPPER",number_readobjects,&TRKILL_OFFSET_UPPER,varname_list, value_list)){
-                                declare_error("Variable TRKILL_OFFSET_UPPER could not be retrieved from the json input file!");
+                            if(TRKILL_OFFSET==1) { /* Only Offset based TRKill */
+                                if (get_float_from_objectlist("TRKILL_OFFSET_LOWER",number_readobjects,&TRKILL_OFFSET_LOWER,varname_list, value_list)){
+                                    TRKILL_OFFSET_LOWER=0.0;
+                                }
+                                if (get_float_from_objectlist("TRKILL_OFFSET_UPPER",number_readobjects,&TRKILL_OFFSET_UPPER,varname_list, value_list)){
+                                    declare_error("Variable TRKILL_OFFSET_UPPER could not be retrieved from the json input file!");
+                                }
                             }
-                            if(TRKILL_OFFSET==2){
+                            if(TRKILL_STF_OFFSET==2){ /* Both Offset based TRKill & File */
                                 if (get_string_from_objectlist("TRKILL_FILE",number_readobjects,TRKILL_FILE,varname_list, value_list))
                                     declare_error("Variable TRKILL_FILE could not be retrieved from the json input file!");
                             }
