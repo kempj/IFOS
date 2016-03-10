@@ -41,6 +41,9 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
     
     extern int USE_WORKFLOW;
     extern int WORKFLOW_STAGE;
+    extern int VERBOSE;
+    char obs_y_tmp[STRING_SIZE];
+    char mod_y_tmp[STRING_SIZE];
     
 	/* declaration of variables for trace killing */
 	int ** kill_tmp = NULL, *kill_vector = NULL, h, j;
@@ -290,15 +293,18 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
 	if(TAPER_STF)
 		taper(stf_conv_wavelet, ns, fc);
 	
-// 	/* --------------- writing out the observed seismograms --------------- */
-// 	sprintf(obs_y_tmp,"%s.shot%d.obs",SEIS_FILE_P,ishot);
-// 	printf(" PE %d is writing %d observed seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,obs_y_tmp);
-// 	outseis_glob(fp,fopen(obs_y_tmp,"w"),1,sectionvy_obs,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);
-// 	
-// 	/* --------------- writing out the modelled seismograms --------------- */
-// 	sprintf(mod_y_tmp,"%s.shot%d.mod",SEIS_FILE_P,ishot);
-// 	printf(" PE %d is writing %d modelled seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,mod_y_tmp);
-// 	outseis_glob(fp,fopen(mod_y_tmp,"w"),1,sectionvy,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);
+    /* Writing out used seismograms for debugging purposes */
+    if(VERBOSE){
+        /* --------------- writing out the observed seismograms --------------- */
+        sprintf(obs_y_tmp,"%s.shot%d.it%d.inputSTF.observed.su",SIGNAL_FILE,ishot,iter);
+        printf(" PE %d is writing %d observed seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,obs_y_tmp);
+        outseis_glob(fp,fopen(obs_y_tmp,"w"),1,sectionvy_obs,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);
+        
+        /* --------------- writing out the modelled seismograms --------------- */
+        sprintf(mod_y_tmp,"%s.shot%d.it%d.inputSTF.synthetic.su",SIGNAL_FILE,ishot,iter);
+        printf(" PE %d is writing %d modelled seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,mod_y_tmp);
+        outseis_glob(fp,fopen(mod_y_tmp,"w"),1,sectionvy,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);
+    }
 	
 	/* --------------- writing out the source time function --------------- */
 	if((TIME_FILT==1)||(TIME_FILT==2)){
