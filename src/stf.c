@@ -37,6 +37,7 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
     extern FILE *FP;
     
     extern int TRKILL_STF_OFFSET;
+    extern int TRKILL_STF_OFFSET_INVERT;
     extern float TRKILL_STF_OFFSET_LOWER;
     extern float TRKILL_STF_OFFSET_UPPER;
     
@@ -92,6 +93,18 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
             
             /* Generate TraceKill file on the fly */
             create_trkill_table(kill_tmp,ntr_glob,recpos,nsrc_glob,srcpos,-100,TRKILL_STF_OFFSET_LOWER,TRKILL_STF_OFFSET_UPPER);
+            
+            if(TRKILL_STF_OFFSET_INVERT) {
+                for(i=1;i<=nsrc_glob;i++){
+                    for (j=1; j<=ntr_glob; j++) {
+                        if (kill_tmp[j][i]==1) {
+                            kill_tmp[j][i]=0;
+                        } else {
+                            kill_tmp[j][i]=1;
+                        }
+                    }
+                }
+            }
             
         } else {
             if(USE_WORKFLOW){

@@ -83,6 +83,7 @@ void exchange_par(void){
     extern int VERBOSE;
     
     extern int TRKILL_STF_OFFSET;
+    extern int TRKILL_STF_OFFSET_INVERT;
     extern float TRKILL_STF_OFFSET_LOWER;
     extern float TRKILL_STF_OFFSET_UPPER;
     
@@ -374,6 +375,7 @@ void exchange_par(void){
         
         idum[114]=TRKILL_OFFSET;
         idum[115]=TRKILL_STF_OFFSET;
+        idum[116]=TRKILL_STF_OFFSET_INVERT;
         
     } /** if (MYID == 0) **/
     
@@ -660,6 +662,7 @@ void exchange_par(void){
     
     TRKILL_OFFSET=idum[114];
     TRKILL_STF_OFFSET=idum[115];
+    TRKILL_STF_OFFSET_INVERT=idum[116];
     
     MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
     
