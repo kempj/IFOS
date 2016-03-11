@@ -180,7 +180,7 @@ void  outseis_vector(FILE *fp, FILE *fpdata, int comp, float *section,
 
 void  inseis(FILE *fp, int comp, float **section, int ntr, int ns, int sws, int iter);
 
-void  inseis_source_wavelet(float *section, int ns, int ishot, int SH);
+void  inseis_source_wavelet(float *section, int ns, int ishot, int SH, int STF);
 
 void  taper(float *section, int ns, float fc);
 
@@ -280,7 +280,7 @@ void surface_elastic_PML(int ndepth, float ** vx, float ** vy, float ** sxx, flo
 void surface_PML(int ndepth, float ** vx, float ** vy, float ** sxx, float ** syy, float ** sxy, float ** syz, float ***p, float ***q, float  **  ppi, float  **  pu, float **prho, float **ptaup, float **ptaus, float *etajm, float *peta, float * hc, float * K_x, float * a_x, float * b_x, float ** psi_vxx, float ** ux, float ** uy, float ** uxy, float ** uyz,float ** sxz,float **uxz);
 
 void  timedomain_filt(float ** data, float fc, int order, int ntr, int ns, int method);
-void  timedomain_filt_vector(float * data, float fc, int order, int ntr, int ns, int method);
+void  timedomain_filt_vector(float * data, float fc, int order, int ns, int method);
 
 void time_window(float **sectiondata, int iter, int ntr_glob, int **recpos_loc, int ntr, int ns, int ishot);
 void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int ishot);
@@ -400,7 +400,7 @@ void update_v_rsg_4th(int nx1, int nx2, int ny1, int ny2, int nt,
                       float ** psxy, float  ** prho,
                       float **  srcpos_loc, float ** signals, int nsrc, float ** absorb_coeff);
 
-float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH);
+float ** wavelet(float ** srcpos_loc, int nsrc, int ishot, int SH, int STF);
 float ** wavelet_stf(int nsrc, int ishot, float ** signals_stf);
 
 void writebufs(float ** sxx, float ** syy,

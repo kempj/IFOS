@@ -26,7 +26,7 @@
 #include "fd.h"
 
 
-float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
+float ** wavelet(float ** srcpos_loc, int nsrc, int ishot, int SH, int STF){
     
     
     /* extern variables */
@@ -50,7 +50,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
         if (SOURCE_SHAPE==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
         if (SOURCE_SHAPE==7){
             psource=vector(1,NT);
-            inseis_source_wavelet(psource,NT,ishot,SH);}
+            inseis_source_wavelet(psource,NT,ishot,SH,STF);}
         
         signals=fmatrix(1,nsrc,1,NT);
         
@@ -144,7 +144,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot,int SH){
         
         if (SOURCE_SHAPE_SH==7){
             psource=vector(1,NT);
-            inseis_source_wavelet(psource,NT,ishot,SH);
+            inseis_source_wavelet(psource,NT,ishot,SH,STF);}
         }
         
         signals=fmatrix(1,nsrc,1,NT);

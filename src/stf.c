@@ -28,12 +28,13 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
 
 	/* declaration of global variables */
 	extern float DT, DH;
-	extern int SEIS_FORMAT, MYID, NT, SOURCE_SHAPE, TIME_FILT, TIMEWIN, TAPER_STF;
+	extern int SEIS_FORMAT, MYID, NT, SOURCE_SHAPE, TIME_FILT, TIMEWIN, TAPER_STF, ORDER;
 	extern char  PARA[STRING_SIZE], DATA_DIR[STRING_SIZE];
 	extern int TRKILL_STF, NORMALIZE, USE_WORKFLOW, WORKFLOW_STAGE;
 	extern char TRKILL_FILE_STF[STRING_SIZE];
 	extern char SIGNAL_FILE[STRING_SIZE];
     extern char SIGNAL_FILE_SH[STRING_SIZE];
+    extern FILE *FP;
     
     extern int TRKILL_STF_OFFSET;
     extern float TRKILL_STF_OFFSET_LOWER;
@@ -211,81 +212,71 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
 	
 	if (SOURCE_SHAPE==3) psource=rd_sour(&nts,fopen(SIGNAL_FILE,"r"));
 	if (SOURCE_SHAPE==7){
-		inseis_source_wavelet(psource,ns,ishot,SH);
+		inseis_source_wavelet(psource,ns,ishot,SH,1);
 	}
 	
 	/* calculating wavelet SIN**3 for convoling with STF */
 	tshift=srcpos[4][ishot];
 	fc=srcpos[5][ishot];
 	ts=1.0/fc;
-	for (nt=1;nt<=ns;nt++){
-		t=(float)nt*DT;
-		switch (SOURCE_SHAPE){
-					case 1 : 
-						/* Old Ricker Wavelet */
-						/* tau=PI*(t-ts-tshift)/(1.5*ts);
-						amp=(((1.0-4.0*tau*tau)*exp(-2.0*tau*tau))); */ 
-
-						/* New Ricker Wavelet, equal to SOFI2D */
-						tau=PI*(t-1.5*ts-tshift)/(ts);
-						amp=(((1.0-2.0*tau*tau)*exp(-tau*tau)));
-					break;
-					case 2 : 
-						if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
-						else amp=((sin(2.0*PI*(t-tshift)*fc) 
-			    				-0.5*sin(4.0*PI*(t-tshift)*fc)));
-
-						/*amp=((sin(2.0*PI*(t+tshift)*fc) 
-			    			-0.5*sin(4.0*PI*(t+tshift)*fc)));*/
-					break;
-					case 3 : 
-						if (nt<=nts) amp=psource[nt]; 
-						else amp=0.0;
-// 						amp=psource[nt];
-					break;  /* source wavelet from file SOURCE_FILE */
-					case 4 : 
-						/*tau=PI*(t-ts-tshift)/(1.5*ts);*/ /* Ricker */
-						/*amp=((t-ts-tshift)*exp(-2.0*tau*tau));*/
-						
-						if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
-						else amp=pow(sin(PI*(t+tshift)/ts),3.0);
-						break; /* sinus raised to the power of three */
-						
-					break; 
-					case 5 : 
-				                /* first derivative of a Gaussian */
-				                ts=1.2/fc;
-					        ag  = PI*PI*fc*fc;
-			                        amp = - 2.0 * ag * (t-ts) * exp(-ag*(t-ts)*(t-ts));
-					break;					
-					case 6 : 
-					        /* Bandlimited Spike */
-						amp=0.0;
-						if(nt==1+iround(tshift/DT)){
-						amp = 1.0;}
-					break; 
-					case 7 :
-					        /* source wavelet from file SOURCE_FILE */ 
-						amp=psource[nt];
-					break;  
-					case 8 :
-					        /* integral of sinus raised to the power of three */
-						if (t<tshift) {
-							 amp=0.0;}
-						if ((t>=tshift) && (t<=(tshift+ts))){
-							amp=(ts/(0.75*PI))*(0.5-0.75*cos(PI*(t-tshift)/ts)+0.25*pow(cos(PI*(t-tshift)/ts),3.0));}
-						if (t>(tshift+ts))
-							{amp=ts/(0.75*PI);}
-						break;                                                                                                                                           	
-					default : 
-						declare_error("Which source-wavelet ? ");
-					
-					
-		}/* end of switch (SOURCE_SHAPE)  */
-		wavelet[nt]=amp;
-		
-	}/*  end of for (nt=1;nt<=ns;nt++) */	
-	
+    for (nt=1;nt<=ns;nt++){
+        t=(float)nt*DT;
+        switch (SOURCE_SHAPE){
+                case 1 :
+                /* New Ricker Wavelet, equal to SOFI2D */
+                tau=PI*(t-1.5*ts-tshift)/(ts);
+                amp=(((1.0-2.0*tau*tau)*exp(-tau*tau)));
+                break;
+                case 2 :
+                if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
+                else amp=((sin(2.0*PI*(t-tshift)*fc)
+                           -0.5*sin(4.0*PI*(t-tshift)*fc)));
+                break;
+                case 3 :
+                /* source wavelet from file SOURCE_FILE */
+                if (nt<=nts) amp=psource[nt];
+                else amp=0.0;
+                break;
+                case 4 :
+                /* sinus raised to the power of three */
+                if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
+                else amp=pow(sin(PI*(t+tshift)/ts),3.0);
+                break;
+                
+                break;
+                case 5 :
+                /* first derivative of a Gaussian */
+                ts=1.2/fc;
+                ag  = PI*PI*fc*fc;
+                amp = - 2.0 * ag * (t-ts) * exp(-ag*(t-ts)*(t-ts));
+                break;
+                case 6 :
+                /* Bandlimited Spike */
+                amp=0.0;
+                if(nt==1+iround(tshift/DT)){
+                    amp = 1.0;}
+                break;
+                case 7 :
+                /* source wavelet from file SOURCE_FILE */
+                amp=psource[nt];
+                break;
+                case 8 :
+                /* integral of sinus raised to the power of three */
+                if (t<tshift) {
+                    amp=0.0;}
+                if ((t>=tshift) && (t<=(tshift+ts))){
+                    amp=(ts/(0.75*PI))*(0.5-0.75*cos(PI*(t-tshift)/ts)+0.25*pow(cos(PI*(t-tshift)/ts),3.0));}
+                if (t>(tshift+ts))
+            {amp=ts/(0.75*PI);}
+                break;                                                                                                                                           	
+            default : 
+                declare_error("Which source-wavelet ? ");
+                
+                
+        }/* end of switch (SOURCE_SHAPE)  */
+        wavelet[nt]=amp;
+        
+    }/*  end of for (nt=1;nt<=ns;nt++) */
 	
 	/* convolving wavelet with STF */
 	conv_FD(wavelet,source_time_function,stf_conv_wavelet,ns);
@@ -341,9 +332,6 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
 	printf(" PE %d is writing source time function for shot = %d to\n\t %s \n",MYID,ishot,qw);
 	outseis_vector(fp,fopen(qw,"w"),1,stf_conv_wavelet,recpos,recpos_loc,ntr,srcpos,0,ns,SEIS_FORMAT,ishot,0);
 	
-	/*sprintf(conv_y_tmp,"%s.shot%d.forward",SEIS_FILE_VY,ishot);
-	printf(" PE %d is writing %d seismograms (vy) for shot = %d to\n\t %s \n",MYID,ntr_glob,ishot,conv_y_tmp);
-	outseis_glob(fp,fopen(conv_y_tmp,"w"),1,sectionvy,recpos,recpos_loc,ntr_glob,srcpos,0,ns,SEIS_FORMAT,ishot,0);*/
 	
 	/*freestfinvengine();
 	free(data.triples);*/
