@@ -144,7 +144,7 @@ float ** wavelet(float ** srcpos_loc, int nsrc, int ishot, int SH, int STF){
         
         if (SOURCE_SHAPE_SH==7){
             psource=vector(1,NT);
-            inseis_source_wavelet(psource,NT,ishot,SH,STF);}
+            inseis_source_wavelet(psource,NT,ishot,SH,STF);
         }
         
         signals=fmatrix(1,nsrc,1,NT);
