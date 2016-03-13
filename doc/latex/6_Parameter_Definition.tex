@@ -120,37 +120,38 @@ Default values are:
 
 Five built-in wavelets of the seismic source are available. The corresponding source time functions are defined in \texttt{src/wavelet.c}. You may modify the time functions in this file and recompile to include your
 own analytical wavelet or to modify the shape of the built-in wavelets.
+\newline
 
-Ricker wavelet (SOURCE\_SHAPE=1):
+SOURCE\_SHAPE=1, Ricker wavelet:
 \begin{equation}
 r(\tau)=\left(1-2\tau^2\right)\exp(-\tau^2) \quad \mbox{with} \quad \tau=\frac{\pi(t-1.5/f_c-t_d)}{1.0/f_c}
 \label{eq_ricker}
 \end{equation}
 
-Fuchs-M\"uller wavelet (SOURCE\_SHAPE=2):
+SOURCE\_SHAPE=2, Fuchs-M\"uller wavelet:
 \begin{equation}
 f_m(t)=\sin(2\pi(t-t_d)f_c)-0.5\sin(4\pi(t-t_d)f_c) \quad \mbox{if} \quad t\in[t_d,t_d+1/fc] \quad \mbox{else} \quad fm(t)=0
 \label{eq_fm}
 \end{equation}
 
-$sin^3$ wavelet (SOURCE\_SHAPE=4):
+SOURCE\_SHAPE=4, $sin^3$ wavelet:
 \begin{equation}
 s3(t)=0.75 \pi f_c \sin(\pi(t+t_d)f_c)^3\quad \mbox{if} \quad t \in[t_d,t_d+1/fc] \quad \mbox{else} \quad s3(t)=0
 \label{eq_s3}
 \end{equation}
 
-First derivative of a Gaussian function (SOURCE\_SHAPE=5):
+SOURCE\_SHAPE=5, First derivative of a Gaussian function:
 \begin{equation}
 f(t)= -2.0 a (t-t_s) \exp(-a (t-t_s)^2)\quad \mbox{with} \quad a=\pi^2 f_c^2 \quad \mbox{and} \quad t_s=1.2/f_c
 \label{eq_deriv_of_gaussian}
 \end{equation}
 
-Delta pulse (SOURCE\_SHAPE=6):
-Lowpass filtered delta pulse. Note, that it is not clear if the lowpass filter used in the current version works correctly for a delta pulse.\\
+SOURCE\_SHAPE=6, delta pulse: Lowpass filtered delta pulse. Note, that it is not clear if the lowpass filter used in the current version works correctly for a delta pulse.\\
 
-Source time function from SIGNAL\_FILE in su format (SOURCE\_SHAPE=7).\\
+% Source time function from SIGNAL\_FILE in su format (SOURCE\_SHAPE=7).\\
 
-In these equations, t denotes time and $f_c=1/TS$ is the center frequency. $t_d$ is a time delay which can be defined for each source position in SOURCE\_FILE. Note that the symmetric (zero phase) Ricker signal is always delayed by $1.0/f_c$, which means that after one period the maximum amplitude is excited at the source location. Three of these 5 source wavelets and the corresponding amplitude spectra for a center frequency of $f_c=50$ Hz and a delay of $t_d=0$ are plotted in Figure \ref{fig_source_wavelets_json}. Note the delay of the Ricker signal described above. The Fuchs-M\"uller wavelet has a slightly higher center frequency and covers a broader frequency range.
+In these equations, t denotes time and $f_c$ is the center frequency. $t_d$ is a time delay which can be defined for each source position. Note that the symmetric (zero phase) Ricker signal is always delayed by $1.0/f_c$, which means that after one period the maximum amplitude is excited at the source location. Three of these 5 source wavelets and the corresponding amplitude spectra for a center frequency of $f_c=50$ Hz and $t_d=0$ are plotted in Figure \ref{fig_source_wavelets_json}. Note the delay of the Ricker signal described above. The Fuchs-M\"uller wavelet has a slightly higher center frequency and covers a broader frequency range.
+\newline
 
 \begin{figure}
 \begin{center}
@@ -162,8 +163,9 @@ spectrum, c) phase spectrum.  }
 \label{fig_source_wavelets_json}
 \end{figure}
 
-You may also use your own time function as the source wavelet (for instance the signal of the first arrival recorded by a geophone at near offsets). Specify SOURCE\_SHAPE=3 and save the samples of
-your source wavelet in ASCII-format in SIGNAL\_FILE. SIGNAL\_FILE should contain one sample per line. It should thus look like:
+\newpage
+
+SOURCE\_SHAPE=3 allows you to use your own time function as the source wavelet stored in ASCII-format in SIGNAL\_FILE. SIGNAL\_FILE should then contain one sample per line. It should thus look like:
 
 {\color{blue}{\begin{verbatim}
 0.0
@@ -175,12 +177,17 @@ your source wavelet in ASCII-format in SIGNAL\_FILE. SIGNAL\_FILE should contain
 The time interval between the samples must equal the time step interval (DT) of the FD simulation (see above)! Therefore it might be necessary to resample/interpolate a given source time function with a smaller sample rate. You may use the matlab script mfiles/resamp.m to resample your external source signal to the required sampling interval.
 \newline
 
-It is also possible to read different external source wavelets for each shot. Specify SOURCE\_SHAPE=7 and save the wavelets in su format in SIGNAL\_FILE.shot<no\_of\_shot>. The wavelets in each su file must equal the time step intervel (DT) and the number of time steps of the FD simulation!
+SOURCE\_SHAPE=7 is used for reading different external source wavelets for each shot. The wavelets in SU-format need to be saved in SIGNAL\_FILE.shot<shotnumber>.su.
+
+If you want to use the source time function inversion (INV\_STF==1, section \ref{sec:STF}) with an external wavelet, this wavelet needs to be provided at SIGNAL\_FILE.shot<shotnumber>\_start.su and the inverted wavelets will be stored in SIGNAL\_FILE.shot<shotnumber>.su (or SIGNAL\_FILE.<workflowstage>.<shotnumber>.su if you use the WORKFLOW option).
+
+The wavelets in each su file must have the same number of samples as specified by TIME/DT!
 \newline
 
 The following source types are availabe: explosive sources that excite compressional waves only (SOURCE\_TYPE=1), and point forces in the x- and y-direction (SOURCE\_TYPE=2,3).
 The force sources excite both P- and S-waves. The explosive source is located at the same position as the diagonal elements of the stress tensor, i.e. at (i,j) (Figure \ref{fig_cell}).
 The forces are located at the same position as the corresponding components of particle velocity (Figure \ref{fig_cell}). If (x,y) denotes the position at which the source location is defined in source.dat, then the actual force in x-direction is located at (x+DX/2,y) and the actual force in y-direction is located at (x,y+DY/2). With SOURCE\_TYPE=4 a custom directive force can be defined by a force angle between y and x. The angle of the force must be specified in the SOURCE\_FILE after AMP. This force is not aligned along the main directions.
+\newline
 
 The locations of multiple sources must be defined in an external ASCII file (SOURCE\_FILE) that has the following format:
 {\color{blue}{\begin{verbatim}
@@ -620,6 +627,7 @@ smaller than PRO the inversion aborts or in case of using frequency filtering (T
 \newpage
 
 \section{Source wavelet inversion}
+\label{sec:STF}
 To remove the contribution of the unknown source time function (STF) from the waveform residuals, it is necessary to design a filter which minimizes the misfit to the field recordings and raw synthetics. Therefore, a second forward simulation is applied. The first one is done with the wavelet specified in SOURCE\_SHAPE and the second one with the optimized source wavelet saved in SIGNAL\_FILE (see Section~\ref{sec:sources}). This optimized source wavelet is kept constant within N\_STF or within a frequency range (see below).\\
 
 {\color{blue}{\begin{verbatim}

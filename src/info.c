@@ -26,8 +26,8 @@
 void info(FILE *fp){
 
 	fprintf(fp," ***********************************************************\n");
-	fprintf(fp," This is program IFOS2D. Version 2.0                        \n");
-	fprintf(fp," Parallel 2-D elastic Finite Difference FWT code            \n");
+	fprintf(fp," This is program IFOS2D. Version 2.0.1                      \n");
+	fprintf(fp," Parallel 2-D elastic Full Waveform Inversion code.         \n");
 	fprintf(fp,"                                                            \n");
 	fprintf(fp," ***********************************************************\n");
 	fprintf(fp,"\n");

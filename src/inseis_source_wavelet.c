@@ -22,7 +22,7 @@
 #include "fd.h"
 #include "segy.h"
 
-void  inseis_source_wavelet(float *section, int ns, int ishot, int SH){
+void  inseis_source_wavelet(float *section, int ns, int ishot, int SH, int STF){
 
 	/* declaration of extern variables */
 	extern int MYID;
@@ -38,17 +38,25 @@ void  inseis_source_wavelet(float *section, int ns, int ishot, int SH){
 	char data[STRING_SIZE];
     FILE *fpdata;
     
-    if(SH==0) {
-        if(USE_WORKFLOW){
-            sprintf(data,"%s.stage%d.shot%d.su",SIGNAL_FILE,WORKFLOW_STAGE,ishot);
+    if (STF==0){ /* reading inverted signals */
+        if(SH==0) {
+            if(USE_WORKFLOW){
+                sprintf(data,"%s.stage%d.shot%d.su",SIGNAL_FILE,WORKFLOW_STAGE,ishot);
+            } else {
+                sprintf(data,"%s.shot%d.su",SIGNAL_FILE,ishot);
+            }
         } else {
-            sprintf(data,"%s.shot%d.su",SIGNAL_FILE,ishot);
+            if(USE_WORKFLOW){
+                sprintf(data,"%s.stage%d.shot%d.su",SIGNAL_FILE_SH,WORKFLOW_STAGE,ishot);
+            } else {
+                sprintf(data,"%s.shot%d.su",SIGNAL_FILE_SH,ishot);
+            }
         }
-    } else {
-        if(USE_WORKFLOW){
-            sprintf(data,"%s.stage%d.shot%d.su",SIGNAL_FILE_SH,WORKFLOW_STAGE,ishot);
+    } else { /* reading signals for STF inversion */
+        if(SH==0) {
+            sprintf(data,"%s.shot%d_start.su",SIGNAL_FILE,ishot);
         } else {
-            sprintf(data,"%s.shot%d.su",SIGNAL_FILE_SH,ishot);
+            sprintf(data,"%s.shot%d_start.su",SIGNAL_FILE_SH,ishot);
         }
     }
     

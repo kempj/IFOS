@@ -17,7 +17,7 @@
  -----------------------------------------------------------------------------------------*/
 
 /* ----------------------------------------------------------------------
- * This is program IFOS.
+ * This is program IFOS Version 2.0.1
  * Inversion of Full Observerd Seismograms
  *
  *  ----------------------------------------------------------------------*/
@@ -95,9 +95,9 @@ int main(int argc, char **argv){
     int step1, step2, step3=0, itests, iteste, stepmax, countstep;
     float scalefac;
     
-    /* Variables for Pseudo-Hessian calculation */
     int RECINC, ntr1;
-    int SOURCE_SHAPE_OLD;
+    int SOURCE_SHAPE_OLD=0;
+    int SOURCE_SHAPE_OLD_SH=0;
     
     /* Variables for L-BFGS */
     int LBFGS_NPAR=3;
@@ -903,11 +903,6 @@ int main(int argc, char **argv){
     
     MPI_Barrier(MPI_COMM_WORLD);
     
-    /* comunication initialisation for persistent communication */
-    /*comm_ini(bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, bufferbot_to_top, req_send, req_rec);*/
-    
-    snapseis=1;
-    snapseis1=1;
     SHOTINC=1;
     RECINC=1;
     
@@ -917,7 +912,9 @@ int main(int argc, char **argv){
         case 2: FC_EXT=filter_frequencies(&nfrq); FC=FC_EXT[FREQ_NR]; break;
     }
     
+    /* Save old SOURCE_SHAPE, which is needed for STF */
     SOURCE_SHAPE_OLD = SOURCE_SHAPE;
+    if(WAVETYPE==2 || WAVETYPE==3) SOURCE_SHAPE_OLD_SH=SOURCE_SHAPE_SH;
     
     nt_out=10000;
     if(!VERBOSE) nt_out=1e5;
@@ -1163,7 +1160,8 @@ int main(int argc, char **argv){
                     for (ishot=1;ishot<=nshots;ishot+=SHOTINC){
 
                         SOURCE_SHAPE = SOURCE_SHAPE_OLD;
-
+                        if(WAVETYPE==2 || WAVETYPE==3) SOURCE_SHAPE_SH=SOURCE_SHAPE_OLD_SH;
+                        
                         /*------------------------------------------------------------------------------*/
                         /*----------- Start of inversion of source time function -----------------------*/
                         /*------------------------------------------------------------------------------*/
@@ -1189,7 +1187,7 @@ int main(int argc, char **argv){
                                 srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
                             }
                             
-                            if((SOURCE_SHAPE==7)||(SOURCE_SHAPE==3))declare_error("SOURCE_SHAPE==7 or SOURCE_SHAPE==3 isn't possible with INV_STF==1");
+                            if(SOURCE_SHAPE==3) declare_error("SOURCE_SHAPE==3 isn't possible with INV_STF==1");
                             MPI_Barrier(MPI_COMM_WORLD);
                             
                             
@@ -1199,12 +1197,12 @@ int main(int argc, char **argv){
                             /* calculate wavelet for each source point P SV */
                             if(WAVETYPE==1||WAVETYPE==3){
                                 signals=NULL;
-                                signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
+                                signals=wavelet(srcpos_loc,nsrc_loc,ishot,0,1);
                             }
                             /* calculate wavelet for each source point SH */
                             if(WAVETYPE==2||WAVETYPE==3){
                                 signals_SH=NULL;
-                                signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1);
+                                signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1,1);
                             }
                             
                             
@@ -1558,10 +1556,19 @@ int main(int argc, char **argv){
                             srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
                         }
                         
+                        /*-------------------*/
+                        /*  Use STF wavelet  */
+                        /*-------------------*/
                         if(INV_STF){
+                            
                             SOURCE_SHAPE=7;
-                            if(WAVETYPE==1||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d \n",SIGNAL_FILE,ishot);
-                            if(WAVETYPE==2||WAVETYPE==3) fprintf(FP,"\n Using optimized source time function located in %s.shot%d  \n",SIGNAL_FILE_SH,ishot);
+                            if( WAVETYPE==1 || WAVETYPE==3 ) fprintf(FP,"\n Using optimized source time function located in %s.shot%d \n",SIGNAL_FILE,ishot);
+                            
+                            if( WAVETYPE==2 || WAVETYPE==3 ) {
+                                SOURCE_SHAPE_SH=7;
+                                fprintf(FP,"\n Using optimized source time function located in %s.shot%d  \n",SIGNAL_FILE_SH,ishot);
+                            }
+                            
                         }
                         
                         MPI_Barrier(MPI_COMM_WORLD);
@@ -1572,19 +1579,19 @@ int main(int argc, char **argv){
                         /* calculate wavelet for each source point P SV */
                         if(WAVETYPE==1||WAVETYPE==3){
                             signals=NULL;
-                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
+                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0,0);
                         }
                         /* calculate wavelet for each source point SH */
                         if(WAVETYPE==2||WAVETYPE==3){
                             signals_SH=NULL;
-                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1);
+                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1,0);
                         }
                         
                         /*------------------------------------------------------------------------------*/
                         /*----------- Start of Time Domain Filtering -----------------------------------*/
                         /*------------------------------------------------------------------------------*/
                         
-                        if (((TIME_FILT==1) || (TIME_FILT==2))){
+                        if (((TIME_FILT==1) || (TIME_FILT==2)) && (SOURCE_SHAPE!=6) && (INV_STF==0)){
                             fprintf(FP,"\n Time Domain Filter applied: Lowpass with corner frequency of %.2f Hz, order %d\n",FC,ORDER);
                             
                             /*time domain filtering of the source signal */
@@ -2043,6 +2050,9 @@ int main(int argc, char **argv){
                                     } /* end ADJOINT_TYPE */
                                 }
                                 
+                                /* --------------------------------- */
+                                /* read seismic data from SU file vz */
+                                /* --------------------------------- */
                                 if(WAVETYPE==2 || WAVETYPE==3){
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,10,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
@@ -3091,6 +3101,9 @@ int main(int argc, char **argv){
             calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
             
             alpha_SL_old=1;
+            
+            /* If minimum number of iterations would be enforced, L-BFGS is likely to crash */
+            min_iter_help=0;
         }
         
         /*-----------------------------------------------------*/
@@ -3262,12 +3275,12 @@ int main(int argc, char **argv){
                         /* calculate wavelet for each source point P SV */
                         if(WAVETYPE==1||WAVETYPE==3){
                             signals=NULL;
-                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0);
+                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0,0);
                         }
                         /* calculate wavelet for each source point SH */
                         if(WAVETYPE==2||WAVETYPE==3){
                             signals_SH=NULL;
-                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1);
+                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1,0);
                         }
                         
                         /*------------------------------------------------------------------------------*/
@@ -3275,7 +3288,7 @@ int main(int argc, char **argv){
                         /*------------------------------------------------------------------------------*/
                         /*time domain filtering of the source signal */
                         if(WAVETYPE==1||WAVETYPE==3){
-                            if(((TIME_FILT==1) || (TIME_FILT==2))){
+                            if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)){
                                 timedomain_filt(signals,FC,ORDER,nsrc_loc,ns,1);
                             }
                             
@@ -3283,7 +3296,7 @@ int main(int argc, char **argv){
                         
                         /*time domain filtering of the source signal */
                         if(WAVETYPE==2||WAVETYPE==3){
-                            if(((TIME_FILT==1) || (TIME_FILT==2))){
+                            if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)){
                                 timedomain_filt(signals_SH,FC,ORDER,nsrc_loc,ns,1);
                             }
                             
@@ -3523,6 +3536,9 @@ int main(int argc, char **argv){
                                 }
                             }
                             
+                            /* --------------------------------- */
+                            /* read seismic data from SU file vz */
+                            /* --------------------------------- */
                             if(WAVETYPE==2 || WAVETYPE==3){
                                 inseis(fprec,ishot,sectionread,ntr_glob,ns,10,iter);
                                 if ((TIME_FILT==1 )|| (TIME_FILT==2)){
