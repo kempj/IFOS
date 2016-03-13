@@ -118,7 +118,6 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int EPRECOND_PER_SHOT;
     extern int EPRECOND_PER_SHOT_SH;
     
-    extern int LBFGS_SURFACE;
     extern int LBFGS_STEP_LENGTH;
     extern int N_LBFGS;
     
@@ -700,14 +699,9 @@ void read_par_json(FILE *fp, char *fileinp){
                         WOLFE_CONDITION=0;
                     }
                     if(GRAD_METHOD==2) {
-                                                
-                        if (get_int_from_objectlist("LBFGS_SURFACE",number_readobjects,&LBFGS_SURFACE,varname_list, value_list)){
-                            LBFGS_SURFACE=0;
-                            fprintf(fp,"Variable LBFGS_SURFACE is set to default value %d.\n",LBFGS_SURFACE);
-                        } else { declare_error("LBFGS_SURFACE not supported anymore"); }
                         if (get_int_from_objectlist("LBFGS_STEP_LENGTH",number_readobjects,&LBFGS_STEP_LENGTH,varname_list, value_list)){
                             LBFGS_STEP_LENGTH=1;
-                            fprintf(fp,"Variable LBFGS_SURFACE is set to default value %d.\n",LBFGS_STEP_LENGTH);
+                            fprintf(fp,"Variable LBFGS_STEP_LENGTH is set to default value %d.\n",LBFGS_STEP_LENGTH);
                         }
                         if (get_int_from_objectlist("N_LBFGS",number_readobjects,&N_LBFGS,varname_list, value_list)){
                             N_LBFGS=5;
@@ -727,7 +721,7 @@ void read_par_json(FILE *fp, char *fileinp){
                                 fprintf(fp,"Variable WOLFE_NUM_TEST is set to default value %d.\n",WOLFE_NUM_TEST);
                             }
                             if (get_int_from_objectlist("WOLFE_TRY_OLD_STEPLENGTH",number_readobjects,&WOLFE_TRY_OLD_STEPLENGTH,varname_list, value_list)){
-                                WOLFE_TRY_OLD_STEPLENGTH=1;
+                                WOLFE_TRY_OLD_STEPLENGTH=0;
                                 fprintf(fp,"Variable WOLFE_TRY_OLD_STEPLENGTH is set to default value %d.\n",WOLFE_TRY_OLD_STEPLENGTH);
                             }
                             if (get_float_from_objectlist("WOLFE_C1_SL",number_readobjects,&WOLFE_C1_SL,varname_list, value_list)){

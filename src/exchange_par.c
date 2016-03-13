@@ -109,7 +109,6 @@ void exchange_par(void){
     extern int EPRECOND_PER_SHOT_SH;
     
     extern float LBFGS_SCALE_GRADIENTS;
-    extern int LBFGS_SURFACE;
     extern int LBFGS_STEP_LENGTH;
     
     extern int N_LBFGS;
@@ -356,7 +355,6 @@ void exchange_par(void){
         idum[101]=EPRECOND;
         idum[102]=EPRECOND_ITER;
         
-        idum[103]=LBFGS_SURFACE;
         idum[104]=LBFGS_STEP_LENGTH;
         
         idum[105]=EPRECOND_PER_SHOT;
@@ -641,7 +639,6 @@ void exchange_par(void){
     EPRECOND=idum[101];
     EPRECOND_ITER=idum[102];
     
-    LBFGS_SURFACE=idum[103];
     LBFGS_STEP_LENGTH=idum[104];
     
     EPRECOND_PER_SHOT= idum[105];
