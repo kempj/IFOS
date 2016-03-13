@@ -136,10 +136,10 @@
 
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",
-			"F_HP" : "1",
-			"FC_START" : "10.0",
-			"FC_END" : "70.0",
-			"FC_INCR" : "10.0",
+			"F_HIGH_PASS" : "1",
+			"F_LOW_PASS_START" : "10.0",
+			"F_LOW_PASS_END" : "70.0",
+			"F_LOW_PASS_INCR" : "10.0",
 			"ORDER" : "4",
 			"ZERO_PHASE" : "1",    
 

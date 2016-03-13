@@ -24,7 +24,7 @@
 #include "stfinv/stfinv.h"
 #include "segy.h"
 
-void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy_conv, float * source_time_function, int  **recpos, int  **recpos_loc, int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float FC, int SH,int nsrc_glob){
+void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy_conv, float * source_time_function, int  **recpos, int  **recpos_loc, int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float F_LOW_PASS, int SH,int nsrc_glob){
 
 	/* declaration of global variables */
 	extern float DT, DH;
@@ -314,15 +314,15 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
 	if((TIME_FILT==1)||(TIME_FILT==2)){
         if(SH==0) {
             if(USE_WORKFLOW){
-                sprintf(qw,"%s.stage%d.shot%d_%dHz.su",SIGNAL_FILE,WORKFLOW_STAGE,ishot,(int)FC);
+                sprintf(qw,"%s.stage%d.shot%d_%dHz.su",SIGNAL_FILE,WORKFLOW_STAGE,ishot,(int)F_LOW_PASS);
             } else {
-                sprintf(qw,"%s.shot%d_%dHz.su",SIGNAL_FILE,ishot,(int)FC);
+                sprintf(qw,"%s.shot%d_%dHz.su",SIGNAL_FILE,ishot,(int)F_LOW_PASS);
             }
         } else {
             if(USE_WORKFLOW){
-                sprintf(qw,"%s.stage%d.shot%d_%dHz.su",SIGNAL_FILE_SH,WORKFLOW_STAGE,ishot,(int)FC);
+                sprintf(qw,"%s.stage%d.shot%d_%dHz.su",SIGNAL_FILE_SH,WORKFLOW_STAGE,ishot,(int)F_LOW_PASS);
             } else {
-                sprintf(qw,"%s.shot%d_%dHz.su",SIGNAL_FILE_SH,ishot,(int)FC);
+                sprintf(qw,"%s.shot%d_%dHz.su",SIGNAL_FILE_SH,ishot,(int)F_LOW_PASS);
             }
         }
 		printf(" PE %d is writing source time function for shot = %d to\n\t %s \n",MYID,ishot,qw);

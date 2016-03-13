@@ -63,7 +63,7 @@ void write_par(FILE *fp){
     extern char PARA[STRING_SIZE];
     
     extern int TIME_FILT, ORDER, ZERO_PHASE;
-    extern float FC_START, FC_END, FC_INCR;
+    extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR;
     extern int LNORM, DTINV;
     extern int STEPMAX, TRKILL, TRKILL_STF;
     
@@ -517,8 +517,8 @@ void write_par(FILE *fp){
         if (TIME_FILT){
             if(TIME_FILT==1){
                 fprintf(fp," TIME_FILT=%d: Time domain filtering is applied \n",TIME_FILT);
-                fprintf(fp," Starting at frequencies of %.2f Hz\n",FC_START);
-                fprintf(fp," Increasing the bandwidth up to %.2f Hz in steps of %.2f Hz\n",FC_END,FC_INCR);
+                fprintf(fp," Starting at frequencies of %.2f Hz\n",F_LOW_PASS_START);
+                fprintf(fp," Increasing the bandwidth up to %.2f Hz in steps of %.2f Hz\n",F_LOW_PASS_END,F_LOW_PASS_INCR);
             }
             if(TIME_FILT==2){
                 fprintf(fp," TIME_FILT=%d: Time domain filtering is applied \n Frequencies will be read from file: %s\n",TIME_FILT,FREQ_FILE);}

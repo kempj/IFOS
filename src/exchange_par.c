@@ -60,7 +60,7 @@ void exchange_par(void){
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
     extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
-    extern float FC_START, FC_END, FC_INCR, F_HP;
+    extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR, F_HIGH_PASS;
     extern int LNORM, DTINV;
     extern int STEPMAX;
     extern float EPS_SCALE, SCALEFAC;
@@ -175,9 +175,9 @@ void exchange_par(void){
         fdum[39]  = npower;
         fdum[40]  = k_max_PML;
 
-        fdum[42]  = FC_START;
-        fdum[43]  = FC_END;
-        fdum[44]  = FC_INCR;
+        fdum[42]  = F_LOW_PASS_START;
+        fdum[43]  = F_LOW_PASS_END;
+        fdum[44]  = F_LOW_PASS_INCR;
         
         fdum[45]  = EPS_SCALE;
         fdum[46]  = SCALEFAC;
@@ -203,7 +203,7 @@ void exchange_par(void){
         
         fdum[58]  = A;
         
-        fdum[59]  = F_HP;
+        fdum[59]  = F_HIGH_PASS;
         
         fdum[60] = JOINT_INVERSION_PSV_SH_ALPHA_VS;
         fdum[61] = JOINT_INVERSION_PSV_SH_ALPHA_RHO;
@@ -457,9 +457,9 @@ void exchange_par(void){
     k_max_PML = fdum[40];
     
     
-    FC_START = fdum[42];
-    FC_END = fdum[43];
-    FC_INCR = fdum[44];
+    F_LOW_PASS_START = fdum[42];
+    F_LOW_PASS_END = fdum[43];
+    F_LOW_PASS_INCR = fdum[44];
     
     EPS_SCALE = fdum[45];
     SCALEFAC = fdum[46];
@@ -486,7 +486,7 @@ void exchange_par(void){
     
     A = fdum[58];
     
-    F_HP = fdum[59];
+    F_HIGH_PASS = fdum[59];
     
     JOINT_INVERSION_PSV_SH_ALPHA_VS = fdum[60];
     JOINT_INVERSION_PSV_SH_ALPHA_RHO = fdum[61];

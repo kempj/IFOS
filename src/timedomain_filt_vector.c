@@ -38,7 +38,7 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ns, int meth
 	*/
     
     /* declaration of external variables */
-    extern float DT, F_HP;
+    extern float DT, F_HIGH_PASS;
     extern int ZERO_PHASE, NT,MYID;
     
     /* declaration of local variables */
@@ -56,8 +56,8 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ns, int meth
     if (ZERO_PHASE==1) seismogram_reverse_hp = dvector(1,ns);
     
     T0=1.0/(double)fc;
-    if(F_HP)
-        T0_hp=1.0/(double)F_HP;
+    if(F_HIGH_PASS)
+        T0_hp=1.0/(double)F_HIGH_PASS;
     if(method==2)
         T0_hp=1.0/(double)fc;
         
@@ -85,7 +85,7 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ns, int meth
         }
     }
 
-    if ((method==2)||(F_HP)){   /*highpass filter*/
+    if ((method==2)||(F_HIGH_PASS)){   /*highpass filter*/
         for (j=1;j<=ns;j++){
             seismogram_hp[j]=(double)data[j];
         }

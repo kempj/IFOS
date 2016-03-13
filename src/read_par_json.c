@@ -63,7 +63,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern char PARA[STRING_SIZE];
     
     extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
-    extern float FC_START, FC_END, FC_INCR, F_HP;
+    extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR, F_HIGH_PASS;
     
     extern int LNORM, DTINV;
     
@@ -131,6 +131,12 @@ void read_par_json(FILE *fp, char *fileinp){
     /* definition of local variables */
     
     int number_readobjects=0,fserr=0;
+    
+    
+    /* Support naming of variables  */
+    float FC_START, FC_END, FC_INCR, F_HP;
+    
+    
     char errormessage[STRING_SIZE2];
     
     char ** varname_list, ** value_list;
@@ -813,24 +819,43 @@ void read_par_json(FILE *fp, char *fileinp){
                     if (get_int_from_objectlist("WRITE_FILTERED_DATA",number_readobjects,&WRITE_FILTERED_DATA,varname_list, value_list)){
                         WRITE_FILTERED_DATA=0;
                     }
-                    if (get_float_from_objectlist("F_HP",number_readobjects,&F_HP,varname_list, value_list)){
-                        F_HP=0.0;
-                        fprintf(fp,"Variable F_HP is set to default value %f.\n",F_HP);}
-                    if (get_float_from_objectlist("FC_START",number_readobjects,&FC_START,varname_list, value_list))
-                        if (TIME_FILT==1)declare_error("Variable FC_START could not be retrieved from the json input file!");
-                    if (get_float_from_objectlist("FC_END",number_readobjects,&FC_END,varname_list, value_list))
-                        if (TIME_FILT==1)declare_error("Variable FC_END could not be retrieved from the json input file!");
-                    if (get_float_from_objectlist("FC_INCR",number_readobjects,&FC_INCR,varname_list, value_list))
-                        if (TIME_FILT==1)declare_error("Variable FC_INCR could not be retrieved from the json input file!");
-                    if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list))
-                        if (TIME_FILT==1)declare_error("Variable ORDER could not be retrieved from the json input file!");
+                    if (get_float_from_objectlist("F_HIGH_PASS",number_readobjects,&F_HIGH_PASS,varname_list, value_list)){
+                        /* Support of old variable naming: Test if old variable naming is used */
+                        if (get_float_from_objectlist("F_HP",number_readobjects,&F_HIGH_PASS,varname_list, value_list)){
+                            F_HIGH_PASS=0.0;
+                            fprintf(fp,"Variable F_HIGH_PASS is set to default value %f.\n",F_HIGH_PASS);
+                        }
+                    }
+                    if (TIME_FILT==1) {
+                        if (get_float_from_objectlist("F_LOW_PASS_START",number_readobjects,&F_LOW_PASS_START,varname_list, value_list)){
+                            /* Support of old variable naming: Test if old variable naming is used */
+                            if (get_float_from_objectlist("FC_START",number_readobjects,&F_LOW_PASS_START,varname_list, value_list)){
+                                declare_error("Variable F_LOW_PASS_START could not be retrieved from the json input file!");
+                            }
+                        }
+                        if (get_float_from_objectlist("F_LOW_PASS_END",number_readobjects,&F_LOW_PASS_END,varname_list, value_list)){
+                            /* Support of old variable naming: Test if old variable naming is used */
+                            if (get_float_from_objectlist("FC_END",number_readobjects,&F_LOW_PASS_END,varname_list, value_list)){
+                                declare_error("Variable F_LOW_PASS_END could not be retrieved from the json input file!");
+                            }
+                        }
+                        if (get_float_from_objectlist("F_LOW_PASS_INCR",number_readobjects,&F_LOW_PASS_INCR,varname_list, value_list)){
+                            /* Support of old variable naming: Test if old variable naming is used */
+                            if (get_float_from_objectlist("FC_INCR",number_readobjects,&F_LOW_PASS_INCR,varname_list, value_list)){
+                                declare_error("Variable F_LOW_PASS_INCR could not be retrieved from the json input file!");
+                            }
+                        }
+                        if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list)){
+                            declare_error("Variable ORDER could not be retrieved from the json input file!");
+                        }
+                    }
                     if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
                         ZERO_PHASE=0;
                         fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
                     if (TIME_FILT==2) {
-                        if (get_float_from_objectlist("F_HP",number_readobjects,&F_HP,varname_list, value_list)){
-                            F_HP=0.0;
-                            fprintf(fp,"Variable F_HP is set to default value %f.\n",F_HP);}
+                        if (get_float_from_objectlist("F_HIGH_PASS",number_readobjects,&F_HIGH_PASS,varname_list, value_list)){
+                            F_HIGH_PASS=0.0;
+                            fprintf(fp,"Variable F_HIGH_PASS is set to default value %f.\n",F_HIGH_PASS);}
                         if (get_string_from_objectlist("FREQ_FILE",number_readobjects,FREQ_FILE,varname_list, value_list))
                             declare_error("Variable FREQ_FILE could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list))

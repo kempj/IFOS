@@ -149,8 +149,8 @@ int main(int argc, char **argv){
     WORKFLOW_STAGE=1;
     
     /* variable for time domain filtering */
-    float FC;
-    float *FC_EXT=NULL;
+    float F_LOW_PASS;
+    float *F_LOW_PASS_EXT=NULL;
     int nfrq=0;
     int FREQ_NR=1;
 
@@ -907,9 +907,9 @@ int main(int argc, char **argv){
     RECINC=1;
     
     switch(TIME_FILT){
-        case 1: FC=FC_START; break;
+        case 1: F_LOW_PASS=F_LOW_PASS_START; break;
             /*read frequencies from file*/
-        case 2: FC_EXT=filter_frequencies(&nfrq); FC=FC_EXT[FREQ_NR]; break;
+        case 2: F_LOW_PASS_EXT=filter_frequencies(&nfrq); F_LOW_PASS=F_LOW_PASS_EXT[FREQ_NR]; break;
     }
     
     /* Save old SOURCE_SHAPE, which is needed for STF */
@@ -927,7 +927,7 @@ int main(int argc, char **argv){
         // At each iteration the workflow is applied
         if(USE_WORKFLOW&&(FORWARD_ONLY==0)){
             
-            apply_workflow(workflow,workflow_lines,workflow_header,&iter,&FC,wavetype_start,&change_wavetype_iter,&LBFGS_iter_start);
+            apply_workflow(workflow,workflow_lines,workflow_header,&iter,&F_LOW_PASS,wavetype_start,&change_wavetype_iter,&LBFGS_iter_start);
             
         }
         
@@ -1084,7 +1084,7 @@ int main(int argc, char **argv){
                                 if (TIME_FILT==0){
                                     fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
                                 else{
-                                    fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t FC \n");
+                                    fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \n");
                                 }
                             }
                         }
@@ -1447,21 +1447,21 @@ int main(int argc, char **argv){
                                             if(WAVETYPE==1 || WAVETYPE==3){
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
                                                     inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
-                                                    timedomain_filt(sectionvy_obs,FC,ORDER,ntr_glob,ns,1);
+                                                    timedomain_filt(sectionvy_obs,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                                 }
                                                 if (ADJOINT_TYPE==4){
                                                     inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
-                                                    timedomain_filt(sectionp_obs,FC,ORDER,ntr_glob,ns,1);
+                                                    timedomain_filt(sectionp_obs,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                                 }
                                             }
                                             
                                             if(WAVETYPE==2 || WAVETYPE==3){
                                                 inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
-                                                timedomain_filt(sectionvz_obs,FC,ORDER,ntr_glob,ns,1);
+                                                timedomain_filt(sectionvz_obs,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                             }
                                             
                                             printf("\n ====================================================================================================== \n");
-                                            printf("\n Time Domain Filter is used for the inversion: lowpass filter, corner frequency of %.2f Hz, order %d\n",FC,ORDER);
+                                            printf("\n Time Domain Filter is used for the inversion: lowpass filter, corner frequency of %.2f Hz, order %d\n",F_LOW_PASS,ORDER);
                                             printf("\n ====================================================================================================== \n");
                                             
                                             if(iter==1){
@@ -1475,15 +1475,15 @@ int main(int argc, char **argv){
                                             
                                             if(WAVETYPE==1 || WAVETYPE==3){
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0,nsrc_glob);
+                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
                                                 }
                                                 if (ADJOINT_TYPE==4){
-                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0,nsrc_glob);
+                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
                                                 }
                                             }
                                             
                                             if(WAVETYPE==2 || WAVETYPE==3){
-                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1,nsrc_glob);
+                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,1,nsrc_glob);
                                             }
                                             
 
@@ -1513,15 +1513,15 @@ int main(int argc, char **argv){
                                                 }
                                                 
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
-                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0,nsrc_glob);
+                                                    stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
                                                 }
                                                 if (ADJOINT_TYPE==4){
-                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,0,nsrc_glob);
+                                                    stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
                                                 }
                                             }
                                             if(WAVETYPE==2 || WAVETYPE==3){
                                                 inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
-                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,FC,1,nsrc_glob);
+                                                stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,1,nsrc_glob);
                                             }
                                         }
                                     }
@@ -1592,11 +1592,11 @@ int main(int argc, char **argv){
                         /*------------------------------------------------------------------------------*/
                         
                         if (((TIME_FILT==1) || (TIME_FILT==2)) && (SOURCE_SHAPE!=6) && (INV_STF==0)){
-                            fprintf(FP,"\n Time Domain Filter applied: Lowpass with corner frequency of %.2f Hz, order %d\n",FC,ORDER);
+                            fprintf(FP,"\n Time Domain Filter applied: Lowpass with corner frequency of %.2f Hz, order %d\n",F_LOW_PASS,ORDER);
                             
                             /*time domain filtering of the source signal */
-                            if(WAVETYPE==1||WAVETYPE==3) timedomain_filt(signals,FC,ORDER,nsrc_loc,ns,1);
-                            if(WAVETYPE==2||WAVETYPE==3) timedomain_filt(signals_SH,FC,ORDER,nsrc_loc,ns,1);
+                            if(WAVETYPE==1||WAVETYPE==3) timedomain_filt(signals,F_LOW_PASS,ORDER,nsrc_loc,ns,1);
+                            if(WAVETYPE==2||WAVETYPE==3) timedomain_filt(signals_SH,F_LOW_PASS,ORDER,nsrc_loc,ns,1);
                             
                         }
                         /*------------------------------------------------------------------------------*/
@@ -1989,7 +1989,7 @@ int main(int argc, char **argv){
                                     if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==3)){ /* if ADJOINT_TYPE */
                                         inseis(fprec,ishot,sectionread,ntr_glob,ns,1,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)){
-                                            timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                         }
                                         h=1;
                                         for(i=1;i<=ntr;i++){
@@ -2012,7 +2012,7 @@ int main(int argc, char **argv){
                                     if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==2)){ /* if ADJOINT_TYPE */
                                         inseis(fprec,ishot,sectionread,ntr_glob,ns,2,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)){
-                                            timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                         }
                                         h=1;
                                         for(i=1;i<=ntr;i++){
@@ -2034,7 +2034,7 @@ int main(int argc, char **argv){
                                     if(ADJOINT_TYPE==4){ /* if ADJOINT_TYPE */
                                         inseis(fprec,ishot,sectionread,ntr_glob,ns,9,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)){
-                                            timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                         }
                                         h=1;
                                         for(i=1;i<=ntr;i++){
@@ -2056,7 +2056,7 @@ int main(int argc, char **argv){
                                 if(WAVETYPE==2 || WAVETYPE==3){
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,10,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
-                                        timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
+                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                     }
                                     h=1;
                                     for(i=1;i<=ntr;i++){
@@ -2902,8 +2902,8 @@ int main(int argc, char **argv){
                 /* ----------------------------------------------------------------------*/
                 if((GRAD_METHOD==1)){
                     
-                    if (WAVETYPE==1 || WAVETYPE==3) PCG(waveconv, taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, C_vp, gradp, nfstart_jac, waveconv_u, C_vs, gradp_u, waveconv_rho, C_rho, gradp_rho,Vs_avg,FC);
-                    if (WAVETYPE==2 || WAVETYPE==3) PCG_SH(taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, nfstart_jac, waveconv_u_z, C_vs, gradp_u_z, waveconv_rho_z, C_rho, gradp_rho_z,Vs_avg,FC);
+                    if (WAVETYPE==1 || WAVETYPE==3) PCG(waveconv, taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, C_vp, gradp, nfstart_jac, waveconv_u, C_vs, gradp_u, waveconv_rho, C_rho, gradp_rho,Vs_avg,F_LOW_PASS);
+                    if (WAVETYPE==2 || WAVETYPE==3) PCG_SH(taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, nfstart_jac, waveconv_u_z, C_vs, gradp_u_z, waveconv_rho_z, C_rho, gradp_rho_z,Vs_avg,F_LOW_PASS);
                     
                 }
                 
@@ -2959,7 +2959,7 @@ int main(int argc, char **argv){
                     if(WAVETYPE==1 || WAVETYPE==3){
                         if (SWS_TAPER_FILE){   /* read taper from BIN-File*/
                             taper_grad(waveconv,taper_coeff,srcpos,nsrc,recpos,ntr_glob,4);}
-                        if(GRAD_FILTER==1){smooth(waveconv,1,1,Vs_avg,FC);}
+                        if(GRAD_FILTER==1){smooth(waveconv,1,1,Vs_avg,F_LOW_PASS);}
                     }
                     
                     if (SWS_TAPER_FILE && !ACOUSTIC){   /* read taper from BIN-File*/
@@ -2968,8 +2968,8 @@ int main(int argc, char **argv){
                     if (SWS_TAPER_FILE){   /* read taper from BIN-File*/
                         taper_grad(waveconv_rho,taper_coeff,srcpos,nsrc,recpos,ntr_glob,6);}
                     
-                    if(GRAD_FILTER==1&& !ACOUSTIC){smooth(waveconv_u,2,1,Vs_avg,FC);}
-                    if(GRAD_FILTER==1){smooth(waveconv_rho,3,1,Vs_avg,FC);}
+                    if(GRAD_FILTER==1&& !ACOUSTIC){smooth(waveconv_u,2,1,Vs_avg,F_LOW_PASS);}
+                    if(GRAD_FILTER==1){smooth(waveconv_rho,3,1,Vs_avg,F_LOW_PASS);}
                     
                     if(WOLFE_CONDITION) {
                         for (j=1;j<=NY;j=j+IDY){
@@ -3093,7 +3093,7 @@ int main(int argc, char **argv){
             if (TIME_FILT==0){
                 if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old);}
             else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,FC);
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS);
             }
             
             /* No update is done here, however model fils are written to disk for easy post processing */
@@ -3134,7 +3134,7 @@ int main(int argc, char **argv){
             if (TIME_FILT==0){
                 if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new);}
             else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,FC);
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS);
             }
             
             /* initiate variables for next iteration */
@@ -3289,7 +3289,7 @@ int main(int argc, char **argv){
                         /*time domain filtering of the source signal */
                         if(WAVETYPE==1||WAVETYPE==3){
                             if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)){
-                                timedomain_filt(signals,FC,ORDER,nsrc_loc,ns,1);
+                                timedomain_filt(signals,F_LOW_PASS,ORDER,nsrc_loc,ns,1);
                             }
                             
                         }
@@ -3297,7 +3297,7 @@ int main(int argc, char **argv){
                         /*time domain filtering of the source signal */
                         if(WAVETYPE==2||WAVETYPE==3){
                             if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)){
-                                timedomain_filt(signals_SH,FC,ORDER,nsrc_loc,ns,1);
+                                timedomain_filt(signals_SH,F_LOW_PASS,ORDER,nsrc_loc,ns,1);
                             }
                             
                         }
@@ -3486,7 +3486,7 @@ int main(int argc, char **argv){
                                 if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==3)){ /* if ADJOINT_TYPE */
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,1,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
-                                        timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
+                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                     }
                                     h=1;
                                     for(i=1;i<=ntr;i++){
@@ -3505,7 +3505,7 @@ int main(int argc, char **argv){
                                 if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==2)){ /* if ADJOINT_TYPE */
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,2,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
-                                        timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
+                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                     }
                                     h=1;
                                     for(i=1;i<=ntr;i++){
@@ -3523,7 +3523,7 @@ int main(int argc, char **argv){
                                 if(ADJOINT_TYPE==4){ /* if ADJOINT_TYPE */
                                     inseis(fprec,ishot,sectionread,ntr_glob,ns,9,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)){
-                                        timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
+                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                     }
                                     h=1;
                                     for(i=1;i<=ntr;i++){
@@ -3542,7 +3542,7 @@ int main(int argc, char **argv){
                             if(WAVETYPE==2 || WAVETYPE==3){
                                 inseis(fprec,ishot,sectionread,ntr_glob,ns,10,iter);
                                 if ((TIME_FILT==1 )|| (TIME_FILT==2)){
-                                    timedomain_filt(sectionread,FC,ORDER,ntr_glob,ns,1);
+                                    timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
                                 }
                                 h=1;
                                 for(i=1;i<=ntr;i++){
@@ -3774,7 +3774,7 @@ int main(int argc, char **argv){
                 if (TIME_FILT==0){
                     fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4]);}
                 else{
-                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f\n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],FC);}
+                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f\n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS);}
             }
             
             /* saving history of final L2*/
@@ -3795,12 +3795,12 @@ int main(int argc, char **argv){
         /* ------------------------------------*/
         if (FORWARD_ONLY==0 && (opteps_vp>0.0 || WOLFE_CONDITION)){
             if(!ACOUSTIC){
-                if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vs_avg,FC);
-                if(MODEL_FILTER)smooth(pu,5,2,Vs_avg,FC);
-                if(MODEL_FILTER)smooth(prho,6,2,Vs_avg,FC);
+                if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vs_avg,F_LOW_PASS);
+                if(MODEL_FILTER)smooth(pu,5,2,Vs_avg,F_LOW_PASS);
+                if(MODEL_FILTER)smooth(prho,6,2,Vs_avg,F_LOW_PASS);
             }else{
-                if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vp_avg,FC);
-                if(MODEL_FILTER)smooth(prho,6,2,Vp_avg,FC);
+                if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vp_avg,F_LOW_PASS);
+                if(MODEL_FILTER)smooth(prho,6,2,Vp_avg,F_LOW_PASS);
             }
         }
         
@@ -3917,19 +3917,19 @@ int main(int argc, char **argv){
                         printf("\n Did not find a step length which decreases the misfit.\n");}
                 }
                 
-                FC=FC+FC_INCR;
+                F_LOW_PASS=F_LOW_PASS+F_LOW_PASS_INCR;
                 do_stf=1;
                 min_iter_help=0;
                 min_iter_help=iter+MIN_ITER;
                 
-                if(FC>FC_END){
+                if(F_LOW_PASS>F_LOW_PASS_END){
                     if(MYID==0){
-                        printf("\n Reached the maximum frequency of %4.2f Hz \n",FC);
+                        printf("\n Reached the maximum frequency of %4.2f Hz \n",F_LOW_PASS);
                     }
                     break;
                 }
                 
-                if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",FC);
+                if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",F_LOW_PASS);
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
@@ -3950,17 +3950,17 @@ int main(int argc, char **argv){
                 
                 if(FREQ_NR==nfrq){
                     if(MYID==0){
-                        printf("\n Finished at the maximum frequency of %4.2f Hz \n",FC);
+                        printf("\n Finished at the maximum frequency of %4.2f Hz \n",F_LOW_PASS);
                     }
                     break;
                 }
                 
                 FREQ_NR=FREQ_NR+1;
-                FC=FC_EXT[FREQ_NR];
+                F_LOW_PASS=F_LOW_PASS_EXT[FREQ_NR];
                 do_stf=1;
                 min_iter_help=0;
                 min_iter_help=iter+MIN_ITER;
-                if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",FC);
+                if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",F_LOW_PASS);
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
@@ -4348,7 +4348,7 @@ int main(int argc, char **argv){
 
     
     if(TIME_FILT==2){
-        free_vector(FC_EXT,1,nfrq);
+        free_vector(F_LOW_PASS_EXT,1,nfrq);
     }
     
     if (nsrc_loc>0){

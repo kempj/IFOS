@@ -31,7 +31,7 @@ extern FILE *FP;
 FILE *freqf;
 char cline[256];
 int IT=1;
-float *FC;
+float *F_LOW_PASS;
 
 
 /*----------------------------------- open FREQ_FILE ------------------------------*/
@@ -48,8 +48,8 @@ fprintf(FP,"\n Reading frequencies from %s \n",FREQ_FILE);
 fscanf(freqf,"%i",nfrq);
 
 /*----------------------------alocate frequency array------------------------------*/
-FC=vector(1,*nfrq);
-//FC = malloc((*nfrq+1) * sizeof(float));
+F_LOW_PASS=vector(1,*nfrq);
+//F_LOW_PASS = malloc((*nfrq+1) * sizeof(float));
 
 rewind (freqf);
 fprintf(FP," Number of freqencies specified: %d \n",*nfrq);
@@ -57,16 +57,16 @@ fprintf(FP," Number of freqencies specified: %d \n",*nfrq);
 /*----------------------Read frequencies from FREQ_FILE----------------------------*/
 for (IT=1;IT<=(*nfrq);IT++){
       fgets(cline,255,freqf);
-      fscanf(freqf,"%f",&FC[IT]);
+      fscanf(freqf,"%f",&F_LOW_PASS[IT]);
       //Read only numbers from FREQ_FILE 
-      if(FC[IT]==0){
+      if(F_LOW_PASS[IT]==0){
       IT=IT-1;}else{
-      fprintf(FP,"\n %d. %.2f Hz",IT,FC[IT]);
+      fprintf(FP,"\n %d. %.2f Hz",IT,F_LOW_PASS[IT]);
       }
 }
 
 fclose(freqf);
 
-return(FC);
+return(F_LOW_PASS);
 }
 

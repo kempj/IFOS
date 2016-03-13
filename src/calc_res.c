@@ -26,7 +26,7 @@ double calc_res(float **sectiondata, float **section, float **sectiondiff, float
     /* declaration of variables */
     extern float DT, WATERLEVEL_LNORM8;
     extern int REC1, REC2, MYID, ACOUSTIC;
-    extern int TRKILL, NORMALIZE, FC, TIMEWIN;
+    extern int TRKILL, NORMALIZE, F_LOW_PASS, TIMEWIN;
     extern char TRKILL_FILE[STRING_SIZE];
     extern int VELOCITY, USE_WORKFLOW, WORKFLOW_STAGE;
     float RMS, signL1;

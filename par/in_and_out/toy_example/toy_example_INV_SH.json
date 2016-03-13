@@ -139,9 +139,9 @@
 
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",
-			"FC_START" : "5.0",
-			"FC_END" : "5.0",
-			"FC_INCR" : "10.0",
+			"F_LOW_PASS_START" : "5.0",
+			"F_LOW_PASS_END" : "5.0",
+			"F_LOW_PASS_INCR" : "10.0",
 			"ORDER" : "4",
 
 "Minimum number of iteration per frequency" : "comment",

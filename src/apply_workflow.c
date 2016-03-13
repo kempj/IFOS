@@ -23,7 +23,7 @@
 
 #include "fd.h"
 
-void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start){
+void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int *iter,float *F_LOW_PASS,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start){
     
     /* local variables */
     int x;
@@ -90,12 +90,12 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
     /* Frequency filtering  */
     if(TIME_FILT==1) {
         TIME_FILT=workflow[WORKFLOW_STAGE][6];
-        if(*FC>workflow[WORKFLOW_STAGE][7]&&(workflow[WORKFLOW_STAGE][6]>0)) {
-            if(MYID==0)printf("\n Due to the abort criteriom FC is already higher than specified in workflow\n");
-            if(MYID==0)printf(" therefore instead of %.2f HZ FC=%.2f HZ is used\n",workflow[WORKFLOW_STAGE][7],*FC);
+        if(*F_LOW_PASS>workflow[WORKFLOW_STAGE][7]&&(workflow[WORKFLOW_STAGE][6]>0)) {
+            if(MYID==0)printf("\n Due to the abort criteriom F_LOW_PASS is already higher than specified in workflow\n");
+            if(MYID==0)printf(" therefore instead of %.2f HZ F_LOW_PASS=%.2f HZ is used\n",workflow[WORKFLOW_STAGE][7],*F_LOW_PASS);
         } else {
-            if(*FC!=workflow[WORKFLOW_STAGE][7]) *LBFGS_iter_start=*iter;
-            *FC=workflow[WORKFLOW_STAGE][7];
+            if(*F_LOW_PASS!=workflow[WORKFLOW_STAGE][7]) *LBFGS_iter_start=*iter;
+            *F_LOW_PASS=workflow[WORKFLOW_STAGE][7];
         }
     } else {
         if(MYID==0&&(workflow[WORKFLOW_STAGE][6]>0))printf("\n TIME_FILT cannot be activated due to it is not activated in the JSON File \n");

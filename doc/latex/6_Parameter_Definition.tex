@@ -686,10 +686,10 @@ For more information see chapter \ref{cha:STF-Inversion}.
 {\color{blue}{\begin{verbatim}
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",
-			"F_HP" : "1",
-			"FC_START" : "10.0",
-			"FC_END" : "75.0",
-			"FC_INCR" : "10.0",
+			"F_HIGH_PASS" : "1",
+			"F_LOW_PASS_START" : "10.0",
+			"F_LOW_PASS_END" : "75.0",
+			"F_LOW_PASS_INCR" : "10.0",
 			"ORDER" : "2",
 			"ZERO_PHASE" : "0",
 			"FREQ_FILE"  : "frequencies.dat",
@@ -706,13 +706,13 @@ Default values are:
 	MIN_ITER=0
 \end{verbatim}}}
 
-TIME\_FILT = 1 can be set to use frequency filtering. The parameter FC\_START defines the corner frequency of the Butterworth low pass filter at the beginning of the inversion. The parameter FC\_END defines the maximum corner frequency used in the inversion. The parameter FC\_INCR controls in which steps the bandwidth is increased during the inversion.
+TIME\_FILT = 1 can be set to use frequency filtering. The parameter F\_LOW\_PASS\_START defines the corner frequency of the Butterworth low pass filter at the beginning of the inversion. The parameter F\_LOW\_PASS\_END defines the maximum corner frequency used in the inversion. The parameter F\_LOW\_PASS\_INCR controls in which steps the bandwidth is increased during the inversion.
 
 If TIME\_FILT = 2 individual frequencies for each step can be read from FREQ\_FILE. In this file the first entry must be the number of frequencies used for filtering. Each frequency in Hz has to be specified in a row. The example file frequencies.dat can be found in \texttt{trunk/par}.
 
 The parameter ORDER defines the order of the Butterworth low pass filter. If the variable ZERO\_PHASE is set to one a zero phase filter is applied. It is realized by filtering the traces in both forward and reverse direction with the defined Butterworth low pass filter. Therefore, the effective order of the low pass filter is doubled. 
 
-With F\_HP an additional high pass filter can be applied, where F\_HP is the corner frequency in Hz.
+With F\_HIGH\_PASS an additional high pass filter can be applied, where F\_HIGH\_PASS is the corner frequency in Hz.
 
 With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
 

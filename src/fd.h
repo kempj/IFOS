@@ -33,7 +33,7 @@ void window_cos(float **win, int npad, int nsrc, float it1, float it2, float it3
 void catseis(float **data, float **fulldata, int *recswitch, int ntr_glob, MPI_Comm newcomm_nodentr);
 
 void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy_conv, float * source_time_function, int  **recpos, int  **recpos_loc,
-         int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float FC, int SH,int nsrc_glob);
+         int ntr_glob,int ntr, float ** srcpos, int ishot, int ns, int iter, int nshots, float F_LOW_PASS, int SH,int nsrc_glob);
 
 int **splitrec(int **recpos,int *ntr_loc, int ntr, int *recswitch);
 
@@ -186,9 +186,9 @@ void  taper(float *section, int ns, float fc);
 
 void  output_source_signal(FILE *fp, float **signals, int ns, int seis_form);
 
-void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int ntr_glob, int iter, float C_vp, float ** gradp, int nfstart_jac, float ** waveconv_u, float C_vs, float ** gradp_u, float ** waveconv_rho, float C_rho, float ** gradp_rho, float Vs_avg, float FC);
+void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int ntr_glob, int iter, float C_vp, float ** gradp, int nfstart_jac, float ** waveconv_u, float C_vs, float ** gradp_u, float ** waveconv_rho, float C_rho, float ** gradp_rho, float Vs_avg, float F_LOW_PASS);
 
-void PCG_SH(float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int ntr_glob, int iter, int nfstart_jac, float ** waveconv_u, float C_vs, float ** gradp_u, float ** waveconv_rho, float C_rho, float ** gradp_rho, float Vs_avg, float FC);
+void PCG_SH(float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int ntr_glob, int iter, int nfstart_jac, float ** waveconv_u, float C_vs, float ** gradp_u, float ** waveconv_rho, float C_rho, float ** gradp_rho, float Vs_avg, float F_LOW_PASS);
 
 void PML_pro(float * d_x, float * K_x, float * alpha_prime_x, float * a_x, float * b_x,
              float * d_x_half, float * K_x_half, float * alpha_prime_x_half, float * a_x_half, float * b_x_half,
@@ -426,7 +426,7 @@ void zero_fdveps_visc(int ny1, int ny2, int nx1, int nx2, float ** vx, float ** 
 
 void FLnode(float  **  rho, float **  pi, float **  u, float **  taus, float **  taup, float *  eta);
 
-void smooth(float ** mat, int sws, int filter, float Vs_avg, float FC);
+void smooth(float ** mat, int sws, int filter, float Vs_avg, float F_LOW_PASS);
 
 /* declaration of functions for parser*/
 
@@ -515,7 +515,7 @@ void read_workflow(char file_in[STRING_SIZE],float *** workflow, int *workflow_l
 float ** joint_inversion_grad ( float ** gradiant_1,float ** gradiant_2, float alpha, int joint_type);
 
 void snap_SH(FILE *fp,int nt, int nsnap, float ** vz, float **u, float **pi, float *hc,int ishot);
-void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start);
+void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int *iter,float *F_LOW_PASS,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start);
 
 void eprecond(float ** W, float ** vx, float ** vy);
 void eprecond_SH(float ** W, float ** vz);
