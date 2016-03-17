@@ -53,7 +53,7 @@ int main(int argc, char **argv){
     int sum_killed_traces=0, sum_killed_traces_testshots=0, killed_traces=0, killed_traces_testshots=0;
     int *ptr_killed_traces=&killed_traces, *ptr_killed_traces_testshots=&killed_traces_testshots;
     
-    float energy, energy_sum, energy_all_shots, energy_sum_all_shots;
+    float energy, energy_sum, energy_all_shots, energy_sum_all_shots = 0.0;
     float energy_SH, energy_sum_SH, energy_all_shots_SH, energy_sum_all_shots_SH;
     float L2_SH, L2sum_SH, L2_all_shots_SH, L2sum_all_shots_SH;
     
@@ -156,6 +156,9 @@ int main(int argc, char **argv){
 
     
     FILE *fprec, *FPL2;
+    
+    FILE *FPL2_JOINT;
+    char L2_joint_log[STRING_SIZE];
     
     /* General parameters */
     int nt_out;
@@ -1074,6 +1077,12 @@ int main(int argc, char **argv){
                     C_rho = rho_avg*rho_avg;
                 }
                 
+                
+                /* Seperate PSV and SH logging in case of a joint inversion */
+                if(WAVETYPE==3){
+                    sprintf(L2_joint_log,"%s_JOINT",MISFIT_LOG_FILE);
+                }
+                
                 /* Open Log File for L2 norm */
                 if(FORWARD_ONLY!=1){
                     if(MYID==0){
@@ -1087,8 +1096,14 @@ int main(int argc, char **argv){
                                     fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \n");
                                 }
                             }
+                            
+                            if(WAVETYPE==3) FPL2_JOINT=fopen(L2_joint_log,"w");
+                            
                         }
-                        if(iter>1){FPL2=fopen(MISFIT_LOG_FILE,"a");}
+                        if(iter>1){
+                            FPL2=fopen(MISFIT_LOG_FILE,"a");
+                            if(WAVETYPE==3) FPL2_JOINT=fopen(L2_joint_log,"a");
+                        }
                     }
                 }
                 
@@ -2802,7 +2817,7 @@ int main(int argc, char **argv){
                         energy_sum_all_shots = 0.0;
                         MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
                         
-                    if(MYID==0&&(WAVETYPE==3)) printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
+                        if(MYID==0&&(WAVETYPE==3)) printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
                     }
                     if(WAVETYPE==2||WAVETYPE==3){
                         L2sum_SH = 0.0;
@@ -2814,8 +2829,13 @@ int main(int argc, char **argv){
                         energy_sum_all_shots_SH = 0.0;
                         MPI_Allreduce(&energy_all_shots_SH,&energy_sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
                         
-                    if(MYID==0&&(WAVETYPE==3)) printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                        if(MYID==0&&(WAVETYPE==3)) printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
                     }
+                    
+                    if(WAVETYPE==3 && MYID==0){
+                        fprintf(FPL2_JOINT,"%i \t %f \t %f \n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                    }
+                    
                     sum_killed_traces=0;
                     MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
                     sum_killed_traces_testshots=0;
