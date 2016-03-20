@@ -1084,32 +1084,34 @@ int main(int argc, char **argv){
                 }
                 
                 /* Open Log File for L2 norm */
-                if(FORWARD_ONLY!=1){
-                    if(MYID==0){
-                        if(iter==1){
-                            FPL2=fopen(MISFIT_LOG_FILE,"w");
-                            /* Write header for misfit log file */
-                            if(GRAD_METHOD==1&&VERBOSE) {
-                                if (TIME_FILT==0){
-                                    fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
-                                else{
-                                    fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \n");
-                                }
+                if(!FORWARD_ONLY && MYID==0){
+                    
+                    if(iter==1){
+                        
+                        FPL2=fopen(MISFIT_LOG_FILE,"w");
+                        
+                        /* Write header for misfit log file */
+                        if(GRAD_METHOD==1&&VERBOSE) {
+                            if (TIME_FILT==0){
+                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
+                            else{
+                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \n");
                             }
-                            
-                            if(WAVETYPE==3) FPL2_JOINT=fopen(L2_joint_log,"w");
-                            
                         }
-                        if(iter>1){
-                            FPL2=fopen(MISFIT_LOG_FILE,"a");
-                            if(WAVETYPE==3) FPL2_JOINT=fopen(L2_joint_log,"a");
-                        }
+                        
+                        if(WAVETYPE==3) FPL2_JOINT=fopen(L2_joint_log,"w");
+                        
+                    } else {
+                        
+                        FPL2=fopen(MISFIT_LOG_FILE,"a");
+                        
+                        if(WAVETYPE==3) FPL2_JOINT=fopen(L2_joint_log,"a");
+                        
                     }
                 }
                 
                 /* initialization of L2 calculation */
                 L2=0.0;
-                Lcount=0;
                 energy=0.0;
                 L2_all_shots=0.0;
                 energy_all_shots=0.0;
@@ -2832,10 +2834,6 @@ int main(int argc, char **argv){
                         if(MYID==0&&(WAVETYPE==3)) printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
                     }
                     
-                    if(WAVETYPE==3 && MYID==0){
-                        fprintf(FPL2_JOINT,"%i \t %f \t %f \n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
-                    }
-                    
                     sum_killed_traces=0;
                     MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
                     sum_killed_traces_testshots=0;
@@ -3116,6 +3114,10 @@ int main(int argc, char **argv){
                 if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS);
             }
             
+            if(WAVETYPE==3 && MYID==0){
+                fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
+            }
+            
             /* No update is done here, however model fils are written to disk for easy post processing */
             alpha_SL=0.0;
             calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
@@ -3155,6 +3157,10 @@ int main(int argc, char **argv){
                 if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new);}
             else{
                 if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS);
+            }
+            
+            if(WAVETYPE==3 && MYID==0){
+                fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
             }
             
             /* initiate variables for next iteration */
@@ -3795,6 +3801,9 @@ int main(int argc, char **argv){
                     fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4]);}
                 else{
                     fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f\n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS);}
+                if(WAVETYPE==3 && MYID==0){
+                    fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                }
             }
             
             /* saving history of final L2*/
@@ -3828,6 +3837,9 @@ int main(int argc, char **argv){
         if(FORWARD_ONLY!=1){
             if(MYID==0){
                 fclose(FPL2);
+            }
+            if(WAVETYPE==3 && MYID==0) {
+                fclose(FPL2_JOINT);
             }
         }
         
