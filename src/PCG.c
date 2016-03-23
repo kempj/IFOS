@@ -24,7 +24,7 @@
 
 #include "fd.h"
 
-void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int ntr_glob, int iter, float C_vp, float ** gradp, int nfstart_jac, float ** waveconv_u, float C_vs, float ** gradp_u, float ** waveconv_rho, float C_rho, float ** gradp_rho, float Vs_avg, float F_LOW_PASS){
+void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int ** recpos, int ntr_glob, int iter, float C_vp, float ** gradp, int nfstart_jac, float ** waveconv_u, float C_vs, float ** gradp_u, float ** waveconv_rho, float C_rho, float ** gradp_rho, float Vs_avg, float F_LOW_PASS, int PCG_iter_start){
 	
 	extern int NX, NY, IDX, IDY, SPATFILTER, GRAD_FILTER;
 	extern int FORWARD_ONLY, SWS_TAPER_GRAD_VERT, SWS_TAPER_GRAD_HOR, SWS_TAPER_GRAD_SOURCES, SWS_TAPER_FILE;
@@ -41,8 +41,14 @@ void PCG(float ** waveconv, float ** taper_coeff, int nsrc, float ** srcpos, int
     int use_conjugate_2=1;
 	FILE *FP3, *FP4, *FP6, *FP5 = NULL;
 	
-
-
+    /* Check if conjugate gradient can be used */
+    if( (iter-PCG_iter_start) < 2 ) {
+        use_conjugate_2=0;
+        if( (iter-PCG_iter_start) < 1 ) {
+            use_conjugate_1=0;
+        }
+    }
+    
 	/* ===================================================================================================================================================== */
 	/* ===================================================== GRADIENT ZP ================================================================================== */
 	/* ===================================================================================================================================================== */

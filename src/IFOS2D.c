@@ -99,6 +99,9 @@ int main(int argc, char **argv){
     int SOURCE_SHAPE_OLD=0;
     int SOURCE_SHAPE_OLD_SH=0;
     
+    /* Variables for conjungate gradient */
+    int PCG_iter_start=1;
+    
     /* Variables for L-BFGS */
     int LBFGS_NPAR=3;
     int LBFGS_iter_start=1;
@@ -222,9 +225,6 @@ int main(int argc, char **argv){
              at the receiver positions to calculate the adjoint sources and to do
              the backpropagation; look at function saveseis_glob.c to see that every
              NDT sample for the forward modeled wavefield is written to su files*/
-    lsnap=iround(TSNAP1/DT);      /* first snapshot at this timestep */
-    lsamp=NDT;
-    
     
     /* output of parameters to log-file or stdout */
     if (MYID==0) write_par(FP);
@@ -504,13 +504,7 @@ int main(int argc, char **argv){
         cjm =  vector(1,L);
     }
     
-    /*nf=4;
-     nfstart=4;*/
-    
     NTST=20;
-    NTSTI=NTST/DTINV;
-    
-    nxny=NX*NY;
     nxnyi=(NX/IDXI)*(NY/IDYI);
     
     /* Parameters for step length calculations */
@@ -2900,17 +2894,25 @@ int main(int argc, char **argv){
                 /* ----------------------------------------------------------------------*/
                 /* ----------- Preconditioned Conjugate Gradient Method (PCG)  ----------*/
                 /* ----------------------------------------------------------------------*/
-                if((GRAD_METHOD==1)){
+                if(GRAD_METHOD==1){
                     
-                    if (WAVETYPE==1 || WAVETYPE==3) PCG(waveconv, taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, C_vp, gradp, nfstart_jac, waveconv_u, C_vs, gradp_u, waveconv_rho, C_rho, gradp_rho,Vs_avg,F_LOW_PASS);
-                    if (WAVETYPE==2 || WAVETYPE==3) PCG_SH(taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, nfstart_jac, waveconv_u_z, C_vs, gradp_u_z, waveconv_rho_z, C_rho, gradp_rho_z,Vs_avg,F_LOW_PASS);
+                    if( (iter-PCG_iter_start) < 2 ) {
+                        fprintf(FP,"\n\n ----- Conjugate Gradient Method -----");
+                        fprintf(FP,"\n Will not use second last gradient for conjugate gradient");
+                        if( (iter-PCG_iter_start) < 1 ) {
+                            fprintf(FP,"\n Will not use last gradient for conjugate gradient");
+                        }
+                    }
+                    
+                    if (WAVETYPE==1 || WAVETYPE==3) PCG(waveconv, taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, C_vp, gradp, nfstart_jac, waveconv_u, C_vs, gradp_u, waveconv_rho, C_rho, gradp_rho,Vs_avg,F_LOW_PASS,PCG_iter_start);
+                    if (WAVETYPE==2 || WAVETYPE==3) PCG_SH(taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, nfstart_jac, waveconv_u_z, C_vs, gradp_u_z, waveconv_rho_z, C_rho, gradp_rho_z,Vs_avg,F_LOW_PASS,PCG_iter_start);
                     
                 }
                 
                 /* ---------------------------------------------------------*/
                 /* ----------- Beginn Joint Inversion PSV and SH  ----------*/
                 /* ---------------------------------------------------------*/
-                if((FORWARD_ONLY==0)){
+                if(FORWARD_ONLY==0){
                     switch (WAVETYPE) {
                         case 2:
                             /* If only SH is inverted, set these gradients to the actual ones */
@@ -2950,7 +2952,7 @@ int main(int argc, char **argv){
                 /* -------------------------------------------------------------------------*/
                 /* ----------- Limited Memory - Broyden-Fletcher-Goldfarb-Shanno  ----------*/
                 /* -------------------------------------------------------------------------*/
-                if((GRAD_METHOD==2)){
+                if(GRAD_METHOD==2){
                     
                     /*---------------------*/
                     /*         TAPER       */
@@ -3903,6 +3905,9 @@ int main(int argc, char **argv){
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
                 
+                /* Restart conjugate gradient at next iteration */
+                PCG_iter_start=iter+1;
+                
                 wolfe_SLS_failed=0;
             }
             
@@ -3933,6 +3938,10 @@ int main(int argc, char **argv){
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
+                
+                /* Restart conjugate gradient at next iteration */
+                PCG_iter_start=iter+1;
+                
                 wolfe_SLS_failed=0;
                 alpha_SL_old=1;
             }
@@ -3964,6 +3973,10 @@ int main(int argc, char **argv){
                 
                 /* Restart L-BFGS at next iteration */
                 LBFGS_iter_start=iter+1;
+                
+                /* Restart conjungate gradient at next iteration */
+                PCG_iter_start=iter+1;
+                
                 wolfe_SLS_failed=0;
                 alpha_SL_old=1;
             }
