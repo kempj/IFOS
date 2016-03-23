@@ -1,7 +1,8 @@
 % ------------------------------------
 \chapter{The adjoint problem}
 % ------------------------------------
-
+This chapter is mainly based on the dissertation of Daniel Köhn (\cite{koehn:11}), who originally has written this manual.\\
+\newline
 The aim of full waveform tomography is to find an ''optimum'' model which can explain the data very well. It should not only explain the 
 first arrivals of specific phases of the seismic wavefield like refractions or reflections, but also the amplitudes which contain information 
 on the distribution of the elastic material parameters in the underground. To achieve this goal three problems have to be solved:
@@ -31,7 +32,7 @@ has a special physical meaning. It represents the residual elastic energy contai
 \begin{figure}[!bh]
 \begin{center}
 \includegraphics[width=15 cm]{figures/data_res_sketch_1.pdf}
-\caption{Definition of data residuals $\rm{\mathbf{\delta u}}$.}
+\caption{Definition of data residuals $\rm{\mathbf{\delta u}}$. (\cite{koehn:11})}
 \label{sketch_data_res}
 \end{center}
 \end{figure} 
@@ -49,7 +50,7 @@ along the search direction $\rm{\mathbf{\delta m}_{1}}$ with the step length $\r
 \begin{figure}[!bh]
 \begin{center}
 \includegraphics[width=12.5cm]{figures/sketch_grad_1.pdf}
-\caption{Schematic sketch of the residual energy at one point in space as a function of two model parameters $\rm{m_1}$ and $\rm{m_2}$. The blue dot denotes the starting point in the parameter space, while the red cross marks a minimum of the objective function.}
+\caption{Schematic sketch of the residual energy at one point in space as a function of two model parameters $\rm{m_1}$ and $\rm{m_2}$. The blue dot denotes the starting point in the parameter space, while the red cross marks a minimum of the objective function. (\cite{koehn:11})}
 \label{sketch_grad}
 \end{center}
 \end{figure} 
@@ -105,7 +106,7 @@ Eq. \ER{dL2_dm} can be related to the mapping of small changes from the data to 
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=10cm]{figures/mapping_data_model.pdf}
-\caption{Mapping between model and data space and vice versa.}
+\caption{Mapping between model and data space and vice versa. (\cite{koehn:11})}
 \label{mapping_data_model}
 \end{center}
 \end{figure}
@@ -424,7 +425,7 @@ The aim is to find the minimum of this function loacted at the point [1,1] which
 \begin{center}
 \includegraphics[width=15cm]{figures/Rosenbrock_1.pdf}\\
 \includegraphics[width=15cm]{figures/Rosenbrock_2.pdf}\\
-\caption{Results of the convergence test for the Rosenbrock function. The minimum is marked with a red cross, the starting point with a blue point. The maximum number of iterations is 16000. The step length $\rm{\mu_n}$ varies between $\rm{2e-3}$ (top) and $\rm{6.1e-3}$ (bottom).}
+\caption{Results of the convergence test for the Rosenbrock function. The minimum is marked with a red cross, the starting point with a blue point. The maximum number of iterations is 16000. The step length $\rm{\mu_n}$ varies between $\rm{2e-3}$ (top) and $\rm{6.1e-3}$ (bottom). (\cite{koehn:11})}
 \label{Rosenbrock_constant}
 \end{center}
 \end{figure}
@@ -432,7 +433,7 @@ gradient of the Rosenbrock function is large. After reaching the narrow valley t
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=15cm]{figures/sl_case1_final}
-\caption{Line search algorithm to find the optimum step length $\rm{\mu_{opt}}$: The true misfit function (yellow line) is approximated by a parabola fitted by 3 points.}
+\caption{Line search algorithm to find the optimum step length $\rm{\mu_{opt}}$: The true misfit function (yellow line) is approximated by a parabola fitted by 3 points. (\cite{koehn:11})}
 \label{sl_case1_final}
 \end{center}
 \end{figure}
@@ -502,7 +503,7 @@ This approach leads to a smoother decrease of the objective function, but also i
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=16cm]{figures/Rosenbrock_3}
-\caption{Results of the convergence test for the Rosenbrock function. The minimum is marked by a red cross, the starting point by a blue point. The maximum number of iterations is 4000. The optimum step length is calculated at each iteration by the parabola fitting algorithm. Note the criss-cross pattern of the updates in the narrow valley near the minimum.}
+\caption{Results of the convergence test for the Rosenbrock function. The minimum is marked by a red cross, the starting point by a blue point. The maximum number of iterations is 4000. The optimum step length is calculated at each iteration by the parabola fitting algorithm. Note the criss-cross pattern of the updates in the narrow valley near the minimum. (\cite{koehn:11})}
 \label{Rosenbrock_variable}
 \end{center}
 \end{figure}
@@ -544,7 +545,7 @@ I use the very popular choice $\rm{\beta_n = max[0,\beta_n^{PR}]}$ which provide
 
 \begin{figure}[ht]
 \includegraphics[width=17cm]{figures/Rosenbrock_4}\\
-\caption{Results of the convergence test for the Rosenbrock function using the conjugate gradient method, where the optimum step length is calculated with the parabolic fitting algorithm. The minimum is marked by a red cross, the starting point by a blue point. The maximum number of iterations is 2000.}
+\caption{Results of the convergence test for the Rosenbrock function using the conjugate gradient method, where the optimum step length is calculated with the parabolic fitting algorithm. The minimum is marked by a red cross, the starting point by a blue point. The maximum number of iterations is 2000. (\cite{koehn:11})}
 \label{Rosenbrock_cg}
 \end{figure}
 

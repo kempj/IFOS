@@ -3,7 +3,7 @@
 \chapter{Theoretical Background}
 
 %------------------------------------------------------------------------------------------------%
-
+This chapter is mainly based on the dissertation of Daniel Köhn (\cite{koehn:11}), who originally has written this manual.
 \section{Equations of motion for an elastic medium}\label{elastic_fd_model} 
 The propagation of waves in a general elastic medium can be described by a system of coupled linear partial differential equations. They consist of the equations of motion
 \EQ{m:1}{\begin{split}
@@ -27,7 +27,6 @@ This expression is called {\bf{Stress-Displacement}} formulation. Another common
 \rm{\frac{\partial \epsilon_{ij}}{\partial t}}&\rm{=\frac{1}{2}\biggl(\frac{\partial v_i}{\partial x_j}+\frac{\partial v_j}{\partial x_i}\biggr)}
 \end{split}}  
 This expression is called {\bf{Stress-Velocity}} formulation. For simple cases \ER{2:20} and \ER{2:20:1} can be solved analytically. More complex problems require numerical solutions. One possible approach for a numerical solution is described in the next section.
-\newpage
 \section{Solution of the elastic wave equation by finite differences}\label{elastic_FD_Code}
 \subsection{Discretization of the wave equation}
 For the numerical solution of the elastic equations of motion, Eqs. \ER{2:20} have to be discretized in time and space on a grid. The
@@ -182,7 +181,7 @@ A comparison between the exponential damping and the PML boundary is shown in Fi
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=13cm]{figures/ABS_PML_comp_shots.pdf}
-\caption{\label{comp_EXP_PML} Comparison between exponential damping (left column) and PML (right column) absorbing boundary conditions for a homogeneous full space model.}
+\caption{\label{comp_EXP_PML} Comparison between exponential damping (left column) and PML (right column) absorbing boundary conditions for a homogeneous full space model. (\cite{koehn:11})}
 \end{center}
 \end{figure} 
 \end{enumerate} 
@@ -251,7 +250,7 @@ Holberg) of FD operators. For the Holberg coefficients n is calculated for a min
 \epsfig{file=figures/homogenous_grid_n_16_5.pdf, width=6 cm}\epsfig{file=figures/homogenous_grid_n_16_10.pdf, width=6 cm}
 \epsfig{file=figures/homogenous_grid_n_4_5.pdf, width=6 cm}\epsfig{file=figures/homogenous_grid_n_4_10.pdf, width=6 cm}
 \epsfig{file=figures/homogenous_grid_n_2_5.pdf, width=6 cm}\epsfig{file=figures/homogenous_grid_n_2_10.pdf, width=6 cm}
-\caption{\label{grid_disp_pics} The influence of grid dispersion in FD modeling: Spatial sampling of the wavefield using n=16 (top), n=4 (center) and n=2 gridpoints (bottom) per minimum wavelength $\rm{\lambda_{min}}$.}
+\caption{\label{grid_disp_pics} The influence of grid dispersion in FD modeling: Spatial sampling of the wavefield using n=16 (top), n=4 (center) and n=2 gridpoints (bottom) per minimum wavelength $\rm{\lambda_{min}}$. (\cite{koehn:11})}
 \end{center}
 \end{figure}
 \clearpage
@@ -284,7 +283,7 @@ FDORDER & h (Taylor)      & h (Holberg) \\ \hline
 \begin{center}
 \epsfig{file=figures/courandt_1.pdf, width=7 cm}\epsfig{file=figures/courandt_2.pdf, width=7 cm}
 \epsfig{file=figures/courandt_3.pdf, width=7 cm}\epsfig{file=figures/courandt_4.pdf, width=7 cm}
-\caption{\label{courandt_pics} Temporal evolution of the Courant instability. In the colored areas the wave amplitudes are extremly large.}
+\caption{\label{courandt_pics} Temporal evolution of the Courant instability. In the colored areas the wave amplitudes are extremly large. (\cite{koehn:11})}
 \end{center}
 \end{figure}
 \clearpage
