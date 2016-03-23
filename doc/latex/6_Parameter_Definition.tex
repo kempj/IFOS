@@ -487,12 +487,12 @@ Default values are:
 With the use of a workflow file, you can define different FWI stages. For instance, one FWI stage could refer to one corner frequency of a low-pass filter or to a specific time window. Every line in the workflow file corresponds to one FWI stage. To use a workflow file the switch USE\_WORKFLOW have to be set to 1.  The algorithm will automatically change to the next line of the workflow file if the abort criterium of the current line is reached or if no step length could be found which reduces the misfit. The structure of the variables inside the workflow file is as follow: \\
 
 \noindent
-\begin{tabular}{llllllllllll}
-\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & FC & WAVETYPE & 0 & 0 & EPRECOND & EPSILON\_WE\\
+\begin{tabular}{lllllllllllll}
+\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & F\_HIGH\_PASS & F\_LOW\_PASS & WAVETYPE & 0 & 0 & EPRECOND & EPSILON\_WE\\
 \end{tabular}
 
 \ \\
-The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency FC. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following to zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg. TIME\_FILT (see section \ref{sec:filtering}) within the workflow have to be activated in the .JSON file.
+The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency F\_HIGH\_PASS of the high-pass and F\_LOW\_PASS of the low-pass filter. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following to zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg. TIME\_FILT (see section \ref{sec:filtering}) within the workflow have to be activated in the .JSON file.
 
 For an example of a workflow file, have a look in the par/ folder.
 
@@ -840,7 +840,7 @@ For GRAD\_FILT\_WAVELENGTH = 1 (and TIME\_FILT=1) a new wavelength dependent fil
 \begin{equation}
  \mbox{FILT\_SIZE\_GRAD} = \frac{V_{s,\text{average}}\cdot \text{A}}{\text{FC}}
 \end{equation}
-where FC is the corner frequency of TIME\_FILT and A is a weighting factor.
+where F\_LOW\_PASS is the corner frequency of TIME\_FILT and A is a weighting factor.
 
 
 \section{Model manipulation}
