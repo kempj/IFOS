@@ -377,7 +377,6 @@ void exchange_par(void){
         
     } /** if (MYID == 0) **/
     
-    if (MYID != 0) FL=vector(1,L);
     MPI_Barrier(MPI_COMM_WORLD);
     
     MPI_Bcast(&idum,NPAR,MPI_INT,0,MPI_COMM_WORLD);
@@ -661,6 +660,12 @@ void exchange_par(void){
     TRKILL_STF_OFFSET=idum[115];
     TRKILL_STF_OFFSET_INVERT=idum[116];
     
-    MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
+    if ( MYID!=0 && L>0 ) {
+        FL=vector(1,L);
+    }
     
+    if ( L>0 ) {
+        MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
+    }
+
 }
