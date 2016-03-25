@@ -253,7 +253,7 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
                 case 4 :
                 /* sinus raised to the power of three */
                 if ((t<tshift) || (t>(tshift+ts))) amp=0.0;
-                else amp=pow(sin(PI*(t+tshift)/ts),3.0);
+                else amp=pow(sin(PI*(t-tshift)/ts),3.0);
                 break;
                 
                 break;
