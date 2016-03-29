@@ -944,7 +944,10 @@ void read_par_json(FILE *fp, char *fileinp){
                     if (TIMEWIN==1){
                         if (get_int_from_objectlist("TW_IND",number_readobjects,&TW_IND,varname_list, value_list)){
                             TW_IND=0;
-                            fprintf(fp,"Variable TW_IND is set to default value %d.\n",TW_IND);}
+                            fprintf(fp,"Variable TW_IND is set to default value %d.\n",TW_IND);
+                        } else {
+                            if (TW_IND>2) declare_error("Only TW_IND=1 (one time window) and TW_IND=2 (two time windows) possible");
+                        }
                         if (get_string_from_objectlist("PICKS_FILE",number_readobjects,PICKS_FILE,varname_list, value_list))
                             declare_error("Variable PICKS_FILE could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("TWLENGTH_PLUS",number_readobjects,&TWLENGTH_PLUS,varname_list, value_list))

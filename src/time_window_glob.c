@@ -17,9 +17,7 @@
 -----------------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------
- *   Apply time damping (after Brossier (2009))                                 
- *   last update 31/08/11, D.Koehn
- *   modified    02/02/12, S.Heider
+ *   Apply time damping (after Brossier (2009)
  *  ----------------------------------------------------------------------*/
 #include "fd.h"
 
@@ -31,19 +29,26 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
 	extern int TW_IND, USE_WORKFLOW, WORKFLOW_STAGE;
 	extern char PICKS_FILE[STRING_SIZE];
 	char pickfile_char[STRING_SIZE];
-	float time, dump, dump1, dump2, dump3, taper, taper1;
+	float time, dumpa, dumpb, dumpc, dumpd;
+	float dump1, dump2, dump3, dump4, dump5, dump6;
+	float taper, taper1, taper2, taper3;
 	int i, j;
 	
 	float **picked_times_m=NULL;
 	float *picked_times=NULL;
+    float **dummysection=NULL;
 	
 	FILE *fptime;
 	
-	if(TW_IND)
+	if(TW_IND==1){
 		picked_times_m = matrix(1,3,1,ntr_glob);
-	else
+    }else if(TW_IND==2){
+        picked_times_m = matrix(1,6,1,ntr_glob);
+        dummysection = matrix(1,ntr_glob,1,ns);
+    }else{
 		picked_times = vector(1,ntr_glob);
-	
+    }
+    
 	/* read picked first arrival times */
     if(USE_WORKFLOW){
         sprintf(pickfile_char,"%s_%i_%i.dat",PICKS_FILE,ishot,WORKFLOW_STAGE);
@@ -63,33 +68,43 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
         }
     }
 	
-	if(TW_IND){
+	if(TW_IND==1){
 		for(i=1;i<=ntr_glob;i++){
-			fscanf(fptime,"%f%f%f",&dump,&dump2,&dump3);
-			picked_times_m[1][i] = dump;
+			fscanf(fptime,"%f%f%f",&dump1,&dump2,&dump3);
+			picked_times_m[1][i] = dump1;
 			picked_times_m[2][i] = dump2;
 			picked_times_m[3][i] = dump3;
 		}
-	}else{
+	}if(TW_IND==2){
+        for(i=1;i<=ntr_glob;i++){
+            fscanf(fptime,"%f%f%f%f%f%f",&dump1,&dump2,&dump3,&dump4,&dump5,&dump6);
+            picked_times_m[1][i] = dump1;
+            picked_times_m[2][i] = dump2;
+            picked_times_m[3][i] = dump3;
+            picked_times_m[4][i] = dump4;
+            picked_times_m[5][i] = dump5;
+            picked_times_m[6][i] = dump6;
+        }
+    }else{
 		for(i=1;i<=ntr_glob;i++){
-			fscanf(fptime,"%f",&dump);
-			picked_times[i] = dump;
+			fscanf(fptime,"%f",&dump1);
+			picked_times[i] = dump1;
 		}
 	}
 	
 	fclose(fptime);
 	
-	if(TW_IND){
+	if(TW_IND==1){
 		for(i=1;i<=ntr_glob;i++){
 		for(j=2;j<=ns;j++){
 		
 			time = (float)(j * DT);
 			
-			dump = (time-picked_times_m[1][i]-picked_times_m[2][i]);
-			taper = exp(-GAMMA*dump*dump);
+			dumpa = (time-picked_times_m[1][i]-picked_times_m[2][i]);
+			taper = exp(-GAMMA*dumpa*dumpa);
 			
-			dump1 = (time-picked_times_m[1][i]+picked_times_m[3][i]); 
-			taper1 = exp(-GAMMA*dump1*dump1);
+			dumpb = (time-picked_times_m[1][i]+picked_times_m[3][i]); 
+			taper1 = exp(-GAMMA*dumpb*dumpb);
 			
 			if(time>=picked_times_m[1][i]+picked_times_m[2][i]){
 			sectiondata[i][j] = sectiondata[i][j] * taper;}
@@ -101,17 +116,53 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
 			
 		}
 		}
-	}else{
+	}if(TW_IND==2){
+        for(i=1;i<=ntr_glob;i++){
+        for(j=2;j<=ns;j++){
+        
+            time = (float)(j * DT);
+            
+            dumpa = (time-picked_times_m[1][i]-picked_times_m[2][i]);
+            taper = exp(-GAMMA*dumpa*dumpa);
+            
+            dumpb = (time-picked_times_m[1][i]+picked_times_m[3][i]); 
+            taper1 = exp(-GAMMA*dumpb*dumpb);
+            
+            dummysection[i][j] = sectiondata[i][j];
+            
+            if(time>=picked_times_m[1][i]+picked_times_m[2][i]){
+            dummysection[i][j] = sectiondata[i][j] * taper;}
+            
+            if(time<=picked_times_m[1][i]-picked_times_m[3][i]){
+            dummysection[i][j] = sectiondata[i][j] * taper1;}
+                        
+            dumpc = (time-picked_times_m[4][i]-picked_times_m[5][i]);
+            taper2 = exp(-GAMMA*dumpc*dumpc);
+            
+            dumpd = (time-picked_times_m[4][i]+picked_times_m[6][i]); 
+            taper3 = exp(-GAMMA*dumpd*dumpd);
+            
+            if(time>=picked_times_m[4][i]+picked_times_m[5][i]){
+            sectiondata[i][j] = sectiondata[i][j] * taper2;}
+            
+            if(time<=picked_times_m[4][i]-picked_times_m[6][i]){
+            sectiondata[i][j] = sectiondata[i][j] * taper3;}
+            
+            sectiondata[i][j] = sectiondata[i][j] + dummysection[i][j];
+            
+        }
+        }
+    }else{
 		for(i=1;i<=ntr_glob;i++){
 		for(j=2;j<=ns;j++){
 		
 			time = (float)(j * DT);
 			
-			dump = (time-picked_times[i]-TWLENGTH_PLUS);
-			taper = exp(-GAMMA*dump*dump);
+			dumpa = (time-picked_times[i]-TWLENGTH_PLUS);
+			taper = exp(-GAMMA*dumpa*dumpa);
 			
-			dump1 = (time-picked_times[i]+TWLENGTH_MINUS); 
-			taper1 = exp(-GAMMA*dump1*dump1);
+			dumpb = (time-picked_times[i]+TWLENGTH_MINUS); 
+			taper1 = exp(-GAMMA*dumpb*dumpb);
 			
 			if(time>=picked_times[i]+TWLENGTH_PLUS){
 			sectiondata[i][j] = sectiondata[i][j] * taper;}
@@ -120,14 +171,17 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
 			sectiondata[i][j] = sectiondata[i][j] * taper1;}
 			
 			sectiondata[i][j] = sectiondata[i][j];
-			
 		}
 		}
 	}
 	
-	if(TW_IND)
+	if(TW_IND==1){
 		free_matrix(picked_times_m,1,3,1,ntr_glob);
-	else
+    }else if(TW_IND==2){
+        free_matrix(picked_times_m,1,6,1,ntr_glob);
+        free_matrix(dummysection,1,ntr_glob,1,ns);
+    }else{
 		free_vector(picked_times,1,ntr_glob);
-	
+    }
+    
 } /* end of function time_window_glob.c */

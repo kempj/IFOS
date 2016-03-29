@@ -740,7 +740,7 @@ To apply time windowing in a time series the paramter TIMEWIN must set to 1. A a
 
 The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually.
 
-When usig TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time, time window length plus and time window length minus. In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored.
+When using TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time (PT), time window length plus (TWLP) and time window length minus (TWLM). In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored. It is also possible to use two time windows for each trace which can be utilized with TW\_IND = 2. PICK\_FILE must then contain six columns with values for PT\_1, TWLP\_1, TWLM\_1, PT\_2, TWLP\_2 and TWLM\_2 for each trace.
 
 If you use the option "Workflow" (section \ref{sec:workflow}) it is possible to define separate files for each workflow stage. They have to be named PICKS\_FILE\_<sourcenumber>\_<workflowstage>.dat. If you don't provide separate files for some or all stages the standard file (PICKS\_FILE\_<sourcenumber>.dat) is used. This means a standard file should exist in any case.
 
