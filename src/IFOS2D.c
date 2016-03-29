@@ -2960,8 +2960,13 @@ int main(int argc, char **argv){
                     
                     if(WAVETYPE==1 || WAVETYPE==3){
                         if (SWS_TAPER_FILE){   /* read taper from BIN-File*/
-                            taper_grad(waveconv,taper_coeff,srcpos,nsrc,recpos,ntr_glob,4);}
-                        if(GRAD_FILTER==1){smooth(waveconv,1,1,Vs_avg,F_LOW_PASS);}
+                            taper_grad(waveconv,taper_coeff,srcpos,nsrc,recpos,ntr_glob,4);
+                        }
+                        if(GRAD_FILTER==1 && !ACOUSTIC){
+                            smooth(waveconv,1,1,Vs_avg,F_LOW_PASS);
+                        }else if(GRAD_FILTER==1 && ACOUSTIC){
+                            smooth(waveconv,1,1,Vp_avg,F_LOW_PASS);
+                        }
                     }
                     
                     if (SWS_TAPER_FILE && !ACOUSTIC){   /* read taper from BIN-File*/
@@ -2970,8 +2975,12 @@ int main(int argc, char **argv){
                     if (SWS_TAPER_FILE){   /* read taper from BIN-File*/
                         taper_grad(waveconv_rho,taper_coeff,srcpos,nsrc,recpos,ntr_glob,6);}
                     
-                    if(GRAD_FILTER==1&& !ACOUSTIC){smooth(waveconv_u,2,1,Vs_avg,F_LOW_PASS);}
-                    if(GRAD_FILTER==1){smooth(waveconv_rho,3,1,Vs_avg,F_LOW_PASS);}
+                    if(GRAD_FILTER==1 && !ACOUSTIC){smooth(waveconv_u,2,1,Vs_avg,F_LOW_PASS);}
+                    if(GRAD_FILTER==1 && !ACOUSTIC){
+                        smooth(waveconv_rho,3,1,Vs_avg,F_LOW_PASS);
+                    }else if(GRAD_FILTER==1 && ACOUSTIC){
+                        smooth(waveconv_rho,3,1,Vp_avg,F_LOW_PASS);
+                    }
                     
                     if(WOLFE_CONDITION) {
                         for (j=1;j<=NY;j=j+IDY){
