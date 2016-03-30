@@ -116,7 +116,7 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
 			
 		}
 		}
-	}if(TW_IND==2){
+	}else if(TW_IND==2){
         for(i=1;i<=ntr_glob;i++){
         for(j=2;j<=ns;j++){
         
