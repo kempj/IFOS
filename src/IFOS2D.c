@@ -157,6 +157,9 @@ int main(int argc, char **argv){
     int nfrq=0;
     int FREQ_NR=1;
 
+    float JOINT_EQUAL_PSV=0.0, JOINT_EQUAL_SH=0.0;
+    float JOINT_EQUAL_PSV_all=0.0, JOINT_EQUAL_SH_all=0.0;
+    int JOINT_EQUAL_new_max=1;
     
     FILE *fprec, *FPL2;
     
@@ -2837,6 +2840,27 @@ int main(int argc, char **argv){
                     switch (LNORM){
                             case 2:
                             L2t[1]=0.0; L2t[4]=0.0;
+    
+                            
+                            if(JOINT_EQUAL_WEIGHTING){
+                                if(JOINT_EQUAL_new_max){
+                                    JOINT_EQUAL_PSV=L2sum/energy_sum;
+                                    JOINT_EQUAL_SH=L2sum_SH/energy_sum_SH;
+                                    
+                                    JOINT_EQUAL_PSV_all=L2sum_all_shots/energy_sum_all_shots;
+                                    JOINT_EQUAL_SH_all=L2sum_all_shots_SH/energy_sum_all_shots_SH;
+                                    
+                                    JOINT_EQUAL_new_max=0;
+                                }
+                                
+                                L2t[1]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
+                                L2t[4]+=(L2sum_all_shots/energy_sum_all_shots)/JOINT_EQUAL_PSV_all;
+                                
+                                L2t[1]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
+                                L2t[4]+=(L2sum_all_shots_SH/energy_sum_all_shots_SH)/JOINT_EQUAL_SH_all;
+                                
+                                break;
+                            }
                             
                             if(WAVETYPE==1||WAVETYPE==3){
                                 L2t[1]+=L2sum/energy_sum;
@@ -2847,6 +2871,7 @@ int main(int argc, char **argv){
                                 L2t[1]+=L2sum_SH/energy_sum_SH;
                                 L2t[4]+=L2sum_all_shots_SH/energy_sum_all_shots_SH;
                             }
+                            
                         if(MYID==0&&(WAVETYPE==3)) printf("\n Sum: L2=%f",L2t[4]);
                             
                             break;
@@ -3613,6 +3638,15 @@ int main(int argc, char **argv){
                         case 2:
                             L2t[itest]=0.0;
                             
+                            if(JOINT_EQUAL_WEIGHTING){
+                                
+                                L2t[1]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
+                                
+                                L2t[1]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
+                                
+                                break;
+                            }
+                            
                             if(WAVETYPE==1||WAVETYPE==3){
                                 L2t[itest]+=L2sum/energy_sum;
                             }
@@ -3950,6 +3984,8 @@ int main(int argc, char **argv){
                 PCG_iter_start=iter+1;
                 
                 wolfe_SLS_failed=0;
+                
+                JOINT_EQUAL_new_max=1;
             }
             
             /* ------------------------------------------------- */
@@ -3985,6 +4021,8 @@ int main(int argc, char **argv){
                 
                 wolfe_SLS_failed=0;
                 alpha_SL_old=1;
+                
+                JOINT_EQUAL_new_max=1;
             }
             
             /* ------------------------------------------------- */
@@ -4020,6 +4058,8 @@ int main(int argc, char **argv){
                 
                 wolfe_SLS_failed=0;
                 alpha_SL_old=1;
+                
+                JOINT_EQUAL_new_max=1;
             }
             
         }

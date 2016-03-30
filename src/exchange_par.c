@@ -95,6 +95,7 @@ void exchange_par(void){
     extern int WAVETYPE;
     extern int SOURCE_SHAPE_SH;
     extern int JOINT_INVERSION_PSV_SH_TYPE;
+    extern int JOINT_EQUAL_WEIGHTING;
     /* Workflow  */
     extern char FILE_WORKFLOW[STRING_SIZE];
     extern int USE_WORKFLOW;
@@ -374,6 +375,8 @@ void exchange_par(void){
         idum[114]=TRKILL_OFFSET;
         idum[115]=TRKILL_STF_OFFSET;
         idum[116]=TRKILL_STF_OFFSET_INVERT;
+        
+        idum[117]=JOINT_EQUAL_WEIGHTING;
         
     } /** if (MYID == 0) **/
     
@@ -659,6 +662,8 @@ void exchange_par(void){
     TRKILL_OFFSET=idum[114];
     TRKILL_STF_OFFSET=idum[115];
     TRKILL_STF_OFFSET_INVERT=idum[116];
+    
+    JOINT_EQUAL_WEIGHTING=idum[117];
     
     if ( MYID!=0 && L>0 ) {
         FL=vector(1,L);
