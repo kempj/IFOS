@@ -75,7 +75,7 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
 			picked_times_m[2][i] = dump2;
 			picked_times_m[3][i] = dump3;
 		}
-	}if(TW_IND==2){
+	}else if(TW_IND==2){
         for(i=1;i<=ntr_glob;i++){
             fscanf(fptime,"%f%f%f%f%f%f",&dump1,&dump2,&dump3,&dump4,&dump5,&dump6);
             picked_times_m[1][i] = dump1;
