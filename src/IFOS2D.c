@@ -3640,9 +3640,9 @@ int main(int argc, char **argv){
                             
                             if(JOINT_EQUAL_WEIGHTING){
                                 
-                                L2t[1]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
+                                L2t[itest]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
                                 
-                                L2t[1]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
+                                L2t[itest]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
                                 
                                 break;
                             }
