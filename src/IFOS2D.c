@@ -950,6 +950,8 @@ int main(int argc, char **argv){
                 gradient_optimization=1;
             }
             
+            /* Reset fail status of parabolic step length search */
+            step3=0;
         }
         
         if (MYID==0){
