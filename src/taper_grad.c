@@ -504,11 +504,13 @@ void taper_grad(float ** waveconv,float ** taper_coeff, float **srcpos, int nsho
         }   
                                          
         fclose(fp_taper);
-        
-        sprintf(modfile,"taper_coeff_file.bin");
-        writemod(modfile,taper_coeff,3);
+
+        if(VERBOSE == 1) {
+            sprintf(modfile,"taper_coeff_file.bin");
+            writemod(modfile,taper_coeff,3);
                         
-        MPI_Barrier(MPI_COMM_WORLD);
-        if (MYID==0) mergemod(modfile,3);       
+            MPI_Barrier(MPI_COMM_WORLD);
+            if (MYID==0) mergemod(modfile,3);  
+        }
         } 
 }
