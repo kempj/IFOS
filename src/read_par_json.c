@@ -62,7 +62,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
     
-    extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
+    extern int TIME_FILT, ORDER,WRITE_FILTERED_DATA;
     extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR, F_HIGH_PASS;
     
     extern int LNORM, DTINV;
@@ -847,9 +847,6 @@ void read_par_json(FILE *fp, char *fileinp){
                             declare_error("Variable ORDER could not be retrieved from the json input file!");
                         }
                     }
-                    if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
-                        ZERO_PHASE=0;
-                        fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
                     if (TIME_FILT==2) {
                         if (get_float_from_objectlist("F_HIGH_PASS",number_readobjects,&F_HIGH_PASS,varname_list, value_list)){
                             F_HIGH_PASS=0.0;
@@ -858,9 +855,6 @@ void read_par_json(FILE *fp, char *fileinp){
                             declare_error("Variable FREQ_FILE could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list))
                             declare_error("Variable ORDER could not be retrieved from the json input file!");
-                        if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
-                            ZERO_PHASE=0;
-                            fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
                     }
                 }
                 

@@ -39,7 +39,7 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ns, int meth
     
     /* declaration of external variables */
     extern float DT, F_HIGH_PASS;
-    extern int ZERO_PHASE, NT,MYID;
+    extern int NT,MYID;
     
     /* declaration of local variables */
     int itr, j, ns_reverse;
@@ -50,10 +50,8 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ns, int meth
         declare_error("Order of timedomain filter must be an even number!");}
     
     seismogram = dvector(1,ns);
-    if (ZERO_PHASE==1) seismogram_reverse = dvector(1,ns);
     
     seismogram_hp = dvector(1,ns);
-    if (ZERO_PHASE==1) seismogram_reverse_hp = dvector(1,ns);
     
     T0=1.0/(double)fc;
     if(F_HIGH_PASS)
@@ -67,18 +65,6 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ns, int meth
         }
         
         seife_lpb(seismogram,ns+1,DT,T0,order); /* ns+1 because vector[0] is also allocated and otherwise seife_lpb do not filter the last sample */
-        
-        if (ZERO_PHASE==1){
-        ns_reverse=ns;
-            for (j=1;j<=ns;j++) {
-                seismogram_reverse[ns_reverse]=seismogram[j];
-                ns_reverse--;}
-        seife_lpb(seismogram_reverse,ns+1,DT,T0,order);
-        ns_reverse=ns; 
-            for (j=1;j<=ns;j++) {
-                seismogram[ns_reverse]=seismogram_reverse[j];
-                ns_reverse--;}
-        }
 
         for (j=1;j<=ns;j++){
             data[j]=(float)seismogram[j];
@@ -92,26 +78,13 @@ void  timedomain_filt_vector(float * data, float fc, int order, int ns, int meth
         
         seife_hpb(seismogram_hp,ns+1,DT,T0_hp,order);
         
-        if (ZERO_PHASE==1){
-        ns_reverse=ns;
-            for (j=1;j<=ns;j++) {
-                seismogram_reverse_hp[ns_reverse]=seismogram_hp[j];
-                ns_reverse--;}
-        seife_hpb(seismogram_reverse_hp,ns+1,DT,T0_hp,order);
-        ns_reverse=ns;
-            for (j=1;j<=ns;j++) {
-                seismogram_hp[ns_reverse]=seismogram_reverse_hp[j];
-                ns_reverse--;}
-        }
         for (j=1;j<=ns;j++){
             data[j]=(float)seismogram_hp[j];
         }
     }
     
     free_dvector(seismogram,1,ns);
-    if (ZERO_PHASE==1) free_dvector(seismogram_reverse,1,ns);
 
     free_dvector(seismogram_hp,1,ns);
-    if (ZERO_PHASE==1) free_dvector(seismogram_reverse_hp,1,ns);
 
 }

@@ -59,7 +59,7 @@ void exchange_par(void){
     extern float npower, k_max_PML;
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
-    extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
+    extern int TIME_FILT, ORDER,WRITE_FILTERED_DATA;
     extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR, F_HIGH_PASS;
     extern int LNORM, DTINV;
     extern int STEPMAX;
@@ -325,7 +325,7 @@ void exchange_par(void){
         
         idum[85]  = NO_OF_TESTSHOTS;
         
-        idum[86]  = ZERO_PHASE;
+        // idum[86]  = EMPTY;
         
         idum[87]  = VELOCITY;
         
@@ -609,7 +609,7 @@ void exchange_par(void){
     
     NO_OF_TESTSHOTS = idum[85];
     
-    ZERO_PHASE = idum[86];
+    // EMPTY = idum[86];
     
     VELOCITY = idum[87];
     
