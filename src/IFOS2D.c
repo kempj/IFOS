@@ -950,6 +950,8 @@ int main(int argc, char **argv){
                 gradient_optimization=1;
             }
             
+            /* Reset fail status of parabolic step length search */
+            step3=0;
         }
         
         if (MYID==0){
@@ -3881,7 +3883,7 @@ int main(int argc, char **argv){
                 if(MYID==0){
                     printf("\n Did not find a step length which decreases the misfit.\n");
                 }
-                
+                step3=0;
                 break;
             }
             
@@ -3920,6 +3922,8 @@ int main(int argc, char **argv){
                 PCG_iter_start=iter+1;
                 
                 wolfe_SLS_failed=0;
+                
+                step3=0;
             }
             
             /* ------------------------------------------------- */
@@ -3955,6 +3959,8 @@ int main(int argc, char **argv){
                 
                 wolfe_SLS_failed=0;
                 alpha_SL_old=1;
+                
+                step3=0;
             }
             
             /* ------------------------------------------------- */
@@ -3990,6 +3996,8 @@ int main(int argc, char **argv){
                 
                 wolfe_SLS_failed=0;
                 alpha_SL_old=1;
+                
+                step3=0;
             }
             
         }
