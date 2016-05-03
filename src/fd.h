@@ -499,7 +499,7 @@ void update_v_acoustic_PML(int nx1, int nx2, int ny1, int ny2, int nt,
                            float ** psi_sxx_x, float ** psi_syy_y);
 
 void update_p_PML(int nx1, int nx2, int ny1, int ny2,
-                  float **  vx, float **   vy, float **  sp, float ** pi, float ** absorb_coeff, float **rho, float *hc, int infoout,
+                  float **  vx, float **   vy, float **  sp, float ** u, float ** pi, float ** absorb_coeff, float **rho, float *hc, int infoout,
                   float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
                   float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half,
                   float ** psi_vxx, float ** psi_vyy, float ** psi_vxy, float ** psi_vyx);

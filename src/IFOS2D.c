@@ -58,7 +58,7 @@ int main(int argc, char **argv){
     float L2_SH, L2sum_SH, L2_all_shots_SH, L2sum_all_shots_SH;
     
     // Pointer for dynamic wavefields:
-    float  **  psxx, **  psxy, **  psyy, **  psxz, **  psyz, **psp, ** ux, ** uy, ** uxy, ** uyx, ** Vp0, ** uttx, ** utty, ** Vs0, ** Rho0;
+    float  **  psxx, **  psxy, **  psyy, **  psxz, **  psyz, **psp, ** ux, ** uy, ** uxy, ** uyx, ** u, ** Vp0, ** uttx, ** utty, ** Vs0, ** Rho0;
     float  **  pvx, **  pvy, **  pvz, **waveconv, **waveconv_lam, **waveconv_mu, **waveconv_rho, **waveconv_rho_s, **waveconv_u, **waveconvtmp, **wcpart, **wavejac,**waveconv_rho_s_z,**waveconv_u_z,**waveconv_rho_z;
     float **waveconv_shot, **waveconv_u_shot, **waveconv_rho_shot, **waveconv_u_shot_z, **waveconv_rho_shot_z;
     float  **  pvxp1, **  pvyp1, **  pvzp1, **  pvxm1, **  pvym1, **  pvzm1;
@@ -408,6 +408,8 @@ int main(int argc, char **argv){
             uxz   =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
             uyz   =  matrix(-nd+1,NY+nd,-nd+1,NX+nd);
         }
+    }else{
+        u = matrix(-nd+1,NY+nd,-nd+1,NX+nd);
     }
     
     switch (WAVETYPE) {
@@ -1303,7 +1305,7 @@ int main(int argc, char **argv){
                                         if(!ACOUSTIC) {
                                             update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                         } else {
-                                            update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                            update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                         }
                                     }
                                     if (WAVETYPE==2 || WAVETYPE==3) {
@@ -1746,7 +1748,7 @@ int main(int argc, char **argv){
                                     if(!ACOUSTIC) {
                                         update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                     } else {
-                                        update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                     }
                                 }
                                 if (WAVETYPE==2 || WAVETYPE==3) {
@@ -1836,7 +1838,11 @@ int main(int argc, char **argv){
                                         }else{
                                             for (j=1;j<=NY;j=j+IDYI){
                                                 for (i=1;i<=NX;i=i+IDXI){
-                                                    forward_prop_p[j][i][hin]=psp[j][i];
+                                                    if(VELOCITY==0){
+                                                        forward_prop_p[j][i][hin]=psp[j][i];
+                                                    }else{
+                                                        forward_prop_p[j][i][hin]=u[j][i];
+                                                    }
                                                 }
                                             }
                                         }
@@ -2254,7 +2260,7 @@ int main(int argc, char **argv){
                                                 update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy,puipjp,pu,prho);
                                             }
                                         } else {
-                                            update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                            update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppi, absorb_coeff, prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                         }
                                     }
                                     
@@ -3417,7 +3423,7 @@ int main(int argc, char **argv){
                                     }
                                 }
                                 else /* acoustic */
-                                    update_p_PML(1, NX, 1, NY, pvx, pvy, psp, ppinp1, absorb_coeff, prhonp1, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                    update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppinp1, absorb_coeff, prhonp1, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                             }
                             
                             if (MYID==0){
