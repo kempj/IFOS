@@ -952,6 +952,8 @@ int main(int argc, char **argv){
                 gradient_optimization=1;
             }
             
+            /* Reset fail status of parabolic step length search */
+            step3=0;
         }
         
         if (MYID==0){
@@ -2424,11 +2426,13 @@ int main(int argc, char **argv){
                                                 muss = 0;
                                             
                                             lamss = prho[j][i] * ppi[j][i] * ppi[j][i] - 2.0 *  muss;
-                                            waveconv_lam[j][i] = (1.0/(4.0 * (lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
+                                            if(!ACOUSTIC)
+                                                waveconv_lam[j][i] = (1.0/(4.0 * (lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
+                                            else
+                                                waveconv_lam[j][i] = (1.0/((lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
                                             
                                             /* calculate Vp gradient */
                                             waveconv_shot[j][i] = 2.0 * ppi[j][i] * prho[j][i] * waveconv_lam[j][i];
-                                            // 								waveconv_shot[j][i] = waveconv_lam[j][i];
                                         }
                                         
                                         if(PARAMETERIZATION==2){
@@ -3885,7 +3889,7 @@ int main(int argc, char **argv){
                 if(MYID==0){
                     printf("\n Did not find a step length which decreases the misfit.\n");
                 }
-                
+                step3=0;
                 break;
             }
             
@@ -3924,6 +3928,8 @@ int main(int argc, char **argv){
                 PCG_iter_start=iter+1;
                 
                 wolfe_SLS_failed=0;
+                
+                step3=0;
             }
             
             /* ------------------------------------------------- */
@@ -3959,6 +3965,8 @@ int main(int argc, char **argv){
                 
                 wolfe_SLS_failed=0;
                 alpha_SL_old=1;
+                
+                step3=0;
             }
             
             /* ------------------------------------------------- */
@@ -3994,6 +4002,8 @@ int main(int argc, char **argv){
                 
                 wolfe_SLS_failed=0;
                 alpha_SL_old=1;
+                
+                step3=0;
             }
             
         }
