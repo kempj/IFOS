@@ -2418,11 +2418,13 @@ int main(int argc, char **argv){
                                                 muss = 0;
                                             
                                             lamss = prho[j][i] * ppi[j][i] * ppi[j][i] - 2.0 *  muss;
-                                            waveconv_lam[j][i] = (1.0/(4.0 * (lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
+                                            if(!ACOUSTIC)
+                                                waveconv_lam[j][i] = (1.0/(4.0 * (lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
+                                            else
+                                                waveconv_lam[j][i] = (1.0/((lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
                                             
                                             /* calculate Vp gradient */
                                             waveconv_shot[j][i] = 2.0 * ppi[j][i] * prho[j][i] * waveconv_lam[j][i];
-                                            // 								waveconv_shot[j][i] = waveconv_lam[j][i];
                                         }
                                         
                                         if(PARAMETERIZATION==2){
