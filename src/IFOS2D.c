@@ -3885,7 +3885,7 @@ int main(int argc, char **argv){
             }
             
             /* abort criterion: did not found a step length which decreases the misfit*/
-            if((step3==1)&&(TIME_FILT==0&&USE_WORKFLOW==0)){
+            if((step3==1 || wolfe_SLS_failed)&&(TIME_FILT==0&&USE_WORKFLOW==0)){
                 if(MYID==0){
                     printf("\n Did not find a step length which decreases the misfit.\n");
                 }
