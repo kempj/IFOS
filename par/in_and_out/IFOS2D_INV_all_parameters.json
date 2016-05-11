@@ -169,7 +169,6 @@
 			"F_LOW_PASS_END" : "75.0",
 			"F_LOW_PASS_INCR" : "10.0",
 			"ORDER" : "2",
-			"ZERO_PHASE" : "0",
 			"FREQ_FILE" : "frequencies.dat",  
 			"WRITE_FILTERED_DATA" : "0",                     
 

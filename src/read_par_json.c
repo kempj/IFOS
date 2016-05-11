@@ -28,7 +28,7 @@ char ** varname_list,** value_list;
 void read_par_json(FILE *fp, char *fileinp){
     
     /* declaration of extern variables */
-    extern int   NX, NY, FDORDER, MAXRELERROR, SOURCE_SHAPE,SOURCE_SHAPE_SH, SOURCE_TYPE, SNAP, SNAP_FORMAT, ACOUSTIC, L, VERBOSE, WAVETYPE,JOINT_INVERSION_PSV_SH_TYPE;
+    extern int   NX, NY, FDORDER, MAXRELERROR, SOURCE_SHAPE,SOURCE_SHAPE_SH, SOURCE_TYPE, SNAP, SNAP_FORMAT, ACOUSTIC, L, VERBOSE, WAVETYPE,JOINT_INVERSION_PSV_SH_TYPE,JOINT_EQUAL_WEIGHTING;
     extern float DH, TIME, DT, TS, *FL, TAU, VPPML, PLANE_WAVE_DEPTH, PHI, F_REF,JOINT_INVERSION_PSV_SH_ALPHA_VS,JOINT_INVERSION_PSV_SH_ALPHA_RHO;
     extern float XREC1, XREC2, YREC1, YREC2, FPML;
     extern float REC_ARRAY_DEPTH, REC_ARRAY_DIST;
@@ -62,7 +62,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
     
-    extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
+    extern int TIME_FILT, ORDER,WRITE_FILTERED_DATA;
     extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR, F_HIGH_PASS;
     
     extern int LNORM, DTINV;
@@ -216,6 +216,12 @@ void read_par_json(FILE *fp, char *fileinp){
                 fprintf(fp,"For acoustic modelling WAVETYPE is set to %d.\n",WAVETYPE);
             }
             if(WAVETYPE==3) {
+                
+                if (get_int_from_objectlist("JOINT_EQUAL_WEIGHTING",number_readobjects,&JOINT_EQUAL_WEIGHTING,varname_list, value_list)){
+                    JOINT_EQUAL_WEIGHTING=0;
+                    fprintf(fp,"Variable JOINT_EQUAL_WEIGHTING is set to default value %d.\n",JOINT_EQUAL_WEIGHTING);
+                }
+                
                 if (get_int_from_objectlist("JOINT_INVERSION_PSV_SH_TYPE",number_readobjects,&JOINT_INVERSION_PSV_SH_TYPE,varname_list, value_list)){
                     JOINT_INVERSION_PSV_SH_TYPE=1;
                     fprintf(fp,"Variable JOINT_INVERSION_PSV_SH_TYPE is set to default value %d.\n",JOINT_INVERSION_PSV_SH_TYPE);
@@ -847,9 +853,6 @@ void read_par_json(FILE *fp, char *fileinp){
                             declare_error("Variable ORDER could not be retrieved from the json input file!");
                         }
                     }
-                    if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
-                        ZERO_PHASE=0;
-                        fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
                     if (TIME_FILT==2) {
                         if (get_float_from_objectlist("F_HIGH_PASS",number_readobjects,&F_HIGH_PASS,varname_list, value_list)){
                             F_HIGH_PASS=0.0;
@@ -858,9 +861,6 @@ void read_par_json(FILE *fp, char *fileinp){
                             declare_error("Variable FREQ_FILE could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list))
                             declare_error("Variable ORDER could not be retrieved from the json input file!");
-                        if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
-                            ZERO_PHASE=0;
-                            fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
                     }
                 }
                 
