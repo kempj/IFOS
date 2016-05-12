@@ -3962,7 +3962,7 @@ int main(int argc, char **argv){
             /* ------------------------------------------- */
             /*       Check when Workflow is used           */
             /* ------------------------------------------- */
-            if(USE_WORKFLOW && (diff<=pro || wolfe_SLS_failed)){
+            if(USE_WORKFLOW && ( diff<=pro || wolfe_SLS_failed || step3==1 )){
                 
                 if(workflow_lines==WORKFLOW_STAGE){
                     fprintf(FP,"\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
