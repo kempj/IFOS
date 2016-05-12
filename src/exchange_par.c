@@ -59,8 +59,8 @@ void exchange_par(void){
     extern float npower, k_max_PML;
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
-    extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
-    extern float FC_START, FC_END, FC_INCR, F_HP;
+    extern int TIME_FILT, ORDER,WRITE_FILTERED_DATA;
+    extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR, F_HIGH_PASS;
     extern int LNORM, DTINV;
     extern int STEPMAX;
     extern float EPS_SCALE, SCALEFAC;
@@ -109,7 +109,6 @@ void exchange_par(void){
     extern int EPRECOND_PER_SHOT_SH;
     
     extern float LBFGS_SCALE_GRADIENTS;
-    extern int LBFGS_SURFACE;
     extern int LBFGS_STEP_LENGTH;
     
     extern int N_LBFGS;
@@ -176,9 +175,9 @@ void exchange_par(void){
         fdum[39]  = npower;
         fdum[40]  = k_max_PML;
 
-        fdum[42]  = FC_START;
-        fdum[43]  = FC_END;
-        fdum[44]  = FC_INCR;
+        fdum[42]  = F_LOW_PASS_START;
+        fdum[43]  = F_LOW_PASS_END;
+        fdum[44]  = F_LOW_PASS_INCR;
         
         fdum[45]  = EPS_SCALE;
         fdum[46]  = SCALEFAC;
@@ -204,7 +203,7 @@ void exchange_par(void){
         
         fdum[58]  = A;
         
-        fdum[59]  = F_HP;
+        fdum[59]  = F_HIGH_PASS;
         
         fdum[60] = JOINT_INVERSION_PSV_SH_ALPHA_VS;
         fdum[61] = JOINT_INVERSION_PSV_SH_ALPHA_RHO;
@@ -326,7 +325,7 @@ void exchange_par(void){
         
         idum[85]  = NO_OF_TESTSHOTS;
         
-        idum[86]  = ZERO_PHASE;
+        // idum[86]  = EMPTY;
         
         idum[87]  = VELOCITY;
         
@@ -356,7 +355,6 @@ void exchange_par(void){
         idum[101]=EPRECOND;
         idum[102]=EPRECOND_ITER;
         
-        idum[103]=LBFGS_SURFACE;
         idum[104]=LBFGS_STEP_LENGTH;
         
         idum[105]=EPRECOND_PER_SHOT;
@@ -379,7 +377,6 @@ void exchange_par(void){
         
     } /** if (MYID == 0) **/
     
-    if (MYID != 0) FL=vector(1,L);
     MPI_Barrier(MPI_COMM_WORLD);
     
     MPI_Bcast(&idum,NPAR,MPI_INT,0,MPI_COMM_WORLD);
@@ -459,9 +456,9 @@ void exchange_par(void){
     k_max_PML = fdum[40];
     
     
-    FC_START = fdum[42];
-    FC_END = fdum[43];
-    FC_INCR = fdum[44];
+    F_LOW_PASS_START = fdum[42];
+    F_LOW_PASS_END = fdum[43];
+    F_LOW_PASS_INCR = fdum[44];
     
     EPS_SCALE = fdum[45];
     SCALEFAC = fdum[46];
@@ -488,7 +485,7 @@ void exchange_par(void){
     
     A = fdum[58];
     
-    F_HP = fdum[59];
+    F_HIGH_PASS = fdum[59];
     
     JOINT_INVERSION_PSV_SH_ALPHA_VS = fdum[60];
     JOINT_INVERSION_PSV_SH_ALPHA_RHO = fdum[61];
@@ -612,7 +609,7 @@ void exchange_par(void){
     
     NO_OF_TESTSHOTS = idum[85];
     
-    ZERO_PHASE = idum[86];
+    // EMPTY = idum[86];
     
     VELOCITY = idum[87];
     
@@ -641,7 +638,6 @@ void exchange_par(void){
     EPRECOND=idum[101];
     EPRECOND_ITER=idum[102];
     
-    LBFGS_SURFACE=idum[103];
     LBFGS_STEP_LENGTH=idum[104];
     
     EPRECOND_PER_SHOT= idum[105];
@@ -664,6 +660,12 @@ void exchange_par(void){
     TRKILL_STF_OFFSET=idum[115];
     TRKILL_STF_OFFSET_INVERT=idum[116];
     
-    MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
+    if ( MYID!=0 && L>0 ) {
+        FL=vector(1,L);
+    }
     
+    if ( L>0 ) {
+        MPI_Bcast(&FL[1],L,MPI_FLOAT,0,MPI_COMM_WORLD);
+    }
+
 }

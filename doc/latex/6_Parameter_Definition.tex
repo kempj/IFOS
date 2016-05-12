@@ -230,7 +230,7 @@ Default value is:
 
 With this option pure acoustic modelling and/or inversion can be performed (ACOUSTIC = 1). Only a P-wave and a density model need to be provided. Acoustic modelling and inversion can be a quick estimate, especially for marine environments.
 
-For acoustic modelling the option VELOCITY is not available and only PARAMETERIZATION = 1 is possible.
+For acoustic modelling only PARAMETERIZATION = 1 is possible.
 
 \section{PSV and SH modelling}
 {\color{blue}{\begin{verbatim}
@@ -487,12 +487,12 @@ Default values are:
 With the use of a workflow file, you can define different FWI stages. For instance, one FWI stage could refer to one corner frequency of a low-pass filter or to a specific time window. Every line in the workflow file corresponds to one FWI stage. To use a workflow file the switch USE\_WORKFLOW have to be set to 1.  The algorithm will automatically change to the next line of the workflow file if the abort criterium of the current line is reached or if no step length could be found which reduces the misfit. The structure of the variables inside the workflow file is as follow: \\
 
 \noindent
-\begin{tabular}{llllllllllll}
-\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & FC & WAVETYPE & 0 & 0 & EPRECOND & EPSILON\_WE\\
+\begin{tabular}{lllllllllllll}
+\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & F\_HIGH\_PASS & F\_LOW\_PASS & WAVETYPE & 0 & 0 & EPRECOND & EPSILON\_WE\\
 \end{tabular}
 
 \ \\
-The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency FC. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following to zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg. TIME\_FILT (see section \ref{sec:filtering}) within the workflow have to be activated in the .JSON file.
+The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency F\_HIGH\_PASS of the high-pass and F\_LOW\_PASS of the low-pass filter. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following to zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg. TIME\_FILT (see section \ref{sec:filtering}) within the workflow have to be activated in the .JSON file.
 
 For an example of a workflow file, have a look in the par/ folder.
 
@@ -549,11 +549,11 @@ The second criterium is defined as \citep{nocedal:1999}:
 \begin{align}
 	\bigtriangledown f(x+\alpha \cdot p)^{T} \cdot p \geq c_2 \cdot\bigtriangledown f(x)^{T} \cdot p
 \end{align}
-To verify this condition the full gradient (with all shots!) of the updated model have to be calculated, so the verification of this condition is very expensive in terms of computation time. In theory always a step length of one should be tried first, however to save time it is possible to chose the step length from the iteration before which satisfied the wolfe condition. This behavior can be controlled with WOLFE\_TRY\_OLD\_STEPLENGTH, if this is set to 1 always the old step length will be tried first. In practice the experience has shown that at the beginning of a FWI stage a couple of step lengths will be tested and then the algorithm converges to a step length which will be accepted by the wolfe condition until the misfit cannot be reduced further. With the variable WOLFE\_NUM\_TEST a maximum number of test calculations can be defined. If after WOLFE\_NUM\_TEST tests no step length could be found, the algorithm takes the step length of the tests which reduced the misfit most, even if this step length does not satisfy the wolfe condition. If no step length was found which reduces the misfit, the algorithm will switch to the next FWI stage in the workflow file or abort the inversion. 
+To verify this condition the full gradient (with all shots!) of the updated model have to be calculated, so the verification of this condition is very expensive in terms of computation time. In theory always a step length of one should be tried first, however to save time it is possible to chose the step length from the iteration before which satisfied the Wolfe condition. This behavior can be controlled with WOLFE\_TRY\_OLD\_STEPLENGTH, if this is set to 1 always the old step length will be tried first. In practice the experience has shown that at the beginning of a FWI stage a couple of step lengths will be tested and then the algorithm converges to a step length which will be accepted by the Wolfe condition until the misfit cannot be reduced further. With the variable WOLFE\_NUM\_TEST a maximum number of test calculations can be defined. If after WOLFE\_NUM\_TEST tests no step length could be found, the algorithm takes the step length of the tests which reduced the misfit most, even if this step length does not satisfy the wolfe condition. If no step length was found which reduces the misfit, the algorithm will switch to the next FWI stage in the workflow file or abort the inversion. 
 The variable $c_1$ will be $10^{-7}\cdot \max(f(x)^{-1}$ and $c_2$ is set to 0.9. With WOLFE\_C1\_SL and WOLFE\_C2\_SL it is possible to manipulate $c_1$ and $c_2$ with the JSON input file. If the parameters are not set, they will be set to default values, so in most cases it should be the best to do not specify theses parameters in the JSON file.
-A step length search which is based on the wolfe condition can be used which the switch WOLFE\_CONDITION. Please note that this step length search is only available if GRAD\_METHOD==2. 
+A step length search which is based on the Wolfe condition can be used which the switch WOLFE\_CONDITION. Please note that this step length search is only available if GRAD\_METHOD==2. 
 
-However, it is possible to chose a second step length search which the L-BFGS method. This one is available by the switch LBFGS\_STEP\_LENGTH=0. If you use LBFGS\_STEP\_LENGTH the wolfe condition based step length search will be deactivated automatically. Whit this search the step length 0.1, 0.5 and 1.0 will be tried and with a parabolic fit the best step length will be estimated. This search algorithm is implemented to save computation time, however the wolfe condition will not be checked, so the L-BFGS stability will not be satisfied. It is highly recommended to use the step length search based on the wolfe condition. It is likely that this option will be removed in a future releas. 
+However, it is possible to chose a second step length search while the L-BFGS method is used. This one is available by the switch LBFGS\_STEP\_LENGTH=0. If you use LBFGS\_STEP\_LENGTH the Wolfe condition based step length search will be deactivated automatically. With this search the step length 0.1, 0.5 and 1.0 will be tried and with a parabolic fit the best step length will be estimated. This search algorithm is implemented to save computation time, however the Wolfe condition will not be checked, so the L-BFGS stability will not be satisfied. It is \textbf{highly} recommended to use the step length search based on the Wolfe condition (LBFGS\_STEP\_LENGTH=1 and WOLFE\_CONDITION=1). Most likely the option LBFGS\_STEP\_LENGTH=0 will be removed in a future release. 
 
 
 \section{Step length estimation}
@@ -637,8 +637,14 @@ To remove the contribution of the unknown source time function (STF) from the wa
 			"N_STF" : "10",
 			"N_STF_START" : "1",
 			"TAPER_STF" : "0",
+			
 			"TRKILL_STF" : "0", 
 			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
+			
+			"TRKILL_STF_OFFSET" : "0", 
+			"TRKILL_STF_OFFSET_LOWER" : "10",
+			"TRKILL_STF_OFFSET_UPPER" : "20",
+			"TRKILL_STF_OFFSET_INVERT" : "0",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
@@ -661,12 +667,12 @@ Due to the amplitude decay with offset to the source signals from receivers at l
 
 The procedure is implemented in the Fourier domain. Fourier coefficients for the correction filter are constructed such that the residual between Fourier coefficients of recorded signals and Fourier coefficients of synthetic signals after application of the correction filter are minimized in a least-squares sense. The least-squares solution is subject to a damping constraint. If the weighted power spectral density of the synthetics at a given frequency drops below the l-th fraction (waterlevel parameter) of the average (over all frequencies) power spectral density, the filter coefficients are damped (artificially made smaller) by the damping constraint (i.e. waterlevel as seen from the perspective of deconvolution). 
 
-Start with l=0.01 as a reasonable initial value for the waterlevel. The best fitting waterlevel must be searched by trial and error and depends of signal noise and on how well the synthetics describe the actually observed wave propagtion.
+Start with l=0.01 as a reasonable initial value for the water-level. The best fitting water-level must be searched by trial and error and depends of signal noise and on how well the synthetics describe the actually observed wave propagation.
 
-The theory behind the Fourier domain least squares procedure is outlined by Lisa Groos (2013, Appendix F, page 146). She also describes a way to find an approrpiate waterlevel by application of the L-curve criterion (Groos, 2013, Appendix G, page 148).
+The theory behind the Fourier domain least squares procedure is outlined by Lisa Groos (2013, Appendix F, page 146). She also describes a way to find an appropriate water-level by application of the L-curve criterion (Groos, 2013, Appendix G, page 148).
 \newline
 
-N\_STF is the increment between the iteration steps. N\_STF\_START defines at which iterationstep the inversion for STF should start. This parameter has to be set at least to 1 NOT(!) 0. When using TAPER\_STF = 1, the source signal is tapered. See \texttt{src/taper.c} for the taper definition. With TRKILL\_STF = 1 it is possible to apply a trace killing for the estimation of the source wavelet correction filter (see section \ref{sec:trace_killing}).
+N\_STF is the increment between the iteration steps. N\_STF\_START defines at which iteration-step the inversion for STF should start. This parameter has to be set at least to 1 NOT(!) 0. When using TAPER\_STF = 1, the source signal is tapered. See \texttt{src/taper.c} for the taper definition. With TRKILL\_STF = 1 it is possible to apply a trace killing for the estimation of the source wavelet correction filter. Similar as for the normal trace killing (see section \ref{sec:trace_killing}) it is possible to use an offset based trace kill. To use this one, TRKILL\_STF\_OFFSET and TRKILL\_STF have to be set one. Than all offsets between TRKILL\_STF\_OFFSET\_LOWER (in meter) and TRKILL\_STF\_OFFSET\_UPPER (in meter) will be killed. The offset is calculated internally for each source - receiver combination. If TRKILL\_STF\_OFFSET is set to two, the trace kill file and the offset based trace kill will be combined. Additionally, the option TRKILL\_STF\_OFFSET\_INVERT allows to invert the sense of the offset based trace kill for the STF inversion. If TRKILL\_STF\_OFFSET\_INVERT is set to one, all offsets which do not lie inside the specified range will be killed. This means, the specified offset range will work like a band pass. However, it is not possible to combine a trace kill file and the offset based trace kill, if you invert the sense of the offset based trace kill. \textit{Example}: If you only want to use an offset range from ten to 20 meters for the STF inversion, you would have to set TRKILL\_STF and TRKILL\_STF\_OFFSET to one, TRKILL\_STF\_OFFSET\_LOWER to ten, TRKILL\_STF\_OFFSET\_UPPER to 20 and TRKILL\_STF\_OFFSET\_INVERT to one.
 \newline
 
 Please note: If you additionally switch on frequency filtering during the inversion (TIME\_FILT=1 or TIME\_FILT=2), the parameters N\_STF and N\_STF\_START will be ignored. But the optimal source time function will be inverted for the first iteration and after every change of the frequency range.
@@ -680,10 +686,10 @@ For more information see chapter \ref{cha:STF-Inversion}.
 {\color{blue}{\begin{verbatim}
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",
-			"F_HP" : "1",
-			"FC_START" : "10.0",
-			"FC_END" : "75.0",
-			"FC_INCR" : "10.0",
+			"F_HIGH_PASS" : "1",
+			"F_LOW_PASS_START" : "10.0",
+			"F_LOW_PASS_END" : "75.0",
+			"F_LOW_PASS_INCR" : "10.0",
 			"ORDER" : "2",
 			"ZERO_PHASE" : "0",
 			"FREQ_FILE"  : "frequencies.dat",
@@ -700,13 +706,13 @@ Default values are:
 	MIN_ITER=0
 \end{verbatim}}}
 
-TIME\_FILT = 1 can be set to use frequency filtering. The parameter FC\_START defines the corner frequency of the Butterworth low pass filter at the beginning of the inversion. The parameter FC\_END defines the maximum corner frequency used in the inversion. The parameter FC\_INCR controls in which steps the bandwidth is increased during the inversion.
+TIME\_FILT = 1 can be set to use frequency filtering. The parameter F\_LOW\_PASS\_START defines the corner frequency of the Butterworth low pass filter at the beginning of the inversion. The parameter F\_LOW\_PASS\_END defines the maximum corner frequency used in the inversion. The parameter F\_LOW\_PASS\_INCR controls in which steps the bandwidth is increased during the inversion.
 
 If TIME\_FILT = 2 individual frequencies for each step can be read from FREQ\_FILE. In this file the first entry must be the number of frequencies used for filtering. Each frequency in Hz has to be specified in a row. The example file frequencies.dat can be found in \texttt{trunk/par}.
 
 The parameter ORDER defines the order of the Butterworth low pass filter. If the variable ZERO\_PHASE is set to one a zero phase filter is applied. It is realized by filtering the traces in both forward and reverse direction with the defined Butterworth low pass filter. Therefore, the effective order of the low pass filter is doubled. 
 
-With F\_HP an additional high pass filter can be applied, where F\_HP is the corner frequency in Hz.
+With F\_HIGH\_PASS an additional high pass filter can be applied, where F\_HIGH\_PASS is the corner frequency in Hz.
 
 With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
 
@@ -734,7 +740,7 @@ To apply time windowing in a time series the paramter TIMEWIN must set to 1. A a
 
 The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually.
 
-When usig TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time, time window length plus and time window length minus. In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored.
+When using TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time (PT), time window length plus (TWLP) and time window length minus (TWLM). In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored. It is also possible to use two time windows for each trace which can be utilized with TW\_IND = 2. PICK\_FILE must then contain six columns with values for PT\_1, TWLP\_1, TWLM\_1, PT\_2, TWLP\_2 and TWLM\_2 for each trace.
 
 If you use the option "Workflow" (section \ref{sec:workflow}) it is possible to define separate files for each workflow stage. They have to be named PICKS\_FILE\_<sourcenumber>\_<workflowstage>.dat. If you don't provide separate files for some or all stages the standard file (PICKS\_FILE\_<sourcenumber>.dat) is used. This means a standard file should exist in any case.
 
@@ -759,7 +765,8 @@ If you don't want to use single traces or a subset of your data, the parameter T
 
 If you use the option "Workflow" (section \ref{sec:workflow}) it is possible to define separate files for each workflow stage. They have to be named TRKILL\_FILE\_<workflowstage>.dat. If you don't provide separate files for some or all stages the standard file (TRKILL\_FILE.dat) is used. This means a standard file should exist in any case.
 
-Moreover, you can directly define a offset range that should be killed. Simply set TRKILL\_OFFSET and TRKILL to one and all traces with a offset between TRKILL\_OFFSET\_LOWER and TRKILL\_OFFSET\_UPPER will be killed.
+Moreover, you can directly define an offset range that should be killed. Simply set TRKILL\_OFFSET and TRKILL to one and all traces with an offset between TRKILL\_OFFSET\_LOWER (in meter) and TRKILL\_OFFSET\_UPPER (in meter) will be killed. The offset is internally calculated for each source - receiver combination.  In this case the trace kill file will be ignored. To use both, the trace kill file and the offset based trace kill, you have to set TRKILL\_OFFSET to two. Hereby, if you use a workflow, the same naming convention as described above will be utilized. 
+\textit{Example}: You want to kill the near offset for each source, lets say you only want to use traces with an offset greater than ten meters. Therefore, you would have to set TRKILL\_OFFSET and TRKILL to one, TRKILL\_OFFSET\_LOWER to zero and TRKILL\_OFFSET\_UPPER to ten. If you want to use additionally a trace kill file, switch TRKILL\_OFFSET to two and the trace kill file in TRKILL\_FILE will be applied also.
 
 \section{Gradient manipulation}
 \subsection{Definition of a gradient taper}
@@ -833,7 +840,7 @@ For GRAD\_FILT\_WAVELENGTH = 1 (and TIME\_FILT=1) a new wavelength dependent fil
 \begin{equation}
  \mbox{FILT\_SIZE\_GRAD} = \frac{V_{s,\text{average}}\cdot \text{A}}{\text{FC}}
 \end{equation}
-where FC is the corner frequency of TIME\_FILT and A is a weighting factor.
+where F\_LOW\_PASS is the corner frequency of TIME\_FILT and A is a weighting factor.
 
 
 \section{Model manipulation}

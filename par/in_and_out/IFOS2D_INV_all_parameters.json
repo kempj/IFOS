@@ -154,19 +154,21 @@
 			"N_STF" : "10",
 			"N_STF_START" : "1",
 			"TAPER_STF" : "0",
+
 			"TRKILL_STF" : "0",
+			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
+
 			"TRKILL_STF_OFFSET" : "0",
 			"TRKILL_STF_OFFSET_LOWER , TRKILL_STF_OFFSET_UPPER" : "0 , 10",
-			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
+			"TRKILL_STF_OFFSET_INVERT" : "0",
 
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",
-			"F_HP" : "1",
-			"FC_START" : "10.0",
-			"FC_END" : "75.0",
-			"FC_INCR" : "10.0",
+			"F_HIGH_PASS" : "1",
+			"F_LOW_PASS_START" : "10.0",
+			"F_LOW_PASS_END" : "75.0",
+			"F_LOW_PASS_INCR" : "10.0",
 			"ORDER" : "2",
-			"ZERO_PHASE" : "0",
 			"FREQ_FILE" : "frequencies.dat",  
 			"WRITE_FILTERED_DATA" : "0",                     
 
@@ -183,9 +185,10 @@
 
 "Trace killing" : "comment",
 			"TRKILL" : "0",
+			"TRKILL_FILE" : "./trace_kill/trace_kill",
+
 			"TRKILL_OFFSET" : "0",
 			"TRKILL_OFFSET_LOWER , TRKILL_OFFSET_UPPER" : "0 , 10",
-			"TRKILL_FILE" : "./trace_kill/trace_kill",
 
 "Definition of a gradient taper" : "comment",
 			"SWS_TAPER_GRAD_VERT" : "0",

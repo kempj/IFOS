@@ -119,20 +119,24 @@ void update_v_acoustic_PML(int nx1, int nx2, int ny1, int ny2, int nt,
 			
 			if(sw==0){
 				if (VELOCITY==0){
-				vxp1[j][i] = rip[j][i]*(sp_x)/DH;
-				vyp1[j][i] = rjp[j][i]*(sp_y)/DH;}
+                    vxp1[j][i] = rip[j][i]*(sp_x)/DH;
+                    vyp1[j][i] = rjp[j][i]*(sp_y)/DH;
+                }
 				else{
-				vxp1[j][i] = rip[j][i]*(sp_x)/DH;
-				vyp1[j][i] = rjp[j][i]*(sp_y)/DH;}
+                    vxp1[j][i] = rip[j][i]*(sp_x)/DH;
+                    vyp1[j][i] = rjp[j][i]*(sp_y)/DH;                    
+                }
 			}
 			
 			if(sw==1){
 				if (VELOCITY==0){
-				vxp1[j][i] += vx[j][i]*DT;
-				vyp1[j][i] += vy[j][i]*DT;}
+                    vxp1[j][i] += vx[j][i]*DT;
+                    vyp1[j][i] += vy[j][i]*DT;
+                }
 				else{
-				vxp1[j][i] = vx[j][i];
-				vyp1[j][i] = vy[j][i];}
+                    vxp1[j][i] = vx[j][i];
+                    vyp1[j][i] = vy[j][i];
+                }
 			}
 			
 			vx[j][i] += DT*rip[j][i]*(sp_x)/DH;

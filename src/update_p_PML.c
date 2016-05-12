@@ -24,7 +24,7 @@
 
 #include "fd.h"
 
-void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy, float ** sp, float ** pi, float ** absorb_coeff, float **rho, float *hc, int infoout,
+void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy, float ** sp, float ** u, float ** pi, float ** absorb_coeff, float **rho, float *hc, int infoout,
 		  float * K_x, float * a_x, float * b_x, float * K_x_half, float * a_x_half, float * b_x_half,
 		  float * K_y, float * a_y, float * b_y, float * K_y_half, float * a_y_half, float * b_y_half, 
 		  float ** psi_vxx, float ** psi_vyy, float ** psi_vxy, float ** psi_vyx){
@@ -99,6 +99,7 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 			
 			sp[j][i] += g*(vxx+vyy);
 			
+            u[j][i] = (g/DT)*(vxx+vyy);
 		}
 		}
 	break;
@@ -150,7 +151,8 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 				g = rho[j][i] * (pi[j][i] * pi[j][i]);}
 			
 			sp[j][i] += g*(vxx+vyy);
-			
+            
+            u[j][i] = (g/DT)*(vxx+vyy);
 		}
 		}
 	break;
@@ -205,7 +207,8 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 				g = rho[j][i] * (pi[j][i] * pi[j][i]);}
 			
 			sp[j][i] += g*(vxx+vyy);
-			
+            
+            u[j][i] = (g/DT)*(vxx+vyy);
 		}
 		}
 	break;
@@ -263,7 +266,8 @@ void update_p_PML(int nx1, int nx2, int ny1, int ny2, 	float **  vx, float ** vy
 				g = rho[j][i] * (pi[j][i] * pi[j][i]);}
 			
 			sp[j][i] += g*(vxx+vyy);
-			
+            
+            u[j][i] = (g/DT)*(vxx+vyy);
 		}
 		}
 	break;

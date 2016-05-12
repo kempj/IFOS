@@ -22,7 +22,7 @@
 
 #include "fd.h"
 
-void smooth(float ** mat, int sws, int filter, float Vs_avg, float FC)
+void smooth(float ** mat, int sws, int filter, float Vs_avg, float F_LOW_PASS)
 {
     
     /* extern variables */
@@ -68,8 +68,8 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float FC)
                 if((GRAD_FILT_WAVELENGTH==1)&&(TIME_FILT==1)){
                     if(VERBOSE) printf("\n -------------------------------------------------------------------------- \n");
                     if(VERBOSE) printf("\n Calculating a wavelength dependent filter size for smoothing the gradient: \n");
-                    FILT_SIZE_GRAD = (int)(Vs_avg/FC*A/DH);
-                    if(VERBOSE) printf("\n FILT_SIZE_GRAD = Vs_avg = %4.2f m/s / FC = %4.2f Hz * weighting factor A = %4.2f / grid spacing DH = %4.2f m  \n",Vs_avg,FC,A,DH);
+                    FILT_SIZE_GRAD = (int)(Vs_avg/F_LOW_PASS*A/DH);
+                    if(VERBOSE) printf("\n FILT_SIZE_GRAD = Vs_avg = %4.2f m/s / F_LOW_PASS = %4.2f Hz * weighting factor A = %4.2f / grid spacing DH = %4.2f m  \n",Vs_avg,F_LOW_PASS,A,DH);
                     if(VERBOSE) printf("\n New FILT_SIZE_GRAD = %d (grid points) is used (-> %4.2f m).                \n",FILT_SIZE_GRAD,FILT_SIZE_GRAD*DH);
                 }
                 if (FILT_SIZE_GRAD==0)	return;

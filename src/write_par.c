@@ -62,8 +62,8 @@ void write_par(FILE *fp){
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
     
-    extern int TIME_FILT, ORDER, ZERO_PHASE;
-    extern float FC_START, FC_END, FC_INCR;
+    extern int TIME_FILT, ORDER;
+    extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR;
     extern int LNORM, DTINV;
     extern int STEPMAX, TRKILL, TRKILL_STF;
     
@@ -517,19 +517,17 @@ void write_par(FILE *fp){
         if (TIME_FILT){
             if(TIME_FILT==1){
                 fprintf(fp," TIME_FILT=%d: Time domain filtering is applied \n",TIME_FILT);
-                fprintf(fp," Starting at frequencies of %.2f Hz\n",FC_START);
-                fprintf(fp," Increasing the bandwidth up to %.2f Hz in steps of %.2f Hz\n",FC_END,FC_INCR);
+                fprintf(fp," Starting at frequencies of %.2f Hz\n",F_LOW_PASS_START);
+                fprintf(fp," Increasing the bandwidth up to %.2f Hz in steps of %.2f Hz\n",F_LOW_PASS_END,F_LOW_PASS_INCR);
             }
             if(TIME_FILT==2){
                 fprintf(fp," TIME_FILT=%d: Time domain filtering is applied \n Frequencies will be read from file: %s\n",TIME_FILT,FREQ_FILE);}
             fprintf(fp," Order of lowpass filter is:\t%d\n",ORDER);
             if ((ORDER%2)!=0){
                 declare_error(" Order of time domain filter must be an even number! \n");}
-            if (ZERO_PHASE){
-                fprintf(fp, " ZERO_PHASE=%i: Zero phase filtering is applied! \n",ZERO_PHASE);}
-            else	fprintf(fp, " No zero phase filtering is applied! \n");}
-        
-        else fprintf(fp," TIME_FILT=%d: No time domain filtering is applied.\n",TIME_FILT);
+        } else {
+            fprintf(fp," TIME_FILT=%d: No time domain filtering is applied.\n",TIME_FILT);
+        }
         
         
         fprintf(fp,"\n\n");

@@ -450,4 +450,49 @@ void calc_mat_change_test(float  **  waveconv, float  **  waveconv_rho, float  *
         sprintf(modfile,"%s_rho_it%d.bin.%i.%i",INV_MODELFILE,iter,POS[1],POS[2]);
         remove(modfile);
     }
+    
+    if(VERBOSE&&(itest==1)){
+        if((wavetype_start==1||wavetype_start==3)){
+            
+            sprintf(modfile,"%s_vp.step.bin",INV_MODELFILE);
+            writemod(modfile,pinp1,3);
+            
+            MPI_Barrier(MPI_COMM_WORLD);
+            
+            if (MYID==0) mergemod(modfile,3);
+            
+            MPI_Barrier(MPI_COMM_WORLD);
+            sprintf(modfile,"%s_vp.step.bin.%i.%i",INV_MODELFILE,POS[1],POS[2]);
+            remove(modfile);
+            
+        }
+        if(!ACOUSTIC){
+            
+            sprintf(modfile,"%s_vs.step.bin",INV_MODELFILE);
+            
+            writemod(modfile,unp1,3);
+            
+            MPI_Barrier(MPI_COMM_WORLD);
+            
+            if (MYID==0) mergemod(modfile,3);
+            
+            MPI_Barrier(MPI_COMM_WORLD);
+            sprintf(modfile,"%s_vs.step.bin.%i.%i",INV_MODELFILE,POS[1],POS[2]);
+            remove(modfile);
+            
+        }
+        
+        
+        sprintf(modfile,"%s_rho.step.bin",INV_MODELFILE);
+        writemod(modfile,rho,3);
+        
+        MPI_Barrier(MPI_COMM_WORLD);
+        
+        if (MYID==0) mergemod(modfile,3);
+        
+        MPI_Barrier(MPI_COMM_WORLD);
+        sprintf(modfile,"%s_rho.bin.step.%i.%i",INV_MODELFILE,POS[1],POS[2]);
+        remove(modfile);
+        
+    }
 }

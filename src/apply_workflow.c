@@ -23,7 +23,7 @@
 
 #include "fd.h"
 
-void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int *iter,float *FC,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start){
+void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[STRING_SIZE],int *iter,float *F_LOW_PASS,int wavetype_start, int * change_wavetype_iter, int * LBFGS_iter_start){
     
     /* local variables */
     int x;
@@ -31,6 +31,7 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
     /* extern variables */
     extern int INV_RHO_ITER,INV_VS_ITER,INV_VP_ITER;
     extern int TIME_FILT,MYID;
+    extern float F_HIGH_PASS;
     extern float PRO;
     extern int WAVETYPE;
     extern float JOINT_INVERSION_PSV_SH_ALPHA_VS;
@@ -88,42 +89,45 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
     PRO=workflow[WORKFLOW_STAGE][5];
     
     /* Frequency filtering  */
-    if(TIME_FILT==1) {
+    if( TIME_FILT == 1 ) {
+        
         TIME_FILT=workflow[WORKFLOW_STAGE][6];
-        if(*FC>workflow[WORKFLOW_STAGE][7]&&(workflow[WORKFLOW_STAGE][6]>0)) {
-            if(MYID==0)printf("\n Due to the abort criteriom FC is already higher than specified in workflow\n");
-            if(MYID==0)printf(" therefore instead of %.2f HZ FC=%.2f HZ is used\n",workflow[WORKFLOW_STAGE][7],*FC);
-        } else {
-            if(*FC!=workflow[WORKFLOW_STAGE][7]) *LBFGS_iter_start=*iter;
-            *FC=workflow[WORKFLOW_STAGE][7];
+        
+        if( TIME_FILT > 0 ) {
+            if( F_HIGH_PASS != workflow[WORKFLOW_STAGE][7] ) *LBFGS_iter_start=*iter;
+            F_HIGH_PASS=workflow[WORKFLOW_STAGE][7];
+            
+            if( *F_LOW_PASS != workflow[WORKFLOW_STAGE][8] ) *LBFGS_iter_start=*iter;
+            *F_LOW_PASS=workflow[WORKFLOW_STAGE][8];
         }
+        
     } else {
         if(MYID==0&&(workflow[WORKFLOW_STAGE][6]>0))printf("\n TIME_FILT cannot be activated due to it is not activated in the JSON File \n");
     }
     
     /* Change of wavetype  */
-    if(wavetype_start!=3&&(WAVETYPE!=workflow[WORKFLOW_STAGE][8])){
+    if(wavetype_start!=3&&(WAVETYPE!=workflow[WORKFLOW_STAGE][9])){
         if(MYID==0)printf("\n Sorry, change of WAVETYPE with workflow only possible if WAVETYPE==3 in *.json");
         if(MYID==0)printf("\n WAVETYPE will remain unchanged %i",WAVETYPE);
     } else {
         /* detect change and reset some things */
-        if(WAVETYPE!=workflow[WORKFLOW_STAGE][8]) {
+        if(WAVETYPE!=workflow[WORKFLOW_STAGE][9]) {
             *change_wavetype_iter=*iter;
             *LBFGS_iter_start=*iter;
         }
-        WAVETYPE=workflow[WORKFLOW_STAGE][8];
+        WAVETYPE=workflow[WORKFLOW_STAGE][9];
     }
     
     /* Joint inversion PSV and SH  */
-    JOINT_INVERSION_PSV_SH_ALPHA_VS=workflow[WORKFLOW_STAGE][9];
-    JOINT_INVERSION_PSV_SH_ALPHA_RHO=workflow[WORKFLOW_STAGE][10];
+    JOINT_INVERSION_PSV_SH_ALPHA_VS=workflow[WORKFLOW_STAGE][10];
+    JOINT_INVERSION_PSV_SH_ALPHA_RHO=workflow[WORKFLOW_STAGE][11];
     
     /* Approx. Hessian  */
-    if(EPRECOND==0 && workflow[WORKFLOW_STAGE][11]!=0){
+    if(EPRECOND==0 && workflow[WORKFLOW_STAGE][12]!=0){
         if(MYID==0) printf(" WARNING: EPRECOND have to be set >0 in JSON (if so, ignore this message)");
     }
-    EPRECOND=workflow[WORKFLOW_STAGE][11];
-    EPSILON_WE=workflow[WORKFLOW_STAGE][12];
+    EPRECOND=workflow[WORKFLOW_STAGE][12];
+    EPSILON_WE=workflow[WORKFLOW_STAGE][13];
     
     if(*LBFGS_iter_start==*iter && GRAD_METHOD==2){
         if(MYID==0)printf("\n L-BFGS will be used from iteration %d on.",*LBFGS_iter_start+1);

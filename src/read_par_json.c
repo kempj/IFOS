@@ -62,8 +62,8 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int INV_STF, N_STF, N_STF_START;
     extern char PARA[STRING_SIZE];
     
-    extern int TIME_FILT, ORDER, ZERO_PHASE,WRITE_FILTERED_DATA;
-    extern float FC_START, FC_END, FC_INCR, F_HP;
+    extern int TIME_FILT, ORDER,WRITE_FILTERED_DATA;
+    extern float F_LOW_PASS_START, F_LOW_PASS_END, F_LOW_PASS_INCR, F_HIGH_PASS;
     
     extern int LNORM, DTINV;
     
@@ -118,7 +118,6 @@ void read_par_json(FILE *fp, char *fileinp){
     extern int EPRECOND_PER_SHOT;
     extern int EPRECOND_PER_SHOT_SH;
     
-    extern int LBFGS_SURFACE;
     extern int LBFGS_STEP_LENGTH;
     extern int N_LBFGS;
     
@@ -132,6 +131,12 @@ void read_par_json(FILE *fp, char *fileinp){
     /* definition of local variables */
     
     int number_readobjects=0,fserr=0;
+    
+    
+    /* Support naming of variables  */
+    float FC_START, FC_END, FC_INCR, F_HP;
+    
+    
     char errormessage[STRING_SIZE2];
     
     char ** varname_list, ** value_list;
@@ -470,9 +475,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 if (get_int_from_objectlist("VELOCITY",number_readobjects,&VELOCITY,varname_list, value_list)){
                     VELOCITY=0;
                     fprintf(fp,"Variable VELOCITY is set to default value %d.\n",VELOCITY);
-                }else
-                    if(ACOUSTIC && VELOCITY==1)
-                        declare_error("For acoustic inversion option VELOCITY not available");
+                }
                 
                 if (get_int_from_objectlist("USE_WORKFLOW",number_readobjects,&USE_WORKFLOW,varname_list, value_list)){
                     USE_WORKFLOW=0;
@@ -700,14 +703,9 @@ void read_par_json(FILE *fp, char *fileinp){
                         WOLFE_CONDITION=0;
                     }
                     if(GRAD_METHOD==2) {
-                                                
-                        if (get_int_from_objectlist("LBFGS_SURFACE",number_readobjects,&LBFGS_SURFACE,varname_list, value_list)){
-                            LBFGS_SURFACE=0;
-                            fprintf(fp,"Variable LBFGS_SURFACE is set to default value %d.\n",LBFGS_SURFACE);
-                        } else { declare_error("LBFGS_SURFACE not supported anymore"); }
                         if (get_int_from_objectlist("LBFGS_STEP_LENGTH",number_readobjects,&LBFGS_STEP_LENGTH,varname_list, value_list)){
                             LBFGS_STEP_LENGTH=1;
-                            fprintf(fp,"Variable LBFGS_SURFACE is set to default value %d.\n",LBFGS_STEP_LENGTH);
+                            fprintf(fp,"Variable LBFGS_STEP_LENGTH is set to default value %d.\n",LBFGS_STEP_LENGTH);
                         }
                         if (get_int_from_objectlist("N_LBFGS",number_readobjects,&N_LBFGS,varname_list, value_list)){
                             N_LBFGS=5;
@@ -727,7 +725,7 @@ void read_par_json(FILE *fp, char *fileinp){
                                 fprintf(fp,"Variable WOLFE_NUM_TEST is set to default value %d.\n",WOLFE_NUM_TEST);
                             }
                             if (get_int_from_objectlist("WOLFE_TRY_OLD_STEPLENGTH",number_readobjects,&WOLFE_TRY_OLD_STEPLENGTH,varname_list, value_list)){
-                                WOLFE_TRY_OLD_STEPLENGTH=1;
+                                WOLFE_TRY_OLD_STEPLENGTH=0;
                                 fprintf(fp,"Variable WOLFE_TRY_OLD_STEPLENGTH is set to default value %d.\n",WOLFE_TRY_OLD_STEPLENGTH);
                             }
                             if (get_float_from_objectlist("WOLFE_C1_SL",number_readobjects,&WOLFE_C1_SL,varname_list, value_list)){
@@ -819,31 +817,44 @@ void read_par_json(FILE *fp, char *fileinp){
                     if (get_int_from_objectlist("WRITE_FILTERED_DATA",number_readobjects,&WRITE_FILTERED_DATA,varname_list, value_list)){
                         WRITE_FILTERED_DATA=0;
                     }
-                    if (get_float_from_objectlist("F_HP",number_readobjects,&F_HP,varname_list, value_list)){
-                        F_HP=0.0;
-                        fprintf(fp,"Variable F_HP is set to default value %f.\n",F_HP);}
-                    if (get_float_from_objectlist("FC_START",number_readobjects,&FC_START,varname_list, value_list))
-                        if (TIME_FILT==1)declare_error("Variable FC_START could not be retrieved from the json input file!");
-                    if (get_float_from_objectlist("FC_END",number_readobjects,&FC_END,varname_list, value_list))
-                        if (TIME_FILT==1)declare_error("Variable FC_END could not be retrieved from the json input file!");
-                    if (get_float_from_objectlist("FC_INCR",number_readobjects,&FC_INCR,varname_list, value_list))
-                        if (TIME_FILT==1)declare_error("Variable FC_INCR could not be retrieved from the json input file!");
-                    if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list))
-                        if (TIME_FILT==1)declare_error("Variable ORDER could not be retrieved from the json input file!");
-                    if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
-                        ZERO_PHASE=0;
-                        fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
+                    if (get_float_from_objectlist("F_HIGH_PASS",number_readobjects,&F_HIGH_PASS,varname_list, value_list)){
+                        /* Support of old variable naming: Test if old variable naming is used */
+                        if (get_float_from_objectlist("F_HP",number_readobjects,&F_HIGH_PASS,varname_list, value_list)){
+                            F_HIGH_PASS=0.0;
+                            fprintf(fp,"Variable F_HIGH_PASS is set to default value %f.\n",F_HIGH_PASS);
+                        }
+                    }
+                    if (TIME_FILT==1) {
+                        if (get_float_from_objectlist("F_LOW_PASS_START",number_readobjects,&F_LOW_PASS_START,varname_list, value_list)){
+                            /* Support of old variable naming: Test if old variable naming is used */
+                            if (get_float_from_objectlist("FC_START",number_readobjects,&F_LOW_PASS_START,varname_list, value_list)){
+                                declare_error("Variable F_LOW_PASS_START could not be retrieved from the json input file!");
+                            }
+                        }
+                        if (get_float_from_objectlist("F_LOW_PASS_END",number_readobjects,&F_LOW_PASS_END,varname_list, value_list)){
+                            /* Support of old variable naming: Test if old variable naming is used */
+                            if (get_float_from_objectlist("FC_END",number_readobjects,&F_LOW_PASS_END,varname_list, value_list)){
+                                declare_error("Variable F_LOW_PASS_END could not be retrieved from the json input file!");
+                            }
+                        }
+                        if (get_float_from_objectlist("F_LOW_PASS_INCR",number_readobjects,&F_LOW_PASS_INCR,varname_list, value_list)){
+                            /* Support of old variable naming: Test if old variable naming is used */
+                            if (get_float_from_objectlist("FC_INCR",number_readobjects,&F_LOW_PASS_INCR,varname_list, value_list)){
+                                declare_error("Variable F_LOW_PASS_INCR could not be retrieved from the json input file!");
+                            }
+                        }
+                        if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list)){
+                            declare_error("Variable ORDER could not be retrieved from the json input file!");
+                        }
+                    }
                     if (TIME_FILT==2) {
-                        if (get_float_from_objectlist("F_HP",number_readobjects,&F_HP,varname_list, value_list)){
-                            F_HP=0.0;
-                            fprintf(fp,"Variable F_HP is set to default value %f.\n",F_HP);}
+                        if (get_float_from_objectlist("F_HIGH_PASS",number_readobjects,&F_HIGH_PASS,varname_list, value_list)){
+                            F_HIGH_PASS=0.0;
+                            fprintf(fp,"Variable F_HIGH_PASS is set to default value %f.\n",F_HIGH_PASS);}
                         if (get_string_from_objectlist("FREQ_FILE",number_readobjects,FREQ_FILE,varname_list, value_list))
                             declare_error("Variable FREQ_FILE could not be retrieved from the json input file!");
                         if (get_int_from_objectlist("ORDER",number_readobjects,&ORDER,varname_list, value_list))
                             declare_error("Variable ORDER could not be retrieved from the json input file!");
-                        if (get_int_from_objectlist("ZERO_PHASE",number_readobjects,&ZERO_PHASE,varname_list, value_list)){
-                            ZERO_PHASE=0;
-                            fprintf(fp,"Variable ZERO_PHASE is set to default value %i.\n",ZERO_PHASE);}
                     }
                 }
                 
@@ -925,7 +936,10 @@ void read_par_json(FILE *fp, char *fileinp){
                     if (TIMEWIN==1){
                         if (get_int_from_objectlist("TW_IND",number_readobjects,&TW_IND,varname_list, value_list)){
                             TW_IND=0;
-                            fprintf(fp,"Variable TW_IND is set to default value %d.\n",TW_IND);}
+                            fprintf(fp,"Variable TW_IND is set to default value %d.\n",TW_IND);
+                        } else {
+                            if (TW_IND>2) declare_error("Only TW_IND=1 (one time window) and TW_IND=2 (two time windows) possible");
+                        }
                         if (get_string_from_objectlist("PICKS_FILE",number_readobjects,PICKS_FILE,varname_list, value_list))
                             declare_error("Variable PICKS_FILE could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("TWLENGTH_PLUS",number_readobjects,&TWLENGTH_PLUS,varname_list, value_list))

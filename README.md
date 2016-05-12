@@ -10,7 +10,7 @@ The [**manual**](https://git.scc.kit.edu/GPIAG-Software/IFOS2D/wikis/home) is in
 
 # Download and Newsletter
 
-You can download the [**latest Release**](https://git.scc.kit.edu/GPIAG-Software/IFOS2D/tags/Release_2.0.1) or the current [**Beta-Version**](https://git.scc.kit.edu/GPIAG-Software/IFOS2D/tree/develop).
+You can download the [**latest Release 2.0.2**](https://git.scc.kit.edu/GPIAG-Software/IFOS2D/tags/Release_2.0.2) or the current [**Beta-Version**](https://git.scc.kit.edu/GPIAG-Software/IFOS2D/tree/develop).
 
 To receive news and updates please [register](http://www.gpi.kit.edu/Software-FWI.php) on the email list [IFOS@lists.kit.edu](http://www.gpi.kit.edu/Software-FWI.php).  
 Please use this list also to ask questions or to report problems or bugs.

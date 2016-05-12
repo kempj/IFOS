@@ -26,7 +26,7 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
     /* declaration of variables */
     extern float DT;
     extern int MYID, USE_WORKFLOW, WORKFLOW_STAGE;
-    extern int TRKILL, NORMALIZE, FC, TIMEWIN;
+    extern int TRKILL, NORMALIZE, F_LOW_PASS, TIMEWIN;
     extern char TRKILL_FILE[STRING_SIZE];
     extern int VELOCITY;
     
