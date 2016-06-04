@@ -140,6 +140,7 @@ float ** get_global_from_local_matrix(float ** local_matrix) {
     }
     
     /* Allocate global matrix */
+    /* You have to deallocate this matrix on our own */
     global_matrix=matrix(1,NYG,1,NXG);
     if(global_matrix==NULL) {
         declare_error("Allocation of global_matrix in get_global_from_local_matrix failed!");
@@ -159,7 +160,6 @@ float ** get_global_from_local_matrix(float ** local_matrix) {
     }
     
     MPI_Allreduce(&global_matrix_temp[1][1],&global_matrix[1][1],NXG*NYG,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-    /* or (NXG+1)*(NYG+1) ? */
     
     free_matrix(global_matrix_temp,1,NYG,1,NXG);
     
@@ -174,7 +174,6 @@ void get_local_from_global_matrix(float ** global_matrix,float ** local_matrix) 
     
     int i=0,j=0;
     int ii=0, jj=0;
-    
     /* Store local matrix in global matrix */
     for (i=1;i<=NXG;i++){
         for (j=1;j<=NYG;j++){
@@ -188,6 +187,5 @@ void get_local_from_global_matrix(float ** global_matrix,float ** local_matrix) 
         }
     }
     
-    free_matrix(global_matrix,1,NYG,1,NXG);
 }
 
