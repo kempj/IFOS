@@ -7,6 +7,14 @@
 # compiling all libraries and  IFOS
 make install MODEL=../genmod/toy_example_true.c
 
+#-------------------------------------------------------------------------------------
+# Insert the trench "Ettlinger Linie" into the toy_example model 
+# in the file ../genmod/toy_example_true_trench.c the size and position can be adjusted
+# Either an elliptic trench or a v-shaped trench can be choosen
+
+#make install MODEL=../genmod/toy_example_true_trench.c
+#---------------------------------------------------------------------------------------
+
 # starting IFOS for forward modeling
 # (depending on the MPI package you maybe have to adjust the following programme call, 
 #  e.g. when using openMPI you do not have to use the 'lamboot' command)
