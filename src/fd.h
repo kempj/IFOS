@@ -47,6 +47,10 @@ void spat_filt(float ** waveconv, int iter, int sws);
 
 float norm(float ** waveconv, int iter, int sws);
 
+void alloc_sections(int ntr,int ns,float ***sectionvx,float ***sectionvy,float ***sectionvz,float ***sectionp,float ***sectionpnp1,float ***sectionpn,float ***sectioncurl,float ***sectiondiv,
+                    float ***sectionpdata,float ***sectionpdiff,float ***sectionpdiffold,float ***sectionvxdata,float ***sectionvxdiff,float ***sectionvxdiffold,float ***sectionvydata,
+                    float ***sectionvydiff,float ***sectionvydiffold,float ***sectionvzdata,float ***sectionvzdiff,float ***sectionvzdiffold);
+
 void av_mat(float **  pi, float **  u,
             float **  ppijm, float **  puip, float ** pujm);
 
@@ -94,6 +98,10 @@ void conv_FD(float * temp_TS, float * temp_TS1, float * temp_conv, int ns);
 void count_killed_traces(int ntr, int swstestshot, int ntr_glob, int **recpos_loc, int nsrc_glob, int ishot, int* ptr_killed_traces, int* ptr_killed_traces_testshots,float ** srcpos, int ** recpos);
 
 void create_trkill_table(int ** killtable, int ntr_glob, int **recpos, int nsrc_glob, float **srcpos, int ishot, float kill_offset_lower, float kill_offset_upper);
+
+void dealloc_sections(int ntr,int ns,int **recpos_loc,float **sectionvx,float **sectionvy,float **sectionvz,float **sectionp,float **sectionpnp1,float **sectionpn,float **sectioncurl,float **sectiondiv,
+                    float **sectionpdata,float **sectionpdiff,float **sectionpdiffold,float **sectionvxdata,float **sectionvxdiff,float **sectionvxdiffold,float **sectionvydata,
+                    float **sectionvydiff,float **sectionvydiffold,float **sectionvzdata,float **sectionvzdiff,float **sectionvzdiffold);
 
 float exchange_L2(float L2, int sw, int bcast_l2);
 
@@ -226,7 +234,7 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u);
 
 void readmod_elastic_es(float  **  rho, float **  pi, float **  u, float ** matmod, int is);
 
-int **receiver(FILE *fp, int *ntr);
+int **receiver(int* ntr, float** srcpos, int shotno);
 
 void save_checkpoint(int nx1, int nx2, int ny1, int ny2,
                      float **  vx, float ** vy, float ** sxx, float ** syy, float ** sxy);

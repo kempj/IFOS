@@ -243,10 +243,14 @@ int main(int argc, char **argv){
     /* In the following, NX and NY denote size of the local grid ! */
     NX = IENDX;
     NY = IENDY;
-    
+        
+    /* Reading source positions from SOURCE_FILE */
+    srcpos=sources(&nsrc);
+    nsrc_glob=nsrc;
+    ishot=0;    
     
     if (SEISMO){
-        recpos=receiver(FP, &ntr);
+        recpos=receiver(&ntr, srcpos, ishot);
         recswitch = ivector(1,ntr);
         recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
         ntr_glob=ntr;
@@ -711,105 +715,14 @@ int main(int argc, char **argv){
             
     }
     if (ntr>0){
-        switch (SEISMO){
-            case 1 : /* particle velocities only */
-                switch (WAVETYPE) {
-                    case 1:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        break;
-                    case 2:
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                    case 3:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                }
-                break;
-            case 2 : /* pressure only */
-                sectionp=matrix(1,ntr,1,ns);
-                sectionpnp1=matrix(1,ntr,1,ns);
-                sectionpn=matrix(1,ntr,1,ns);
-                break;
-            case 3 : /* curl and div only */
-                sectioncurl=matrix(1,ntr,1,ns);
-                sectiondiv=matrix(1,ntr,1,ns);
-                break;
-            case 4 : /* everything */
-                switch (WAVETYPE) {
-                    case 1:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        break;
-                    case 2:
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                    case 3:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                }
-                sectioncurl=matrix(1,ntr,1,ns);
-                sectiondiv=matrix(1,ntr,1,ns);
-                sectionp=matrix(1,ntr,1,ns);
-                break;
-            case 5 : /* everything except curl and div*/
-                switch (WAVETYPE) {
-                    case 1:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        break;
-                    case 2:
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                    case 3:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                }
-                sectionp=matrix(1,ntr,1,ns);
-                break;
-        }
+      alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+	&sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
+	&sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
     }
     
     /* Memory for seismic data */
     sectionread=matrix(1,ntr_glob,1,ns);
-    sectionpdata=matrix(1,ntr,1,ns);
-    sectionpdiff=matrix(1,ntr,1,ns);
-    sectionpdiffold=matrix(1,ntr,1,ns);
-    switch (WAVETYPE) {
-        case 1:
-            sectionvxdata=matrix(1,ntr,1,ns);
-            sectionvxdiff=matrix(1,ntr,1,ns);
-            sectionvxdiffold=matrix(1,ntr,1,ns);
-            sectionvydata=matrix(1,ntr,1,ns);
-            sectionvydiff=matrix(1,ntr,1,ns);
-            sectionvydiffold=matrix(1,ntr,1,ns);
-            break;
-            
-        case 2:
-            sectionvzdata=matrix(1,ntr,1,ns);
-            sectionvzdiff=matrix(1,ntr,1,ns);
-            sectionvzdiffold=matrix(1,ntr,1,ns);
-            break;
-            
-        case 3:
-            sectionvxdata=matrix(1,ntr,1,ns);
-            sectionvxdiff=matrix(1,ntr,1,ns);
-            sectionvxdiffold=matrix(1,ntr,1,ns);
-            sectionvydata=matrix(1,ntr,1,ns);
-            sectionvydiff=matrix(1,ntr,1,ns);
-            sectionvydiffold=matrix(1,ntr,1,ns);
-            sectionvzdata=matrix(1,ntr,1,ns);
-            sectionvzdiff=matrix(1,ntr,1,ns);
-            sectionvzdiffold=matrix(1,ntr,1,ns);
-            break;
-    }
-    
+        
     /* Memory for inversion for source time function */
     if((INV_STF==1)||(TIME_FILT==1) || (TIME_FILT==2)){
         sectionp_conv=matrix(1,ntr_glob,1,NT);
@@ -856,10 +769,6 @@ int main(int argc, char **argv){
     hc = holbergcoeff();
     
     MPI_Barrier(MPI_COMM_WORLD);
-    
-    /* Reading source positions from SOURCE_FILE */
-    srcpos=sources(&nsrc);
-    nsrc_glob=nsrc;
     
     if(FORWARD_ONLY==0&&USE_WORKFLOW){
         read_workflow(FILE_WORKFLOW,&workflow, &workflow_lines,workflow_header);
@@ -1176,6 +1085,28 @@ int main(int argc, char **argv){
                     /*------------------------------------------------------------------------------*/
                     
                     for (ishot=1;ishot<=nshots;ishot+=SHOTINC){
+     
+       			if (SEISMO && READREC==2){
+			  if (ntr>0) {
+			    dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+					     sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+					     sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
+			  }
+			  free_imatrix(recpos,1,3,1,ntr_glob);
+			  recpos=receiver(&ntr, srcpos, ishot);
+			  recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
+			  ntr_glob=ntr;
+			  ntr=ntr_loc;
+			  if (ntr>0){
+				alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+					      &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
+					      &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
+			  }
+			  if (ntr) group_id = 1;
+			  else group_id = 0;
+			  MPI_Comm_split(MPI_COMM_WORLD, group_id, MYID, &MPI_COMM_NTR);
+			  MPI_Comm_rank(MPI_COMM_NTR, &myid_ntr);
+			}
 
                         SOURCE_SHAPE = SOURCE_SHAPE_OLD;
                         if(WAVETYPE==2 || WAVETYPE==3) SOURCE_SHAPE_SH=SOURCE_SHAPE_OLD_SH;
@@ -3325,7 +3256,26 @@ int main(int argc, char **argv){
                         fprintf(FP,"\n=================================================================================================\n");
                         fprintf(FP,"\n *****  Starting simulation (test-forward model) no. %d for shot %d of %d (rel. step length %.5f) \n",itest,ishot,nshots,eps_scale);
                         fprintf(FP,"\n=================================================================================================\n\n");
-                        
+                              
+			if (SEISMO && READREC==2){
+			  if (ntr>0) {
+			    dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+					     sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+					     sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
+			  }
+			  free_imatrix(recpos,1,3,1,ntr_glob);
+			  recpos=receiver(&ntr, srcpos, ishot);
+			  recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
+			  ntr_glob=ntr;
+			  ntr=ntr_loc;
+			  
+			  if (ntr>0){
+				alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+					      &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
+					      &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
+			  }			  
+			}
+	
                         for (nt=1;nt<=8;nt++) srcpos1[nt][1]=srcpos[nt][ishot];
                         
                         /*-----------------------------------*/
@@ -4308,53 +4258,9 @@ int main(int argc, char **argv){
             break;
     }
     if ((ntr>0) && (SEISMO)){
-        free_imatrix(recpos_loc,1,3,1,ntr);
-        switch (SEISMO){
-            case 1 : /* particle velocities only */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectionvx,1,ntr,1,ns);
-                    free_matrix(sectionvy,1,ntr,1,ns);
-                }
-                if (WAVETYPE==2 || WAVETYPE==3) {
-                    free_matrix(sectionvz,1,ntr,1,ns);
-                }
-                break;
-            case 2 : /* pressure only */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectionp,1,ntr,1,ns);
-                    free_matrix(sectionpn,1,ntr,1,ns);
-                    free_matrix(sectionpnp1,1,ntr,1,ns);
-                }
-                break;
-            case 3 : /* curl and div only */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectioncurl,1,ntr,1,ns);
-                    free_matrix(sectiondiv,1,ntr,1,ns);
-                }
-                break;
-            case 4 : /* everything */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectionvx,1,ntr,1,ns);
-                    free_matrix(sectionvy,1,ntr,1,ns);
-                    free_matrix(sectionp,1,ntr,1,ns);
-                    free_matrix(sectioncurl,1,ntr,1,ns);
-                    free_matrix(sectiondiv,1,ntr,1,ns);
-                }
-                if (WAVETYPE==2 || WAVETYPE==3) {
-                    free_matrix(sectionvz,1,ntr,1,ns);
-                }
-                break;
-            case 5 : /* everything except curl and div */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectionvx,1,ntr,1,ns);
-                    free_matrix(sectionvy,1,ntr,1,ns);
-                    free_matrix(sectionp,1,ntr,1,ns);
-                }
-                if (WAVETYPE==2 || WAVETYPE==3) {
-                    free_matrix(sectionvz,1,ntr,1,ns);
-                }
-                break;
-        }
+      dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+	sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+	sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
     }
     
     
@@ -4372,23 +4278,7 @@ int main(int argc, char **argv){
             free_matrix(We_SH,-nd+1,NY+nd,-nd+1,NX+nd);
         }
     }
-    
-    if (WAVETYPE==1 || WAVETYPE==3) {
-        free_matrix(sectionvxdata,1,ntr,1,ns);
-        free_matrix(sectionvxdiff,1,ntr,1,ns);
-        free_matrix(sectionvydata,1,ntr,1,ns);
-        free_matrix(sectionvydiff,1,ntr,1,ns);
-        free_matrix(sectionvydiffold,1,ntr,1,ns);
-        free_matrix(sectionvxdiffold,1,ntr,1,ns);
-        free_matrix(sectionpdata,1,ntr,1,ns);
-        free_matrix(sectionpdiff,1,ntr,1,ns);
-        free_matrix(sectionpdiffold,1,ntr,1,ns);
-    }
-    if (WAVETYPE==2 || WAVETYPE==3) {
-        free_matrix(sectionvzdata,1,ntr,1,ns);
-        free_matrix(sectionvzdiff,1,ntr,1,ns);
-        free_matrix(sectionvzdiffold,1,ntr,1,ns);
-    }
+
     free_matrix(sectionread,1,ntr_glob,1,ns);
     
     

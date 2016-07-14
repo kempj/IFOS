@@ -70,6 +70,7 @@ IFOS2D= \
 	IFOS2D.c \
 	stf.c \
 	window_cos.c \
+	alloc_sections.c \
 	calc_mat_change_test.c \
     	calc_res.c \
 	calc_misfit.c \
