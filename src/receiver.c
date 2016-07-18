@@ -33,7 +33,7 @@ int **receiver(int *ntr, float **srcpos, int shotno){
 	extern int MYID, VERBOSE,TRKILL;
 	extern FILE *FP;
 
-	int **recpos1, **recpos = NULL, nxrec=0, nyrec=0, nzrec=0;
+	int **recpos1, **recpos = NULL, nxrec=0, nyrec=0, nzrec=0, recdist;
 	int   itr=1, itr1=0, itr2=0, recflag=0, c, ifw, n, i, j, ntr1=0;
 	int nxrec1, nxrec2, nxrec3, nyrec1, nyrec2, nzrec1=1, nzrec2=1, offset, shotdist;
 	extern float XREC1, YREC1, XREC2, YREC2;
@@ -100,12 +100,22 @@ int **receiver(int *ntr, float **srcpos, int shotno){
      
      	else if (READREC==2){
 		fprintf(FP,"\n Moving streamer acquisition geometry choosen. \n");
-		nxrec1=iround(XREC1/DH);   /* (nxrec1,nyrec1) and (nxrec2,nyrec2) are */
-		nyrec1=iround(YREC1/DH);   /* the positions of the first and last receiver*/
-		nxrec2=iround(XREC2/DH);   /* in gridpoints */
-		nyrec2=iround(YREC2/DH);
-		offset=iround((XREC1-srcpos[1][1])/DH);
-		shotdist=iround((srcpos[1][2]-srcpos[1][1])/DH);
+		/* decide if XREC1 or XREC2 is the nearest receiver to shot 1 */
+		if (abs(XREC1-srcpos[1][1])<abs(XREC2-srcpos[1][1])){
+			nxrec1=iround(XREC1/DH);   /* (nxrec1,nyrec1) and (nxrec2,nyrec2) are */
+			nyrec1=iround(YREC1/DH);   /* the positions of the first and last receiver*/
+			nxrec2=iround(XREC2/DH);   /* in gridpoints */
+			nyrec2=iround(YREC2/DH);
+			offset=iround((XREC1-srcpos[1][1])/DH);
+		}
+		else {
+			nxrec1=iround(XREC2/DH);   /* (nxrec1,nyrec1) and (nxrec2,nyrec2) are */
+			nyrec1=iround(YREC2/DH);   /* the positions of the first and last receiver*/
+			nxrec2=iround(XREC1/DH);   /* in gridpoints */
+			nyrec2=iround(YREC1/DH);
+			offset=iround((XREC2-srcpos[1][1])/DH);
+			shotdist=iround((srcpos[1][2]-srcpos[1][1])/DH);
+		}
 		if (nyrec1 != nyrec2){
 			fprintf(FP,"\n\n");
 			fprintf(FP," Warning:\n");
@@ -113,29 +123,21 @@ int **receiver(int *ntr, float **srcpos, int shotno){
 			fprintf(FP," Depth of all receivers is seth to %i m\n",YREC1);
 			fprintf(FP,"\n\n");
 		}
-		
-		*ntr=iround((nxrec2-nxrec1)/NGEOPH)+1;
+		if (offset<0) recdist=-NGEOPH;
+		else recdist=NGEOPH;
+		*ntr=iround((nxrec2-nxrec1)/recdist)+1;
 		if (shotno>0) nxrec1=nxrec1+(shotdist*(shotno-1));
 		recpos=imatrix(1,3,1,*ntr);
 		n=0;
 		
-		if (offset<0){
-			for (itr=1;itr<=*ntr;itr++){
-				nxrec=nxrec1-(itr-1)*NGEOPH;
-				if (nxrec>FW && nxrec<(NXG-FW) && nyrec1>0 && nyrec1<(NYG-FW)){
-					recpos[1][itr]=nxrec;
-					recpos[2][itr]=nyrec1;
-				} else declare_error(" Receiver positions of current shot are out of model boundaries !");
-			}
-		} else if (offset>0){
-			for (itr=1;itr<=*ntr;itr++){
-				nxrec=nxrec1+(itr-1)*NGEOPH;
-				if (nxrec>FW && nxrec<(NXG-FW) && nyrec1>0 && nyrec1<(NYG-FW)){
-					recpos[1][itr]=nxrec;
-					recpos[2][itr]=nyrec1;
-				} else declare_error(" Receiver positions of current shot are out of model boundaries !");
-			}
+		for (itr=1;itr<=*ntr;itr++){
+			nxrec=nxrec1+(itr-1)*recdist;
+			if (nxrec>FW && nxrec<(NXG-FW) && nyrec1>0 && nyrec1<(NYG-FW)){
+				recpos[1][itr]=nxrec;
+				recpos[2][itr]=nyrec1;
+			} else declare_error(" Receiver positions of current shot are out of model boundaries !");
 		}
+
 		if (shotno>0){
 			/* write receiver positions to file */
 			sprintf(filename,"%s.shot%i",REC_FILE,shotno);
