@@ -1,12 +1,9 @@
 this is <README>
 ============================================================================
 SEIFE --- seismic waveform filters
-----------------------------------
-$Id$
 ============================================================================
 
-For compilation instructions see README.1st in the root directory of the tar-ball or
-http://gpitrsvn.gpi.uni-karlsruhe.de:8000/TFSoftware/wiki/docs/installation
+For compilation instructions see README.1st in the root directory.
 
 libseife is a collection of Fortran 77 functions and subroutines for time
 series analysis and digital filters. It is a full-grown signal processing
@@ -37,5 +34,15 @@ Dependencies
   external dependencies: -
   internal dependencies: -
 
+Arrays in C version
+-------------------
+
+The proper definition of arrays and parameters to be passed to the C-API of
+libseife becomes obvious in function seife_first, which is defined in cseife.c
+A call
+
+  seife_first(x, n);
+
+will address elements x[0] to x[n-1] in C-array x.
 
 ----- END OF README ----- 

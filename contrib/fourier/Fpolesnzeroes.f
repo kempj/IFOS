@@ -1,6 +1,5 @@
-c this is <polesnzeroes.f>
+c this is <Fpolesnzeroes.f>
 c ----------------------------------------------------------------------------
-c   ($Id$)
 c
 c Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 c
@@ -26,22 +25,10 @@ c
 c REVISIONS and CHANGES
 c    11/11/2002   V1.0   Thomas Forbriger
 c    13/11/2002   V1.1   introduce waterlevel to omega
+c    28/06/2016   V1.2   discard function fou_revision
 c
 cS
 c ============================================================================
-c
-      subroutine fou_revision
-c 
-c print library code revision
-c
-cE
-      print *,
-     &  '$Id$'
-      return
-      end
-c
-cS
-c----------------------------------------------------------------------
 c
       subroutine fou_clear
 c
@@ -280,4 +267,4 @@ c
       return
       end
 c
-c ----- END OF polesnzeroes.f ----- 
+c ----- END OF Fpolesnzeroes.f ----- 

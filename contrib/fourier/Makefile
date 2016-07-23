@@ -1,6 +1,5 @@
 # this is <Makefile>
 # ----------------------------------------------------------------------------
-# $Id$
 # 
 # Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 # 
@@ -72,6 +71,8 @@ $(LOCLIBDIR)/%: install-include %
 	/bin/mv -fv $(word 2,$^) $(LOCLIBDIR)
 
 #----------------------------------------------------------------------
+
+DOXYTXT=$(wildcard doxygen*txt)
 
 flist: Makefile $(wildcard *.f *.inc *.h *.cc *.c README *.cfg) COPYING \
 	$(DOXYTXT)

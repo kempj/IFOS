@@ -1,6 +1,5 @@
-c this is <filters.f>
+c this is <Ffilters.f>
 c ----------------------------------------------------------------------------
-c   ($Id$)
 c
 c Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 c
@@ -25,21 +24,10 @@ c
 c
 c REVISIONS and CHANGES
 c    11/11/2002   V1.0   Thomas Forbriger
+c    28/06/2016   V1.1   discard function foufil_revision
 c
 cS
 c ============================================================================
-c
-      subroutine foufil_revision
-c 
-c print library code revision
-c
-cE
-      print *,'$Id$'
-      return
-      end
-c
-cS
-c----------------------------------------------------------------------
 c
       subroutine foufil_clear
 c
@@ -274,4 +262,4 @@ c
 c
 
 c
-c ----- END OF filters.f ----- 
+c ----- END OF Ffilters.f ----- 

@@ -1,12 +1,11 @@
 this is <README>
 ============================================================================
 FOURIER --- Fourier coefficients library
--------------------------------
-$Id$
 ============================================================================
 
-For compilation instructions see README.1st in the root directory of the tar-ball or
-http://gpitrsvn.gpi.uni-karlsruhe.de:8000/TFSoftware/wiki/docs/installation 
+This software is part of the project Seitosh. See README.1st in the root
+directory of the collection or https://git.scc.kit.edu/Seitosh/Seitosh for
+general installation instructions.
 
 The library provides modules to perform Fourier transformations and to 
 operate on Fourier transforms.An interface to FFTW is available.Signal 

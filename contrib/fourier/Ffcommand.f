@@ -1,6 +1,5 @@
-c this is <fcommand.f>
+c this is <Ffcommand.f>
 c ----------------------------------------------------------------------------
-c   ($Id$)
 c
 c Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 c
@@ -25,21 +24,10 @@ c
 c
 c REVISIONS and CHANGES
 c    11/11/2002   V1.0   Thomas Forbriger
+c    28/06/2016   V1.1   discard function foucmd_revision
 c
 cS
 c ============================================================================
-c
-      subroutine foucmd_revision
-c 
-c print library code revision
-c
-cE
-      print *,'$Id$'
-      return
-      end
-c
-cS
-c----------------------------------------------------------------------
 c
       subroutine foucmd_help(verbose)
 c 
@@ -72,13 +60,6 @@ c
      &  'switch to specification by period (default)'
       print 50,'mod','frequency','switch to specification by frequency '
       print 50,'end',' ',        'terminate file reading'
-c 
-      if (verbose) then
-        print *,' '
-        call fou_revision
-        call foufil_revision
-        call foucmd_revision
-      endif
 c
       return
    50 format(1x,a3,1x,a,t18,1x,a)
@@ -210,4 +191,4 @@ c
    98 stop 'ERROR (foucmd_file): closing file'
       end
 c
-c ----- END OF fcommand.f ----- 
+c ----- END OF Ffcommand.f ----- 

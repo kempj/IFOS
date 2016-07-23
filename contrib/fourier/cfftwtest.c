@@ -3,8 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
- *
  * ----
  * libfourier is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +39,6 @@
  */
 #define TF_CFFTWTEST_C_VERSION \
   "TF_CFFTWTEST_C   V1.0   "
-#define TF_CFFTWTEST_C_CVSID \
-  "$Id$"
 
 #include<drfftw.h>
 #include<stdio.h>
@@ -105,7 +101,6 @@ void process(int n, int m)
 int main()
 {
   printf("%s\n", TF_CFFTWTEST_C_VERSION);
-  printf("%s\n", TF_CFFTWTEST_C_CVSID);
 
 /*
  * the code provided in the tutorial for rfftw_one produces segmentation

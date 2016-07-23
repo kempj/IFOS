@@ -30,7 +30,7 @@
 namespace stfinv {
 
   /*! \brief Engine to find a finite, causal source time-history in time domain
-   * \ingroup engines
+   * \ingroup group_engines
    *
    * \par Concept behin this engine
    *
