@@ -1,6 +1,5 @@
 c this is <filters.inc>
 c ----------------------------------------------------------------------------
-c   ($Id$)
 c
 c Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 c

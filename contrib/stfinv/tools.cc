@@ -1,7 +1,7 @@
 /*! \file tools.cc
  * \brief tools and utilities (implementation)
  * 
- * \ingroup tools
+ * \ingroup group_tools
  * ----------------------------------------------------------------------------
  * 
  * \author Thomas Forbriger

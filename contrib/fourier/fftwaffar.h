@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 13/05/2011
  * 
@@ -44,8 +43,6 @@
 
 #define TF_FFTWAFFAR_H_VERSION \
   "TF_FFTWAFFAR_H   V1.2"
-#define TF_FFTWAFFAR_H_CVSID \
-  "$Id$"
 
 #include<complex>
 #include<fftw3.h>

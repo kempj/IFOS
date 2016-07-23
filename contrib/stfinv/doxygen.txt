@@ -104,7 +104,7 @@ processing are described in the \ref page_help.
 
 /*! \brief Engines implemented in libstfinv
 
-\defgroup engines Engines
+\defgroup group_engines Engines
 
 \todo
   A detailed description for implementers is still missing
@@ -116,7 +116,7 @@ processing are described in the \ref page_help.
 
 /*! \brief Tools and utilities used by the libstfinv engines
 
-\defgroup tools Internal tools and utilities
+\defgroup group_tools Internal tools and utilities
 
 \todo
   A detailed description for implementers is still missing
@@ -132,6 +132,20 @@ processing are described in the \ref page_help.
 
 \todo
   A detailed description for implementers is still missing
+
+\date 04.10.2015
+ */
+
+/*======================================================================*/
+
+/*! \brief Debug tools
+
+\defgroup group_debug Debugging module
+
+\todo
+  Selection of debug statements in most parts of the code is done by bits in
+  the value of the debug variable. E.g∵ The value 16 (bit 4) selects debugging
+  of the taper function. This is not yet properly documented.
 
 \date 04.10.2015
  */

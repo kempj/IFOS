@@ -44,7 +44,7 @@
 namespace stfinv {
 
   /*! \brief Engine to provide a fixed wavelet
-   * \ingroup engines
+   * \ingroup group_engines
    */
   class STFEngineFixedWavelet: public stfinv::STFFourierDomainEngine {
     public:

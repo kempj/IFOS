@@ -47,7 +47,7 @@
 namespace stfinv {
 
   /*! \brief Fourier domain least squares engine
-   * \ingroup engines
+   * \ingroup group_engines
    *
    * \par Concept behind this engine
    * If

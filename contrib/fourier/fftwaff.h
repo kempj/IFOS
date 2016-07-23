@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 11/07/2006
  * 
@@ -75,8 +74,6 @@
 
 #define TF_FFTWAFF_H_VERSION \
   "TF_FFTWAFF_H   V1.3"
-#define TF_FFTWAFF_H_CVSID \
-  "$Id$"
 
 #include<complex>
 #ifdef FFTWFALLBACK

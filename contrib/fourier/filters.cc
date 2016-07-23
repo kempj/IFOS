@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 05/01/2003
  * 
@@ -34,16 +33,15 @@
  * ============================================================================
  */
 #define TF_FILTER_CC_VERSION \
-  "TF_FILTER_CC   V1.0   "
-#define TF_FILTER_CC_CVSID \
-  "$Id$"
+  "TF_FILTER_CC   V1.0"
 
 #include <fourier/filters.h>
 #include <fourier/error.h>
+#include <cmath>
 
 namespace fourier {
 
-  const double Filter::pi;
+  const double Filter::pi=M_PI;
   const Filter::Tcvalue Filter::ime=Tcvalue(0.,1.);
 
   /*----------------------------------------------------------------------*/
