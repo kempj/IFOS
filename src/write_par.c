@@ -184,7 +184,7 @@ void write_par(FILE *fp){
     
     if (SEISMO){
         fprintf(fp," ------------------------- RECEIVER  --------------------------\n");
-        if (READREC){
+        if (READREC==1){
             fprintf(fp," reading receiver positions from file \n");
             fprintf(fp,"\t%s\n\n",REC_FILE);
             fprintf(fp," reference_point_for_receiver_coordinate_system:\n");

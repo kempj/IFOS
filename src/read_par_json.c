@@ -354,7 +354,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 if (get_int_from_objectlist("READREC",number_readobjects,&READREC,varname_list, value_list))
                     declare_error("Variable READREC could not be retrieved from the json input file!");
                 else {
-                    if (READREC==0) {
+                    if (READREC==0 || READREC==2) {
                         if (get_float_from_objectlist("XREC1",number_readobjects,&XREC1,varname_list, value_list))
                             declare_error("Variable XREC1 could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("XREC2",number_readobjects,&XREC2,varname_list, value_list))
@@ -366,7 +366,7 @@ void read_par_json(FILE *fp, char *fileinp){
                         if (get_int_from_objectlist("NGEOPH",number_readobjects,&NGEOPH,varname_list, value_list))
                             declare_error("Variable NGEOPH could not be retrieved from the json input file!");
                     }
-                    else {
+                    if (READREC>0) {
                         if (get_string_from_objectlist("REC_FILE",number_readobjects,REC_FILE,varname_list, value_list))
                             declare_error("Variable REC_FILE could not be retrieved from the json input file!");
                     }
@@ -1052,7 +1052,7 @@ void read_par_json(FILE *fp, char *fileinp){
          }*/
         
         /* receiver file */
-        if (READREC)
+        if (READREC==1)
         {
             if (access(REC_FILE,0) != 0)
             {
