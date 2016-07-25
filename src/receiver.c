@@ -114,7 +114,6 @@ int **receiver(int *ntr, float **srcpos, int shotno){
 			nxrec2=iround(XREC1/DH);   /* in gridpoints */
 			nyrec2=iround(YREC1/DH);
 			offset=iround((XREC2-srcpos[1][1])/DH);
-			shotdist=iround((srcpos[1][2]-srcpos[1][1])/DH);
 		}
 		if (nyrec1 != nyrec2){
 			fprintf(FP,"\n\n");
@@ -126,7 +125,7 @@ int **receiver(int *ntr, float **srcpos, int shotno){
 		if (offset<0) recdist=-NGEOPH;
 		else recdist=NGEOPH;
 		*ntr=iround((nxrec2-nxrec1)/recdist)+1;
-		if (shotno>0) nxrec1=nxrec1+(shotdist*(shotno-1));
+		if (shotno>0) nxrec1=nxrec1+((srcpos[1][shotno]-srcpos[1][1])/DH);
 		recpos=imatrix(1,3,1,*ntr);
 		n=0;
 		
