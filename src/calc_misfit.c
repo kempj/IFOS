@@ -180,8 +180,10 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
                 abs_sectiondata+=intseis_sectiondata[i][j]*intseis_sectiondata[i][j];
                 abs_section+=intseis_section[i][j]*intseis_section[i][j];
             }
-            abs_sectiondata=sqrt(abs_sectiondata);
-            abs_section=sqrt(abs_section);
+            if (abs_sectiondata==0) abs_sectiondata=1;
+	    else abs_sectiondata=sqrt(abs_sectiondata);
+	    if (abs_section==0) abs_section==1;
+            else abs_section=sqrt(abs_section);
         }
         
         /* calculate L2 residuals */
