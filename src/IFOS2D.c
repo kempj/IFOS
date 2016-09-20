@@ -2075,6 +2075,30 @@ int main(int argc, char **argv){
                                         saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,3);
                                     }
                                 }
+                                
+                                
+                                /* Write synthetic filtered seismogramms to disk */
+                                if (SEISMO && TIME_FILT && WRITE_FILTERED_DATA){
+                                    if(WAVETYPE==1 || WAVETYPE==3){
+                                        if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==3)){
+                                            catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                        if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
+                                            catseis(sectionvy, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                        if (ADJOINT_TYPE==4){
+                                            catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                    }
+                                    if(WAVETYPE==2 || WAVETYPE==3){
+                                        catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
+                                    }
+                                    if(myid_ntr==0){
+                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,4);
+                                    }
+                                }
+                                
+                                
                             }
                             
                             

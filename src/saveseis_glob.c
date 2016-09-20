@@ -70,6 +70,17 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             sprintf(curlf,"%s_curl.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
             break;
             
+        case 4:
+            sprintf(vxf,"%s_vx.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(vyf,"%s_vy.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            if(WAVETYPE==2 || WAVETYPE==3) {
+                sprintf(vzf,"%s_vz.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+            sprintf(pf,"%s_p.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(divf,"%s_div.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(curlf,"%s_curl.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            break;
+            
         default:
             declare_error("saveseis_glob: Unkown type_switch");
             break;
