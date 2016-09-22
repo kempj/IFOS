@@ -28,7 +28,7 @@ char ** varname_list,** value_list;
 void read_par_json(FILE *fp, char *fileinp){
     
     /* declaration of extern variables */
-    extern int   NX, NY, FDORDER, MAXRELERROR, SOURCE_SHAPE,SOURCE_SHAPE_SH, SOURCE_TYPE, SNAP, SNAP_FORMAT, ACOUSTIC, L, VERBOSE, WAVETYPE,JOINT_INVERSION_PSV_SH_TYPE;
+    extern int   NX, NY, FDORDER, MAXRELERROR, SOURCE_SHAPE,SOURCE_SHAPE_SH, SOURCE_TYPE, SNAP, SNAP_FORMAT, ACOUSTIC, L, VERBOSE, WAVETYPE,JOINT_INVERSION_PSV_SH_TYPE,JOINT_EQUAL_WEIGHTING;
     extern float DH, TIME, DT, TS, *FL, TAU, VPPML, PLANE_WAVE_DEPTH, PHI, F_REF,JOINT_INVERSION_PSV_SH_ALPHA_VS,JOINT_INVERSION_PSV_SH_ALPHA_RHO;
     extern float XREC1, XREC2, YREC1, YREC2, FPML;
     extern float REC_ARRAY_DEPTH, REC_ARRAY_DIST;
@@ -216,6 +216,12 @@ void read_par_json(FILE *fp, char *fileinp){
                 fprintf(fp,"For acoustic modelling WAVETYPE is set to %d.\n",WAVETYPE);
             }
             if(WAVETYPE==3) {
+                
+                if (get_int_from_objectlist("JOINT_EQUAL_WEIGHTING",number_readobjects,&JOINT_EQUAL_WEIGHTING,varname_list, value_list)){
+                    JOINT_EQUAL_WEIGHTING=0;
+                    fprintf(fp,"Variable JOINT_EQUAL_WEIGHTING is set to default value %d.\n",JOINT_EQUAL_WEIGHTING);
+                }
+                
                 if (get_int_from_objectlist("JOINT_INVERSION_PSV_SH_TYPE",number_readobjects,&JOINT_INVERSION_PSV_SH_TYPE,varname_list, value_list)){
                     JOINT_INVERSION_PSV_SH_TYPE=1;
                     fprintf(fp,"Variable JOINT_INVERSION_PSV_SH_TYPE is set to default value %d.\n",JOINT_INVERSION_PSV_SH_TYPE);
@@ -348,7 +354,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 if (get_int_from_objectlist("READREC",number_readobjects,&READREC,varname_list, value_list))
                     declare_error("Variable READREC could not be retrieved from the json input file!");
                 else {
-                    if (READREC==0) {
+                    if (READREC==0 || READREC==2) {
                         if (get_float_from_objectlist("XREC1",number_readobjects,&XREC1,varname_list, value_list))
                             declare_error("Variable XREC1 could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("XREC2",number_readobjects,&XREC2,varname_list, value_list))
@@ -360,7 +366,7 @@ void read_par_json(FILE *fp, char *fileinp){
                         if (get_int_from_objectlist("NGEOPH",number_readobjects,&NGEOPH,varname_list, value_list))
                             declare_error("Variable NGEOPH could not be retrieved from the json input file!");
                     }
-                    else {
+                    if (READREC>0) {
                         if (get_string_from_objectlist("REC_FILE",number_readobjects,REC_FILE,varname_list, value_list))
                             declare_error("Variable REC_FILE could not be retrieved from the json input file!");
                     }
@@ -1046,7 +1052,7 @@ void read_par_json(FILE *fp, char *fileinp){
          }*/
         
         /* receiver file */
-        if (READREC)
+        if (READREC==1)
         {
             if (access(REC_FILE,0) != 0)
             {

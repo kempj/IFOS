@@ -322,7 +322,9 @@ The locations of the receivers may either be specified in a separate file REC\_F
 \end{verbatim}}}
 These receiver coordinates in REC\_FILE are shifted by REFREC[1], REFREC[2] into the  x- and y-direction, respectively. This allows for completely moving the receiver spread without modifying REC\_FILE. This may be useful for the simulation of moving profiles in reflection seismics.
 
-If READREC=0 the receiver locations must be specified in the parameter file. In this case, it is assumed that the receivers are located along a straight line. The first receiver position is defined by (XREC1, YREC1), and the last receiver position by (XREC1, YREC1). The spacing between receivers is NGEOPH grid points. 
+If READREC=0 the receiver locations must be specified in the parameter file. In this case, it is assumed that the receivers are located along a straight line. The first receiver position is defined by (XREC1, YREC1), and the last receiver position by (XREC1, YREC1). The spacing between receivers is NGEOPH grid points.
+
+READREC=2 is made for a moving streamer aquisition geometry. The receiver positions for shot 1 must be specified in the parameter file (as described for READREC=0). For all other shots the receiver positions are moved according to the movement of the following source. This implementation allows a memory saving usage of moving geometries. The receivers must be in the same depth and all receivers must be located in the model for all shots.
 
 Receivers are always located on full grid indices, i.e. a receiver that is located between two grid points will be shifted by the FD program to the closest next grid point. It is not yet possible
 to output seismograms for arbitrary receiver locations since this would require a certain wavefield interpolation.

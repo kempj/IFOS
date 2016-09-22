@@ -123,10 +123,9 @@ int nsrc, int ns, int seis_form, int ishot, int sws){
 			tr.gwdep=0     	; /* water depth at receiver group */
 
 			
-			tr.sy= (signed int)iround(YS*1000.0)    ;   /* Y source coordinate */
+			tr.sy=0         ; /* Y source coordinate */
 
-	
-			tr.gy= (signed int)iround(yr*1000.0)    ;   /* Y group coordinate */
+			tr.gy=0         ; /* Y group coordinate */
 
 			tr.counit=0    	;   /* coordinate units code:
 						for previous four entries

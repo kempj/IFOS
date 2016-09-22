@@ -207,8 +207,10 @@ double calc_res(float **sectiondata, float **section, float **sectiondiff, float
                 abs_section+=intseis_section[i][j]*intseis_section[i][j];
                 sectiondata_mult_section+=intseis_sectiondata[i][j]*intseis_section[i][j]; /* calculation of dot product for measured (section) and synthetic (sectiondata) data*/
             }
-            abs_sectiondata=sqrt(abs_sectiondata);
-            abs_section=sqrt(abs_section);
+            if (abs_sectiondata==0) abs_sectiondata=1;
+	    else abs_sectiondata=sqrt(abs_sectiondata);
+	    if (abs_section==0) abs_section==1;
+            else abs_section=sqrt(abs_section);
         }
         /* calculate residual seismograms and norm */
         
