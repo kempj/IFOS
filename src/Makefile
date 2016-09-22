@@ -19,7 +19,7 @@ EXEC= ../bin
 
 # LINUX with OpenMPI / IntelMPI and INTEL Compiler
 # Use icc whenever possible, this will be much faster than gcc
-CC=mpiicc
+CC=mpicc
 LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
 CFLAGS=-O3
 SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
