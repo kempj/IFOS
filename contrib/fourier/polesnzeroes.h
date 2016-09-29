@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 05/01/2003
  * 
@@ -38,8 +37,6 @@
 
 #define TF_POLESNZEROES_H_VERSION \
   "TF_POLESNZEROES_H   V1.0   "
-#define TF_POLESNZEROES_H_CVSID \
-  "$Id$"
 
 #include<cmath>
 #include<complex>

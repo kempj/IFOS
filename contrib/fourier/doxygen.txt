@@ -2,8 +2,6 @@
  * \brief C++ library to operate on Fourier transforms (libfourierxx)
  *
  * ----------------------------------------------------------------------------
- *
- * $Id$
  * 
  * Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
  * 
@@ -34,8 +32,6 @@
 /*! \mainpage
 \author Thomas Forbriger
 \since 2002
-\date $Date$
-\version $Id$
 
 The library provides modules to perform Fourier transformations and to operate
 on Fourier transforms.
@@ -128,6 +124,14 @@ Further stuff will be collected in this library in the future.
  * integral transform, where
  * \f$\Delta\omega=2\pi/T\f$ and \f$T=N\Delta t\f$.
  *
+ * The library provides functions which return the appropriate scaling factors
+ * such that application of a inverse transformation in sequence with a
+ * forward transformation is an identity-operation.
+ *
+ * \sa fourier::fft::DRFFTWAFFArrayEngine::scale_series,
+ *     fourier::fft::DRFFTWAFFArrayEngine::scale_spectrum,
+ *     fourier::fft::DRFFTWAFF::scale_series,
+ *     fourier::fft::DRFFTWAFF::scale_spectrum
  */
 
 // ----- END OF doxygen.txt ----- 

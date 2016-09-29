@@ -1,12 +1,11 @@
 this is <README>
 ============================================================================
 AFF --- A container for numbers
--------------------------------
-$Id$
 ============================================================================
 
-For compilation instructions see README.1st in the root directory of the tar-ball or
-http://gpitrsvn.gpi.uni-karlsruhe.de:8000/TFSoftware/wiki/docs/installation 
+This software is part of the project Seitosh. See README.1st in the root
+directory of the collection or https://git.scc.kit.edu/Seitosh/Seitosh for
+general installation instructions.
 
 The AFF (Array of Friederich and Forbriger) is a lightweight class library. It
 offers a simple and easy to use container for numbers as is necessary in

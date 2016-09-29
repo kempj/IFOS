@@ -45,12 +45,12 @@
 namespace stfinv {
 
   /*! \brief Namespace for internal tools
-   * \ingroup tools
+   * \ingroup group_tools
    */
   namespace tools {
 
     /*! strip substring
-     * \ingroup tools
+     * \ingroup group_tools
      *
      * Strips off first substring up to given delimiter.
      * The string is passed as a reference and will be modified (i.e. the
@@ -65,14 +65,14 @@ namespace stfinv {
     /*----------------------------------------------------------------------*/
 
     /*! \brief A map to store parameters.
-     * \ingroup tools
+     * \ingroup group_tools
      */
     typedef std::map<std::string,std::string> Tparamap;
 
     /*----------------------------------------------------------------------*/
 
     /*! \brief Create a parameter map from a parameter string
-     * \ingroup tools
+     * \ingroup group_tools
      *
      * \param p parameter string
      * \param delimiter delimiter which separates two parameters
@@ -86,7 +86,7 @@ namespace stfinv {
     /*----------------------------------------------------------------------*/
 
     /*! replace comma by whitespace
-     * \ingroup tools
+     * \ingroup group_tools
      *
      * \param s input string
      * \return input string with all commas replaced by whitespace
@@ -96,7 +96,7 @@ namespace stfinv {
     /*----------------------------------------------------------------------*/
 
     /*! \brief remove leading and trailing whitespace
-     * \ingroup tools
+     * \ingroup group_tools
      *
      * \param s any string
      * \return value a input string with any leading and trailing whitespace

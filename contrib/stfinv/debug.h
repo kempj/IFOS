@@ -40,7 +40,7 @@
   "STFINV_DEBUG_H   V1.0"
 
 /*! \brief produce debug output
- * \ingroup misc_h
+ * \ingroup group_debug
  *
  * \param C output will be generated if C == true
  * \param N name of function 
@@ -54,8 +54,15 @@
     std::cerr.flush(); \
   }
 
+/*! \brief report value in a sequence of output operators
+ * \ingroup group_debug
+ *
+ * \param P parameter to dump
+ */
+#define STFINV_value( P ) #P << "=" << P
+
 /*! \brief report value of expression
- * \ingroup misc_h
+ * \ingroup group_debug
  *
  * \param P parameter to dump
  */

@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 11/09/2007
  * 
@@ -35,8 +34,6 @@
  */
 #define FOURIER_ERROR_CC_VERSION \
   "FOURIER_ERROR_CC   V1.1"
-#define FOURIER_ERROR_CC_CVSID \
-  "$Id$"
 
 #include <iostream>
 #include <fourier/error.h>

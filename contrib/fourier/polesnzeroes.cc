@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 05/01/2003
  * 
@@ -34,8 +33,6 @@
  */
 #define TF_POLESNZEROES_CC_VERSION \
   "TF_POLESNZEROES_CC   V1.0   "
-#define TF_POLESNZEROES_CC_CVSID \
-  "$Id$"
 
 #include <fourier/polesnzeroes.h>
 

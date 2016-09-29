@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 16/05/2011
  * 
@@ -37,8 +36,6 @@
  */
 #define CXXFFTWARTEST_VERSION \
   "CXXFFTWARTEST   V1.2   test fftw3 array engine"
-#define CXXFFTWARTEST_CVSID \
-  "$Id$"
 
 // use the input/output facilities from the standard library
 #include <iostream>
@@ -140,7 +137,6 @@ int main(int iargc, char* argv[])
   // define full help text
   char help_text[]=
   {
-    CXXFFTWARTEST_CVSID
     "\n"
     "input        input file name\n"
     "output       output file name\n"
@@ -218,7 +214,7 @@ int main(int iargc, char* argv[])
 
   // report program version if in verbose mode
   if (opt.verbose)
-  { cout << CXXFFTWARTEST_VERSION << endl << CXXFFTWARTEST_CVSID << endl; }
+  { cout << CXXFFTWARTEST_VERSION << endl; }
 
   // extract commandline arguments
   // here the rest of the command line is parsed; i.e. the names of input
