@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 05/01/2003
  * 
@@ -35,8 +34,6 @@
  */
 #define TF_FCOMMAND_CC_VERSION \
   "TF_FCOMMAND_CC   V1.0   "
-#define TF_FCOMMAND_CC_CVSID \
-  "$Id$"
 
 #include <fourier/fcommand.h>
 #include <fstream>
@@ -79,11 +76,8 @@ namespace fourier {
     {
       os << endl;
       os << TF_FCOMMAND_H_VERSION << endl;
-      os << TF_FCOMMAND_H_CVSID << endl;
       os << TF_FILTERS_H_VERSION << endl;
-      os << TF_FILTERS_H_CVSID << endl;
       os << TF_POLESNZEROES_H_VERSION << endl;
-      os << TF_POLESNZEROES_H_CVSID << endl;
     }
   }
 

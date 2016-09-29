@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 05/01/2003
  * 
@@ -39,8 +38,6 @@
 
 #define TF_FCOMMAND_H_VERSION \
   "TF_FCOMMAND_H   V1.0   "
-#define TF_FCOMMAND_H_CVSID \
-  "$Id$"
 
 #include<iostream>
 #include<fourier/filters.h>

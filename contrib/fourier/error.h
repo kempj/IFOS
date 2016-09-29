@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 11/09/2007
  * 
@@ -39,8 +38,6 @@
 
 #define FOURIER_ERROR_H_VERSION \
   "FOURIER_ERROR_H   V1.0"
-#define FOURIER_ERROR_H_CVSID \
-  "$Id$"
 
 namespace fourier {
 

@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 05/01/2003
  * 
@@ -40,9 +39,7 @@
 #ifndef TF_FILTERS_H_VERSION
 
 #define TF_FILTERS_H_VERSION \
-  "TF_FILTERS_H   V1.0   "
-#define TF_FILTERS_H_CVSID \
-  "$Id$"
+  "TF_FILTERS_H   V1.0"
 
 #include<fourier/polesnzeroes.h>
   
@@ -53,7 +50,7 @@ namespace fourier {
       typedef PolesNZeroes Tbase;
       typedef Tbase::Tcvalue Tcvalue;
 
-      static const double pi=3.141592653589793;
+      static const double pi;
       static const Tcvalue ime;
 
       Filter(): Tbase(), Mfrequency(false) { }

@@ -30,6 +30,9 @@
  *  - 08/05/2011   V1.0   Thomas Forbriger
  *  - 30/09/2011   V1.1   implemented handling of additional time series pairs
  *  - 14/10/2015   V1.2   new end-user usage functions
+ *  - 28/06/2016   V1.3   provide time domain tapering of filter response
+ *  - 22/07/2016   V1.4   provide separate FFT processor addressing just the
+ *                        source time function correction filter
  * 
  * ============================================================================
  */
@@ -38,7 +41,7 @@
 #ifndef STFINV_STFINVFOURIER_H_VERSION
 
 #define STFINV_STFINVFOURIER_H_VERSION \
-  "STFINV_STFINVFOURIER_H   V1.2"
+  "STFINV_STFINVFOURIER_H   V1.4"
 
 #include <stfinv/stfinvbase.h>
 #include <aff/array.h>
@@ -51,12 +54,19 @@ namespace stfinv {
    * This is just a base class.
    * The constructor is protected and should only be called from a derived
    * class.
+   * The intention of this class is to provide all processing steps common to
+   * all engines operating in the Fourier domain in one single base class.
+   * The individual engines of different Fourier domain approaches then need
+   * not reimplement these steps.
+   * They essentially need only provide a specific exec-function (e.g.
+   * STFEngineFDLeastSquares::exec).
    *
    * This class maintains a workspace for Fourier transforms.
    * It provides the FFT from input signals to the workspace through a member
    * functions as well as the convolution of the synthetic data with a given
    * source wavelet Fourier transform and a subsequent FFT to time domain for
-   * the convolved synthetics as well as the source correction filter separately.
+   * the convolved synthetics as well as the source correction filter
+   * separately.
    *
    * \par What STFFourierDomainEngine does for you
    * All derived classes call STFFourierDomainEngine::fftinput prior to
@@ -69,13 +79,27 @@ namespace stfinv {
    * \par
    * When processing has finished, the derived classes should call
    * STFFourierDomainEngine::fftoutput.
-   * This function convolves the synthetic data with the source correction
+   * This function first applies a time domain taper to the correction filter
+   * impulse response if requested (STFFourierDomainEngine::taperstf).
+   * Then it convolves the synthetic data with the source correction
    * filter (STFFourierDomainEngine::convolve).
-   * Then it applies a time shift to the source correction filter if requested
-   * (STFFourierDomainEngine::stfshift).
+   * If requested it applies a time shift to the source correction filter 
+   * as a next step (STFFourierDomainEngine::stfshift).
    * The convolved synthetics as well as the source correction filter then are
    * transformed to time domain and written to the users workspace
-   * ((STFFourierDomainEngine::putoutput).
+   * (STFFourierDomainEngine::putoutput).
+   *
+   * \par 
+   * This should take place in the exec-function (e.g.
+   * STFEngineFDLeastSquares::exec) of the derived class.
+   * I.e. the first statement in the exec function is a call to function
+   * STFFourierDomainEngine::fftinput of the base class and the very last
+   * statement is a call to function STFFourierDomainEngine::fftoutput of the
+   * base class.
+   * This also guarantees that STFFourierDomainEngine::fftoutput is only
+   * called once per derived correction filter response.
+   * This is necessary, since otherwise the taper function and the time shift
+   * would be applied twice to the impulse response.
    *
    * \par Layout of Fourier transform arrays
    * The workspace for the Fourier transform engine is initialized by
@@ -119,6 +143,12 @@ namespace stfinv {
       //! \brief return name of engine
       virtual const char* name() const;
     protected:
+      /*! \name Access and control functions to be used by derived classes.
+       *
+       * These functions are part of the interface implemented in
+       * STFFourierDomainEngine.
+       */
+      //@{
       /*! \brief copy input signals to workspace and
        * transform input workspace to Fourier domain
        */
@@ -150,7 +180,14 @@ namespace stfinv {
       double frequency(const unsigned int& i) const;
       //! \brief return number of frequencies in use
       unsigned int nfreq() const;
+      //@}
     private:
+      /*! \name Internal processing control functions of.
+       *
+       * These functions are part of the interface implemented in
+       * STFFourierDomainEngine.
+       */
+      //@{
       //! \brief initialize work space
       void initialize();
       /*! \brief copy input time series for recorded data and synthetics
@@ -167,6 +204,12 @@ namespace stfinv {
       /*! \brief apply time shift to stf prior to FFT to time domain
        */
       void stfshift();
+      /*! \brief apply a time domain taper to the correction filter response.
+       */
+      void taperstf();
+      //! \brief return reference to time series container of stf
+      TAseries stfseries() const;
+      //@}
       
     // member data
     // -----------
@@ -223,12 +266,43 @@ namespace stfinv {
        * M is returned by function npairs().
        */
       Tfftengine Mfftengineoutput;
+      /*! \brief FFT processor for source time function correction filter
+       *
+       * This uses a reference to the source time function correction filter
+       * data in Mfftengineoutput. It is used in cases, where this data has to
+       * be transformed alone (like in STFFourierDomainEngine::taperstf).
+       *
+       * \note
+       * This processor does not maintain a separate data space. 
+       * It rather operates on a reference to data space also maintained by
+       * Mfftengineoutput.
+       */
+      Tfftengine Mfftenginestf;
       /*! \brief time shift to be applied to STF in order to expose
        * acausal parts
        */
       double Mtshift;
       //! \brief true if shift must be applied
       bool Mapplyshift;
+      /*! \brief true if time domain taper should be applied to filter
+       *         response.
+       */
+      bool Mapplystftaper;
+      /*! \brief time values defining taper.
+       *
+       * All samples at times 
+       * - t<Mtt1 will be set to zero.
+       * - Mtt1<=t<=Mtt2 will be scaled by 
+       *   0.5-0.5*cos(pi*(t-Mtt1)/(Mtt2-Mtt1)).
+       * - Mtt2<t<Mtt3 will remain unaltered.
+       * - Mtt3<=t<=Mtt4 will be scaled by
+       *   0.5+0.5*cos(pi*(t-Mtt3)/(Mtt4-Mtt3)).
+       * - t>Mtt4 will be set to zero.
+       *
+       * @{
+       */
+      double Mtt1, Mtt2, Mtt3, Mtt4;
+      //!@}
   }; // class STFFourierDomainEngine
 
 }

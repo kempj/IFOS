@@ -94,9 +94,9 @@
   Programs using this library will require the following libraries in
   addition:
 
-    - libfourierxx (available from TFSoftware)
+    - libfourierxx (available from Seitosh)
     - libfftw3
-    - libaff (available from TFSoftware)
+    - libaff (available from Seitosh)
 
   C programs will further be required to link against
 
