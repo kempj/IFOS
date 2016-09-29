@@ -45,7 +45,7 @@
 namespace stfinv {
 
   /*! \brief Normalization engine
-   * \ingroup engines
+   * \ingroup group_engines
    *
    * \par Motivation
    * On the down-side of Fourier domain least squares as is implemented

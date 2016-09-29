@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 12/09/2007
  * 
@@ -35,8 +34,6 @@
  */
 #define CXXFFTWTEST_VERSION \
   "CXXFFTWTEST   V1.1   a small test program for fftw when called from C++"
-#define CXXFFTWTEST_CVSID \
-  "$Id$"
 
 #include <iostream>
 #include <tfxx/commandline.h>
@@ -123,7 +120,6 @@ int main(int iargc, char* argv[])
   // define full help text
   char help_text[]=
   {
-    CXXFFTWTEST_CVSID
     "\n"
     "-n n   set number of samples to n\n"
     "-m f   set frequency to f\n"
