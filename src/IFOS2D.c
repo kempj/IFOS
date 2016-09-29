@@ -53,7 +53,7 @@ int main(int argc, char **argv){
     int sum_killed_traces=0, sum_killed_traces_testshots=0, killed_traces=0, killed_traces_testshots=0;
     int *ptr_killed_traces=&killed_traces, *ptr_killed_traces_testshots=&killed_traces_testshots;
     
-    float energy, energy_sum, energy_all_shots, energy_sum_all_shots;
+    float energy, energy_sum, energy_all_shots, energy_sum_all_shots = 0.0;
     float energy_SH, energy_sum_SH, energy_all_shots_SH, energy_sum_all_shots_SH;
     float L2_SH, L2sum_SH, L2_all_shots_SH, L2sum_all_shots_SH;
     
@@ -157,8 +157,14 @@ int main(int argc, char **argv){
     int nfrq=0;
     int FREQ_NR=1;
 
+    float JOINT_EQUAL_PSV=0.0, JOINT_EQUAL_SH=0.0;
+    float JOINT_EQUAL_PSV_all=0.0, JOINT_EQUAL_SH_all=0.0;
+    int JOINT_EQUAL_new_max=1;
     
     FILE *fprec, *FPL2;
+    
+    FILE *FPL2_JOINT;
+    char L2_joint_log[STRING_SIZE];
     
     /* General parameters */
     int nt_out;
@@ -237,10 +243,14 @@ int main(int argc, char **argv){
     /* In the following, NX and NY denote size of the local grid ! */
     NX = IENDX;
     NY = IENDY;
-    
+        
+    /* Reading source positions from SOURCE_FILE */
+    srcpos=sources(&nsrc);
+    nsrc_glob=nsrc;
+    ishot=0;    
     
     if (SEISMO){
-        recpos=receiver(FP, &ntr);
+        recpos=receiver(&ntr, srcpos, ishot);
         recswitch = ivector(1,ntr);
         recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
         ntr_glob=ntr;
@@ -705,105 +715,14 @@ int main(int argc, char **argv){
             
     }
     if (ntr>0){
-        switch (SEISMO){
-            case 1 : /* particle velocities only */
-                switch (WAVETYPE) {
-                    case 1:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        break;
-                    case 2:
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                    case 3:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                }
-                break;
-            case 2 : /* pressure only */
-                sectionp=matrix(1,ntr,1,ns);
-                sectionpnp1=matrix(1,ntr,1,ns);
-                sectionpn=matrix(1,ntr,1,ns);
-                break;
-            case 3 : /* curl and div only */
-                sectioncurl=matrix(1,ntr,1,ns);
-                sectiondiv=matrix(1,ntr,1,ns);
-                break;
-            case 4 : /* everything */
-                switch (WAVETYPE) {
-                    case 1:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        break;
-                    case 2:
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                    case 3:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                }
-                sectioncurl=matrix(1,ntr,1,ns);
-                sectiondiv=matrix(1,ntr,1,ns);
-                sectionp=matrix(1,ntr,1,ns);
-                break;
-            case 5 : /* everything except curl and div*/
-                switch (WAVETYPE) {
-                    case 1:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        break;
-                    case 2:
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                    case 3:
-                        sectionvx=matrix(1,ntr,1,ns);
-                        sectionvy=matrix(1,ntr,1,ns);
-                        sectionvz=matrix(1,ntr,1,ns);
-                        break;
-                }
-                sectionp=matrix(1,ntr,1,ns);
-                break;
-        }
+      alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+	&sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
+	&sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
     }
     
     /* Memory for seismic data */
     sectionread=matrix(1,ntr_glob,1,ns);
-    sectionpdata=matrix(1,ntr,1,ns);
-    sectionpdiff=matrix(1,ntr,1,ns);
-    sectionpdiffold=matrix(1,ntr,1,ns);
-    switch (WAVETYPE) {
-        case 1:
-            sectionvxdata=matrix(1,ntr,1,ns);
-            sectionvxdiff=matrix(1,ntr,1,ns);
-            sectionvxdiffold=matrix(1,ntr,1,ns);
-            sectionvydata=matrix(1,ntr,1,ns);
-            sectionvydiff=matrix(1,ntr,1,ns);
-            sectionvydiffold=matrix(1,ntr,1,ns);
-            break;
-            
-        case 2:
-            sectionvzdata=matrix(1,ntr,1,ns);
-            sectionvzdiff=matrix(1,ntr,1,ns);
-            sectionvzdiffold=matrix(1,ntr,1,ns);
-            break;
-            
-        case 3:
-            sectionvxdata=matrix(1,ntr,1,ns);
-            sectionvxdiff=matrix(1,ntr,1,ns);
-            sectionvxdiffold=matrix(1,ntr,1,ns);
-            sectionvydata=matrix(1,ntr,1,ns);
-            sectionvydiff=matrix(1,ntr,1,ns);
-            sectionvydiffold=matrix(1,ntr,1,ns);
-            sectionvzdata=matrix(1,ntr,1,ns);
-            sectionvzdiff=matrix(1,ntr,1,ns);
-            sectionvzdiffold=matrix(1,ntr,1,ns);
-            break;
-    }
-    
+        
     /* Memory for inversion for source time function */
     if((INV_STF==1)||(TIME_FILT==1) || (TIME_FILT==2)){
         sectionp_conv=matrix(1,ntr_glob,1,NT);
@@ -850,10 +769,6 @@ int main(int argc, char **argv){
     hc = holbergcoeff();
     
     MPI_Barrier(MPI_COMM_WORLD);
-    
-    /* Reading source positions from SOURCE_FILE */
-    srcpos=sources(&nsrc);
-    nsrc_glob=nsrc;
     
     if(FORWARD_ONLY==0&&USE_WORKFLOW){
         read_workflow(FILE_WORKFLOW,&workflow, &workflow_lines,workflow_header);
@@ -1072,27 +987,41 @@ int main(int argc, char **argv){
                     C_rho = rho_avg*rho_avg;
                 }
                 
+                
+                /* Seperate PSV and SH logging in case of a joint inversion */
+                if(WAVETYPE==3){
+                    sprintf(L2_joint_log,"%s_JOINT",MISFIT_LOG_FILE);
+                }
+                
                 /* Open Log File for L2 norm */
-                if(FORWARD_ONLY!=1){
-                    if(MYID==0){
-                        if(iter==1){
-                            FPL2=fopen(MISFIT_LOG_FILE,"w");
-                            /* Write header for misfit log file */
-                            if(GRAD_METHOD==1&&VERBOSE) {
-                                if (TIME_FILT==0){
-                                    fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
-                                else{
-                                    fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \n");
-                                }
+                if(!FORWARD_ONLY && MYID==0){
+                    
+                    if(iter==1){
+                        
+                        FPL2=fopen(MISFIT_LOG_FILE,"w");
+                        
+                        /* Write header for misfit log file */
+                        if(GRAD_METHOD==1&&VERBOSE) {
+                            if (TIME_FILT==0){
+                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
+                            else{
+                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \n");
                             }
                         }
-                        if(iter>1){FPL2=fopen(MISFIT_LOG_FILE,"a");}
+                        
+                        if(WAVETYPE==3) FPL2_JOINT=fopen(L2_joint_log,"w");
+                        
+                    } else {
+                        
+                        FPL2=fopen(MISFIT_LOG_FILE,"a");
+                        
+                        if(WAVETYPE==3) FPL2_JOINT=fopen(L2_joint_log,"a");
+                        
                     }
                 }
                 
                 /* initialization of L2 calculation */
                 L2=0.0;
-                Lcount=0;
                 energy=0.0;
                 L2_all_shots=0.0;
                 energy_all_shots=0.0;
@@ -1156,6 +1085,28 @@ int main(int argc, char **argv){
                     /*------------------------------------------------------------------------------*/
                     
                     for (ishot=1;ishot<=nshots;ishot+=SHOTINC){
+     
+       			if (SEISMO && READREC==2){
+			  if (ntr>0) {
+			    dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+					     sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+					     sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
+			  }
+			  free_imatrix(recpos,1,3,1,ntr_glob);
+			  recpos=receiver(&ntr, srcpos, ishot);
+			  recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
+			  ntr_glob=ntr;
+			  ntr=ntr_loc;
+			  if (ntr>0){
+				alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+					      &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
+					      &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
+			  }
+			  if (ntr) group_id = 1;
+			  else group_id = 0;
+			  MPI_Comm_split(MPI_COMM_WORLD, group_id, MYID, &MPI_COMM_NTR);
+			  MPI_Comm_rank(MPI_COMM_NTR, &myid_ntr);
+			}
 
                         SOURCE_SHAPE = SOURCE_SHAPE_OLD;
                         if(WAVETYPE==2 || WAVETYPE==3) SOURCE_SHAPE_SH=SOURCE_SHAPE_OLD_SH;
@@ -2806,7 +2757,7 @@ int main(int argc, char **argv){
                         energy_sum_all_shots = 0.0;
                         MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
                         
-                    if(MYID==0&&(WAVETYPE==3)) printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
+                        if(MYID==0&&(WAVETYPE==3)) printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
                     }
                     if(WAVETYPE==2||WAVETYPE==3){
                         L2sum_SH = 0.0;
@@ -2818,8 +2769,9 @@ int main(int argc, char **argv){
                         energy_sum_all_shots_SH = 0.0;
                         MPI_Allreduce(&energy_all_shots_SH,&energy_sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
                         
-                    if(MYID==0&&(WAVETYPE==3)) printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                        if(MYID==0&&(WAVETYPE==3)) printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
                     }
+                    
                     sum_killed_traces=0;
                     MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
                     sum_killed_traces_testshots=0;
@@ -2829,6 +2781,27 @@ int main(int argc, char **argv){
                     switch (LNORM){
                             case 2:
                             L2t[1]=0.0; L2t[4]=0.0;
+    
+                            
+                            if(JOINT_EQUAL_WEIGHTING){
+                                if(JOINT_EQUAL_new_max){
+                                    JOINT_EQUAL_PSV=L2sum/energy_sum;
+                                    JOINT_EQUAL_SH=L2sum_SH/energy_sum_SH;
+                                    
+                                    JOINT_EQUAL_PSV_all=L2sum_all_shots/energy_sum_all_shots;
+                                    JOINT_EQUAL_SH_all=L2sum_all_shots_SH/energy_sum_all_shots_SH;
+                                    
+                                    JOINT_EQUAL_new_max=0;
+                                }
+                            
+                                L2t[1]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
+                                L2t[4]+=(L2sum_all_shots/energy_sum_all_shots)/JOINT_EQUAL_PSV_all;
+                                
+                                L2t[1]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
+                                L2t[4]+=(L2sum_all_shots_SH/energy_sum_all_shots_SH)/JOINT_EQUAL_SH_all;
+                                
+                                break;
+                            }
                             
                             if(WAVETYPE==1||WAVETYPE==3){
                                 L2t[1]+=L2sum/energy_sum;
@@ -2839,6 +2812,7 @@ int main(int argc, char **argv){
                                 L2t[1]+=L2sum_SH/energy_sum_SH;
                                 L2t[4]+=L2sum_all_shots_SH/energy_sum_all_shots_SH;
                             }
+                            
                         if(MYID==0&&(WAVETYPE==3)) printf("\n Sum: L2=%f",L2t[4]);
                             
                             break;
@@ -3117,6 +3091,10 @@ int main(int argc, char **argv){
                 if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS);
             }
             
+            if(WAVETYPE==3 && MYID==0){
+                fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
+            }
+            
             /* No update is done here, however model fils are written to disk for easy post processing */
             alpha_SL=0.0;
             calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
@@ -3156,6 +3134,10 @@ int main(int argc, char **argv){
                 if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new);}
             else{
                 if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS);
+            }
+            
+            if(WAVETYPE==3 && MYID==0){
+                fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
             }
             
             /* initiate variables for next iteration */
@@ -3274,7 +3256,26 @@ int main(int argc, char **argv){
                         fprintf(FP,"\n=================================================================================================\n");
                         fprintf(FP,"\n *****  Starting simulation (test-forward model) no. %d for shot %d of %d (rel. step length %.5f) \n",itest,ishot,nshots,eps_scale);
                         fprintf(FP,"\n=================================================================================================\n\n");
-                        
+                              
+			if (SEISMO && READREC==2){
+			  if (ntr>0) {
+			    dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+					     sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+					     sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
+			  }
+			  free_imatrix(recpos,1,3,1,ntr_glob);
+			  recpos=receiver(&ntr, srcpos, ishot);
+			  recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
+			  ntr_glob=ntr;
+			  ntr=ntr_loc;
+			  
+			  if (ntr>0){
+				alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+					      &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
+					      &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
+			  }			  
+			}
+	
                         for (nt=1;nt<=8;nt++) srcpos1[nt][1]=srcpos[nt][ishot];
                         
                         /*-----------------------------------*/
@@ -3597,6 +3598,15 @@ int main(int argc, char **argv){
                         case 2:
                             L2t[itest]=0.0;
                             
+                            if(JOINT_EQUAL_WEIGHTING){
+                            
+                                L2t[itest]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
+                                
+                                L2t[itest]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
+                                
+                                break;
+                            }
+                            
                             if(WAVETYPE==1||WAVETYPE==3){
                                 L2t[itest]+=L2sum/energy_sum;
                             }
@@ -3796,6 +3806,9 @@ int main(int argc, char **argv){
                     fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4]);}
                 else{
                     fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f\n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS);}
+                if(WAVETYPE==3 && MYID==0){
+                    fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                }
             }
             
             /* saving history of final L2*/
@@ -3829,6 +3842,9 @@ int main(int argc, char **argv){
         if(FORWARD_ONLY!=1){
             if(MYID==0){
                 fclose(FPL2);
+            }
+            if(WAVETYPE==3 && MYID==0) {
+                fclose(FPL2_JOINT);
             }
         }
         
@@ -3896,7 +3912,7 @@ int main(int argc, char **argv){
             /* ------------------------------------------- */
             /*       Check when Workflow is used           */
             /* ------------------------------------------- */
-            if(USE_WORKFLOW && (diff<=pro || wolfe_SLS_failed)){
+            if(USE_WORKFLOW && ( diff<=pro || wolfe_SLS_failed || step3==1 )){
                 
                 if(workflow_lines==WORKFLOW_STAGE){
                     fprintf(FP,"\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
@@ -3930,6 +3946,7 @@ int main(int argc, char **argv){
                 wolfe_SLS_failed=0;
                 
                 step3=0;
+                JOINT_EQUAL_new_max=1;
             }
             
             /* ------------------------------------------------- */
@@ -3967,6 +3984,7 @@ int main(int argc, char **argv){
                 alpha_SL_old=1;
                 
                 step3=0;
+                JOINT_EQUAL_new_max=1;
             }
             
             /* ------------------------------------------------- */
@@ -4004,6 +4022,7 @@ int main(int argc, char **argv){
                 alpha_SL_old=1;
                 
                 step3=0;
+                JOINT_EQUAL_new_max=1;
             }
             
         }
@@ -4239,53 +4258,9 @@ int main(int argc, char **argv){
             break;
     }
     if ((ntr>0) && (SEISMO)){
-        free_imatrix(recpos_loc,1,3,1,ntr);
-        switch (SEISMO){
-            case 1 : /* particle velocities only */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectionvx,1,ntr,1,ns);
-                    free_matrix(sectionvy,1,ntr,1,ns);
-                }
-                if (WAVETYPE==2 || WAVETYPE==3) {
-                    free_matrix(sectionvz,1,ntr,1,ns);
-                }
-                break;
-            case 2 : /* pressure only */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectionp,1,ntr,1,ns);
-                    free_matrix(sectionpn,1,ntr,1,ns);
-                    free_matrix(sectionpnp1,1,ntr,1,ns);
-                }
-                break;
-            case 3 : /* curl and div only */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectioncurl,1,ntr,1,ns);
-                    free_matrix(sectiondiv,1,ntr,1,ns);
-                }
-                break;
-            case 4 : /* everything */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectionvx,1,ntr,1,ns);
-                    free_matrix(sectionvy,1,ntr,1,ns);
-                    free_matrix(sectionp,1,ntr,1,ns);
-                    free_matrix(sectioncurl,1,ntr,1,ns);
-                    free_matrix(sectiondiv,1,ntr,1,ns);
-                }
-                if (WAVETYPE==2 || WAVETYPE==3) {
-                    free_matrix(sectionvz,1,ntr,1,ns);
-                }
-                break;
-            case 5 : /* everything except curl and div */
-                if (WAVETYPE==1 || WAVETYPE==3) {
-                    free_matrix(sectionvx,1,ntr,1,ns);
-                    free_matrix(sectionvy,1,ntr,1,ns);
-                    free_matrix(sectionp,1,ntr,1,ns);
-                }
-                if (WAVETYPE==2 || WAVETYPE==3) {
-                    free_matrix(sectionvz,1,ntr,1,ns);
-                }
-                break;
-        }
+      dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+	sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+	sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
     }
     
     
@@ -4303,23 +4278,7 @@ int main(int argc, char **argv){
             free_matrix(We_SH,-nd+1,NY+nd,-nd+1,NX+nd);
         }
     }
-    
-    if (WAVETYPE==1 || WAVETYPE==3) {
-        free_matrix(sectionvxdata,1,ntr,1,ns);
-        free_matrix(sectionvxdiff,1,ntr,1,ns);
-        free_matrix(sectionvydata,1,ntr,1,ns);
-        free_matrix(sectionvydiff,1,ntr,1,ns);
-        free_matrix(sectionvydiffold,1,ntr,1,ns);
-        free_matrix(sectionvxdiffold,1,ntr,1,ns);
-        free_matrix(sectionpdata,1,ntr,1,ns);
-        free_matrix(sectionpdiff,1,ntr,1,ns);
-        free_matrix(sectionpdiffold,1,ntr,1,ns);
-    }
-    if (WAVETYPE==2 || WAVETYPE==3) {
-        free_matrix(sectionvzdata,1,ntr,1,ns);
-        free_matrix(sectionvzdiff,1,ntr,1,ns);
-        free_matrix(sectionvzdiffold,1,ntr,1,ns);
-    }
+
     free_matrix(sectionread,1,ntr_glob,1,ns);
     
     
