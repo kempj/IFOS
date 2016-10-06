@@ -642,7 +642,7 @@ To remove the contribution of the unknown source time function (STF) from the wa
 			
 			"TRKILL_STF" : "0", 
 			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
-			
+			"STF_FULL" : "0",
 			"TRKILL_STF_OFFSET" : "0", 
 			"TRKILL_STF_OFFSET_LOWER" : "10",
 			"TRKILL_STF_OFFSET_UPPER" : "20",
@@ -654,7 +654,7 @@ Default values are:
 	INV_STF=0
 \end{verbatim}}}
 
-INV\_STF should be switched to 1 if you want to invert for the source time function.
+INV\_STF should be switched to 1 if you want to invert for the source time function. If STF\_FULL is set to 1 then the total wavefield is used to invert for the source time function and the time window is ignored.
 \newline
 
 An example for the parameter string provided in PARA is:
