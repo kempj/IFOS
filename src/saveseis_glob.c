@@ -24,7 +24,7 @@
 
 void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectionvz,float **sectionp,float **sectioncurl, float **sectiondiv, int  **recpos, int  **recpos_loc,int ntr, float ** srcpos, int ishot, int ns, int iter, int type_switch){
     
-     /* type_switch:
+    /* type_switch:
      *  1== synthetic data
      *  2== measured - synthetic data (residuals)
      *  3== filtered measured data
@@ -32,6 +32,7 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
     
     extern int SEISMO, SEIS_FORMAT, RUN_MULTIPLE_SHOTS, WAVETYPE, VERBOSE,FORWARD_ONLY;
     extern char SEIS_FILE[STRING_SIZE];
+    extern int VELOCITY;
     
     char vxf[STRING_SIZE], vyf[STRING_SIZE],vzf[STRING_SIZE], curlf[STRING_SIZE], divf[STRING_SIZE], pf[STRING_SIZE];
     int nsrc=1;
@@ -60,14 +61,41 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             break;
             
         case 3:
-            sprintf(vxf,"%s_vx.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
-            sprintf(vyf,"%s_vy.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
-            if(WAVETYPE==2 || WAVETYPE==3) {
-                sprintf(vzf,"%s_vz.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            if(VELOCITY==0){
+                sprintf(vxf,"%s_dx.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_dy.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                if(WAVETYPE==2 || WAVETYPE==3) {
+                    sprintf(vzf,"%s_dz.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+            } else {
+                sprintf(vxf,"%s_vx.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_vy.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                if(WAVETYPE==2 || WAVETYPE==3) {
+                    sprintf(vzf,"%s_vz.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
             }
             sprintf(pf,"%s_p.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
             sprintf(divf,"%s_div.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
             sprintf(curlf,"%s_curl.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            break;
+            
+        case 4:
+            if(VELOCITY==0){
+                sprintf(vxf,"%s_dx.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_dy.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                if(WAVETYPE==2 || WAVETYPE==3) {
+                    sprintf(vzf,"%s_dz.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+            } else {
+                sprintf(vxf,"%s_vx.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_vy.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                if(WAVETYPE==2 || WAVETYPE==3) {
+                    sprintf(vzf,"%s_vz.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+            }
+            sprintf(pf,"%s_p.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(divf,"%s_div.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(curlf,"%s_curl.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
             break;
             
         default:

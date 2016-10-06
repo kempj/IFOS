@@ -202,6 +202,14 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
         }
     }
     
+    for(i=1;i<=ntr;i++){
+        for(j=1;j<=ns;j++){
+            sectiondata[i][j]=intseis_sectiondata[i][j];
+            section[i][j]=intseis_section[i][j];
+        }
+    }
+    
+    
     l2=L2;
     
     /*  printf("\n MYID = %i   IN CALC_MISFIT: L2 = %10.12f \n",MYID,l2); */
