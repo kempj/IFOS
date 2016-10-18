@@ -255,7 +255,7 @@ namespace stfinv {
     // taper definition
     // ----------------
     {
-      std::istringstream is(stfinv::tools::commatospace(
+      std::istringstream is(stfinv::tools::secomtospace(
                             this->parameter("irtap","0.,1.,2.,3.")));
       is >> Mtt1 >> Mtt2 >> Mtt3 >> Mtt4;
     }
