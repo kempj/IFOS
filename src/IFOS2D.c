@@ -2078,7 +2078,7 @@ int main(int argc, char **argv){
                                 
                                 
                                 /* Write synthetic filtered seismogramms to disk */
-                                if (SEISMO && TIME_FILT && WRITE_FILTERED_DATA){
+                                if (SEISMO && TIME_FILT && WRITE_FILTERED_DATA==2){
                                     if(WAVETYPE==1 || WAVETYPE==3){
                                         if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==3)){
                                             catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);

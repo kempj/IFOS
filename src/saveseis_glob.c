@@ -62,40 +62,40 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             
         case 3:
             if(VELOCITY==0){
-                sprintf(vxf,"%s_dx.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
-                sprintf(vyf,"%s_dy.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vxf,"%s_dx.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_dy.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
                 if(WAVETYPE==2 || WAVETYPE==3) {
-                    sprintf(vzf,"%s_dz.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                    sprintf(vzf,"%s_dz.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
                 }
             } else {
-                sprintf(vxf,"%s_vx.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
-                sprintf(vyf,"%s_vy.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vxf,"%s_vx.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_vy.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
                 if(WAVETYPE==2 || WAVETYPE==3) {
-                    sprintf(vzf,"%s_vz.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+                    sprintf(vzf,"%s_vz.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
                 }
             }
-            sprintf(pf,"%s_p.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
-            sprintf(divf,"%s_div.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
-            sprintf(curlf,"%s_curl.su.measured.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(pf,"%s_p.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(divf,"%s_div.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(curlf,"%s_curl.su.obs.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
             break;
             
         case 4:
             if(VELOCITY==0){
-                sprintf(vxf,"%s_dx.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
-                sprintf(vyf,"%s_dy.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vxf,"%s_dx.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_dy.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
                 if(WAVETYPE==2 || WAVETYPE==3) {
-                    sprintf(vzf,"%s_dz.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                    sprintf(vzf,"%s_dz.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
                 }
             } else {
-                sprintf(vxf,"%s_vx.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
-                sprintf(vyf,"%s_vy.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vxf,"%s_vx.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_vy.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
                 if(WAVETYPE==2 || WAVETYPE==3) {
-                    sprintf(vzf,"%s_vz.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+                    sprintf(vzf,"%s_vz.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
                 }
             }
-            sprintf(pf,"%s_p.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
-            sprintf(divf,"%s_div.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
-            sprintf(curlf,"%s_curl.su.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(pf,"%s_p.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(divf,"%s_div.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
+            sprintf(curlf,"%s_curl.su.syn.filtered.shot%d.it%d",SEIS_FILE,ishot,iter);
             break;
             
         default:
