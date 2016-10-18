@@ -277,7 +277,7 @@ void checkfd(FILE *fp, float ** prho, float ** ppi, float ** pu, float ** ptaus,
                   therefore we determine the minimum/maximum position in y-direction by the ZREC1 variable and vice versa.
                   this has to be considered for the receiver line coordinates specified in both the input file and separate source/receiver files*/
 
-		if (READREC==0) {
+		if (READREC==0 || READREC==2) {
 			if (XREC1>XREC2) {
 				srec_maxx=XREC1;
 				srec_minx=XREC2;
