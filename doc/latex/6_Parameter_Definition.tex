@@ -718,7 +718,7 @@ With F\_HIGH\_PASS an additional high pass filter can be applied, where F\_HIGH\
 
 With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
 
-With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. The filtered data is located in DATA\_DIR and are labeled with "\_measured".
+With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. The filtered data is located in SEIS\_FILE and are labeled with "\_measured".
 
 If you are using frequeny filtering (TIME\_FILT==1) during the inversion, you can set a minimum number of iterations per frequency. Within this minimum number of iteration per frequency the abort criterion PRO will receive no consideration.
 
