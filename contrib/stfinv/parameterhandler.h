@@ -29,6 +29,7 @@
  * 
  * REVISIONS and CHANGES 
  *  - 06/05/2011   V1.0   Thomas Forbriger
+ *  - 18/01/2016   V1.1   rename function to secomtospace
  * 
  * ============================================================================
  */
@@ -37,7 +38,7 @@
 #ifndef STFINV_PARAMETERHANDLER_H_VERSION
 
 #define STFINV_PARAMETERHANDLER_H_VERSION \
-  "STFINV_PARAMETERHANDLER_H   V1.0"
+  "STFINV_PARAMETERHANDLER_H   V1.1"
 
 #include <string>
 #include <map>
@@ -85,13 +86,14 @@ namespace stfinv {
 
     /*----------------------------------------------------------------------*/
 
-    /*! replace comma by whitespace
+    /*! replace commas and semicolons by whitespace
      * \ingroup group_tools
      *
      * \param s input string
-     * \return input string with all commas replaced by whitespace
+     * \return input string with all commas replaced by whitespace and
+     *         all semicolons replaced by whitespace
      */
-    std::string commatospace(std::string s);
+    std::string secomtospace(std::string s);
 
     /*----------------------------------------------------------------------*/
 

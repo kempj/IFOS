@@ -51,4 +51,9 @@ transformed to the Fourier domain again. The values of the taper are:
   1                              if t2 <  t <  t3
   0.5+0.5*cos(pi*(t-t3)/(t3-t4)) if t3 <= t <= t4
   0                              if       t >  t4
+
+Time values are given in the same unit in which the sampling interval is given
+in the input time series. I.e. if sampling interval is specified as a fraction
+of seconds (which is standard) then all time values passed as parameters are
+also given as fractions or multiples of seconds.
 # ----- END OF stfinvfourier_description_usage.txt ----- 

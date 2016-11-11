@@ -29,11 +29,12 @@
  * 
  * REVISIONS and CHANGES 
  *  - 06/05/2011   V1.0   Thomas Forbriger
+ *  - 18/01/2016   V1.1   rename function to secomtospace
  * 
  * ============================================================================
  */
 #define STFINV_PARAMETERHANDLER_CC_VERSION \
-  "STFINV_PARAMETERHANDLER_CC   V1.0"
+  "STFINV_PARAMETERHANDLER_CC   V1.1"
 
 #include <algorithm>
 #include <stfinv/parameterhandler.h>
@@ -50,7 +51,7 @@ std::string stfinv::tools::clipstring(std::string& s, const std::string& delim)
     s.erase();
   }
   return(result);
-} // std::string stfinv::tools::clipstring^
+} // std::string stfinv::tools::clipstring()
 
 /*----------------------------------------------------------------------*/
 
@@ -71,11 +72,12 @@ stfinv::tools::Tparamap stfinv::tools::makeparamap(const std::string& p,
 
 /*----------------------------------------------------------------------*/
 
-std::string stfinv::tools::commatospace(std::string s)
+std::string stfinv::tools::secomtospace(std::string s)
 {
   std::replace(s.begin(), s.end(), ',', ' ');
+  std::replace(s.begin(), s.end(), ';', ' ');
   return(s);
-} // std::string stfinv::tools::commatospace(const std::string& s)
+} // std::string stfinv::tools::secomtospace(const std::string& s)
 
 /*----------------------------------------------------------------------*/
 
