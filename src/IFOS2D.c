@@ -4396,6 +4396,8 @@ int main(int argc, char **argv){
             fprintf(FP," stress exchange:  \t %5.3f seconds  \n",time_av_s_exchange);
             fprintf(FP," timestep:  \t %5.3f seconds  \n",time_av_timestep);
         }
+        time8=MPI_Wtime();
+        fprintf(FP," Total real time of program: %4.2f seconds.\n",time8-time1);
         if(FORWARD_ONLY==0) {
             printf("\n Inversion finished after %d iterations. \n\n",iter);
         } else {
