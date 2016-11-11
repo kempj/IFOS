@@ -128,6 +128,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern float WOLFE_C1_SL;
     extern float WOLFE_C2_SL;
     
+    extern int STF_FULL;
     /* definition of local variables */
     
     int number_readobjects=0,fserr=0;
@@ -763,6 +764,9 @@ void read_par_json(FILE *fp, char *fileinp){
                         TRKILL_STF=0;
                         fprintf(fp,"Variable TRKILL_STF is set to default value %d.\n",TRKILL_STF);}
                     else {
+                        if (get_int_from_objectlist("STF_FULL",number_readobjects,&STF_FULL,varname_list, value_list)){
+                            STF_FULL=0;
+                            fprintf(fp,"Variable STF_FULL is set to default value %d.\n",STF_FULL);}
                         if (TRKILL_STF==1) {
                             if (get_int_from_objectlist("TRKILL_STF_OFFSET",number_readobjects,&TRKILL_STF_OFFSET,varname_list, value_list)){
                                 TRKILL_STF_OFFSET=0;
