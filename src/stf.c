@@ -28,7 +28,7 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
 
 	/* declaration of global variables */
 	extern float DT, DH;
-	extern int SEIS_FORMAT, MYID, NT, SOURCE_SHAPE, TIME_FILT, TIMEWIN, TAPER_STF, ORDER;
+	extern int SEIS_FORMAT, MYID, NT, SOURCE_SHAPE, TIME_FILT, TIMEWIN, TAPER_STF, ORDER, STF_FULL;
 	extern char  PARA[STRING_SIZE], DATA_DIR[STRING_SIZE];
 	extern int TRKILL_STF, NORMALIZE, USE_WORKFLOW, WORKFLOW_STAGE;
 	extern char TRKILL_FILE_STF[STRING_SIZE];
@@ -160,10 +160,10 @@ void stf(FILE *fp, float **sectionvy, float ** sectionvy_obs, float ** sectionvy
     }
 	/* trace killing ends here */
 	
-	if(TIMEWIN==1){
+	if((TIMEWIN==1)&&(STF_FULL==0)){
 		time_window_glob(sectionvy, iter, ntr_glob, ns, ishot);
 		time_window_glob(sectionvy_obs, iter, ntr_glob, ns, ishot);
-	}
+    }
 	
 	/* NORMALIZE TRACES */
 	if(NORMALIZE==1){

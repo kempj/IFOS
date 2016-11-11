@@ -30,7 +30,7 @@ void exchange_par(void){
     extern float XREC1, XREC2, YREC1, YREC2, FPML;
     extern float REC_ARRAY_DEPTH, REC_ARRAY_DIST, MUN, EPSILON, EPSILON_u, EPSILON_rho;
     extern int SEISMO, NDT, NGEOPH, SEIS_FORMAT, FREE_SURF, READMOD, READREC, SRCREC;
-    extern int BOUNDARY, REC_ARRAY, DRX, FW;
+    extern int BOUNDARY, REC_ARRAY, DRX, FW, STF_FULL;
     extern int SNAPSHOT_START,SNAPSHOT_END,SNAPSHOT_INCR;
     extern float TSNAP1, TSNAP2, TSNAPINC, REFREC[4];
     extern char  MFILE[STRING_SIZE], SIGNAL_FILE[STRING_SIZE],SIGNAL_FILE_SH[STRING_SIZE], LOG_FILE[STRING_SIZE];
@@ -377,7 +377,7 @@ void exchange_par(void){
         idum[116]=TRKILL_STF_OFFSET_INVERT;
         
         idum[117]=JOINT_EQUAL_WEIGHTING;
-        
+        idum[118]=STF_FULL;
     } /** if (MYID == 0) **/
     
     MPI_Barrier(MPI_COMM_WORLD);
@@ -664,7 +664,7 @@ void exchange_par(void){
     TRKILL_STF_OFFSET_INVERT=idum[116];
     
     JOINT_EQUAL_WEIGHTING=idum[117];
-    
+    STF_FULL=idum[118];
     if ( MYID!=0 && L>0 ) {
         FL=vector(1,L);
     }

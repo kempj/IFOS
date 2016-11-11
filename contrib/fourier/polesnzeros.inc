@@ -1,7 +1,6 @@
 c this is <polesnzeros.inc>
 cS
 c ----------------------------------------------------------------------------
-c   ($Id$)
 c
 c Copyright (c) 2002 by Thomas Forbriger (IMG Frankfurt) 
 c

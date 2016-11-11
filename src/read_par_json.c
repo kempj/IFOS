@@ -128,6 +128,7 @@ void read_par_json(FILE *fp, char *fileinp){
     extern float WOLFE_C1_SL;
     extern float WOLFE_C2_SL;
     
+    extern int STF_FULL;
     /* definition of local variables */
     
     int number_readobjects=0,fserr=0;
@@ -354,7 +355,7 @@ void read_par_json(FILE *fp, char *fileinp){
                 if (get_int_from_objectlist("READREC",number_readobjects,&READREC,varname_list, value_list))
                     declare_error("Variable READREC could not be retrieved from the json input file!");
                 else {
-                    if (READREC==0) {
+                    if (READREC==0 || READREC==2) {
                         if (get_float_from_objectlist("XREC1",number_readobjects,&XREC1,varname_list, value_list))
                             declare_error("Variable XREC1 could not be retrieved from the json input file!");
                         if (get_float_from_objectlist("XREC2",number_readobjects,&XREC2,varname_list, value_list))
@@ -366,7 +367,7 @@ void read_par_json(FILE *fp, char *fileinp){
                         if (get_int_from_objectlist("NGEOPH",number_readobjects,&NGEOPH,varname_list, value_list))
                             declare_error("Variable NGEOPH could not be retrieved from the json input file!");
                     }
-                    else {
+                    if (READREC>0) {
                         if (get_string_from_objectlist("REC_FILE",number_readobjects,REC_FILE,varname_list, value_list))
                             declare_error("Variable REC_FILE could not be retrieved from the json input file!");
                     }
@@ -763,6 +764,9 @@ void read_par_json(FILE *fp, char *fileinp){
                         TRKILL_STF=0;
                         fprintf(fp,"Variable TRKILL_STF is set to default value %d.\n",TRKILL_STF);}
                     else {
+                        if (get_int_from_objectlist("STF_FULL",number_readobjects,&STF_FULL,varname_list, value_list)){
+                            STF_FULL=0;
+                            fprintf(fp,"Variable STF_FULL is set to default value %d.\n",STF_FULL);}
                         if (TRKILL_STF==1) {
                             if (get_int_from_objectlist("TRKILL_STF_OFFSET",number_readobjects,&TRKILL_STF_OFFSET,varname_list, value_list)){
                                 TRKILL_STF_OFFSET=0;
@@ -1052,7 +1056,7 @@ void read_par_json(FILE *fp, char *fileinp){
          }*/
         
         /* receiver file */
-        if (READREC)
+        if (READREC==1)
         {
             if (access(REC_FILE,0) != 0)
             {

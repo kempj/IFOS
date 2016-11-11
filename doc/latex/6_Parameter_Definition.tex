@@ -322,7 +322,9 @@ The locations of the receivers may either be specified in a separate file REC\_F
 \end{verbatim}}}
 These receiver coordinates in REC\_FILE are shifted by REFREC[1], REFREC[2] into the  x- and y-direction, respectively. This allows for completely moving the receiver spread without modifying REC\_FILE. This may be useful for the simulation of moving profiles in reflection seismics.
 
-If READREC=0 the receiver locations must be specified in the parameter file. In this case, it is assumed that the receivers are located along a straight line. The first receiver position is defined by (XREC1, YREC1), and the last receiver position by (XREC1, YREC1). The spacing between receivers is NGEOPH grid points. 
+If READREC=0 the receiver locations must be specified in the parameter file. In this case, it is assumed that the receivers are located along a straight line. The first receiver position is defined by (XREC1, YREC1), and the last receiver position by (XREC1, YREC1). The spacing between receivers is NGEOPH grid points.
+
+READREC=2 is made for a moving streamer aquisition geometry. The receiver positions for shot 1 must be specified in the parameter file (as described for READREC=0). For all other shots the receiver positions are moved according to the movement of the following source. This implementation allows a memory saving usage of moving geometries. The receivers must be in the same depth and all receivers must be located in the model for all shots.
 
 Receivers are always located on full grid indices, i.e. a receiver that is located between two grid points will be shifted by the FD program to the closest next grid point. It is not yet possible
 to output seismograms for arbitrary receiver locations since this would require a certain wavefield interpolation.
@@ -640,7 +642,7 @@ To remove the contribution of the unknown source time function (STF) from the wa
 			
 			"TRKILL_STF" : "0", 
 			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
-			
+			"STF_FULL" : "0",
 			"TRKILL_STF_OFFSET" : "0", 
 			"TRKILL_STF_OFFSET_LOWER" : "10",
 			"TRKILL_STF_OFFSET_UPPER" : "20",
@@ -652,13 +654,14 @@ Default values are:
 	INV_STF=0
 \end{verbatim}}}
 
-INV\_STF should be switched to 1 if you want to invert for the source time function.
+INV\_STF should be switched to 1 if you want to invert for the source time function. If STF\_FULL is set to 1 then the total wavefield is used to invert for the source time function and the time window is ignored.
 \newline
 
 An example for the parameter string provided in PARA is:
 \begin{itemize}
  \item To select frequency domain least squares (fdlsq), apply offset dependent weights and a waterlevel use\\
  \textit{fdlsq:exp=1.0:waterlevel=0.01}
+ \item For tapering the inverted STF add the option \textit{irtap=t1;t2;t3;t4} to the parameter string. The four values define the taper window. %It is important to use ";", because "," is used by the JSON-parser to separate variables.
 \end{itemize}
 
 In most cases the frequency domain least squares engine is the best approach to find a suitable wavelet. There are also other possibilities, if you want to use those a detailed look at the libraries and the acompanying documentation provided in the folder /contrib is recommended. Here only the two main parameters for the fdlsq approach are described.
@@ -716,7 +719,7 @@ With F\_HIGH\_PASS an additional high pass filter can be applied, where F\_HIGH\
 
 With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
 
-With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. The filtered data is located in DATA\_DIR and are labeled with "\_measured".
+With the parameter WRITE\_FILTERED\_DATA=1 it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. The filtered data is located in SEIS\_FILE and the seismograms are labeled with "obs" (synthetic seismograms are labeled with "syn"). By choosing WRITE\_FILTERED\_DATA=2 one can directly output the seismograms that are used for calculating the adjoint sources. Additionally time windowing and integration (see Option VELOCITY) are considered and the label "adj" is added to the seismogram name.
 
 If you are using frequeny filtering (TIME\_FILT==1) during the inversion, you can set a minimum number of iterations per frequency. Within this minimum number of iteration per frequency the abort criterion PRO will receive no consideration.
 
@@ -736,7 +739,7 @@ Default values are:
 	TIMEWIN=0
 \end{verbatim}}}
 
-To apply time windowing in a time series the paramter TIMEWIN must set to 1. A automatic picker routine is not integrated. The point in time (picked time) for each source must be specified in separate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources must be equal to the number of files. Each file must contain the picked times for every receiver.
+To apply time windowing in a time series the parameter TIMEWIN must set to 1. A automatic picker routine is not integrated. The point in time (picked time) for each source must be specified in separate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources must be equal to the number of files. Each file must contain the picked times for every receiver.
 
 The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually.
 
@@ -796,7 +799,7 @@ SWS_TAPER_FILE=0
 SWS_TAPER_FILE_PER_SHOT=0
 \end{verbatim}}}
 
-Different preconditioning matrices can be created and applied to the gradients (using the function \texttt{taper\_grad.c}). To apply a vertical taper one has to set the switch SWS\_TAPER\_GRAD\_VERT to one and for a horizontaltaper SWS\_TAPER\_GRAD\_HOR has to be 1. The parameters for the vertical and the horizontal window are defined by the input file paramters GRADT1, GRADT2, GRADT3 and GRADT4. Please have a look at the function \texttt{taper\_grad.c} directly to obtain more information about the actual definition of the tapers. It is also possible to apply cylindrical tapers around the source positions. This can be done by either setting the switch SWS\_TAPER\_GRAD\_SOURCES or SWS\_TAPER\_CIRCULAR\_PER\_SHOT to 1. If one uses SWS\_TAPER\_GRAD\_SOURCES=1 only the final gradients (that means the gradients obtained by the summation of the gradients of each shots) are multiplied with a taper that decreases the gradients at all shot positions. Therefore, one looses the update information at the source positions. To avoid this one can use SWS\_TAPER\_CIRCULAR\_PER\_SHOT=1. In this case the gradients of the single shots are preconditioned with a window that only decreases at the current shot position. This is done before the summation of all gradients to keep model update information also at the shot positions. The actual tapers are generated by the function \texttt{taper\_grad.c} and \texttt{taper\_grad\_shot.c}, respectively. The circular taper around the source positions decrease from a value of one at the edge of the taper to a value of zero at the source position. The shape of the decrease can be defined by an error function (SRTSHAPE=1) or a log-function (SRTSHAPE=2). The radius of the taper is defined in meter by SRTRADIUS. Note, that this radius must be at least 5 gridpoints. With the parameter FILTSIZE one can extend the region where the taper is zero around the source. The taper is set to zero in a square region of (2*FILTSIZE+1 times 2*FILTSIZE+1) gridpoints. All preconditioning matrices that are applied are saved in the par directory with the file names taper\_coeff\_vert.bin, taper\_coeff\_horz.bin and taper\_coeff\_sources.bin.\\
+Different preconditioning matrices can be created and applied to the gradients (using the function \texttt{taper\_grad.c}). To apply a vertical taper one has to set the switch SWS\_TAPER\_GRAD\_VERT to one and for a horizontaltaper SWS\_TAPER\_GRAD\_HOR has to be 1. The parameters for the vertical and the horizontal window are defined by the input file parameters GRADT1, GRADT2, GRADT3 and GRADT4. Please have a look at the function \texttt{taper\_grad.c} directly to obtain more information about the actual definition of the tapers. It is also possible to apply cylindrical tapers around the source positions. This can be done by either setting the switch SWS\_TAPER\_GRAD\_SOURCES or SWS\_TAPER\_CIRCULAR\_PER\_SHOT to 1. If one uses SWS\_TAPER\_GRAD\_SOURCES=1 only the final gradients (that means the gradients obtained by the summation of the gradients of each shots) are multiplied with a taper that decreases the gradients at all shot positions. Therefore, one looses the update information at the source positions. To avoid this one can use SWS\_TAPER\_CIRCULAR\_PER\_SHOT=1. In this case the gradients of the single shots are preconditioned with a window that only decreases at the current shot position. This is done before the summation of all gradients to keep model update information also at the shot positions. The actual tapers are generated by the function \texttt{taper\_grad.c} and \texttt{taper\_grad\_shot.c}, respectively. The circular taper around the source positions decrease from a value of one at the edge of the taper to a value of zero at the source position. The shape of the decrease can be defined by an error function (SRTSHAPE=1) or a log-function (SRTSHAPE=2). The radius of the taper is defined in meter by SRTRADIUS. Note, that this radius must be at least 5 gridpoints. With the parameter FILTSIZE one can extend the region where the taper is zero around the source. The taper is set to zero in a square region of (2*FILTSIZE+1 times 2*FILTSIZE+1) gridpoints. All preconditioning matrices that are applied are saved in the par directory with the file names taper\_coeff\_vert.bin, taper\_coeff\_horz.bin and taper\_coeff\_sources.bin.\\
 
 To apply an externally defined taper on the gradients in IFOS2D, the parameter SWS\_TAPER\_FILE has to be set to 1. Each model parameter requires a taper file which needs to be located in TAPER\_FILE\_NAME.vp for vp, in TAPER\_FILE\_NAME.vs for vs and in TAPER\_FILE\_NAME.rho for the density.\\
 

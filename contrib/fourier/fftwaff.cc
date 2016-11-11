@@ -3,7 +3,6 @@
  * 
  * ----------------------------------------------------------------------------
  * 
- * $Id$
  * \author Thomas Forbriger
  * \date 11/07/2006
  * 
@@ -42,8 +41,6 @@
  */
 #define TF_FFTWAFF_CC_VERSION \
   "TF_FFTWAFF_CC   V1.4"
-#define TF_FFTWAFF_CC_CVSID \
-  "$Id$"
 
 #include <iostream>
 #include <fourier/fftwaff.h>
@@ -308,7 +305,15 @@ namespace fourier {
 
     /*----------------------------------------------------------------------*/
     
-    //! Return appropriate scaling factor for sampling interval dt.
+    /*! \brief Return appropriate scaling factor for sampling interval dt.
+     *
+     * Factor to be applied when transforming to time domain.
+     *
+     * \param[in] dt sampling interval
+     * \return scalar factor to be applied to all samples
+     *
+     * \sa \ref sec_fftw3_integral_transform
+     */
     DRFFTWAFF::Tsample DRFFTWAFF::scale_series(const Tsample& dt) const
     {
       return(1./(Msize*dt));
@@ -316,7 +321,15 @@ namespace fourier {
 
     /*----------------------------------------------------------------------*/
     
-    //! Return appropriate scaling factor for sampling interval dt.
+    /*! \brief Return appropriate scaling factor for sampling interval dt.
+     *
+     * Factor to be applied when transforming to Fourier domain.
+     *
+     * \param[in] dt sampling interval
+     * \return scalar factor to be applied to all samples
+     *
+     * \sa \ref sec_fftw3_integral_transform
+     */
     DRFFTWAFF::Tsample DRFFTWAFF::scale_spectrum(const Tsample& dt) const
     {
       return(dt);
