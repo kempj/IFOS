@@ -25,6 +25,7 @@
 
 float *rd_sour(int *nts,FILE* fp_source){
 
+	extern int VERBOSE;
 	/* local variables */
 	float *psource;
 	int i, c;
@@ -35,7 +36,7 @@ float *rd_sour(int *nts,FILE* fp_source){
         while ((c=fgetc(fp_source)) != EOF)
          if (c=='\n') ++(*nts);
         rewind(fp_source);
-			printf(" Number of samples (nts) in source file: %i\n",*nts);
+			if (VERBOSE==1) printf(" Number of samples (nts) in source file: %i\n",*nts);
 		  
 	psource=vector(1,*nts);
 	for (i=1;i<=*nts;i++) fscanf(fp_source,"%e\n",&psource[i]);
