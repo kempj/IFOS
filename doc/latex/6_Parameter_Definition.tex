@@ -845,6 +845,9 @@ For GRAD\_FILT\_WAVELENGTH = 1 (and TIME\_FILT=1) a new wavelength dependent fil
 \end{equation}
 where F\_LOW\_PASS is the corner frequency of TIME\_FILT and A is a weighting factor.
 
+\ \\
+WARNING: The option GRAD\_FILTER uses a median filter that makes use of a quicksort routine. Under some (unknown) conditions this can take a huge amount of time and corrupt the inversion.
+
 
 \section{Model manipulation}
 \subsection{Limits for the model parameters}
@@ -908,3 +911,6 @@ Default values are:
 \end{verbatim}}}
 
 If MODEL\_FILTER = 1 vp- and vs-models are smoothed with a 2D median filter after every iterationstep. With FILT\_SIZE you can set the filter length in gridpoints.
+
+\ \\
+WARNING: The option MODEL\_FILTER uses a median filter that makes use of a quicksort routine. Under some (unknown) conditions this can take a huge amount of time and corrupt the inversion.
