@@ -59,10 +59,10 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float F_LOW_PASS)
                 if(VERBOSE) printf("\n FILT_SIZE_GRAD = Vs_avg = %4.2f m/s / F_LOW_PASS = %4.2f Hz * weighting factor A = %4.2f / grid spacing DH = %4.2f m  \n",Vs_avg,F_LOW_PASS,A,DH);
                 if(VERBOSE) printf("\n New FILT_SIZE_GRAD = %d (grid points) is used (-> %4.2f m).                \n",FILT_SIZE_GRAD,FILT_SIZE_GRAD*DH);
             }
-            if (FILT_SIZE_GRAD==0)	return;
+            if (FILT_SIZE_GRAD==0)  return;
             if (!(FILT_SIZE_GRAD % 2)) {
-                if (FILT_SIZE_GRAD > 0)	FILT_SIZE_GRAD += 1;
-                else			FILT_SIZE_GRAD -= 1;
+                if (FILT_SIZE_GRAD > 0) FILT_SIZE_GRAD += 1;
+                else            FILT_SIZE_GRAD -= 1;
             }
             hfs = abs(FILT_SIZE_GRAD)/2;
             if(VERBOSE) printf("\n ----------------------------------------------------------------\n");
@@ -72,10 +72,10 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float F_LOW_PASS)
             break;
             
         case 2:
-            if (FILT_SIZE==0)	return;
+            if (FILT_SIZE==0)   return;
             if (!(FILT_SIZE % 2)) {
-                if (FILT_SIZE > 0)	FILT_SIZE += 1;
-                else			FILT_SIZE -= 1;
+                if (FILT_SIZE > 0)  FILT_SIZE += 1;
+                else            FILT_SIZE -= 1;
             }
             hfs = abs(FILT_SIZE)/2;
             if(VERBOSE) printf("\n ----------------------------------------------------------------\n");
@@ -84,7 +84,6 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float F_LOW_PASS)
             model_tmp = matrix(-hfs+1,NYG+hfs,-hfs+1,NXG+hfs);
             break;
     }
-    model_med = matrix(1,NYG,1,NXG);
     
     /* load merged model */
     for (i=1;i<=NXG;i++){
@@ -114,30 +113,27 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float F_LOW_PASS)
     }
     
     /* filter */
-    for (j=1;j<=NYG;j++){
-        for (i=1;i<=NXG;i++){
+    for (j=1;j<=NY;j++){
+        for (i=1;i<=NX;i++){
             /* create a filtersize x filtersize matrix */
             for (ii=-hfs;ii<=hfs;ii++){
                 for (jj=-hfs;jj<=hfs;jj++){
                     
-                    filterpart[ii+hfs+1][jj+hfs+1] = model_tmp[j+jj][i+ii];
+                    filterpart[ii+hfs+1][jj+hfs+1] = model_tmp[j+POS[2]*NY+jj][i+POS[1]*NX+ii];
                 }
             }
             /* filter */
             switch (filter){
                 case 1:
-                    model_med[j][i] = median2d(filterpart,abs(FILT_SIZE_GRAD),abs(FILT_SIZE_GRAD));
+                    mat[j][i] = median2d(filterpart,abs(FILT_SIZE_GRAD),abs(FILT_SIZE_GRAD));
                     break;
                 case 2:
-                    model_med[j][i] = median2d(filterpart,abs(FILT_SIZE),abs(FILT_SIZE));
+                    mat[j][i] = median2d(filterpart,abs(FILT_SIZE),abs(FILT_SIZE));
                     break;
-            }
-            
+            }            
         }
     }
-    
-    get_local_from_global_matrix(model_med, mat);
-    
+        
     switch (filter){
         case 1:
             free_matrix(model_tmp,-hfs+1,NYG+hfs,-hfs+1,NXG+hfs);
@@ -147,9 +143,7 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float F_LOW_PASS)
             free_matrix(model_tmp,-hfs+1,NYG+hfs,-hfs+1,NXG+hfs);
             free_matrix(filterpart,1,abs(FILT_SIZE),1,abs(FILT_SIZE));
             break;
-    }
-    free_matrix(model_med,1,NXG,1,NYG);
-    
+    }    
     
     
     MPI_Barrier(MPI_COMM_WORLD);
@@ -165,7 +159,4 @@ void smooth(float ** mat, int sws, int filter, float Vs_avg, float F_LOW_PASS)
             break ;
     }
     
-    
-    if(VERBOSE) fprintf(FP,"\n Smoothed gradient / model is distributed on computational nodes.\n");
-    if(VERBOSE) fprintf(FP,"\n ----------------------------------------------------------------\n");
 }/* end of smoothing */
