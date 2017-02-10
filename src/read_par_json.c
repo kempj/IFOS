@@ -463,7 +463,9 @@ void read_par_json(FILE *fp, char *fileinp){
             declare_error("Variable FORWARD_ONLY could not be retrieved from the json input file!");
         else {
             if (FORWARD_ONLY==0) {	/* FWI is calculated */
-                
+                /* Overwrite IDX/IDY option from forward modeling (used for snapshots), interpolation for FWI not yet implemented*/
+                IDX=1;
+                IDY=1;
                 /* General inversion parameters */
                 if (get_int_from_objectlist("ITERMAX",number_readobjects,&ITERMAX,varname_list, value_list))
                     declare_error("Variable ITERMAX could not be retrieved from the json input file!");
