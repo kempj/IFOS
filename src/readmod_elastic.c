@@ -104,7 +104,7 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u){
                 
             }
             
-            if(feof(fp_vs) && feof(fp_rho)){
+            if(feof(fp_vs) || feof(fp_rho)){
                 declare_error("Model file VS or RHO is to small. Check dimensions NX*NY of file.");
             }
             
@@ -141,7 +141,7 @@ void readmod_elastic(float  **  rho, float **  pi, float **  u){
     
     fread(&vs, sizeof(float), 1, fp_vs);
     fread(&rho, sizeof(float), 1, fp_rho);
-    if(!feof(fp_vs) && !feof(fp_rho)){
+    if(!feof(fp_vs) || !feof(fp_rho)){
         declare_error("Model file VS or RHO is to big. Check dimensions NX*NY of file.");
     }
     fclose(fp_vs);
