@@ -452,7 +452,7 @@ This section covers some general inversion parameters. The maximum number of ite
 
 If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be back propagated. For two component data (x- and y-component) set ADJOINT\_TYPE=1, only the y-component (ADJOINT\_TYPE=2) and only the x-component (ADJOINT\_TYPE=3). For the inversion of pressure seismograms ADJOINT\_TYPE=4 has to be used.
 
-During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of eight or nine columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use frequency filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step.
+During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of nine or ten columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use frequency filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step. If TIMEWIN=1 then the tenth column shows the GAMMA value that was used at the current iteration.
 
 In general IFOS2D tries to minimize the misfit in the particle displacement between the observed data and the synthetic data. If you set the switch VELOCITY to 1 the misfit in the particle velocity seismograms is minimized.
 
@@ -731,7 +731,7 @@ If you are using frequeny filtering (TIME\_FILT==1) during the inversion, you ca
 			"PICKS_FILE" : "./picked_times/picks"
 			"TWLENGTH_PLUS" : "0.01",
 			"TWLENGTH_MINUS" : "0.01",
-			"GAMMA" : "100000",
+			"GAMMA" : "30",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
