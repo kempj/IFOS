@@ -957,8 +957,8 @@ int main(int argc, char **argv){
                             
                             if(PARAMETERIZATION==2){
                                 
-                                Vp0[j][i] = sqrt((ppi[j][i]+2.0*pu[j][i])*prho[j][i]);
-                                Vs0[j][i] = sqrt((pu[j][i])*prho[j][i]);
+                                Vp0[j][i] = sqrt((ppi[j][i]+2.0*pu[j][i])/prho[j][i]);
+                                Vs0[j][i] = sqrt((pu[j][i])/prho[j][i]);
                                 Rho0[j][i] = prho[j][i];
                                 
                             }
