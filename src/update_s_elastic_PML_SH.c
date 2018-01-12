@@ -103,8 +103,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     sxz[j][i]+=(fipjp*vzx);
                     syz[j][i]+=(f*vzy);
                     
-                    uxz[j][i]+=(fipjp*vzx)/DT;
-                    uyz[j][i]+=(f*vzy)/DT;
+                    uxz[j][i]=(fipjp*vzx)/DT;
+                    uyz[j][i]=(f*vzy)/DT;
                     
                 }
             }
@@ -159,8 +159,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     sxz[j][i]+=(fipjp*vzx);
                     syz[j][i]+=(f*vzy);
                     
-                    uxz[j][i]+=(fipjp*vzx)/DT;
-                    uyz[j][i]+=(f*vzy)/DT;
+                    uxz[j][i]=(fipjp*vzx)/DT;
+                    uyz[j][i]=(f*vzy)/DT;
                     
                 }
             }
@@ -216,8 +216,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     sxz[j][i]+=(fipjp*vzx);
                     syz[j][i]+=(f*vzy);
                     
-                    uxz[j][i]+=(fipjp*vzx)/DT;
-                    uyz[j][i]+=(f*vzy)/DT;
+                    uxz[j][i]=(fipjp*vzx)/DT;
+                    uyz[j][i]=(f*vzy)/DT;
                     
                 }
             }
@@ -275,8 +275,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     sxz[j][i]+=(fipjp*vzx);
                     syz[j][i]+=(f*vzy);
                     
-                    uxz[j][i]+=(fipjp*vzx)/DT;
-                    uyz[j][i]+=(f*vzy)/DT;
+                    uxz[j][i]=(fipjp*vzx)/DT;
+                    uyz[j][i]=(f*vzy)/DT;
                     
                 }
             }
@@ -336,8 +336,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     sxz[j][i]+=(fipjp*vzx);
                     syz[j][i]+=(f*vzy);
                     
-                    uxz[j][i]+=(fipjp*vzx)/DT;
-                    uyz[j][i]+=(f*vzy)/DT;
+                    uxz[j][i]=(fipjp*vzx)/DT;
+                    uyz[j][i]=(f*vzy)/DT;
                     
                 }
             }
@@ -399,8 +399,8 @@ void update_s_elastic_PML_SH(int nx1, int nx2, int ny1, int ny2, float **  vz, f
                     sxz[j][i]+=(fipjp*vzx);
                     syz[j][i]+=(f*vzy);
                     
-                    uxz[j][i]+=(fipjp*vzx)/DT;
-                    uyz[j][i]+=(f*vzy)/DT;
+                    uxz[j][i]=(fipjp*vzx)/DT;
+                    uyz[j][i]=(f*vzy)/DT;
                     
                 }
             }

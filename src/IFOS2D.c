@@ -957,8 +957,8 @@ int main(int argc, char **argv){
                             
                             if(PARAMETERIZATION==2){
                                 
-                                Vp0[j][i] = sqrt((ppi[j][i]+2.0*pu[j][i])*prho[j][i]);
-                                Vs0[j][i] = sqrt((pu[j][i])*prho[j][i]);
+                                Vp0[j][i] = sqrt((ppi[j][i]+2.0*pu[j][i])/prho[j][i]);
+                                Vs0[j][i] = sqrt((pu[j][i])/prho[j][i]);
                                 Rho0[j][i] = prho[j][i];
                                 
                             }
@@ -1003,9 +1003,9 @@ int main(int argc, char **argv){
                         /* Write header for misfit log file */
                         if(GRAD_METHOD==1&&VERBOSE) {
                             if (TIME_FILT==0){
-                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
+                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t GAMMA \n");}
                             else{
-                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \n");
+                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \t GAMMA  \n");
                             }
                         }
                         
@@ -1339,19 +1339,18 @@ int main(int argc, char **argv){
                                     if(LNORM==8){
                                         calc_envelope(fulldata_vy,fulldata_vy,ns,ntr_glob);
                                         calc_envelope(fulldata_vx,fulldata_vx,ns,ntr_glob);}
-                                    if (MYID==0){
-                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);}
+//                                     if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                                 case 2 :	/* pressure only */
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+//                                     if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                                 case 3 : 	/* curl and div only */
                                     catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+//                                     if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                                 case 4 :	/* everything */
@@ -1365,7 +1364,7 @@ int main(int argc, char **argv){
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+//                                     if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                                 case 5 :	/* everything except curl and div*/
@@ -1377,7 +1376,7 @@ int main(int argc, char **argv){
                                         catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     }
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-                                    if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+//                                     if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                     break;
                                     
                             } /* end of switch (SEISMO) */
@@ -1871,8 +1870,7 @@ int main(int argc, char **argv){
                                 if(LNORM==8){
                                     calc_envelope(fulldata_vy,fulldata_vy,ns,ntr_glob);
                                     calc_envelope(fulldata_vx,fulldata_vx,ns,ntr_glob);}
-                                if (MYID==0){
-                                    saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);}
+                                if (MYID==0) saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
                                 break;
                                 
                             case 2 :	/* pressure only */
@@ -1953,8 +1951,8 @@ int main(int argc, char **argv){
                                         }
                                         L2=calc_res(sectionvxdata,sectionvx,sectionvxdiff,sectionvxdiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
                                         if(swstestshot==1){energy=calc_energy(sectionvxdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);}
-                                        L2_all_shots=calc_misfit(sectionvxdata,sectionvx,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         energy_all_shots=calc_energy(sectionvxdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        L2_all_shots=calc_misfit(sectionvxdata,sectionvx,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         /*fprintf(FP,"Energy vxdata for PE %d:   %f\n\n", MYID,energy);*/
                                     } /* end ADJOINT_TYPE */
                                     
@@ -1976,8 +1974,8 @@ int main(int argc, char **argv){
                                         }
                                         L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
                                         if(swstestshot==1){energy=calc_energy(sectionvydata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);}
-                                        L2_all_shots=calc_misfit(sectionvydata,sectionvy,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         energy_all_shots=calc_energy(sectionvydata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        L2_all_shots=calc_misfit(sectionvydata,sectionvy,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         /*fprintf(FP,"Energy vydata for PE %d:   %f\n\n", MYID,energy);	*/
                                     } /* end ADJOINT_TYPE */
                                     
@@ -1998,8 +1996,8 @@ int main(int argc, char **argv){
                                         }
                                         L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
                                         if(swstestshot==1){energy=calc_energy(sectionpdata,ntr,ns,energy, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);}
-                                        L2_all_shots=calc_misfit(sectionpdata,sectionp,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         energy_all_shots=calc_energy(sectionpdata,ntr,ns,energy_all_shots, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        L2_all_shots=calc_misfit(sectionpdata,sectionp,ntr,ns,LNORM,L2_all_shots,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                     } /* end ADJOINT_TYPE */
                                 }
                                 
@@ -2020,8 +2018,8 @@ int main(int argc, char **argv){
                                     }
                                     L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,L2_SH,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
                                     if(swstestshot==1){energy_SH=calc_energy(sectionvzdata,ntr,ns,energy_SH, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);}
-                                    L2_all_shots_SH=calc_misfit(sectionvzdata,sectionvz,ntr,ns,LNORM,L2_all_shots_SH,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                     energy_all_shots_SH=calc_energy(sectionvzdata,ntr,ns,energy_all_shots_SH, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                    L2_all_shots_SH=calc_misfit(sectionvzdata,sectionvz,ntr,ns,LNORM,L2_all_shots_SH,0,1,1, ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                 }
                                 
                                 // Tracekill
@@ -2075,6 +2073,30 @@ int main(int argc, char **argv){
                                         saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,3);
                                     }
                                 }
+                                
+                                
+                                /* Write synthetic filtered seismogramms to disk */
+                                if (SEISMO && TIME_FILT && WRITE_FILTERED_DATA==2){
+                                    if(WAVETYPE==1 || WAVETYPE==3){
+                                        if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==3)){
+                                            catseis(sectionvx, fulldata_vx, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                        if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)){
+                                            catseis(sectionvy, fulldata_vy, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                        if (ADJOINT_TYPE==4){
+                                            catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_NTR);
+                                        }
+                                    }
+                                    if(WAVETYPE==2 || WAVETYPE==3){
+                                        catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_NTR);
+                                    }
+                                    if(myid_ntr==0){
+                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,4);
+                                    }
+                                }
+                                
+                                
                             }
                             
                             
@@ -3086,9 +3108,9 @@ int main(int argc, char **argv){
         if(wolfe_SLS_failed) {
             
             if (TIME_FILT==0){
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old);}
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t  %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old, GAMMA);}
             else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS);
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f \n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS, GAMMA);
             }
             
             if(WAVETYPE==3 && MYID==0){
@@ -3131,9 +3153,9 @@ int main(int argc, char **argv){
             float diff=0.0;
             diff=fabs((L2_hist[iter-2]-L2_hist[iter])/L2_hist[iter-2]);
             if (TIME_FILT==0){
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new);}
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new, GAMMA);}
             else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS);
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS, GAMMA);
             }
             
             if(WAVETYPE==3 && MYID==0){
@@ -3803,9 +3825,9 @@ int main(int argc, char **argv){
                 if(MYID==0&&(!VERBOSE)){printf("L2-Norm[4] = %e (final L2 of all shots)\n",L2t[4]);}
                 printf("MYID = %d \t epst1[1] = %e \t epst1[2] = %e \t epst1[3] = %e \n",MYID,epst1[1],epst1[2],epst1[3]);
                 if (TIME_FILT==0){
-                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4]);}
+                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],GAMMA);}
                 else{
-                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f\n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS);}
+                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f \t %f \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS,GAMMA);}
                 if(WAVETYPE==3 && MYID==0){
                     fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
                 }
@@ -4374,6 +4396,8 @@ int main(int argc, char **argv){
             fprintf(FP," stress exchange:  \t %5.3f seconds  \n",time_av_s_exchange);
             fprintf(FP," timestep:  \t %5.3f seconds  \n",time_av_timestep);
         }
+        time8=MPI_Wtime();
+        fprintf(FP," Total real time of program: %4.2f seconds.\n",time8-time1);
         if(FORWARD_ONLY==0) {
             printf("\n Inversion finished after %d iterations. \n\n",iter);
         } else {

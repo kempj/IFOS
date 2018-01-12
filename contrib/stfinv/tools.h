@@ -1,7 +1,7 @@
 /*! \file tools.h
  * \brief tools and utilities (prototypes)
  * 
- * \ingroup tools
+ * \ingroup group_tools
  * ----------------------------------------------------------------------------
  * 
  * \author Thomas Forbriger
@@ -48,7 +48,7 @@ namespace stfinv {
   namespace tools {
 
     /*! \brief function to compare doubles
-     * \ingroup tools
+     * \ingroup group_tools
      * \param a a double value
      * \param b a double value
      * \param eps relative residual allowed for \c a and \c b
@@ -60,7 +60,7 @@ namespace stfinv {
 /* ---------------------------------------------------------------------- */
 
     /*! \brief report engine identifier
-     * \ingroup tools
+     * \ingroup group_tools
      * \param C class to report ID and oneline description
      * \param os output stream to send output to
      */
@@ -78,7 +78,7 @@ namespace stfinv {
 /* ---------------------------------------------------------------------- */
 
     /*! \brief report engine identifier with heading
-     * \ingroup tools
+     * \ingroup group_tools
      * \param C class to report ID and oneline description
      * \param os output stream to send output to
      */

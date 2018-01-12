@@ -70,7 +70,7 @@ documentation.
 
 User documentation
 ------------------
-The theory behind the Fourier domain least squares engine is outlined by
+The theory behind the Fourier domain least squares procedure is outlined by
 Lisa Groos (2013, Appendix F, page 146). She also describes a way to find an
 approrpiate water level by application of the L-curve criterion (Groos, 2013,
 Appendix G, page 148).
@@ -86,6 +86,9 @@ tests/onlinehelp Provides access to these texts. Just issue
   ./onlinhelp
 
 to get access.
+
+A toy example and a step-by-step introduction are provided in subdirectory
+src/ts/wf/testcases in README.soutifu
 
 A short descrpition of the library and the accompanying program soutifu is
 provided on the OpenTOAST web-page:

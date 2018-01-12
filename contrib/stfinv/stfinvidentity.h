@@ -45,7 +45,7 @@
 namespace stfinv {
 
   /*! \brief Engine to apply a scalar factor
-   * \ingroup engines
+   * \ingroup group_engines
    *
    * \par Concept behin this engine
    * This engine convolves the synthetic data with a discrete delta pulse so

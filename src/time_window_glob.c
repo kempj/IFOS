@@ -101,10 +101,10 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
 			time = (float)(j * DT);
 			
 			dumpa = (time-picked_times_m[1][i]-picked_times_m[2][i]);
-			taper = exp(-GAMMA*dumpa*dumpa);
+			taper = exp(-GAMMA*dumpa);
 			
 			dumpb = (time-picked_times_m[1][i]+picked_times_m[3][i]); 
-			taper1 = exp(-GAMMA*dumpb*dumpb);
+			taper1 = exp(-GAMMA*dumpb);
 			
 			if(time>=picked_times_m[1][i]+picked_times_m[2][i]){
 			sectiondata[i][j] = sectiondata[i][j] * taper;}
@@ -123,10 +123,10 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
             time = (float)(j * DT);
             
             dumpa = (time-picked_times_m[1][i]-picked_times_m[2][i]);
-            taper = exp(-GAMMA*dumpa*dumpa);
+            taper = exp(-GAMMA*dumpa);
             
             dumpb = (time-picked_times_m[1][i]+picked_times_m[3][i]); 
-            taper1 = exp(-GAMMA*dumpb*dumpb);
+            taper1 = exp(-GAMMA*dumpb);
             
             dummysection[i][j] = sectiondata[i][j];
             
@@ -137,10 +137,10 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
             dummysection[i][j] = sectiondata[i][j] * taper1;}
                         
             dumpc = (time-picked_times_m[4][i]-picked_times_m[5][i]);
-            taper2 = exp(-GAMMA*dumpc*dumpc);
+            taper2 = exp(-GAMMA*dumpc);
             
             dumpd = (time-picked_times_m[4][i]+picked_times_m[6][i]); 
-            taper3 = exp(-GAMMA*dumpd*dumpd);
+            taper3 = exp(-GAMMA*dumpd);
             
             if(time>=picked_times_m[4][i]+picked_times_m[5][i]){
             sectiondata[i][j] = sectiondata[i][j] * taper2;}
@@ -159,10 +159,10 @@ void time_window_glob(float **sectiondata, int iter, int ntr_glob, int ns, int i
 			time = (float)(j * DT);
 			
 			dumpa = (time-picked_times[i]-TWLENGTH_PLUS);
-			taper = exp(-GAMMA*dumpa*dumpa);
+			taper = exp(-GAMMA*dumpa);
 			
 			dumpb = (time-picked_times[i]+TWLENGTH_MINUS); 
-			taper1 = exp(-GAMMA*dumpb*dumpb);
+			taper1 = exp(-GAMMA*dumpb);
 			
 			if(time>=picked_times[i]+TWLENGTH_PLUS){
 			sectiondata[i][j] = sectiondata[i][j] * taper;}

@@ -29,7 +29,7 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
     extern int TRKILL, NORMALIZE, F_LOW_PASS, TIMEWIN;
     extern char TRKILL_FILE[STRING_SIZE];
     extern int VELOCITY;
-    
+    extern int WRITE_FILTERED_DATA;
     int i,j;
     float l2;
     int h;
@@ -199,6 +199,15 @@ double calc_misfit(float **sectiondata, float **section, int ntr, int ns, int LN
             if(LNORM==8){
                 L2 += (intseis_section_envelope[i][j]-intseis_sectiondata_envelope[i][j]) * (intseis_section_envelope[i][j]-intseis_sectiondata_envelope[i][j]);}
             
+        }
+    }
+    
+    if(WRITE_FILTERED_DATA==2){
+        for(i=1;i<=ntr;i++){
+            for(j=1;j<=ns;j++){
+                sectiondata[i][j]=intseis_sectiondata[i][j];
+                section[i][j]=intseis_section[i][j];
+            }
         }
     }
     

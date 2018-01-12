@@ -452,7 +452,7 @@ This section covers some general inversion parameters. The maximum number of ite
 
 If models are read from binary files appropriate file extensions are required for the different models (see section \ref{gen_of_mod}). Depending on the data different components of the seismic sections can be back propagated. For two component data (x- and y-component) set ADJOINT\_TYPE=1, only the y-component (ADJOINT\_TYPE=2) and only the x-component (ADJOINT\_TYPE=3). For the inversion of pressure seismograms ADJOINT\_TYPE=4 has to be used.
 
-During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of eight or nine columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use frequency filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step.
+During the inversion the misfit values are saved in a log file specified in MISFIT\_LOG\_FILE. The log file consists of nine or ten columns and each line corresponds to one iteration step. The used step length is written in the first column. In the second to fourth column the three test step lengths used for the step length estimation are saved. The corresponding misfit values for these test step lengthes and the test shots are written to column five to seven. Column eight corresponds to the total misfit for all shots and if you use frequency filtering then the ninth column corresponds to the corner frequency of the lowpass filter used in the inversion step. If TIMEWIN=1 then the tenth column shows the GAMMA value that was used at the current iteration.
 
 In general IFOS2D tries to minimize the misfit in the particle displacement between the observed data and the synthetic data. If you set the switch VELOCITY to 1 the misfit in the particle velocity seismograms is minimized.
 
@@ -489,12 +489,12 @@ Default values are:
 With the use of a workflow file, you can define different FWI stages. For instance, one FWI stage could refer to one corner frequency of a low-pass filter or to a specific time window. Every line in the workflow file corresponds to one FWI stage. To use a workflow file the switch USE\_WORKFLOW have to be set to 1.  The algorithm will automatically change to the next line of the workflow file if the abort criterium of the current line is reached or if no step length could be found which reduces the misfit. The structure of the variables inside the workflow file is as follow: \\
 
 \noindent
-\begin{tabular}{lllllllllllll}
-\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & F\_HIGH\_PASS & F\_LOW\_PASS & WAVETYPE & 0 & 0 & EPRECOND & EPSILON\_WE\\
+\begin{tabular}{llllllllllIlll}
+\# & INV\_VS & INV\_VP & INV\_RHO & PRO & TIME\_FILT & F\_HIGH\_PASS & F\_LOW\_PASS & WAVETYPE & 0 & 0 & EPRECOND & EPSILON\_WE & GAMMA \\
 \end{tabular}
 
 \ \\
-The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency F\_HIGH\_PASS of the high-pass and F\_LOW\_PASS of the low-pass filter. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following to zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg. TIME\_FILT (see section \ref{sec:filtering}) within the workflow have to be activated in the .JSON file.
+The first column is the number of the line. With INV\_* etc. you can activate the inversion for VS, VP or RHO, respectively. The abort criterium in percent for this FWI stage will be the declared in the variable PRO. With TIME\_FILT you can activate the frequency filtering with the corner frequency F\_HIGH\_PASS of the high-pass and F\_LOW\_PASS of the low-pass filter. WAVETYPE can be used to switch between PSV and SH modeling, however it is recommended to use PSV modeling (WAVETYPE==1) due to the current development on SH modeling. The following two zeros are placeholders for an upcoming update. With EPRECOND and EPSILON\_WE you can control the approx. Hessian. Please note, that all features which are used eg.  With GAMMA you can define the exponential taper applied to both synthetic and observed data. TIME\_FILT (see section \ref{sec:filtering}) within the workflow have to be activated in the .JSON file.
 
 For an example of a workflow file, have a look in the par/ folder.
 
@@ -642,7 +642,7 @@ To remove the contribution of the unknown source time function (STF) from the wa
 			
 			"TRKILL_STF" : "0", 
 			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
-			
+			"STF_FULL" : "0",
 			"TRKILL_STF_OFFSET" : "0", 
 			"TRKILL_STF_OFFSET_LOWER" : "10",
 			"TRKILL_STF_OFFSET_UPPER" : "20",
@@ -654,13 +654,14 @@ Default values are:
 	INV_STF=0
 \end{verbatim}}}
 
-INV\_STF should be switched to 1 if you want to invert for the source time function.
+INV\_STF should be switched to 1 if you want to invert for the source time function. If STF\_FULL is set to 1 then the total wavefield is used to invert for the source time function and the time window is ignored.
 \newline
 
 An example for the parameter string provided in PARA is:
 \begin{itemize}
  \item To select frequency domain least squares (fdlsq), apply offset dependent weights and a waterlevel use\\
  \textit{fdlsq:exp=1.0:waterlevel=0.01}
+ \item For tapering the inverted STF add the option \textit{irtap=t1;t2;t3;t4} to the parameter string. The four values define the taper window. %It is important to use ";", because "," is used by the JSON-parser to separate variables.
 \end{itemize}
 
 In most cases the frequency domain least squares engine is the best approach to find a suitable wavelet. There are also other possibilities, if you want to use those a detailed look at the libraries and the acompanying documentation provided in the folder /contrib is recommended. Here only the two main parameters for the fdlsq approach are described.
@@ -718,7 +719,7 @@ With F\_HIGH\_PASS an additional high pass filter can be applied, where F\_HIGH\
 
 With the parameter PRO (see~\ref{json:abort_criterion}) one has to adjust the criterion that defines at which points the bandwidth of the signals are increased.
 
-With the parameter WRITE\_FILTERED\_DATA it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. The filtered data is located in DATA\_DIR and are labeled with "\_measured".
+With the parameter WRITE\_FILTERED\_DATA=1 it is possible to write the time filtered measured data to disk which are filtered with the same filter as the synthetic data. Therefore this output can be used to visualize the residuals between synthetic and measured data. The filtered data is located in SEIS\_FILE and the seismograms are labeled with "obs" (synthetic seismograms are labeled with "syn"). By choosing WRITE\_FILTERED\_DATA=2 one can directly output the seismograms that are used for calculating the adjoint sources. Additionally time windowing and integration (see Option VELOCITY) are considered and the label "adj" is added to the seismogram name.
 
 If you are using frequeny filtering (TIME\_FILT==1) during the inversion, you can set a minimum number of iterations per frequency. Within this minimum number of iteration per frequency the abort criterion PRO will receive no consideration.
 
@@ -730,7 +731,7 @@ If you are using frequeny filtering (TIME\_FILT==1) during the inversion, you ca
 			"PICKS_FILE" : "./picked_times/picks"
 			"TWLENGTH_PLUS" : "0.01",
 			"TWLENGTH_MINUS" : "0.01",
-			"GAMMA" : "100000",
+			"GAMMA" : "30",
 \end{verbatim}}}
 
 {\color{red}{\begin{verbatim}
@@ -738,9 +739,9 @@ Default values are:
 	TIMEWIN=0
 \end{verbatim}}}
 
-To apply time windowing in a time series the paramter TIMEWIN must set to 1. A automatic picker routine is not integrated. The point in time (picked time) for each source must be specified in separate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources must be equal to the number of files. Each file must contain the picked times for every receiver.
+To apply time windowing in a time series the parameter TIMEWIN must set to 1. A automatic picker routine is not integrated. The point in time (picked time) for each source must be specified in separate files. The folder and file name can be set with the parameter PICKS\_FILE. The files must be named like this PICKS\_FILE\_<sourcenumber>.dat. So the number of sources must be equal to the number of files. Each file must contain the picked times for every receiver.
 
-The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually.
+The parameters TWLENGTH\_PLUS and TWLENGTH\_MINUS specify the length of the time window after (PLUS) and before (MINUS) the picked time. The unit is seconds. The damping factor GAMMA must be set individually. In case where the workflow is used you can specify different values for GAMMA per stage.
 
 When using TW\_IND = 1 three columns are expected in PICK\_FILE for each trace with the picked time (PT), time window length plus (TWLP) and time window length minus (TWLM). In this case TWLENGTH\_PLUS and TWLENGTH\_MINUS are ignored. It is also possible to use two time windows for each trace which can be utilized with TW\_IND = 2. PICK\_FILE must then contain six columns with values for PT\_1, TWLP\_1, TWLM\_1, PT\_2, TWLP\_2 and TWLM\_2 for each trace.
 
@@ -798,7 +799,7 @@ SWS_TAPER_FILE=0
 SWS_TAPER_FILE_PER_SHOT=0
 \end{verbatim}}}
 
-Different preconditioning matrices can be created and applied to the gradients (using the function \texttt{taper\_grad.c}). To apply a vertical taper one has to set the switch SWS\_TAPER\_GRAD\_VERT to one and for a horizontaltaper SWS\_TAPER\_GRAD\_HOR has to be 1. The parameters for the vertical and the horizontal window are defined by the input file paramters GRADT1, GRADT2, GRADT3 and GRADT4. Please have a look at the function \texttt{taper\_grad.c} directly to obtain more information about the actual definition of the tapers. It is also possible to apply cylindrical tapers around the source positions. This can be done by either setting the switch SWS\_TAPER\_GRAD\_SOURCES or SWS\_TAPER\_CIRCULAR\_PER\_SHOT to 1. If one uses SWS\_TAPER\_GRAD\_SOURCES=1 only the final gradients (that means the gradients obtained by the summation of the gradients of each shots) are multiplied with a taper that decreases the gradients at all shot positions. Therefore, one looses the update information at the source positions. To avoid this one can use SWS\_TAPER\_CIRCULAR\_PER\_SHOT=1. In this case the gradients of the single shots are preconditioned with a window that only decreases at the current shot position. This is done before the summation of all gradients to keep model update information also at the shot positions. The actual tapers are generated by the function \texttt{taper\_grad.c} and \texttt{taper\_grad\_shot.c}, respectively. The circular taper around the source positions decrease from a value of one at the edge of the taper to a value of zero at the source position. The shape of the decrease can be defined by an error function (SRTSHAPE=1) or a log-function (SRTSHAPE=2). The radius of the taper is defined in meter by SRTRADIUS. Note, that this radius must be at least 5 gridpoints. With the parameter FILTSIZE one can extend the region where the taper is zero around the source. The taper is set to zero in a square region of (2*FILTSIZE+1 times 2*FILTSIZE+1) gridpoints. All preconditioning matrices that are applied are saved in the par directory with the file names taper\_coeff\_vert.bin, taper\_coeff\_horz.bin and taper\_coeff\_sources.bin.\\
+Different preconditioning matrices can be created and applied to the gradients (using the function \texttt{taper\_grad.c}). To apply a vertical taper one has to set the switch SWS\_TAPER\_GRAD\_VERT to one and for a horizontaltaper SWS\_TAPER\_GRAD\_HOR has to be 1. The parameters for the vertical and the horizontal window are defined by the input file parameters GRADT1, GRADT2, GRADT3 and GRADT4. Please have a look at the function \texttt{taper\_grad.c} directly to obtain more information about the actual definition of the tapers. It is also possible to apply cylindrical tapers around the source positions. This can be done by either setting the switch SWS\_TAPER\_GRAD\_SOURCES or SWS\_TAPER\_CIRCULAR\_PER\_SHOT to 1. If one uses SWS\_TAPER\_GRAD\_SOURCES=1 only the final gradients (that means the gradients obtained by the summation of the gradients of each shots) are multiplied with a taper that decreases the gradients at all shot positions. Therefore, one looses the update information at the source positions. To avoid this one can use SWS\_TAPER\_CIRCULAR\_PER\_SHOT=1. In this case the gradients of the single shots are preconditioned with a window that only decreases at the current shot position. This is done before the summation of all gradients to keep model update information also at the shot positions. The actual tapers are generated by the function \texttt{taper\_grad.c} and \texttt{taper\_grad\_shot.c}, respectively. The circular taper around the source positions decrease from a value of one at the edge of the taper to a value of zero at the source position. The shape of the decrease can be defined by an error function (SRTSHAPE=1) or a log-function (SRTSHAPE=2). The radius of the taper is defined in meter by SRTRADIUS. Note, that this radius must be at least 5 gridpoints. With the parameter FILTSIZE one can extend the region where the taper is zero around the source. The taper is set to zero in a square region of (2*FILTSIZE+1 times 2*FILTSIZE+1) gridpoints. All preconditioning matrices that are applied are saved in the par directory with the file names taper\_coeff\_vert.bin, taper\_coeff\_horz.bin and taper\_coeff\_sources.bin.\\
 
 To apply an externally defined taper on the gradients in IFOS2D, the parameter SWS\_TAPER\_FILE has to be set to 1. Each model parameter requires a taper file which needs to be located in TAPER\_FILE\_NAME.vp for vp, in TAPER\_FILE\_NAME.vs for vs and in TAPER\_FILE\_NAME.rho for the density.\\
 
@@ -843,6 +844,9 @@ For GRAD\_FILT\_WAVELENGTH = 1 (and TIME\_FILT=1) a new wavelength dependent fil
  \mbox{FILT\_SIZE\_GRAD} = \frac{V_{s,\text{average}}\cdot \text{A}}{\text{FC}}
 \end{equation}
 where F\_LOW\_PASS is the corner frequency of TIME\_FILT and A is a weighting factor.
+
+\ \\
+WARNING: The option GRAD\_FILTER uses a median filter that makes use of a quicksort routine. Under some (unknown) conditions this can take a huge amount of time and corrupt the inversion.
 
 
 \section{Model manipulation}
@@ -907,3 +911,6 @@ Default values are:
 \end{verbatim}}}
 
 If MODEL\_FILTER = 1 vp- and vs-models are smoothed with a 2D median filter after every iterationstep. With FILT\_SIZE you can set the filter length in gridpoints.
+
+\ \\
+WARNING: The option MODEL\_FILTER uses a median filter that makes use of a quicksort routine. Under some (unknown) conditions this can take a huge amount of time and corrupt the inversion.

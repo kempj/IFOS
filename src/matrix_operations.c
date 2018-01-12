@@ -21,7 +21,7 @@
 
 #include "fd.h"
 
-void write_matrix_disk(float ** gradient,char path_name[STRING_SIZE]){
+void write_matrix_disk(float ** local_matrix,char path_name[STRING_SIZE]){
     char joint[225];
     FILE *FPjoint;
     extern int POS[3],MYID;
@@ -32,7 +32,7 @@ void write_matrix_disk(float ** gradient,char path_name[STRING_SIZE]){
     
     for (i=1;i<=NX;i=i+IDX){
         for (j=1;j<=NY;j=j+IDY){
-            fwrite(&gradient[j][i],sizeof(float),1,FPjoint);
+            fwrite(&local_matrix[j][i],sizeof(float),1,FPjoint);
         }
     }
     
@@ -122,6 +122,70 @@ float matrix_product(float ** matrix1, float **matrix2) {
     return global_sum;
 }
 
+float ** get_global_from_local_matrix(float ** local_matrix) {
+    
+    extern int NXG, NYG;
+    extern int NX,NY;
+    extern int POS[3];
+    
+    
+    float ** global_matrix=NULL,** global_matrix_temp=NULL;
+    int i=0,j=0;
+    int ii=0, jj=0;
+    
+    /* Allocate global matrix temp */
+    global_matrix_temp=matrix(1,NYG,1,NXG);
+    if(global_matrix_temp==NULL) {
+        declare_error("Allocation of global_matrix_temp in get_global_from_local_matrix failed!");
+    }
+    
+    /* Allocate global matrix */
+    /* You have to deallocate this matrix on our own */
+    global_matrix=matrix(1,NYG,1,NXG);
+    if(global_matrix==NULL) {
+        declare_error("Allocation of global_matrix in get_global_from_local_matrix failed!");
+    }
+    
+    /* Store local matrix in global matrix */
+    for (i=1;i<=NXG;i++){
+        for (j=1;j<=NYG;j++){
+            
+            if ( (POS[1]==((i-1)/NX)) && (POS[2]==((j-1)/NY)) ) {
+                ii=i-POS[1]*NX;
+                jj=j-POS[2]*NY;
+                
+                global_matrix_temp[j][i]=local_matrix[jj][ii];
+            }
+        }
+    }
+    
+    MPI_Allreduce(&global_matrix_temp[1][1],&global_matrix[1][1],NXG*NYG,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+    
+    free_matrix(global_matrix_temp,1,NYG,1,NXG);
+    
+    return global_matrix;
+}
 
-
+void get_local_from_global_matrix(float ** global_matrix,float ** local_matrix) {
+    
+    extern int NXG, NYG;
+    extern int NX,NY;
+    extern int POS[3];
+    
+    int i=0,j=0;
+    int ii=0, jj=0;
+    /* Store local matrix in global matrix */
+    for (i=1;i<=NXG;i++){
+        for (j=1;j<=NYG;j++){
+            
+            if ( (POS[1]==((i-1)/NX)) && (POS[2]==((j-1)/NY)) ) {
+                ii=i-POS[1]*NX;
+                jj=j-POS[2]*NY;
+                
+                local_matrix[jj][ii]=global_matrix[j][i];
+            }
+        }
+    }
+    
+}
 
