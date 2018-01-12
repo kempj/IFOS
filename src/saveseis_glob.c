@@ -32,15 +32,24 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
     
     extern int SEISMO, SEIS_FORMAT, RUN_MULTIPLE_SHOTS, WAVETYPE, VERBOSE,FORWARD_ONLY;
     extern char SEIS_FILE[STRING_SIZE];
-    extern int VELOCITY, WRITE_FILTERED_DATA;
+    extern int VELOCITY, WRITE_FILTERED_DATA, ADJOINT_TYPE;;
     
     char vxf[STRING_SIZE], vyf[STRING_SIZE],vzf[STRING_SIZE], curlf[STRING_SIZE], divf[STRING_SIZE], pf[STRING_SIZE];
     int nsrc=1;
     
     switch (type_switch) {
         case 1:
-            sprintf(vxf,"%s_vx.su.syn.shot%d.it%d",SEIS_FILE,ishot,iter);
-            sprintf(vyf,"%s_vy.su.syn.shot%d.it%d",SEIS_FILE,ishot,iter);
+            if(ADJOINT_TYPE==1) {
+                sprintf(vxf,"%s_vx.su.syn.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_vy.su.syn.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+            if(ADJOINT_TYPE==2){
+                sprintf(vyf,"%s_vy.su.syn.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+            if(ADJOINT_TYPE==3){
+                sprintf(vxf,"%s_vx.su.syn.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+
             if(WAVETYPE==2 || WAVETYPE==3) {
                 sprintf(vzf,"%s_vz.su.syn.shot%d.it%d",SEIS_FILE,ishot,iter);
             }
@@ -50,8 +59,16 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             break;
             
         case 2:
-            sprintf(vxf,"%s_vx.su.shot%d_adjoint_src",SEIS_FILE,ishot);
-            sprintf(vyf,"%s_vy.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            if(ADJOINT_TYPE==1) {
+                sprintf(vxf,"%s_vx.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+                sprintf(vyf,"%s_vy.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            }
+            if(ADJOINT_TYPE==2){
+                sprintf(vyf,"%s_vy.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            }
+            if(ADJOINT_TYPE==3){
+                sprintf(vxf,"%s_vx.su.shot%d_adjoint_src",SEIS_FILE,ishot);
+            }
             if(WAVETYPE==2 || WAVETYPE==3) {
                 sprintf(vzf,"%s_vz.su.shot%d_adjoint_src",SEIS_FILE,ishot);
             }
@@ -62,8 +79,17 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             
         case 3:
             if(WRITE_FILTERED_DATA==1){
-                sprintf(vxf,"%s_vx.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
-                sprintf(vyf,"%s_vy.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
+                if(ADJOINT_TYPE==1) {
+                    sprintf(vxf,"%s_vx.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
+                    sprintf(vyf,"%s_vy.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+                if(ADJOINT_TYPE==2){
+                    sprintf(vyf,"%s_vy.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+                if(ADJOINT_TYPE==3){
+                    sprintf(vxf,"%s_vx.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+
                 if(WAVETYPE==2 || WAVETYPE==3) {
                     sprintf(vzf,"%s_vz.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
                 }
@@ -71,8 +97,17 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
                 sprintf(divf,"%s_div.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
                 sprintf(curlf,"%s_curl.su.obs.shot%d.it%d",SEIS_FILE,ishot,iter);
             }else if(WRITE_FILTERED_DATA==2){
-                sprintf(vxf,"%s_vx.su.obs.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
-                sprintf(vyf,"%s_vy.su.obs.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+                if(ADJOINT_TYPE==1) {
+                    sprintf(vxf,"%s_vx.su.obs.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+                    sprintf(vyf,"%s_vy.su.obs.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+                if(ADJOINT_TYPE==2){
+                    sprintf(vyf,"%s_vy.su.obs.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+                if(ADJOINT_TYPE==3){
+                    sprintf(vxf,"%s_vx.su.obs.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+                }
+
                 if(WAVETYPE==2 || WAVETYPE==3) {
                     sprintf(vzf,"%s_vz.su.obs.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
                 }
@@ -83,8 +118,17 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             break;
             
         case 4:
-            sprintf(vxf,"%s_vx.su.syn.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
-            sprintf(vyf,"%s_vy.su.syn.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+            if(ADJOINT_TYPE==1) {
+                sprintf(vxf,"%s_vx.su.syn.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+                sprintf(vyf,"%s_vy.su.syn.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+            if(ADJOINT_TYPE==2){
+                sprintf(vyf,"%s_vy.su.syn.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+            if(ADJOINT_TYPE==3){
+                sprintf(vxf,"%s_vx.su.syn.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
+            }
+
             if(WAVETYPE==2 || WAVETYPE==3) {
                 sprintf(vzf,"%s_vz.su.syn.adj.shot%d.it%d",SEIS_FILE,ishot,iter);
             }
@@ -99,8 +143,17 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
     }
     
     if(FORWARD_ONLY==1){
-        sprintf(vxf,"%s_vx.su.shot%d",SEIS_FILE,ishot);
-        sprintf(vyf,"%s_vy.su.shot%d",SEIS_FILE,ishot);
+        if(ADJOINT_TYPE==1) {
+            sprintf(vxf,"%s_vx.su.shot%d",SEIS_FILE,ishot);
+            sprintf(vyf,"%s_vy.su.shot%d",SEIS_FILE,ishot);
+        }
+        if(ADJOINT_TYPE==2){
+            sprintf(vyf,"%s_vy.su.shot%d",SEIS_FILE,ishot);
+        }
+        if(ADJOINT_TYPE==3){
+            sprintf(vxf,"%s_vx.su.shot%d",SEIS_FILE,ishot);
+        }
+
         if(WAVETYPE==2 || WAVETYPE==3) {
             sprintf(vzf,"%s_vz.su.shot%d",SEIS_FILE,ishot);
         }
@@ -112,10 +165,21 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
     switch (SEISMO){
         case 1 : /* particle velocities only */
             if (WAVETYPE==1 || WAVETYPE==3) {
-                if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
-                outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
-                if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
-                outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                if(ADJOINT_TYPE==1) {
+                    
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
+                    outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
+                    outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
+                if(ADJOINT_TYPE==2){
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
+                    outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
+                if(ADJOINT_TYPE==3){
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
+                    outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
             }
             if(WAVETYPE==2 || WAVETYPE==3) {
                 if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vz) to\n\t %s \n",0,ntr,vzf);
@@ -137,10 +201,21 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             
         case 4 : /* everything */
             if (WAVETYPE==1 || WAVETYPE==3) {
-                if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
-                outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
-                if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
-                outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                if(ADJOINT_TYPE==1) {
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
+                    outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
+                    outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
+                if(ADJOINT_TYPE==2){
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
+                    outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
+                if(ADJOINT_TYPE==3){
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
+                    outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
+
                 if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms of pressure to\n\t %s \n",0,ntr,pf);
                 outseis_glob(fp,fopen(pf,"w"), 0, sectionp,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
                 
@@ -157,10 +232,21 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             
         case 5 : /* everything except curl and div */
             if (WAVETYPE==1 || WAVETYPE==3) {
-                if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
-                outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
-                if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
-                outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                if(ADJOINT_TYPE==1) {
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
+                    outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
+                    outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
+                if(ADJOINT_TYPE==2){
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vy) to\n\t %s \n",0,ntr,vyf);
+                    outseis_glob(fp,fopen(vyf,"w"),2,sectionvy,recpos,recpos_loc, ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
+                if(ADJOINT_TYPE==3){
+                    if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms (vx) to\n\t %s \n",0,ntr,vxf);
+                    outseis_glob(fp,fopen(vxf,"w"),1,sectionvx,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
+                }
+
                 if(VERBOSE==1) fprintf(fp," PE %d is writing %d seismograms of pressure to\n\t %s \n",0,ntr,pf);
                 outseis_glob(fp,fopen(pf,"w"), 0, sectionp,recpos,recpos_loc,ntr,srcpos,nsrc,ns,SEIS_FORMAT,ishot,1);
             }

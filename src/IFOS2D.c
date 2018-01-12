@@ -957,8 +957,8 @@ int main(int argc, char **argv){
                             
                             if(PARAMETERIZATION==2){
                                 
-                                Vp0[j][i] = sqrt((ppi[j][i]+2.0*pu[j][i])*prho[j][i]);
-                                Vs0[j][i] = sqrt((pu[j][i])*prho[j][i]);
+                                Vp0[j][i] = sqrt((ppi[j][i]+2.0*pu[j][i])/prho[j][i]);
+                                Vs0[j][i] = sqrt((pu[j][i])/prho[j][i]);
                                 Rho0[j][i] = prho[j][i];
                                 
                             }
@@ -1003,9 +1003,9 @@ int main(int argc, char **argv){
                         /* Write header for misfit log file */
                         if(GRAD_METHOD==1&&VERBOSE) {
                             if (TIME_FILT==0){
-                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \n");}
+                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t GAMMA \n");}
                             else{
-                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \n");
+                                fprintf(FPL2,"opteps_vp \t epst1[1] \t epst1[2] \t epst1[3] \t L2t[1] \t L2t[2] \t L2t[3] \t L2t[4] \t F_LOW_PASS \t GAMMA  \n");
                             }
                         }
                         
@@ -3108,9 +3108,9 @@ int main(int argc, char **argv){
         if(wolfe_SLS_failed) {
             
             if (TIME_FILT==0){
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old);}
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t  %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old, GAMMA);}
             else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS);
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f \n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS, GAMMA);
             }
             
             if(WAVETYPE==3 && MYID==0){
@@ -3153,9 +3153,9 @@ int main(int argc, char **argv){
             float diff=0.0;
             diff=fabs((L2_hist[iter-2]-L2_hist[iter])/L2_hist[iter-2]);
             if (TIME_FILT==0){
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new);}
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new, GAMMA);}
             else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS);
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS, GAMMA);
             }
             
             if(WAVETYPE==3 && MYID==0){
@@ -3825,9 +3825,9 @@ int main(int argc, char **argv){
                 if(MYID==0&&(!VERBOSE)){printf("L2-Norm[4] = %e (final L2 of all shots)\n",L2t[4]);}
                 printf("MYID = %d \t epst1[1] = %e \t epst1[2] = %e \t epst1[3] = %e \n",MYID,epst1[1],epst1[2],epst1[3]);
                 if (TIME_FILT==0){
-                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4]);}
+                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],GAMMA);}
                 else{
-                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f\n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS);}
+                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f \t %f \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS,GAMMA);}
                 if(WAVETYPE==3 && MYID==0){
                     fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
                 }

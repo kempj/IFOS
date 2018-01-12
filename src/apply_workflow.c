@@ -38,6 +38,7 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
     extern float JOINT_INVERSION_PSV_SH_ALPHA_RHO;
     extern int EPRECOND;
     extern float EPSILON_WE;
+    extern float GAMMA;
     extern int GRAD_METHOD;
     extern int WORKFLOW_STAGE;
     
@@ -126,8 +127,10 @@ void apply_workflow(float ** workflow,int workflow_lines,char workflow_header[ST
     if(EPRECOND==0 && workflow[WORKFLOW_STAGE][12]!=0){
         if(MYID==0) printf(" WARNING: EPRECOND have to be set >0 in JSON (if so, ignore this message)");
     }
+    
     EPRECOND=workflow[WORKFLOW_STAGE][12];
     EPSILON_WE=workflow[WORKFLOW_STAGE][13];
+    GAMMA=workflow[WORKFLOW_STAGE][14];
     
     if(*LBFGS_iter_start==*iter && GRAD_METHOD==2){
         if(MYID==0)printf("\n L-BFGS will be used from iteration %d on.",*LBFGS_iter_start+1);
