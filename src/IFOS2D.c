@@ -3108,9 +3108,9 @@ int main(int argc, char **argv){
         if(wolfe_SLS_failed) {
             
             if (TIME_FILT==0){
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t  %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old, GAMMA);}
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t  %f\n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,GAMMA);}
             else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f \n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS, GAMMA);
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f \n",0.0,iter,wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS,GAMMA);
             }
             
             if(WAVETYPE==3 && MYID==0){
@@ -3153,9 +3153,9 @@ int main(int argc, char **argv){
             float diff=0.0;
             diff=fabs((L2_hist[iter-2]-L2_hist[iter])/L2_hist[iter-2]);
             if (TIME_FILT==0){
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new, GAMMA);}
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,GAMMA);}
             else{
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS, GAMMA);
+                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f\n",alpha_SL,iter,wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS,GAMMA);
             }
             
             if(WAVETYPE==3 && MYID==0){
