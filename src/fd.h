@@ -22,7 +22,7 @@
 #define STRING_SIZE 74
 #define STRING_SIZE2 256
 #define REQUEST_COUNT 4
-#define WORKFLOW_MAX_VAR 13
+#define WORKFLOW_MAX_VAR 14
 
 /* declaration of functions */
 
