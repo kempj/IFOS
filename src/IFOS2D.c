@@ -30,9 +30,26 @@
 
 #include "stfinv/stfinv.h" /* libstfinv - inversion for source time function */
 
+int get_num_seismograms(int seismo_id) {
+    switch (seismo_id) {
+        case 1 : /* particle velocities only */
+            return 2;
+        case 2 : /* pressure only */
+            return 1;
+        case 3 : /* curl and div only */
+            return 2;
+        case 4 : /* everything */
+            return 5;
+        case 5 : /* everything except curl and div */
+            return 3;
+        default:
+            return 0;
+    }
+}
+
 int main(int argc, char **argv)
 {
-    int ns, nseismograms=0, nt, nd, fdo3, j, i, iter, h, infoout, SHOTINC,  hin, hin1, do_stf=0;
+    int nt, nd, fdo3, j, i, iter, h, infoout, SHOTINC,  hin, hin1, do_stf=0;
     int NTDTINV, nxny, nxnyi, imat, imat1, imat2, IDXI, IDYI, hi, NTST, NTSTI;
     int lsnap, nsnap=0, lsamp=0, buffsize,  swstestshot, snapseis, snapseis1;
     int ntr=0, ntr_loc=0, ntr_glob=0, nsrc=0, nsrc_loc=0, nsrc_glob=0, ishot, irec, nshots=0, nshots1, Lcount, itest, itestshot;
@@ -242,7 +259,7 @@ int main(int argc, char **argv)
 
     NT=iround(TIME/DT);  	  /* number of timesteps */
     /*ns=iround(NT/NDT);*/           /* number of samples per trace */
-    ns=NT;	/* in a FWI one has to keep all samples of the forward modeled data
+    int num_samples=NT;	/* in a FWI one has to keep all samples of the forward modeled data
                at the receiver positions to calculate the adjoint sources and to do
                the backpropagation; look at function saveseis_glob.c to see that every
                NDT sample for the forward modeled wavefield is written to su files*/
@@ -280,23 +297,6 @@ int main(int argc, char **argv)
 
     /* estimate memory requirement of the variables in megabytes*/
 
-    switch (SEISMO) {
-    case 1 : /* particle velocities only */
-        nseismograms=2;
-        break;
-    case 2 : /* pressure only */
-        nseismograms=1;
-        break;
-    case 3 : /* curl and div only */
-        nseismograms=2;
-        break;
-    case 4 : /* everything */
-        nseismograms=5;
-        break;
-    case 5 : /* everything except curl and div */
-        nseismograms=3;
-        break;
-    }
 
     /* use only every DTINV time sample for the inversion */
     /*DTINV=15;*/
@@ -337,11 +337,11 @@ int main(int argc, char **argv)
         memdyn=5.0*fac1*fac2;
         memmodel=6.0*fac1*fac2;
     }
-    memseismograms=nseismograms*ntr*ns*fac2;
+    memseismograms = get_num_seismograms(SEISMO)*ntr*num_samples*fac2;
 
     memfwt=5.0*((NX/IDXI)+FDORDER)*((NY/IDYI)+FDORDER)*NTDTINV*fac2;
     memfwt1=20.0*NX*NY*fac2;
-    memfwtdata=6.0*ntr*ns*fac2;
+    memfwtdata=6.0*ntr*num_samples*fac2;
 
     membuffer=2.0*fdo3*(NY+NX)*fac2;
     buffsize=2.0*2.0*fdo3*(NX+NY)*sizeof(MPI_FLOAT);
@@ -726,13 +726,13 @@ int main(int argc, char **argv)
             break;
     }
     if (ntr>0) {
-        alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+        alloc_sections(ntr,num_samples,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
                        &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
                        &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
     }
 
     /* Memory for seismic data */
-    sectionread=matrix(1,ntr_glob,1,ns);
+    sectionread=matrix(1,ntr_glob,1, num_samples);
 
     /* Memory for inversion for source time function */
     if((INV_STF==1)||(TIME_FILT==1) || (TIME_FILT==2)) {
@@ -1081,9 +1081,9 @@ int main(int argc, char **argv)
                     for (ishot=1; ishot<=nshots; ishot+=SHOTINC) {
                         if (SEISMO && READREC==2) {
                             if (ntr>0) {
-                                dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
-                                                 sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
-                                                 sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
+                                dealloc_sections(ntr,num_samples,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+                                        sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+                                        sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
                             }
                             free_imatrix(recpos,1,3,1,ntr_glob);
                             recpos=receiver(&ntr, srcpos, ishot);
@@ -1091,9 +1091,9 @@ int main(int argc, char **argv)
                             ntr_glob=ntr;
                             ntr=ntr_loc;
                             if (ntr>0) {
-                                alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
-                                               &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
-                                               &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
+                                alloc_sections(ntr,num_samples,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+                                        &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
+                                        &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
                             }
                             if(ntr) 
                                 group_id = 1;
@@ -1159,17 +1159,17 @@ int main(int argc, char **argv)
                                             psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
                                 } else {
                                     zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, 
-                                                       psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, 
-                                                       psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
+                                            psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, 
+                                            psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
                                 }
                             } else {
                                 if(!ACOUSTIC)
                                     zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,
-                                                pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,
-                                                psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
+                                            pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,
+                                            psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
                                 else
                                     zero_fdveps_ac(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,psp,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,
-                                                   psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
+                                            psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
                             }
 
                             if((!VERBOSE)&&(MYID==0)) {
@@ -1222,24 +1222,24 @@ int main(int argc, char **argv)
                                 if(!ACOUSTIC) {
                                     if(WAVETYPE==1 || WAVETYPE==3) {
                                         update_v_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, 
-                                                     uttx, utty, psxx, psyy, psxy, prip, prjp, srcpos_loc,
-                                                     signals,signals,nsrc_loc,absorb_coeff,hc,infoout,0, 
-                                                     K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
-                                                     K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
-                                                     psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
+                                                uttx, utty, psxx, psyy, psxy, prip, prjp, srcpos_loc,
+                                                signals,signals,nsrc_loc,absorb_coeff,hc,infoout,0, 
+                                                K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
+                                                K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
+                                                psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
                                     }
 
                                     if(WAVETYPE==2 || WAVETYPE==3) {
                                         update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, 
-                                                        srcpos_loc, signals, signals_SH, nsrc_loc, absorb_coeff,
-                                                        hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half,
-                                                        K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
+                                                srcpos_loc, signals, signals_SH, nsrc_loc, absorb_coeff,
+                                                hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half,
+                                                K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
                                     }
                                 } else {
                                     update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, 
-                                                          psp, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,
-                                                          absorb_coeff,hc,infoout,0, K_x_half, a_x_half, b_x_half, 
-                                                          K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
+                                            psp, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,
+                                            absorb_coeff,hc,infoout,0, K_x_half, a_x_half, b_x_half, 
+                                            K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
                                 }
                                 if(MYID==0) {
                                     time4=MPI_Wtime();
@@ -1262,46 +1262,46 @@ int main(int argc, char **argv)
                                     if(WAVETYPE==1 || WAVETYPE==3) {
                                         if(!ACOUSTIC) {
                                             update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, 
-                                                              psxx, psyy, psxy, ppi, pu, puipjp, prho, 
-                                                              hc, infoout, pr, pp, pq, fipjp, f, g, 
-                                                              bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, 
-                                                              K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
-                                                              K_y_half, a_y_half, b_y_half, 
-                                                              psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                    psxx, psyy, psxy, ppi, pu, puipjp, prho, 
+                                                    hc, infoout, pr, pp, pq, fipjp, f, g, 
+                                                    bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, 
+                                                    K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
+                                                    K_y_half, a_y_half, b_y_half, 
+                                                    psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                         } else {
                                             update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, 
-                                                              pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, 
-                                                              a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, 
-                                                              a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                    pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, 
+                                                    a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, 
+                                                    a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                         }
                                     }
                                     if (WAVETYPE==2 || WAVETYPE==3) {
                                         update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, cip, 
-                                                             cjm, d, dip,fipjp, f, hc,infoout, K_x, a_x, b_x, 
-                                                             K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
-                                                             K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
+                                                cjm, d, dip,fipjp, f, hc,infoout, K_x, a_x, b_x, 
+                                                K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
+                                                K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
                                     }
                                 } else {   /* elastic */
                                     if (WAVETYPE==1 || WAVETYPE==3) {
                                         if(!ACOUSTIC) {
                                             update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, 
-                                                                 psxx, psyy, psxy, ppi, pu, puipjp, 
-                                                                 absorb_coeff, prho, hc, infoout, 
-                                                                 K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
-                                                                 K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
-                                                                 psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                    psxx, psyy, psxy, ppi, pu, puipjp, 
+                                                    absorb_coeff, prho, hc, infoout, 
+                                                    K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
+                                                    K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
+                                                    psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                         } else {
                                             update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppi, absorb_coeff, 
-                                                         prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half,
-                                                         K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
-                                                         psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                    prho, hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half,
+                                                    K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
+                                                    psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                         }
                                     }
                                     if (WAVETYPE==2 || WAVETYPE==3) {
                                         update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, 
-                                                                K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
-                                                                K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,
-                                                                psi_vzx, psi_vzy,puipjp,pu,prho);
+                                                K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
+                                                K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,
+                                                psi_vzx, psi_vzy,puipjp,pu,prho);
                                     }
                                 }
                                 /* explosive source */
@@ -1314,12 +1314,12 @@ int main(int argc, char **argv)
                                         if (L) {
                                             /* viscoelastic */
                                             surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, 
-                                                        ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux,
-                                                        uy,uxy,uyz,psxz,uxz);
+                                                    ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux,
+                                                    uy,uxy,uyz,psxz,uxz);
                                         } else {
                                             /* elastic */
                                             surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, 
-                                                                hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
+                                                    hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
                                         }
                                     } else {
                                         /* viscoelastic and elastic ACOUSTIC */
@@ -1334,10 +1334,10 @@ int main(int argc, char **argv)
                                 /* stress exchange between PEs */
                                 if(!ACOUSTIC) {
                                     exchange_s(psxx,psyy,psxy,psxz,psyz,bufferlef_to_rig, bufferrig_to_lef,
-                                               buffertop_to_bot, bufferbot_to_top,req_send, req_rec,wavetype_start);
+                                            buffertop_to_bot, bufferbot_to_top,req_send, req_rec,wavetype_start);
                                 } else {
                                     exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, 
-                                               bufferbot_to_top,req_send, req_rec);
+                                            bufferbot_to_top,req_send, req_rec);
                                 }
                                 if(MYID==0) {
                                     time7=MPI_Wtime();
@@ -1350,7 +1350,7 @@ int main(int argc, char **argv)
                                 /* store amplitudes at receivers in section-arrays */
                                 if (SEISMO) {
                                     seismo_ssg(nt, ntr, recpos_loc, sectionvx, sectionvy,sectionvz,sectionp, sectioncurl, 
-                                               sectiondiv,pvx, pvy,pvz, psxx, psyy, psp, ppi, pu, hc);
+                                            sectiondiv,pvx, pvy,pvz, psxx, psyy, psp, ppi, pu, hc);
                                     /*lsamp+=NDT;*/
                                 }
 
@@ -1379,25 +1379,25 @@ int main(int argc, char **argv)
                                         catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     }
                                     if(LNORM==8) {
-                                        calc_envelope(fulldata_vy,fulldata_vy,ns,ntr_glob);
-                                        calc_envelope(fulldata_vx,fulldata_vx,ns,ntr_glob);
+                                        calc_envelope(fulldata_vy,fulldata_vy,num_samples,ntr_glob);
+                                        calc_envelope(fulldata_vx,fulldata_vx,num_samples,ntr_glob);
                                     }
-//                                    if(MYID==0) 
-//                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-//                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                    //                                    if(MYID==0) 
+                                    //                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
+                                    //                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                     break;
                                 case 2 :	/* pressure only */
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-//                                    if(MYID==0)
-//                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-//                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                    //                                    if(MYID==0)
+                                    //                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
+                                    //                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                     break;
                                 case 3 : 	/* curl and div only */
                                     catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
-//                                    if(MYID==0)
-//                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-//                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                    //                                    if(MYID==0)
+                                    //                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
+                                    //                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                     break;
                                 case 4 :	/* everything */
                                     if (WAVETYPE==1 || WAVETYPE==3) {
@@ -1410,9 +1410,9 @@ int main(int argc, char **argv)
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
-//                                    if(MYID==0) 
-//                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-//                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                    //                                    if(MYID==0) 
+                                    //                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
+                                    //                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                     break;
                                 case 5 :	/* everything except curl and div*/
                                     if (WAVETYPE==1 || WAVETYPE==3) {
@@ -1423,9 +1423,9 @@ int main(int argc, char **argv)
                                         catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                     }
                                     catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
-//                                    if(MYID==0)
-//                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-//                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                    //                                    if(MYID==0)
+                                    //                                        saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
+                                    //                                                      fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                     break;
                             } /* end of switch (SEISMO) */
 
@@ -1439,17 +1439,17 @@ int main(int argc, char **argv)
                                             /*time domain filtering of the observed data sectionvy_obs */
                                             if(WAVETYPE==1 || WAVETYPE==3) {
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)) {
-                                                    inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
-                                                    timedomain_filt(sectionvy_obs,F_LOW_PASS,ORDER,ntr_glob,ns,1);
+                                                    inseis(fprec,ishot,sectionvy_obs,ntr_glob,num_samples,2,iter);
+                                                    timedomain_filt(sectionvy_obs,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                                 }
                                                 if (ADJOINT_TYPE==4) {
-                                                    inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
-                                                    timedomain_filt(sectionp_obs,F_LOW_PASS,ORDER,ntr_glob,ns,1);
+                                                    inseis(fprec,ishot,sectionp_obs,ntr_glob,num_samples,9,iter);
+                                                    timedomain_filt(sectionp_obs,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                                 }
                                             }
                                             if(WAVETYPE==2 || WAVETYPE==3) {
-                                                inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
-                                                timedomain_filt(sectionvz_obs,F_LOW_PASS,ORDER,ntr_glob,ns,1);
+                                                inseis(fprec,ishot,sectionvz_obs,ntr_glob,num_samples,10,iter);
+                                                timedomain_filt(sectionvz_obs,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                             }
                                             printf("\n ====================================================================================================== \n");
                                             printf("\n Time Domain Filter is used for the inversion: lowpass filter, corner frequency of %.2f Hz, order %d\n",F_LOW_PASS,ORDER);
@@ -1465,16 +1465,16 @@ int main(int argc, char **argv)
                                             if(WAVETYPE==1 || WAVETYPE==3) {
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)) {
                                                     stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,source_time_function,recpos,
-                                                        recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
+                                                            recpos_loc,ntr_glob,ntr,srcpos,ishot,num_samples,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
                                                 }
                                                 if (ADJOINT_TYPE==4) {
                                                     stf(FP,fulldata_p,sectionp_obs,sectionp_conv,source_time_function,recpos,recpos_loc,
-                                                            ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
+                                                            ntr_glob,ntr,srcpos,ishot,num_samples,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
                                                 }
                                             }
                                             if(WAVETYPE==2 || WAVETYPE==3) {
                                                 stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,recpos,recpos_loc,
-                                                        ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,1,nsrc_glob);
+                                                        ntr_glob,ntr,srcpos,ishot,num_samples,iter,nsrc_glob,F_LOW_PASS,1,nsrc_glob);
                                             }
                                         }
                                     }
@@ -1491,27 +1491,27 @@ int main(int argc, char **argv)
 
                                             if(WAVETYPE==1 || WAVETYPE==3) {
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)) {
-                                                    inseis(fprec,ishot,sectionvy_obs,ntr_glob,ns,2,iter);
+                                                    inseis(fprec,ishot,sectionvy_obs,ntr_glob,num_samples,2,iter);
                                                 }
                                                 if (ADJOINT_TYPE==4) {
-                                                    inseis(fprec,ishot,sectionp_obs,ntr_glob,ns,9,iter);
+                                                    inseis(fprec,ishot,sectionp_obs,ntr_glob,num_samples,9,iter);
                                                 }
                                                 if ((ADJOINT_TYPE==1)|| (ADJOINT_TYPE==2)) {
                                                     stf(FP,fulldata_vy,sectionvy_obs,sectionvy_conv,
-                                                        source_time_function,recpos,recpos_loc,ntr_glob,
-                                                        ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
+                                                            source_time_function,recpos,recpos_loc,ntr_glob,
+                                                            ntr,srcpos,ishot,num_samples,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
                                                 }
                                                 if (ADJOINT_TYPE==4) {
                                                     stf(FP,fulldata_p,sectionp_obs,sectionp_conv,
-                                                        source_time_function,recpos,recpos_loc,ntr_glob,
-                                                        ntr,srcpos,ishot,ns,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
+                                                            source_time_function,recpos,recpos_loc,ntr_glob,
+                                                            ntr,srcpos,ishot,num_samples,iter,nsrc_glob,F_LOW_PASS,0,nsrc_glob);
                                                 }
                                             }
                                             if(WAVETYPE==2 || WAVETYPE==3) {
-                                                inseis(fprec,ishot,sectionvz_obs,ntr_glob,ns,10,iter);
+                                                inseis(fprec,ishot,sectionvz_obs,ntr_glob,num_samples,10,iter);
                                                 stf(FP,fulldata_vz,sectionvz_obs,sectionvz_conv,source_time_function,
-                                                    recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,ns,iter,nsrc_glob,
-                                                    F_LOW_PASS,1,nsrc_glob);
+                                                        recpos,recpos_loc,ntr_glob,ntr,srcpos,ishot,num_samples,iter,nsrc_glob,
+                                                        F_LOW_PASS,1,nsrc_glob);
                                             }
                                         }
                                     }
@@ -1574,8 +1574,8 @@ int main(int argc, char **argv)
                             fprintf(FP,"\n Time Domain Filter applied: Lowpass with corner frequency of %.2f Hz, order %d\n",F_LOW_PASS,ORDER);
 
                             /*time domain filtering of the source signal */
-                            if(WAVETYPE==1||WAVETYPE==3) timedomain_filt(signals,F_LOW_PASS,ORDER,nsrc_loc,ns,1);
-                            if(WAVETYPE==2||WAVETYPE==3) timedomain_filt(signals_SH,F_LOW_PASS,ORDER,nsrc_loc,ns,1);
+                            if(WAVETYPE==1||WAVETYPE==3) timedomain_filt(signals,F_LOW_PASS,ORDER,nsrc_loc,num_samples,1);
+                            if(WAVETYPE==2||WAVETYPE==3) timedomain_filt(signals_SH,F_LOW_PASS,ORDER,nsrc_loc,num_samples,1);
 
                         }
                         /*------------------------------------------------------------------------------*/
@@ -1588,22 +1588,22 @@ int main(int argc, char **argv)
                         if(L) {
                             if(!ACOUSTIC) {
                                 zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,
-                                                 ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,
-                                                 psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,
-                                                 psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
+                                        ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,
+                                        psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,
+                                        psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
                             } else {
                                 zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, 
-                                                   psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, 
-                                                   psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
+                                        psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, 
+                                        psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
                             }
                         } else {
                             if(!ACOUSTIC)
                                 zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,
-                                            pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,
-                                            psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
+                                        pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,
+                                        psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
                             else
                                 zero_fdveps_ac(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,psp,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,
-                                               psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
+                                        psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
                         }
 
                         /*initialize gradient matrices for each shot with zeros PSV*/
@@ -1701,22 +1701,22 @@ int main(int argc, char **argv)
                             if(!ACOUSTIC) {
                                 if (WAVETYPE==1 || WAVETYPE==3) {
                                     update_v_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, uttx, utty, 
-                                                 psxx, psyy, psxy, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,
-                                                 absorb_coeff,hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, 
-                                                 b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
-                                                 psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
+                                            psxx, psyy, psxy, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,
+                                            absorb_coeff,hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, 
+                                            b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
+                                            psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
                                 }
                                 if (WAVETYPE==2 || WAVETYPE==3) {
                                     update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, 
-                                                    srcpos_loc, signals, signals_SH, nsrc_loc, absorb_coeff,
-                                                    hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
-                                                    K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
+                                            srcpos_loc, signals, signals_SH, nsrc_loc, absorb_coeff,
+                                            hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
+                                            K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
                                 }
                             } else {
                                 update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, psp, 
-                                                      prip, prjp, srcpos_loc,signals,signals,nsrc_loc,absorb_coeff,
-                                                      hc,infoout,0, K_x_half, a_x_half, b_x_half, K_y_half, a_y_half,
-                                                      b_y_half, psi_sxx_x, psi_syy_y);
+                                        prip, prjp, srcpos_loc,signals,signals,nsrc_loc,absorb_coeff,
+                                        hc,infoout,0, K_x_half, a_x_half, b_x_half, K_y_half, a_y_half,
+                                        b_y_half, psi_sxx_x, psi_syy_y);
                             }
                             if (MYID==0) {
                                 time4=MPI_Wtime();
@@ -1727,7 +1727,7 @@ int main(int argc, char **argv)
                             }
                             /* exchange of particle velocities between PEs */
                             exchange_v(pvx,pvy,pvz, bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, 
-                                       bufferbot_to_top, req_send, req_rec,wavetype_start);
+                                    bufferbot_to_top, req_send, req_rec,wavetype_start);
 
                             if (MYID==0) {
                                 time5=MPI_Wtime();
@@ -1740,39 +1740,39 @@ int main(int argc, char **argv)
                                 if (WAVETYPE==1 || WAVETYPE==3) {
                                     if(!ACOUSTIC) {
                                         update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, 
-                                                          ppi, pu, puipjp, prho, hc, infoout, pr, pp, pq, fipjp, f, g,
-                                                          bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, K_x_half, 
-                                                          a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, 
-                                                          b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                ppi, pu, puipjp, prho, hc, infoout, pr, pp, pq, fipjp, f, g,
+                                                bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, K_x_half, 
+                                                a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, 
+                                                b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                     } else {
                                         update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, pp, g,
-                                                          bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
-                                                          K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
-                                                          psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
+                                                K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
+                                                psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                     }
                                 }
                                 if (WAVETYPE==2 || WAVETYPE==3) {
                                     update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, cip, cjm, d, 
-                                                         dip,fipjp, f, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, 
-                                                         b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
+                                            dip,fipjp, f, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, 
+                                            b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
                                 }
                             } else {   /* elastic */
                                 if (WAVETYPE==1 || WAVETYPE==3) {
                                     if(!ACOUSTIC) {
                                         update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy,
-                                                             ppi, pu, puipjp, absorb_coeff, prho, hc, infoout, K_x, 
-                                                             a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
-                                                             K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                ppi, pu, puipjp, absorb_coeff, prho, hc, infoout, K_x, 
+                                                a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
+                                                K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                     } else {
                                         update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppi, absorb_coeff, prho, hc, infoout, 
-                                                     K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half,
-                                                     a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half,
+                                                a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                     }
                                 }
                                 if (WAVETYPE==2 || WAVETYPE==3) {
                                     update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, K_x, 
-                                                            a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
-                                                            K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy,puipjp,pu,prho);
+                                            a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
+                                            K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy,puipjp,pu,prho);
                                 }
                             }
                             /* explosive source */
@@ -1785,11 +1785,11 @@ int main(int argc, char **argv)
                                     if (L) {
                                         /* viscoelastic */
                                         surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, ptaup, 
-                                                    ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy,uxy,uyz,psxz,uxz);
+                                                ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, ux, uy,uxy,uyz,psxz,uxz);
                                     } else {
                                         /* elastic */
                                         surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho, 
-                                                            hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
+                                                hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
                                     }
                                 } else {
                                     /* viscoelastic and elastic ACOUSTIC */
@@ -1807,7 +1807,7 @@ int main(int argc, char **argv)
                                         buffertop_to_bot, bufferbot_to_top, req_send, req_rec,wavetype_start);
                             } else {
                                 exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,
-                                           buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
+                                        buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
                             }
                             if(MYID==0) {
                                 time7=MPI_Wtime();
@@ -1819,8 +1819,8 @@ int main(int argc, char **argv)
                             /* store amplitudes at receivers in section-arrays */
                             if (SEISMO) {
                                 seismo_ssg(nt, ntr, recpos_loc, sectionvx, sectionvy,sectionvz, 
-                                           sectionp, sectioncurl, sectiondiv, pvx, pvy,pvz, 
-                                           psxx, psyy, psp, ppi, pu, hc);
+                                        sectionp, sectioncurl, sectiondiv, pvx, pvy,pvz, 
+                                        psxx, psyy, psp, ppi, pu, hc);
                             }
                             /* save snapshots from forward model */
                             if(nt==hin1) {
@@ -1931,25 +1931,25 @@ int main(int argc, char **argv)
                                     catseis(sectionvz, fulldata_vz, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 }
                                 if(LNORM==8) {
-                                    calc_envelope(fulldata_vy,fulldata_vy,ns,ntr_glob);
-                                    calc_envelope(fulldata_vx,fulldata_vx,ns,ntr_glob);
+                                    calc_envelope(fulldata_vy,fulldata_vy,num_samples,ntr_glob);
+                                    calc_envelope(fulldata_vx,fulldata_vx,num_samples,ntr_glob);
                                 }
                                 if(MYID==0) 
                                     saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                 break;
                             case 2 :	/* pressure only */
                                 catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 if(MYID==0) 
-                                saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-                                              fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                    saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
+                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                 break;
                             case 3 : 	/* curl and div only */
                                 catseis(sectiondiv, fulldata_div, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 if(MYID==0) 
                                     saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                 break;
                             case 4 :	/* everything */
                                 if (WAVETYPE==1 || WAVETYPE==3) {
@@ -1964,7 +1964,7 @@ int main(int argc, char **argv)
                                 catseis(sectioncurl, fulldata_curl, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 if(MYID==0)
                                     saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                 break;
                             case 5 :	/* everything except curl and div*/
                                 if (WAVETYPE==1 || WAVETYPE==3) {
@@ -1977,7 +1977,7 @@ int main(int argc, char **argv)
                                 catseis(sectionp, fulldata_p, recswitch, ntr_glob, MPI_COMM_WORLD);
                                 if(MYID==0) 
                                     saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,fulldata_curl,
-                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,1);
+                                            fulldata_div,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,1);
                                 break;
                         } /* end of switch (SEISMO) */
                         /*---------------------------------------------------------------*/
@@ -2002,56 +2002,56 @@ int main(int argc, char **argv)
                                     /* read seismic data from SU file vx */
                                     /* --------------------------------- */
                                     if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==3)) { /* if ADJOINT_TYPE */
-                                        inseis(fprec,ishot,sectionread,ntr_glob,ns,1,iter);
+                                        inseis(fprec,ishot,sectionread,ntr_glob,num_samples,1,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
-                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
                                         h=1;
                                         for(i=1; i<=ntr; i++) {
-                                            for(j=1; j<=ns; j++) {
+                                            for(j=1; j<=num_samples; j++) {
                                                 sectionvxdata[h][j]=sectionread[recpos_loc[3][i]][j];
                                             }
                                             h++;
                                         }
                                         L2=calc_res(sectionvxdata,sectionvx,sectionvxdiff,sectionvxdiffold,
-                                                    ntr,ns,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,
-                                                    nsrc_glob,ishot,iter,srcpos,recpos);
+                                                ntr,num_samples,LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,
+                                                nsrc_glob,ishot,iter,srcpos,recpos);
                                         if(swstestshot==1) {
-                                            energy=calc_energy(sectionvxdata,ntr,ns,energy, ntr_glob, recpos_loc, 
-                                                               nsrc_glob, ishot,iter,srcpos,recpos);
+                                            energy=calc_energy(sectionvxdata,ntr,num_samples,energy, ntr_glob, recpos_loc, 
+                                                    nsrc_glob, ishot,iter,srcpos,recpos);
                                         }
-                                        energy_all_shots=calc_energy(sectionvxdata,ntr,ns,energy_all_shots, ntr_glob, 
-                                                                     recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
-                                        L2_all_shots=calc_misfit(sectionvxdata,sectionvx,ntr,ns,LNORM,L2_all_shots,0,1,1, 
-                                                                 ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        energy_all_shots=calc_energy(sectionvxdata,ntr,num_samples,energy_all_shots, ntr_glob, 
+                                                recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        L2_all_shots=calc_misfit(sectionvxdata,sectionvx,ntr,num_samples,LNORM,L2_all_shots,0,1,1, 
+                                                ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         /*fprintf(FP,"Energy vxdata for PE %d:   %f\n\n", MYID,energy);*/
                                     } /* end ADJOINT_TYPE */
                                     /* --------------------------------- */
                                     /* read seismic data from SU file vy */
                                     /* --------------------------------- */
                                     if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==2)) { /* if ADJOINT_TYPE */
-                                        inseis(fprec,ishot,sectionread,ntr_glob,ns,2,iter);
+                                        inseis(fprec,ishot,sectionread,ntr_glob,num_samples,2,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
-                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
                                         h=1;
                                         for(i=1; i<=ntr; i++) {
-                                            for(j=1; j<=ns; j++) {
+                                            for(j=1; j<=num_samples; j++) {
                                                 sectionvydata[h][j]=sectionread[recpos_loc[3][i]][j];
                                             }
                                             h++;
                                         }
-                                        L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,ns,
-                                                    LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,
-                                                    ishot,iter,srcpos,recpos);
+                                        L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,num_samples,
+                                                LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,
+                                                ishot,iter,srcpos,recpos);
                                         if(swstestshot==1) {
-                                            energy=calc_energy(sectionvydata,ntr,ns,energy, ntr_glob, recpos_loc, 
-                                                               nsrc_glob, ishot,iter,srcpos,recpos);
+                                            energy=calc_energy(sectionvydata,ntr,num_samples,energy, ntr_glob, recpos_loc, 
+                                                    nsrc_glob, ishot,iter,srcpos,recpos);
                                         }
-                                        energy_all_shots=calc_energy(sectionvydata,ntr,ns,energy_all_shots, ntr_glob, 
-                                                                     recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
-                                        L2_all_shots=calc_misfit(sectionvydata,sectionvy,ntr,ns,LNORM,L2_all_shots,0,1,1, 
-                                                                 ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        energy_all_shots=calc_energy(sectionvydata,ntr,num_samples,energy_all_shots, ntr_glob, 
+                                                recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        L2_all_shots=calc_misfit(sectionvydata,sectionvy,ntr,num_samples,LNORM,L2_all_shots,0,1,1, 
+                                                ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                         /*fprintf(FP,"Energy vydata for PE %d:   %f\n\n", MYID,energy);	*/
                                     } /* end ADJOINT_TYPE */
 
@@ -2059,62 +2059,62 @@ int main(int argc, char **argv)
                                     /* read seismic data from SU file p */
                                     /* --------------------------------- */
                                     if(ADJOINT_TYPE==4) { /* if ADJOINT_TYPE */
-                                        inseis(fprec,ishot,sectionread,ntr_glob,ns,9,iter);
+                                        inseis(fprec,ishot,sectionread,ntr_glob,num_samples,9,iter);
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
-                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
                                         h=1;
                                         for(i=1; i<=ntr; i++) {
-                                            for(j=1; j<=ns; j++) {
+                                            for(j=1; j<=num_samples; j++) {
                                                 sectionpdata[h][j]=sectionread[recpos_loc[3][i]][j];
                                             }
                                             h++;
                                         }
-                                        L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,ns,
-                                                    LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,
-                                                    ishot,iter,srcpos,recpos);
+                                        L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,num_samples,
+                                                LNORM,L2,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,
+                                                ishot,iter,srcpos,recpos);
                                         if(swstestshot==1) {
-                                            energy=calc_energy(sectionpdata,ntr,ns,energy, ntr_glob, recpos_loc, 
-                                                               nsrc_glob, ishot,iter,srcpos,recpos);
+                                            energy=calc_energy(sectionpdata,ntr,num_samples,energy, ntr_glob, recpos_loc, 
+                                                    nsrc_glob, ishot,iter,srcpos,recpos);
                                         }
-                                        energy_all_shots=calc_energy(sectionpdata,ntr,ns,energy_all_shots, ntr_glob, 
-                                                                     recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
-                                        L2_all_shots=calc_misfit(sectionpdata,sectionp,ntr,ns,LNORM,L2_all_shots,0,1,1, 
-                                                                 ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        energy_all_shots=calc_energy(sectionpdata,ntr,num_samples,energy_all_shots, ntr_glob, 
+                                                recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        L2_all_shots=calc_misfit(sectionpdata,sectionp,ntr,num_samples,LNORM,L2_all_shots,0,1,1, 
+                                                ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                     } /* end ADJOINT_TYPE */
                                 }
                                 /* --------------------------------- */
                                 /* read seismic data from SU file vz */
                                 /* --------------------------------- */
                                 if(WAVETYPE==2 || WAVETYPE==3) {
-                                    inseis(fprec,ishot,sectionread,ntr_glob,ns,10,iter);
+                                    inseis(fprec,ishot,sectionread,ntr_glob,num_samples,10,iter);
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
-                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
+                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                     }
                                     h=1;
                                     for(i=1; i<=ntr; i++) {
-                                        for(j=1; j<=ns; j++) {
+                                        for(j=1; j<=num_samples; j++) {
                                             sectionvzdata[h][j]=sectionread[recpos_loc[3][i]][j];
                                         }
                                         h++;
                                     }
-                                    L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,
-                                                   LNORM,L2_SH,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,
-                                                   ishot,iter,srcpos,recpos);
+                                    L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,num_samples,
+                                            LNORM,L2_SH,0,1,swstestshot,ntr_glob,recpos_loc,nsrc_glob,
+                                            ishot,iter,srcpos,recpos);
                                     if(swstestshot==1) {
-                                        energy_SH=calc_energy(sectionvzdata,ntr,ns,energy_SH, ntr_glob, 
-                                                              recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                        energy_SH=calc_energy(sectionvzdata,ntr,num_samples,energy_SH, ntr_glob, 
+                                                recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                     }
-                                    energy_all_shots_SH=calc_energy(sectionvzdata,ntr,ns,energy_all_shots_SH, 
-                                                                    ntr_glob, recpos_loc, nsrc_glob, 
-                                                                    ishot,iter,srcpos,recpos);
-                                    L2_all_shots_SH=calc_misfit(sectionvzdata,sectionvz,ntr,ns,LNORM,L2_all_shots_SH,0,1,1, 
-                                                                ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
+                                    energy_all_shots_SH=calc_energy(sectionvzdata,ntr,num_samples,energy_all_shots_SH, 
+                                            ntr_glob, recpos_loc, nsrc_glob, 
+                                            ishot,iter,srcpos,recpos);
+                                    L2_all_shots_SH=calc_misfit(sectionvzdata,sectionvz,ntr,num_samples,LNORM,L2_all_shots_SH,0,1,1, 
+                                            ntr_glob, recpos_loc, nsrc_glob, ishot,iter,srcpos,recpos);
                                 }
                                 // Tracekill
                                 if (TRKILL) {
                                     count_killed_traces(ntr,swstestshot,ntr_glob,recpos_loc,nsrc_glob,ishot,ptr_killed_traces,
-                                                        ptr_killed_traces_testshots,srcpos,recpos);
+                                            ptr_killed_traces_testshots,srcpos,recpos);
                                 }
                                 if((ishot==itestshot)&&(ishot<=TESTSHOT_END)) {
                                     swstestshot=0;
@@ -2138,7 +2138,7 @@ int main(int argc, char **argv)
                                     }
                                     if(myid_ntr==0) {
                                         saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,
-                                                      sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,2);
+                                                sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,2);
                                     }
                                 }
                                 /* Write measured filtered seismogramms to disk */
@@ -2159,7 +2159,7 @@ int main(int argc, char **argv)
                                     }
                                     if(myid_ntr==0) {
                                         saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,
-                                                      sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,3);
+                                                sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,3);
                                     }
                                 }
                                 /* Write synthetic filtered seismogramms to disk */
@@ -2180,7 +2180,7 @@ int main(int argc, char **argv)
                                     }
                                     if(myid_ntr==0) {
                                         saveseis_glob(FP,fulldata_vx,fulldata_vy,fulldata_vz,fulldata_p,sectionpdiff,
-                                                      sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,ns,iter,4);
+                                                sectionpdiff,recpos,recpos_loc,ntr_glob,srcpos,ishot,num_samples,iter,4);
                                     }
                                 }
                             }
@@ -2215,19 +2215,19 @@ int main(int argc, char **argv)
                                 if (L) {
                                     if(!ACOUSTIC) {
                                         zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,
-                                                         ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,
-                                                         psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,
-                                                         psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
+                                                ux,uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,
+                                                psi_vyx,psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,
+                                                psi_vxy,psi_vzy,psi_vxxs,pr,pp,pq,pt,po);
                                     } else {
                                         zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, 
-                                                           psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, 
-                                                           psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
+                                                psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, 
+                                                psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
                                     }
                                 } else {
                                     if(!ACOUSTIC) {
                                         zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,
-                                                    uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,
-                                                    psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
+                                                uy,uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,
+                                                psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
                                     } else {
                                         zero_fdveps_ac(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,psp,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,
                                                 psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
@@ -2273,24 +2273,24 @@ int main(int argc, char **argv)
                                     if(!ACOUSTIC) {
                                         if (WAVETYPE==1 || WAVETYPE==3) {
                                             update_v_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, 
-                                                         uttx, utty, psxx, psyy, psxy, prip, prjp, srcpos_loc_back,
-                                                         sectionvxdiff,sectionvydiff,ntr1,absorb_coeff,hc,infoout,
-                                                         1, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, 
-                                                         b_y, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
+                                                    uttx, utty, psxx, psyy, psxy, prip, prjp, srcpos_loc_back,
+                                                    sectionvxdiff,sectionvydiff,ntr1,absorb_coeff,hc,infoout,
+                                                    1, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, 
+                                                    b_y, K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
                                         }
                                         if (WAVETYPE==2 || WAVETYPE==3) {
                                             update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, 
-                                                            srcpos_loc_back, sectionvzdiff, sectionvzdiff, ntr1, 
-                                                            absorb_coeff,hc,infoout,1, K_x, a_x, b_x, K_x_half, 
-                                                            a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, 
-                                                            a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
+                                                    srcpos_loc_back, sectionvzdiff, sectionvzdiff, ntr1, 
+                                                    absorb_coeff,hc,infoout,1, K_x, a_x, b_x, K_x_half, 
+                                                    a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, 
+                                                    a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
                                         }
                                     } else {
                                         update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, 
-                                                              pvym1, psp, prip, prjp, srcpos_loc_back, 
-                                                              sectionvxdiff,sectionvydiff,ntr1,absorb_coeff,
-                                                              hc,infoout,1, K_x_half, a_x_half, b_x_half, 
-                                                              K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
+                                                pvym1, psp, prip, prjp, srcpos_loc_back, 
+                                                sectionvxdiff,sectionvydiff,ntr1,absorb_coeff,
+                                                hc,infoout,1, K_x_half, a_x_half, b_x_half, 
+                                                K_y_half, a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
                                     }
                                     if(MYID==0) {
                                         time4=MPI_Wtime();
@@ -2312,46 +2312,46 @@ int main(int argc, char **argv)
                                         if (WAVETYPE==1 || WAVETYPE==3) {
                                             if(!ACOUSTIC) {
                                                 update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy,
-                                                                  psxy, ppi, pu, puipjp, prho, hc, infoout,pr, pp, pq, 
-                                                                  fipjp, f, g, bip, bjm, cip, cjm, d, e, dip,K_x, a_x, 
-                                                                  b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
-                                                                  K_y_half, a_y_half, b_y_half, 
-                                                                  psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                        psxy, ppi, pu, puipjp, prho, hc, infoout,pr, pp, pq, 
+                                                        fipjp, f, g, bip, bjm, cip, cjm, d, e, dip,K_x, a_x, 
+                                                        b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
+                                                        K_y_half, a_y_half, b_y_half, 
+                                                        psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                             } else {
                                                 update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppi, prho, hc, infoout, 
-                                                                  pp, g, bjm, cjm, e, K_x, a_x, b_x, 
-                                                                  K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
-                                                                  K_y_half, a_y_half, b_y_half, 
-                                                                  psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                        pp, g, bjm, cjm, e, K_x, a_x, b_x, 
+                                                        K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
+                                                        K_y_half, a_y_half, b_y_half, 
+                                                        psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                             }
                                         }
                                         if (WAVETYPE==2 || WAVETYPE==3) {
                                             update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, 
-                                                                 cip, cjm, d, dip,fipjp, f, hc,infoout, K_x, a_x, 
-                                                                 b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y,
-                                                                 K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
+                                                    cip, cjm, d, dip,fipjp, f, hc,infoout, K_x, a_x, 
+                                                    b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y,
+                                                    K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
                                         }
                                     } else {
                                         /* elastic */
                                         if(!ACOUSTIC) {
                                             if (WAVETYPE==1 || WAVETYPE==3) {
                                                 update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, 
-                                                                     psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho,
-                                                                     hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, 
-                                                                     b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, 
-                                                                     b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                        psyy, psxy, ppi, pu, puipjp, absorb_coeff, prho,
+                                                        hc, infoout, K_x, a_x, b_x, K_x_half, a_x_half, 
+                                                        b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, 
+                                                        b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                             }
                                             if (WAVETYPE==2 || WAVETYPE==3) {
                                                 update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, 
-                                                                        K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, 
-                                                                        a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, 
-                                                                        psi_vzy,puipjp,pu,prho);
+                                                        K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, 
+                                                        a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, 
+                                                        psi_vzy,puipjp,pu,prho);
                                             }
                                         } else {
                                             update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppi, absorb_coeff, prho, hc, 
-                                                         infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, 
-                                                         a_y, b_y, K_y_half, a_y_half, b_y_half, 
-                                                         psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                                    infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, 
+                                                    a_y, b_y, K_y_half, a_y_half, b_y_half, 
+                                                    psi_vxx, psi_vyy, psi_vxy, psi_vyx);
                                         }
                                     }
                                     /* explosive source */
@@ -2364,12 +2364,12 @@ int main(int argc, char **argv)
                                             if (L) {
                                                 /* viscoelastic */
                                                 surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppi, pu, prho, 
-                                                            ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, 
-                                                            ux, uy,uxy,uyz,psxz,uxz);
+                                                        ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, psi_vxxs, 
+                                                        ux, uy,uxy,uyz,psxz,uxz);
                                             } else {
                                                 /* elastic */
                                                 surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppi, pu, prho,
-                                                                    hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
+                                                        hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
                                             }
                                         } else {
                                             /* viscoelastic and elastic ACOUSTIC */
@@ -2386,7 +2386,7 @@ int main(int argc, char **argv)
                                     /* stress exchange between PEs */
                                     if(!ACOUSTIC) {
                                         exchange_s(psxx,psyy,psxy,psxz,psyz, bufferlef_to_rig, bufferrig_to_lef, 
-                                                   buffertop_to_bot, bufferbot_to_top, req_send, req_rec,wavetype_start);
+                                                buffertop_to_bot, bufferbot_to_top, req_send, req_rec,wavetype_start);
                                     } else {
                                         exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
                                     }
@@ -2408,10 +2408,10 @@ int main(int argc, char **argv)
                                                 for (i=1; i<=NX; i=i+IDXI) {
                                                     if (WAVETYPE==1 || WAVETYPE==3) {
                                                         waveconv_rho_shot[j][i] += (pvxp1[j][i]*forward_prop_rho_x[j][i][NTDTINV-hin+1]) 
-                                                                                 + (pvyp1[j][i]*forward_prop_rho_y[j][i][NTDTINV-hin+1]);
+                                                            + (pvyp1[j][i]*forward_prop_rho_y[j][i][NTDTINV-hin+1]);
                                                         if(!ACOUSTIC) {
                                                             waveconv_shot[j][i] += (forward_prop_x[j][i][NTDTINV-hin+1]+forward_prop_y[j][i][NTDTINV-hin+1]) 
-                                                                                 * (psxx[j][i]+psyy[j][i]);
+                                                                * (psxx[j][i]+psyy[j][i]);
                                                         } else {
                                                             waveconv_shot[j][i]+= (forward_prop_p[j][i][NTDTINV-hin+1])*(psp[j][i]);
                                                         }
@@ -2420,12 +2420,12 @@ int main(int argc, char **argv)
                                                             lamss = prho[j][i] * ppi[j][i] * ppi[j][i] - 2.0 * muss;
                                                             if(pu[j][i]>0.0) {
                                                                 waveconv_u_shot[j][i] += ((1.0/(muss*muss))*(forward_prop_u[j][i][NTDTINV-hin+1] * psxy[j][i])) +
-                                                                                         (.25*(forward_prop_x[j][i][NTDTINV-hin+1] +
-                                                                                               forward_prop_y[j][i][NTDTINV-hin+1] * (psxx[j][i]+psyy[j][i]) )
-                                                                                               / ((lamss+muss)*(lamss+muss)))
-                                                                                        + (.25*(forward_prop_x[j][i][NTDTINV-hin+1] - 
-                                                                                                forward_prop_y[j][i][NTDTINV-hin+1]*(psxx[j][i]-psyy[j][i])) 
-                                                                                                / (muss*muss));
+                                                                    (.25*(forward_prop_x[j][i][NTDTINV-hin+1] +
+                                                                          forward_prop_y[j][i][NTDTINV-hin+1] * (psxx[j][i]+psyy[j][i]) )
+                                                                     / ((lamss+muss)*(lamss+muss)))
+                                                                    + (.25*(forward_prop_x[j][i][NTDTINV-hin+1] - 
+                                                                                forward_prop_y[j][i][NTDTINV-hin+1]*(psxx[j][i]-psyy[j][i])) 
+                                                                            / (muss*muss));
                                                             }
                                                         }
                                                     }
@@ -2433,8 +2433,8 @@ int main(int argc, char **argv)
                                                         waveconv_rho_shot_z[j][i] += pvzp1[j][i]*forward_prop_rho_z[j][i][NTDTINV-hin+1];
                                                         muss = prho[j][i] * pu[j][i] * pu[j][i];
                                                         waveconv_u_shot_z[j][i] += (1.0/(muss*muss)) *
-                                                                                   (forward_prop_z_xz[j][i][NTDTINV-hin+1]*psxz[j][i] +
-                                                                                    forward_prop_z_yz[j][i][NTDTINV-hin+1]*psyz[j][i]);
+                                                            (forward_prop_z_xz[j][i][NTDTINV-hin+1]*psxz[j][i] +
+                                                             forward_prop_z_yz[j][i][NTDTINV-hin+1]*psyz[j][i]);
                                                     }
                                                 }
                                             }
@@ -2484,1962 +2484,1962 @@ int main(int argc, char **argv)
                                         write_matrix_disk(waveconv_u_shot_z, jac);
                                     }
                                 }
-                            }
-                            /*--------------------------------------------------------------------------------*/
-                            /* ------ end loop over shots at receiver positions (backward model) ------------ */
-                            /*--------------------------------------------------------------------------------*/
+                                }
+                                /*--------------------------------------------------------------------------------*/
+                                /* ------ end loop over shots at receiver positions (backward model) ------------ */
+                                /*--------------------------------------------------------------------------------*/
 
-                            /* ------------------------------- */
-                            /* calculate gradient direction pi */
-                            /* ------------------------------- */
-                            if((FORWARD_ONLY==0)&&(WAVETYPE==1||WAVETYPE==3)) {
-                                /* interpolate unknown values */
-                                if((IDXI>1)||(IDYI>1)) {
-                                    interpol(IDXI,IDYI,waveconv_shot,1);
-                                }
-                                /* calculate complete gradient */
-                                for (j=1; j<=NY; j=j+IDY) {
-                                    for (i=1; i<=NX; i=i+IDX) {
-                                        waveconv_lam[j][i] = - DT * waveconv_shot[j][i];
-                                        if(PARAMETERIZATION==1) {
-                                            if(!ACOUSTIC)
-                                                muss = prho[j][i] * pu[j][i] * pu[j][i];
-                                            else
-                                                muss = 0;
-
-                                            lamss = prho[j][i] * ppi[j][i] * ppi[j][i] - 2.0 *  muss;
-                                            if(!ACOUSTIC)
-                                                waveconv_lam[j][i] = (1.0/(4.0 * (lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
-                                            else
-                                                waveconv_lam[j][i] = (1.0/((lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
-                                            /* calculate Vp gradient */
-                                            waveconv_shot[j][i] = 2.0 * ppi[j][i] * prho[j][i] * waveconv_lam[j][i];
-                                        }
-                                        if(PARAMETERIZATION==2) {
-                                            /* calculate Zp gradient */
-                                            waveconv_shot[j][i] = 2.0 * ppi[j][i] * waveconv_lam[j][i];
-                                        }
-                                        if(PARAMETERIZATION==3) {
-                                            waveconv_shot[j][i] = waveconv_lam[j][i];
-                                        }
+                                /* ------------------------------- */
+                                /* calculate gradient direction pi */
+                                /* ------------------------------- */
+                                if((FORWARD_ONLY==0)&&(WAVETYPE==1||WAVETYPE==3)) {
+                                    /* interpolate unknown values */
+                                    if((IDXI>1)||(IDYI>1)) {
+                                        interpol(IDXI,IDYI,waveconv_shot,1);
                                     }
-                                }
-                            }
-                            /* ---------------------------------- */
-                            /* calculate gradient direction u PSV */
-                            /* ---------------------------------- */
-                            if((WAVETYPE==1 || WAVETYPE==3)&&(FORWARD_ONLY==0)&&(!ACOUSTIC)) {
-                                /* interpolate unknown values */
-                                if((IDXI>1)||(IDYI>1)) {
-                                    interpol(IDXI,IDYI,waveconv_u_shot,1);
-                                }
-                                /* calculate complete gradient */
-                                for (j=1; j<=NY; j=j+IDY) {
-                                    for (i=1; i<=NX; i=i+IDX) {
-                                        /* calculate mu gradient */
-                                        waveconv_mu[j][i] = - DT * waveconv_u_shot[j][i];
-                                        if(PARAMETERIZATION==1) {
-                                            /* calculate Vs gradient */
-                                            waveconv_u_shot[j][i] = -4.0*prho[j][i] * pu[j][i] * waveconv_lam[j][i] +
-                                                                     2.0*prho[j][i] * pu[j][i] * waveconv_mu[j][i];
-                                        }
-                                        if(PARAMETERIZATION==2) {
-                                            /* calculate Zs gradient */
-                                            waveconv_u_shot[j][i] = -4.0*pu[j][i] * waveconv_lam[j][i] + 
-                                                                    2.0*pu[j][i] * waveconv_mu[j][i];
-                                        }
-                                        if(PARAMETERIZATION==3) {
-                                            /* calculate u gradient */
-                                            waveconv_u_shot[j][i] = waveconv_mu[j][i];
-                                        }
-                                    }
-                                }
-                            }
-                            /* ---------------------------------- */
-                            /* calculate gradient direction u SH */
-                            /* ---------------------------------- */
-                            if((WAVETYPE==2 || WAVETYPE==3)&&(FORWARD_ONLY==0)&&(!ACOUSTIC)) {
-                                /* interpolate unknown values */
-                                if((IDXI>1)||(IDYI>1)) {
-                                    interpol(IDXI,IDYI,waveconv_u_shot_z,1);
-                                }
-                                /* calculate complete gradient */
-                                for (j=1; j<=NY; j=j+IDY) {
-                                    for (i=1; i<=NX; i=i+IDX) {
-                                        /* calculate mu gradient */
-                                        waveconv_mu_z[j][i] = - DT * waveconv_u_shot_z[j][i];
-                                        if(PARAMETERIZATION==1) {
-                                            /* calculate Vs gradient */
-                                            waveconv_u_shot_z[j][i] = (2.0 * prho[j][i] * pu[j][i] * waveconv_mu_z[j][i]);
-                                        }
-                                        if(PARAMETERIZATION==3) {
-                                            /* calculate u gradient */
-                                            waveconv_u_shot_z[j][i] = waveconv_mu_z[j][i];
-                                        }
-                                    }
-                                }
-                            }
-                            /* ------------------------------------ */
-                            /* calculate gradient direction rho PSV */
-                            /* ------------------------------------ */
-                            if((WAVETYPE==1 || WAVETYPE==3)&&(FORWARD_ONLY==0)) {
-                                /* interpolate unknown values */
-                                if((IDXI>1)||(IDYI>1)) {
-                                    interpol(IDXI,IDYI,waveconv_rho,1);
-                                }
-                                /* calculate complete gradient */
-                                for (j=1; j<=NY; j=j+IDY) {
-                                    for (i=1; i<=NX; i=i+IDX) {
-                                        /* calculate density gradient rho' */
-                                        waveconv_rho_s[j][i]= - DT * waveconv_rho_shot[j][i];
-                                        if(PARAMETERIZATION==1) {
-                                            /* calculate density gradient */
-                                            if(!ACOUSTIC) {
-                                                waveconv_rho_shot[j][i] = ((ppi[j][i] * ppi[j][i])-(2.0*pu[j][i] * pu[j][i])) * waveconv_lam[j][i] + 
-                                                                          pu[j][i] * pu[j][i] * waveconv_mu[j][i] + 
-                                                                          waveconv_rho_s[j][i];
-                                            } else {
-                                                waveconv_rho_shot[j][i] = ((ppi[j][i] * ppi[j][i]) * waveconv_lam[j][i]) + waveconv_rho_s[j][i];
-                                            }
-                                        }
-                                        if(PARAMETERIZATION==3) {
-                                            /* calculate density gradient */
-                                            waveconv_rho_shot[j][i] = waveconv_rho_s[j][i];
-                                        }
-                                    }
-                                }
-                            }
-                            /* ------------------------------------ */
-                            /* calculate gradient direction rho SH*/
-                            /* ------------------------------------ */
-                            if((WAVETYPE==2 || WAVETYPE==3)&&(FORWARD_ONLY==0)) {
-                                /* interpolate unknown values */
-                                if((IDXI>1)||(IDYI>1)) {
-                                    interpol(IDXI,IDYI,waveconv_rho_shot_z,1);
-                                }
-                                /* calculate complete gradient */
-                                for (j=1; j<=NY; j=j+IDY) {
-                                    for (i=1; i<=NX; i=i+IDX) {
-                                        /* calculate density gradient rho' */
-                                        waveconv_rho_s_z[j][i]= - DT * waveconv_rho_shot_z[j][i];
-                                        if(PARAMETERIZATION==1) {
-                                            /* calculate density gradient */
-                                            waveconv_rho_shot_z[j][i] = ( (pu[j][i] * pu[j][i] * waveconv_mu_z[j][i]) + waveconv_rho_s_z[j][i]);
-                                        }
-                                        if(PARAMETERIZATION==3) {
-                                            /* calculate density gradient */
-                                            waveconv_rho_shot_z[j][i] = waveconv_rho_s_z[j][i];
-                                        }
-                                    }
-                                }
-                            }
-                            /* -------------------------------------------- */
-                            /* calculate and apply energy preconditioning   */
-                            /* -------------------------------------------- */
-                            if((EPRECOND==1)||(EPRECOND==3)) {
-                                /* calculate energy weights */
-                                if(EPRECOND_ITER==iter||(EPRECOND_ITER==0)) {
-                                    fprintf(FP,"\n Calculating approx. Hessian for shot %i. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
-                                    if(WAVETYPE==1 || WAVETYPE==3) {
-                                        eprecond1(We,Ws,Wr,EPSILON_WE);
-                                        if(EPRECOND_PER_SHOT) We_max=global_maximum(We);
-                                    }
-                                    if(WAVETYPE==2 || WAVETYPE==3) {
-                                        eprecond1(We_SH,Ws_SH,Wr_SH,EPSILON_WE_SH);
-                                        if(EPRECOND_PER_SHOT_SH) We_max_SH=global_maximum(We_SH);
-                                    }
-                                    if(EPRECOND_PER_SHOT && (WAVETYPE==1 || WAVETYPE==3)) {
-                                        fprintf(FP,"\n Applying approx. Hessian for shot %i PSV. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
-                                        for (j=1; j<=NY; j=j+IDY) {
-                                            for (i=1; i<=NX; i=i+IDX) {
-                                                We[j][i]=We[j][i]/We_max;
-                                                waveconv_shot[j][i] = waveconv_shot[j][i]/(We[j][i]);
-                                                if(!ACOUSTIC) {
-                                                    waveconv_u_shot[j][i] = waveconv_u_shot[j][i]/(We[j][i]);
-                                                }
-                                                waveconv_rho_shot[j][i] = waveconv_rho_shot[j][i]/(We[j][i]);
-                                            }
-                                        }
-                                    }
-                                    if(EPRECOND_PER_SHOT_SH && (WAVETYPE==2 || WAVETYPE==3)) {
-                                        fprintf(FP,"\n Applying approx. Hessian for shot %i SH. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
-                                        for (j=1; j<=NY; j=j+IDY) {
-                                            for (i=1; i<=NX; i=i+IDX) {
-                                                We_SH[j][i]=We_SH[j][i]/We_max_SH;
-                                                waveconv_u_shot_z[j][i] = waveconv_u_shot_z[j][i]/(We_SH[j][i]);
-                                                waveconv_rho_shot_z[j][i] = waveconv_rho_shot_z[j][i]/(We_SH[j][i]);
-                                            }
-                                        }
-                                    }
+                                    /* calculate complete gradient */
                                     for (j=1; j<=NY; j=j+IDY) {
                                         for (i=1; i<=NX; i=i+IDX) {
-                                            if(WAVETYPE==1 || WAVETYPE==3) We_sum[j][i]+=1.0/We[j][i];
-                                            if(WAVETYPE==2 || WAVETYPE==3) We_sum_SH[j][i]+=1.0/We_SH[j][i];
-                                        }
-                                    }
-                                }
-                            }
-                            /* --------------- */
-                            /* Apply taper SH  */
-                            /* --------------- */
-                            if (WAVETYPE==2 || WAVETYPE==3) {
-                                /* applying a circular taper at the source position to the gradient of each shot */
-                                if (SWS_TAPER_CIRCULAR_PER_SHOT) {
-                                    /* applying the preconditioning */
-                                    taper_grad_shot(waveconv_u_shot_z,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
-                                    taper_grad_shot(waveconv_rho_shot_z,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
-                                }
-                                /* end of SWS_TAPER_CIRCULAR_PER_SHOT == 1 */
-                                /* applying taper file which is read in */
-                                if (SWS_TAPER_FILE_PER_SHOT) {
-                                    /* applying the preconditioning */
-                                    taper_grad_shot(waveconv_u_shot_z,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,3); /*taper vs gradient */
-                                    taper_grad_shot(waveconv_rho_shot_z,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,4); /*taper rho gradient */
-                                }
-                            }
-                            /* --------------- */
-                            /* Apply taper PSV */
-                            /* --------------- */
-                            if (WAVETYPE==1 || WAVETYPE==3) {
-                                /* applying a circular taper at the source position to the gradient of each shot */
-                                if (SWS_TAPER_CIRCULAR_PER_SHOT) {
-                                    /* applying the preconditioning */
-                                    taper_grad_shot(waveconv_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
-                                    if(!ACOUSTIC) {
-                                        taper_grad_shot(waveconv_u_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
-                                    }
-                                    taper_grad_shot(waveconv_rho_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
-                                }
-                                /* end of SWS_TAPER_CIRCULAR_PER_SHOT == 1 */
-                                /* applying taper file which is read in */
-                                if (SWS_TAPER_FILE_PER_SHOT) {
-                                    /* applying the preconditioning */
-                                    taper_grad_shot(waveconv_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,2);	/* taper vp gradient */
-                                    if(!ACOUSTIC) {
-                                        taper_grad_shot(waveconv_u_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,3); /*taper vs gradient */
-                                    }
-                                    taper_grad_shot(waveconv_rho_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,4); /*taper rho gradient */
-                                }
-                            }
-                            /* ----------------------------------------- */
-                            /* Summing up the gradient for all shots PSV */
-                            /* ----------------------------------------- */
-                            if (WAVETYPE==1 || WAVETYPE==3) {
-                                for (j=1; j<=NY; j=j+IDY) {
-                                    for (i=1; i<=NX; i=i+IDX) {
-                                        waveconv[j][i] += waveconv_shot[j][i];
-                                        if(!ACOUSTIC) {
-                                            waveconv_u[j][i] += waveconv_u_shot[j][i];
-                                        }
-                                        waveconv_rho[j][i] += waveconv_rho_shot[j][i];
-                                    }
-                                }
-                            }
-                            /* ----------------------------------------- */
-                            /* Summing up the gradient for all shots SH */
-                            /* ----------------------------------------- */
-                            if (WAVETYPE==2 || WAVETYPE==3) {
-                                for (j=1; j<=NY; j=j+IDY) {
-                                    for (i=1; i<=NX; i=i+IDX) {
-                                        waveconv_u_z[j][i] += waveconv_u_shot_z[j][i];
-                                        waveconv_rho_z[j][i] += waveconv_rho_shot_z[j][i];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    /*------------------------------------------------------------------------------*/
-                    /*----------- End of loop over shots -----------------------------------------*/
-                    /*------------------------------------------------------------------------------*/
-                    nsrc_loc=0;
-                }
+                                            waveconv_lam[j][i] = - DT * waveconv_shot[j][i];
+                                            if(PARAMETERIZATION==1) {
+                                                if(!ACOUSTIC)
+                                                    muss = prho[j][i] * pu[j][i] * pu[j][i];
+                                                else
+                                                    muss = 0;
 
-                if(FORWARD_ONLY==0) {
-                    /* ----------------------------------------- */
-                    /*     Applying and output approx hessian    */
-                    /* ----------------------------------------- */
-                    if((EPRECOND==1)||(EPRECOND==3)) {
-                        if(!EPRECOND_PER_SHOT && (WAVETYPE==1 || WAVETYPE==3)) {
-                            fprintf(FP,"\n Applying approx. Hessian to summed gradient PSV. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
-                            We_sum_max1=global_maximum(We_sum);
-                            for (j=1; j<=NY; j=j+IDY) {
-                                for (i=1; i<=NX; i=i+IDX) {
-                                    We_sum[j][i]=We_sum[j][i]/We_sum_max1;
-                                    waveconv[j][i] = waveconv[j][i]*We_sum[j][i];
-                                    if(!ACOUSTIC) {
-                                        waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i];
+                                                lamss = prho[j][i] * ppi[j][i] * ppi[j][i] - 2.0 *  muss;
+                                                if(!ACOUSTIC)
+                                                    waveconv_lam[j][i] = (1.0/(4.0 * (lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
+                                                else
+                                                    waveconv_lam[j][i] = (1.0/((lamss+muss) * (lamss+muss))) * waveconv_lam[j][i];
+                                                /* calculate Vp gradient */
+                                                waveconv_shot[j][i] = 2.0 * ppi[j][i] * prho[j][i] * waveconv_lam[j][i];
+                                            }
+                                            if(PARAMETERIZATION==2) {
+                                                /* calculate Zp gradient */
+                                                waveconv_shot[j][i] = 2.0 * ppi[j][i] * waveconv_lam[j][i];
+                                            }
+                                            if(PARAMETERIZATION==3) {
+                                                waveconv_shot[j][i] = waveconv_lam[j][i];
+                                            }
+                                        }
                                     }
-                                    waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i];
+                                }
+                                /* ---------------------------------- */
+                                /* calculate gradient direction u PSV */
+                                /* ---------------------------------- */
+                                if((WAVETYPE==1 || WAVETYPE==3)&&(FORWARD_ONLY==0)&&(!ACOUSTIC)) {
+                                    /* interpolate unknown values */
+                                    if((IDXI>1)||(IDYI>1)) {
+                                        interpol(IDXI,IDYI,waveconv_u_shot,1);
+                                    }
+                                    /* calculate complete gradient */
+                                    for (j=1; j<=NY; j=j+IDY) {
+                                        for (i=1; i<=NX; i=i+IDX) {
+                                            /* calculate mu gradient */
+                                            waveconv_mu[j][i] = - DT * waveconv_u_shot[j][i];
+                                            if(PARAMETERIZATION==1) {
+                                                /* calculate Vs gradient */
+                                                waveconv_u_shot[j][i] = -4.0*prho[j][i] * pu[j][i] * waveconv_lam[j][i] +
+                                                    2.0*prho[j][i] * pu[j][i] * waveconv_mu[j][i];
+                                            }
+                                            if(PARAMETERIZATION==2) {
+                                                /* calculate Zs gradient */
+                                                waveconv_u_shot[j][i] = -4.0*pu[j][i] * waveconv_lam[j][i] + 
+                                                    2.0*pu[j][i] * waveconv_mu[j][i];
+                                            }
+                                            if(PARAMETERIZATION==3) {
+                                                /* calculate u gradient */
+                                                waveconv_u_shot[j][i] = waveconv_mu[j][i];
+                                            }
+                                        }
+                                    }
+                                }
+                                /* ---------------------------------- */
+                                /* calculate gradient direction u SH */
+                                /* ---------------------------------- */
+                                if((WAVETYPE==2 || WAVETYPE==3)&&(FORWARD_ONLY==0)&&(!ACOUSTIC)) {
+                                    /* interpolate unknown values */
+                                    if((IDXI>1)||(IDYI>1)) {
+                                        interpol(IDXI,IDYI,waveconv_u_shot_z,1);
+                                    }
+                                    /* calculate complete gradient */
+                                    for (j=1; j<=NY; j=j+IDY) {
+                                        for (i=1; i<=NX; i=i+IDX) {
+                                            /* calculate mu gradient */
+                                            waveconv_mu_z[j][i] = - DT * waveconv_u_shot_z[j][i];
+                                            if(PARAMETERIZATION==1) {
+                                                /* calculate Vs gradient */
+                                                waveconv_u_shot_z[j][i] = (2.0 * prho[j][i] * pu[j][i] * waveconv_mu_z[j][i]);
+                                            }
+                                            if(PARAMETERIZATION==3) {
+                                                /* calculate u gradient */
+                                                waveconv_u_shot_z[j][i] = waveconv_mu_z[j][i];
+                                            }
+                                        }
+                                    }
+                                }
+                                /* ------------------------------------ */
+                                /* calculate gradient direction rho PSV */
+                                /* ------------------------------------ */
+                                if((WAVETYPE==1 || WAVETYPE==3)&&(FORWARD_ONLY==0)) {
+                                    /* interpolate unknown values */
+                                    if((IDXI>1)||(IDYI>1)) {
+                                        interpol(IDXI,IDYI,waveconv_rho,1);
+                                    }
+                                    /* calculate complete gradient */
+                                    for (j=1; j<=NY; j=j+IDY) {
+                                        for (i=1; i<=NX; i=i+IDX) {
+                                            /* calculate density gradient rho' */
+                                            waveconv_rho_s[j][i]= - DT * waveconv_rho_shot[j][i];
+                                            if(PARAMETERIZATION==1) {
+                                                /* calculate density gradient */
+                                                if(!ACOUSTIC) {
+                                                    waveconv_rho_shot[j][i] = ((ppi[j][i] * ppi[j][i])-(2.0*pu[j][i] * pu[j][i])) * waveconv_lam[j][i] + 
+                                                        pu[j][i] * pu[j][i] * waveconv_mu[j][i] + 
+                                                        waveconv_rho_s[j][i];
+                                                } else {
+                                                    waveconv_rho_shot[j][i] = ((ppi[j][i] * ppi[j][i]) * waveconv_lam[j][i]) + waveconv_rho_s[j][i];
+                                                }
+                                            }
+                                            if(PARAMETERIZATION==3) {
+                                                /* calculate density gradient */
+                                                waveconv_rho_shot[j][i] = waveconv_rho_s[j][i];
+                                            }
+                                        }
+                                    }
+                                }
+                                /* ------------------------------------ */
+                                /* calculate gradient direction rho SH*/
+                                /* ------------------------------------ */
+                                if((WAVETYPE==2 || WAVETYPE==3)&&(FORWARD_ONLY==0)) {
+                                    /* interpolate unknown values */
+                                    if((IDXI>1)||(IDYI>1)) {
+                                        interpol(IDXI,IDYI,waveconv_rho_shot_z,1);
+                                    }
+                                    /* calculate complete gradient */
+                                    for (j=1; j<=NY; j=j+IDY) {
+                                        for (i=1; i<=NX; i=i+IDX) {
+                                            /* calculate density gradient rho' */
+                                            waveconv_rho_s_z[j][i]= - DT * waveconv_rho_shot_z[j][i];
+                                            if(PARAMETERIZATION==1) {
+                                                /* calculate density gradient */
+                                                waveconv_rho_shot_z[j][i] = ( (pu[j][i] * pu[j][i] * waveconv_mu_z[j][i]) + waveconv_rho_s_z[j][i]);
+                                            }
+                                            if(PARAMETERIZATION==3) {
+                                                /* calculate density gradient */
+                                                waveconv_rho_shot_z[j][i] = waveconv_rho_s_z[j][i];
+                                            }
+                                        }
+                                    }
+                                }
+                                /* -------------------------------------------- */
+                                /* calculate and apply energy preconditioning   */
+                                /* -------------------------------------------- */
+                                if((EPRECOND==1)||(EPRECOND==3)) {
+                                    /* calculate energy weights */
+                                    if(EPRECOND_ITER==iter||(EPRECOND_ITER==0)) {
+                                        fprintf(FP,"\n Calculating approx. Hessian for shot %i. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
+                                        if(WAVETYPE==1 || WAVETYPE==3) {
+                                            eprecond1(We,Ws,Wr,EPSILON_WE);
+                                            if(EPRECOND_PER_SHOT) We_max=global_maximum(We);
+                                        }
+                                        if(WAVETYPE==2 || WAVETYPE==3) {
+                                            eprecond1(We_SH,Ws_SH,Wr_SH,EPSILON_WE_SH);
+                                            if(EPRECOND_PER_SHOT_SH) We_max_SH=global_maximum(We_SH);
+                                        }
+                                        if(EPRECOND_PER_SHOT && (WAVETYPE==1 || WAVETYPE==3)) {
+                                            fprintf(FP,"\n Applying approx. Hessian for shot %i PSV. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
+                                            for (j=1; j<=NY; j=j+IDY) {
+                                                for (i=1; i<=NX; i=i+IDX) {
+                                                    We[j][i]=We[j][i]/We_max;
+                                                    waveconv_shot[j][i] = waveconv_shot[j][i]/(We[j][i]);
+                                                    if(!ACOUSTIC) {
+                                                        waveconv_u_shot[j][i] = waveconv_u_shot[j][i]/(We[j][i]);
+                                                    }
+                                                    waveconv_rho_shot[j][i] = waveconv_rho_shot[j][i]/(We[j][i]);
+                                                }
+                                            }
+                                        }
+                                        if(EPRECOND_PER_SHOT_SH && (WAVETYPE==2 || WAVETYPE==3)) {
+                                            fprintf(FP,"\n Applying approx. Hessian for shot %i SH. EPRECOND=%i, EPSILON_WE=%f",ishot,EPRECOND,EPSILON_WE);
+                                            for (j=1; j<=NY; j=j+IDY) {
+                                                for (i=1; i<=NX; i=i+IDX) {
+                                                    We_SH[j][i]=We_SH[j][i]/We_max_SH;
+                                                    waveconv_u_shot_z[j][i] = waveconv_u_shot_z[j][i]/(We_SH[j][i]);
+                                                    waveconv_rho_shot_z[j][i] = waveconv_rho_shot_z[j][i]/(We_SH[j][i]);
+                                                }
+                                            }
+                                        }
+                                        for (j=1; j<=NY; j=j+IDY) {
+                                            for (i=1; i<=NX; i=i+IDX) {
+                                                if(WAVETYPE==1 || WAVETYPE==3) We_sum[j][i]+=1.0/We[j][i];
+                                                if(WAVETYPE==2 || WAVETYPE==3) We_sum_SH[j][i]+=1.0/We_SH[j][i];
+                                            }
+                                        }
+                                    }
+                                }
+                                /* --------------- */
+                                /* Apply taper SH  */
+                                /* --------------- */
+                                if (WAVETYPE==2 || WAVETYPE==3) {
+                                    /* applying a circular taper at the source position to the gradient of each shot */
+                                    if (SWS_TAPER_CIRCULAR_PER_SHOT) {
+                                        /* applying the preconditioning */
+                                        taper_grad_shot(waveconv_u_shot_z,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
+                                        taper_grad_shot(waveconv_rho_shot_z,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
+                                    }
+                                    /* end of SWS_TAPER_CIRCULAR_PER_SHOT == 1 */
+                                    /* applying taper file which is read in */
+                                    if (SWS_TAPER_FILE_PER_SHOT) {
+                                        /* applying the preconditioning */
+                                        taper_grad_shot(waveconv_u_shot_z,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,3); /*taper vs gradient */
+                                        taper_grad_shot(waveconv_rho_shot_z,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,4); /*taper rho gradient */
+                                    }
+                                }
+                                /* --------------- */
+                                /* Apply taper PSV */
+                                /* --------------- */
+                                if (WAVETYPE==1 || WAVETYPE==3) {
+                                    /* applying a circular taper at the source position to the gradient of each shot */
+                                    if (SWS_TAPER_CIRCULAR_PER_SHOT) {
+                                        /* applying the preconditioning */
+                                        taper_grad_shot(waveconv_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
+                                        if(!ACOUSTIC) {
+                                            taper_grad_shot(waveconv_u_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
+                                        }
+                                        taper_grad_shot(waveconv_rho_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,1);
+                                    }
+                                    /* end of SWS_TAPER_CIRCULAR_PER_SHOT == 1 */
+                                    /* applying taper file which is read in */
+                                    if (SWS_TAPER_FILE_PER_SHOT) {
+                                        /* applying the preconditioning */
+                                        taper_grad_shot(waveconv_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,2);	/* taper vp gradient */
+                                        if(!ACOUSTIC) {
+                                            taper_grad_shot(waveconv_u_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,3); /*taper vs gradient */
+                                        }
+                                        taper_grad_shot(waveconv_rho_shot,taper_coeff,srcpos,nsrc,recpos,ntr_glob,ishot,4); /*taper rho gradient */
+                                    }
+                                }
+                                /* ----------------------------------------- */
+                                /* Summing up the gradient for all shots PSV */
+                                /* ----------------------------------------- */
+                                if (WAVETYPE==1 || WAVETYPE==3) {
+                                    for (j=1; j<=NY; j=j+IDY) {
+                                        for (i=1; i<=NX; i=i+IDX) {
+                                            waveconv[j][i] += waveconv_shot[j][i];
+                                            if(!ACOUSTIC) {
+                                                waveconv_u[j][i] += waveconv_u_shot[j][i];
+                                            }
+                                            waveconv_rho[j][i] += waveconv_rho_shot[j][i];
+                                        }
+                                    }
+                                }
+                                /* ----------------------------------------- */
+                                /* Summing up the gradient for all shots SH */
+                                /* ----------------------------------------- */
+                                if (WAVETYPE==2 || WAVETYPE==3) {
+                                    for (j=1; j<=NY; j=j+IDY) {
+                                        for (i=1; i<=NX; i=i+IDX) {
+                                            waveconv_u_z[j][i] += waveconv_u_shot_z[j][i];
+                                            waveconv_rho_z[j][i] += waveconv_rho_shot_z[j][i];
+                                        }
+                                    }
                                 }
                             }
                         }
-                        if(!EPRECOND_PER_SHOT_SH && (WAVETYPE==2 || WAVETYPE==3)) {
-                            fprintf(FP,"\n Applying approx. Hessian to summed gradient SH. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
-                            We_sum_max1=global_maximum(We_sum_SH);
+                        /*------------------------------------------------------------------------------*/
+                        /*----------- End of loop over shots -----------------------------------------*/
+                        /*------------------------------------------------------------------------------*/
+                        nsrc_loc=0;
+                    }
+
+                    if(FORWARD_ONLY==0) {
+                        /* ----------------------------------------- */
+                        /*     Applying and output approx hessian    */
+                        /* ----------------------------------------- */
+                        if((EPRECOND==1)||(EPRECOND==3)) {
+                            if(!EPRECOND_PER_SHOT && (WAVETYPE==1 || WAVETYPE==3)) {
+                                fprintf(FP,"\n Applying approx. Hessian to summed gradient PSV. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
+                                We_sum_max1=global_maximum(We_sum);
+                                for (j=1; j<=NY; j=j+IDY) {
+                                    for (i=1; i<=NX; i=i+IDX) {
+                                        We_sum[j][i]=We_sum[j][i]/We_sum_max1;
+                                        waveconv[j][i] = waveconv[j][i]*We_sum[j][i];
+                                        if(!ACOUSTIC) {
+                                            waveconv_u[j][i] = waveconv_u[j][i]*We_sum[j][i];
+                                        }
+                                        waveconv_rho[j][i] = waveconv_rho[j][i]*We_sum[j][i];
+                                    }
+                                }
+                            }
+                            if(!EPRECOND_PER_SHOT_SH && (WAVETYPE==2 || WAVETYPE==3)) {
+                                fprintf(FP,"\n Applying approx. Hessian to summed gradient SH. EPRECOND=%i, EPSILON_WE=%f",EPRECOND,EPSILON_WE);
+                                We_sum_max1=global_maximum(We_sum_SH);
+                                for (j=1; j<=NY; j=j+IDY) {
+                                    for (i=1; i<=NX; i=i+IDX) {
+                                        We_sum_SH[j][i]=We_sum_SH[j][i]/We_sum_max1;
+                                        waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i];
+                                        waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i];
+                                    }
+                                }
+                            }
+                            if (WAVETYPE==1 || WAVETYPE==3) {
+                                sprintf(jac,"%s_approx_hessian_it%i",JACOBIAN,iter);
+                                write_matrix_disk(We_sum, jac);
+                            }
+                            if (WAVETYPE==2 || WAVETYPE==3) {
+                                sprintf(jac,"%s_approx_hessian_SH_it%i",JACOBIAN,iter);
+                                write_matrix_disk(We_sum_SH, jac);
+                            }
+                        }
+                        /* ----------------------------------------- */
+                        /*  Set gradient to zero if no inversion     */
+                        /* ----------------------------------------- */
+                        if (WAVETYPE==1 || WAVETYPE==3) {
                             for (j=1; j<=NY; j=j+IDY) {
                                 for (i=1; i<=NX; i=i+IDX) {
-                                    We_sum_SH[j][i]=We_sum_SH[j][i]/We_sum_max1;
-                                    waveconv_u_z[j][i] = waveconv_u_z[j][i]*We_sum_SH[j][i];
-                                    waveconv_rho_z[j][i] = waveconv_rho_z[j][i]*We_sum_SH[j][i];
+                                    if(iter<INV_VP_ITER) waveconv[j][i] = 0.0;
+                                    if(iter<INV_VS_ITER && !ACOUSTIC) waveconv_u[j][i] = 0.0;
+                                    if(iter<INV_RHO_ITER) waveconv_rho[j][i] = 0.0;
                                 }
                             }
-                        }
-                        if (WAVETYPE==1 || WAVETYPE==3) {
-                            sprintf(jac,"%s_approx_hessian_it%i",JACOBIAN,iter);
-                            write_matrix_disk(We_sum, jac);
                         }
                         if (WAVETYPE==2 || WAVETYPE==3) {
-                            sprintf(jac,"%s_approx_hessian_SH_it%i",JACOBIAN,iter);
-                            write_matrix_disk(We_sum_SH, jac);
-                        }
-                    }
-                    /* ----------------------------------------- */
-                    /*  Set gradient to zero if no inversion     */
-                    /* ----------------------------------------- */
-                    if (WAVETYPE==1 || WAVETYPE==3) {
-                        for (j=1; j<=NY; j=j+IDY) {
-                            for (i=1; i<=NX; i=i+IDX) {
-                                if(iter<INV_VP_ITER) waveconv[j][i] = 0.0;
-                                if(iter<INV_VS_ITER && !ACOUSTIC) waveconv_u[j][i] = 0.0;
-                                if(iter<INV_RHO_ITER) waveconv_rho[j][i] = 0.0;
-                            }
-                        }
-                    }
-                    if (WAVETYPE==2 || WAVETYPE==3) {
-                        for (j=1; j<=NY; j=j+IDY) {
-                            for (i=1; i<=NX; i=i+IDX) {
-                                if(iter<INV_VS_ITER) waveconv_u_z[j][i] = 0.0;
-                                if(iter<INV_RHO_ITER) waveconv_rho_z[j][i] = 0.0;
-                            }
-                        }
-                    }
-                    /* ------------------------------*/
-                    /* calculate L2 norm of all CPUs */
-                    /* ------------------------------*/
-                    if(WAVETYPE==1||WAVETYPE==3) {
-                        L2sum = 0.0;
-                        MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                        energy_sum = 0.0;
-                        MPI_Allreduce(&energy,&energy_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                        L2sum_all_shots = 0.0;
-                        MPI_Allreduce(&L2_all_shots,&L2sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                        energy_sum_all_shots = 0.0;
-                        MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                        if(MYID==0&&(WAVETYPE==3)) {
-                            printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
-                        }
-                    }
-                    if(WAVETYPE==2||WAVETYPE==3) {
-                        L2sum_SH = 0.0;
-                        MPI_Allreduce(&L2_SH,&L2sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                        energy_sum_SH = 0.0;
-                        MPI_Allreduce(&energy_SH,&energy_sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                        L2sum_all_shots_SH = 0.0;
-                        MPI_Allreduce(&L2_all_shots_SH,&L2sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                        energy_sum_all_shots_SH = 0.0;
-                        MPI_Allreduce(&energy_all_shots_SH,&energy_sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-
-                        if(MYID==0&&(WAVETYPE==3)) {
-                            printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
-                        }
-                    }
-                    sum_killed_traces=0;
-                    MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
-                    sum_killed_traces_testshots=0;
-                    MPI_Allreduce(&killed_traces_testshots,&sum_killed_traces_testshots,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
-
-                    switch (LNORM) {
-                        case 2:
-                            L2t[1]=0.0;
-                            L2t[4]=0.0;
-                            if(JOINT_EQUAL_WEIGHTING) {
-                                if(JOINT_EQUAL_new_max) {
-                                    JOINT_EQUAL_PSV=L2sum/energy_sum;
-                                    JOINT_EQUAL_SH=L2sum_SH/energy_sum_SH;
-                                    JOINT_EQUAL_PSV_all=L2sum_all_shots/energy_sum_all_shots;
-                                    JOINT_EQUAL_SH_all=L2sum_all_shots_SH/energy_sum_all_shots_SH;
-                                    JOINT_EQUAL_new_max=0;
+                            for (j=1; j<=NY; j=j+IDY) {
+                                for (i=1; i<=NX; i=i+IDX) {
+                                    if(iter<INV_VS_ITER) waveconv_u_z[j][i] = 0.0;
+                                    if(iter<INV_RHO_ITER) waveconv_rho_z[j][i] = 0.0;
                                 }
-                                L2t[1]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
-                                L2t[4]+=(L2sum_all_shots/energy_sum_all_shots)/JOINT_EQUAL_PSV_all;
-                                L2t[1]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
-                                L2t[4]+=(L2sum_all_shots_SH/energy_sum_all_shots_SH)/JOINT_EQUAL_SH_all;
-                                break;
                             }
-                            if(WAVETYPE==1||WAVETYPE==3) {
-                                L2t[1]+=L2sum/energy_sum;
-                                L2t[4]+=L2sum_all_shots/energy_sum_all_shots;
-                            }
-                            if(WAVETYPE==2||WAVETYPE==3) {
-                                L2t[1]+=L2sum_SH/energy_sum_SH;
-                                L2t[4]+=L2sum_all_shots_SH/energy_sum_all_shots_SH;
-                            }
+                        }
+                        /* ------------------------------*/
+                        /* calculate L2 norm of all CPUs */
+                        /* ------------------------------*/
+                        if(WAVETYPE==1||WAVETYPE==3) {
+                            L2sum = 0.0;
+                            MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                            energy_sum = 0.0;
+                            MPI_Allreduce(&energy,&energy_sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                            L2sum_all_shots = 0.0;
+                            MPI_Allreduce(&L2_all_shots,&L2sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                            energy_sum_all_shots = 0.0;
+                            MPI_Allreduce(&energy_all_shots,&energy_sum_all_shots,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
                             if(MYID==0&&(WAVETYPE==3)) {
-                                printf("\n Sum: L2=%f",L2t[4]);
+                                printf("\n\n PSV: L2=%f",L2sum_all_shots/energy_sum_all_shots);
                             }
-                            break;
-                        case 7:
-                            if (TRKILL) {
-                                if(ADJOINT_TYPE==1) {	/* x and y component are used in the inversion */
-                                    L2t[1]=2.0*(1.0+(L2sum/((float)((NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots)*2.0))));
-                                    L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)((nsrc_glob*ntr_glob-sum_killed_traces)*2.0))));
-                                    if (MYID==0) {
-                                        printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
-                                        printf("sum_killed_traces=%d\n",sum_killed_traces);
+                        }
+                        if(WAVETYPE==2||WAVETYPE==3) {
+                            L2sum_SH = 0.0;
+                            MPI_Allreduce(&L2_SH,&L2sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                            energy_sum_SH = 0.0;
+                            MPI_Allreduce(&energy_SH,&energy_sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                            L2sum_all_shots_SH = 0.0;
+                            MPI_Allreduce(&L2_all_shots_SH,&L2sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                            energy_sum_all_shots_SH = 0.0;
+                            MPI_Allreduce(&energy_all_shots_SH,&energy_sum_all_shots_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+
+                            if(MYID==0&&(WAVETYPE==3)) {
+                                printf("\n  SH: L2=%f",L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                            }
+                        }
+                        sum_killed_traces=0;
+                        MPI_Allreduce(&killed_traces,&sum_killed_traces,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
+                        sum_killed_traces_testshots=0;
+                        MPI_Allreduce(&killed_traces_testshots,&sum_killed_traces_testshots,1,MPI_INT,MPI_SUM,MPI_COMM_WORLD);
+
+                        switch (LNORM) {
+                            case 2:
+                                L2t[1]=0.0;
+                                L2t[4]=0.0;
+                                if(JOINT_EQUAL_WEIGHTING) {
+                                    if(JOINT_EQUAL_new_max) {
+                                        JOINT_EQUAL_PSV=L2sum/energy_sum;
+                                        JOINT_EQUAL_SH=L2sum_SH/energy_sum_SH;
+                                        JOINT_EQUAL_PSV_all=L2sum_all_shots/energy_sum_all_shots;
+                                        JOINT_EQUAL_SH_all=L2sum_all_shots_SH/energy_sum_all_shots_SH;
+                                        JOINT_EQUAL_new_max=0;
+                                    }
+                                    L2t[1]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
+                                    L2t[4]+=(L2sum_all_shots/energy_sum_all_shots)/JOINT_EQUAL_PSV_all;
+                                    L2t[1]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
+                                    L2t[4]+=(L2sum_all_shots_SH/energy_sum_all_shots_SH)/JOINT_EQUAL_SH_all;
+                                    break;
+                                }
+                                if(WAVETYPE==1||WAVETYPE==3) {
+                                    L2t[1]+=L2sum/energy_sum;
+                                    L2t[4]+=L2sum_all_shots/energy_sum_all_shots;
+                                }
+                                if(WAVETYPE==2||WAVETYPE==3) {
+                                    L2t[1]+=L2sum_SH/energy_sum_SH;
+                                    L2t[4]+=L2sum_all_shots_SH/energy_sum_all_shots_SH;
+                                }
+                                if(MYID==0&&(WAVETYPE==3)) {
+                                    printf("\n Sum: L2=%f",L2t[4]);
+                                }
+                                break;
+                            case 7:
+                                if (TRKILL) {
+                                    if(ADJOINT_TYPE==1) {	/* x and y component are used in the inversion */
+                                        L2t[1]=2.0*(1.0+(L2sum/((float)((NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots)*2.0))));
+                                        L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)((nsrc_glob*ntr_glob-sum_killed_traces)*2.0))));
+                                        if (MYID==0) {
+                                            printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
+                                            printf("sum_killed_traces=%d\n",sum_killed_traces);
+                                        }
+                                    } else {
+                                        L2t[1]=2.0*(1.0+(L2sum/((float)(NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots))));
+                                        L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)(nsrc_glob*ntr_glob-sum_killed_traces))));
+                                        if (MYID==0) {
+                                            printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
+                                            printf("sum_killed_traces=%d\n",sum_killed_traces);
+                                            printf("ntr_glob=%d\n",ntr_glob);
+                                            printf("nsrc_glob=%d\n",nsrc_glob);
+                                        }
                                     }
                                 } else {
-                                    L2t[1]=2.0*(1.0+(L2sum/((float)(NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots))));
-                                    L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)(nsrc_glob*ntr_glob-sum_killed_traces))));
-                                    if (MYID==0) {
-                                        printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
-                                        printf("sum_killed_traces=%d\n",sum_killed_traces);
-                                        printf("ntr_glob=%d\n",ntr_glob);
-                                        printf("nsrc_glob=%d\n",nsrc_glob);
+                                    if(ADJOINT_TYPE==1) {	/* x and y component are used in the inversion */
+                                        L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob*2.0)));
+                                        L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob*2.0)));
+                                    } else {
+                                        L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob)));
+                                        L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob)));
                                     }
                                 }
-                            } else {
-                                if(ADJOINT_TYPE==1) {	/* x and y component are used in the inversion */
-                                    L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob*2.0)));
-                                    L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob*2.0)));
-                                } else {
-                                    L2t[1]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob)));
-                                    L2t[4]=2.0*(1.0+(L2sum_all_shots/((float)nsrc_glob*(float)ntr_glob)));
-                                }
-                            }
-                            break;
-                        case 8:
-                            L2t[1]=L2sum/energy_sum;
-                            L2t[4]=L2sum_all_shots/energy_sum_all_shots;
-                            break;
-                        default:
-                            L2t[1]=L2sum;
-                            L2t[4]=L2sum_all_shots;
-                            break;
+                                break;
+                            case 8:
+                                L2t[1]=L2sum/energy_sum;
+                                L2t[4]=L2sum_all_shots/energy_sum_all_shots;
+                                break;
+                            default:
+                                L2t[1]=L2sum;
+                                L2t[4]=L2sum_all_shots;
+                                break;
+                        }
+                        if(!steplength_search) {
+                            L2_SL_old=L2t[4];
+                        } else {
+                            L2_SL_new=L2t[4];
+                        }
+                        if(MYID==0&&VERBOSE) {
+                            fprintf(FP,"\n\nL2sum: %f\n", L2sum);
+                            fprintf(FP,"energy_sum: %e\n\n", energy_sum);
+                            fprintf(FP,"L2sum_all_shots: %f\n", L2sum_all_shots);
+                            fprintf(FP,"energy_sum_all_shots: %e\n\n", energy_sum_all_shots);
+                        }
                     }
-                    if(!steplength_search) {
-                        L2_SL_old=L2t[4];
-                    } else {
-                        L2_SL_new=L2t[4];
+                    /* Count how often this loop runs */
+                    if(GRAD_METHOD==2 && iter>LBFGS_iter_start) {
+                        wolfe_sum_FWI++;
                     }
-                    if(MYID==0&&VERBOSE) {
-                        fprintf(FP,"\n\nL2sum: %f\n", L2sum);
-                        fprintf(FP,"energy_sum: %e\n\n", energy_sum);
-                        fprintf(FP,"L2sum_all_shots: %f\n", L2sum_all_shots);
-                        fprintf(FP,"energy_sum_all_shots: %e\n\n", energy_sum_all_shots);
-                    }
-                }
-                /* Count how often this loop runs */
-                if(GRAD_METHOD==2 && iter>LBFGS_iter_start) {
-                    wolfe_sum_FWI++;
-                }
                 }
 
                 /*-----------------------------------------------------*/
                 /*     Gradient optimization with PCG or L-BFGS        */
                 /*-----------------------------------------------------*/
                 if(gradient_optimization==1 && FORWARD_ONLY==0) {
-                /* ----------------------------------------------------------------------*/
-                /* ----------- Preconditioned Conjugate Gradient Method (PCG)  ----------*/
-                /* ----------------------------------------------------------------------*/
-                if(GRAD_METHOD==1) {
-                    if( (iter-PCG_iter_start) < 2 ) {
-                        fprintf(FP,"\n\n ----- Conjugate Gradient Method -----");
-                        fprintf(FP,"\n Will not use second last gradient for conjugate gradient");
-                        if( (iter-PCG_iter_start) < 1 ) {
-                            fprintf(FP,"\n Will not use last gradient for conjugate gradient");
+                    /* ----------------------------------------------------------------------*/
+                    /* ----------- Preconditioned Conjugate Gradient Method (PCG)  ----------*/
+                    /* ----------------------------------------------------------------------*/
+                    if(GRAD_METHOD==1) {
+                        if( (iter-PCG_iter_start) < 2 ) {
+                            fprintf(FP,"\n\n ----- Conjugate Gradient Method -----");
+                            fprintf(FP,"\n Will not use second last gradient for conjugate gradient");
+                            if( (iter-PCG_iter_start) < 1 ) {
+                                fprintf(FP,"\n Will not use last gradient for conjugate gradient");
+                            }
+                        }
+                        if (WAVETYPE==1 || WAVETYPE==3) {
+                            PCG(waveconv, taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, C_vp, gradp, nfstart_jac,
+                                    waveconv_u, C_vs, gradp_u, waveconv_rho, C_rho, gradp_rho,Vs_avg,F_LOW_PASS,PCG_iter_start);
+                        }
+                        if (WAVETYPE==2 || WAVETYPE==3) {
+                            PCG_SH(taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, nfstart_jac, waveconv_u_z, C_vs, 
+                                    gradp_u_z, waveconv_rho_z, C_rho, gradp_rho_z,Vs_avg,F_LOW_PASS,PCG_iter_start);
                         }
                     }
-                    if (WAVETYPE==1 || WAVETYPE==3) {
-                        PCG(waveconv, taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, C_vp, gradp, nfstart_jac,
-                            waveconv_u, C_vs, gradp_u, waveconv_rho, C_rho, gradp_rho,Vs_avg,F_LOW_PASS,PCG_iter_start);
-                    }
-                    if (WAVETYPE==2 || WAVETYPE==3) {
-                        PCG_SH(taper_coeff, nsrc, srcpos, recpos, ntr_glob, iter, nfstart_jac, waveconv_u_z, C_vs, 
-                               gradp_u_z, waveconv_rho_z, C_rho, gradp_rho_z,Vs_avg,F_LOW_PASS,PCG_iter_start);
-                    }
-                }
-                /* ---------------------------------------------------------*/
-                /* ----------- Beginn Joint Inversion PSV and SH  ----------*/
-                /* ---------------------------------------------------------*/
-                if(FORWARD_ONLY==0) {
-                    switch (WAVETYPE) {
-                        case 2:
-                            /* If only SH is inverted, set these gradients to the actual ones */
-                            waveconv_u=waveconv_u_z;
-                            waveconv_rho=waveconv_rho_z;
-                            //waveconv=NULL; // SH case no VP inversion is possible
-                            INV_VP_ITER=iter+10; // Just in case...
-                            break;
-                        case 3:
-                            /* If PSV and SH are simultaneously are inverted, a joint inversion have to be done */
-                            fprintf(FP, "\n\n===================================\n");
-                            fprintf(FP, " Joint Inversion Process initiated!\n");
-                            fprintf(FP, "===================================\n\n");
-                            waveconv_u=joint_inversion_grad(waveconv_u,waveconv_u_z,JOINT_INVERSION_PSV_SH_ALPHA_VS,JOINT_INVERSION_PSV_SH_TYPE);
-                            waveconv_rho=joint_inversion_grad(waveconv_rho,waveconv_rho_z,JOINT_INVERSION_PSV_SH_ALPHA_RHO,JOINT_INVERSION_PSV_SH_TYPE);
+                    /* ---------------------------------------------------------*/
+                    /* ----------- Beginn Joint Inversion PSV and SH  ----------*/
+                    /* ---------------------------------------------------------*/
+                    if(FORWARD_ONLY==0) {
+                        switch (WAVETYPE) {
+                            case 2:
+                                /* If only SH is inverted, set these gradients to the actual ones */
+                                waveconv_u=waveconv_u_z;
+                                waveconv_rho=waveconv_rho_z;
+                                //waveconv=NULL; // SH case no VP inversion is possible
+                                INV_VP_ITER=iter+10; // Just in case...
+                                break;
+                            case 3:
+                                /* If PSV and SH are simultaneously are inverted, a joint inversion have to be done */
+                                fprintf(FP, "\n\n===================================\n");
+                                fprintf(FP, " Joint Inversion Process initiated!\n");
+                                fprintf(FP, "===================================\n\n");
+                                waveconv_u=joint_inversion_grad(waveconv_u,waveconv_u_z,JOINT_INVERSION_PSV_SH_ALPHA_VS,JOINT_INVERSION_PSV_SH_TYPE);
+                                waveconv_rho=joint_inversion_grad(waveconv_rho,waveconv_rho_z,JOINT_INVERSION_PSV_SH_ALPHA_RHO,JOINT_INVERSION_PSV_SH_TYPE);
 
-                            /* Output joint gradient to disk */
-                            sprintf(jac,"%s_joint_vs_it%i",JACOBIAN,iter);
-                            write_matrix_disk(waveconv_u, jac);
+                                /* Output joint gradient to disk */
+                                sprintf(jac,"%s_joint_vs_it%i",JACOBIAN,iter);
+                                write_matrix_disk(waveconv_u, jac);
 
-                            /* Output joint gradient to disk */
-                            sprintf(jac,"%s_joint_rho_it%i",JACOBIAN,iter);
-                            write_matrix_disk(waveconv_rho, jac);
-                            break;
-                        default:
-                            /* By default (WAVETYPE=1) no joint inversion */
-                            break;
+                                /* Output joint gradient to disk */
+                                sprintf(jac,"%s_joint_rho_it%i",JACOBIAN,iter);
+                                write_matrix_disk(waveconv_rho, jac);
+                                break;
+                            default:
+                                /* By default (WAVETYPE=1) no joint inversion */
+                                break;
+                        }
                     }
-                }
-                /* ---------------------------------------------------------*/
-                /* ----------- END Joint Inversion PSV and SH  -------------*/
-                /* ---------------------------------------------------------*/
+                    /* ---------------------------------------------------------*/
+                    /* ----------- END Joint Inversion PSV and SH  -------------*/
+                    /* ---------------------------------------------------------*/
 
-                /* -------------------------------------------------------------------------*/
-                /* ----------- Limited Memory - Broyden-Fletcher-Goldfarb-Shanno  ----------*/
-                /* -------------------------------------------------------------------------*/
-                if(GRAD_METHOD==2) {
-                    /*---------------------*/
-                    /*         TAPER       */
-                    /*---------------------*/
-                    if(WAVETYPE==1 || WAVETYPE==3) {
+                    /* -------------------------------------------------------------------------*/
+                    /* ----------- Limited Memory - Broyden-Fletcher-Goldfarb-Shanno  ----------*/
+                    /* -------------------------------------------------------------------------*/
+                    if(GRAD_METHOD==2) {
+                        /*---------------------*/
+                        /*         TAPER       */
+                        /*---------------------*/
+                        if(WAVETYPE==1 || WAVETYPE==3) {
+                            if (SWS_TAPER_FILE) {  /* read taper from BIN-File*/
+                                taper_grad(waveconv,taper_coeff,srcpos,nsrc,recpos,ntr_glob,4);
+                            }
+                            if(GRAD_FILTER==1 && !ACOUSTIC) {
+                                smooth(waveconv,1,1,Vs_avg,F_LOW_PASS);
+                            } else if(GRAD_FILTER==1 && ACOUSTIC) {
+                                smooth(waveconv,1,1,Vp_avg,F_LOW_PASS);
+                            }
+                        }
+                        if (SWS_TAPER_FILE && !ACOUSTIC) {  /* read taper from BIN-File*/
+                            taper_grad(waveconv_u,taper_coeff,srcpos,nsrc,recpos,ntr_glob,5);
+                        }
                         if (SWS_TAPER_FILE) {  /* read taper from BIN-File*/
-                            taper_grad(waveconv,taper_coeff,srcpos,nsrc,recpos,ntr_glob,4);
+                            taper_grad(waveconv_rho,taper_coeff,srcpos,nsrc,recpos,ntr_glob,6);
                         }
                         if(GRAD_FILTER==1 && !ACOUSTIC) {
-                            smooth(waveconv,1,1,Vs_avg,F_LOW_PASS);
-                        } else if(GRAD_FILTER==1 && ACOUSTIC) {
-                            smooth(waveconv,1,1,Vp_avg,F_LOW_PASS);
+                            smooth(waveconv_u,2,1,Vs_avg,F_LOW_PASS);
                         }
-                    }
-                    if (SWS_TAPER_FILE && !ACOUSTIC) {  /* read taper from BIN-File*/
-                        taper_grad(waveconv_u,taper_coeff,srcpos,nsrc,recpos,ntr_glob,5);
-                    }
-                    if (SWS_TAPER_FILE) {  /* read taper from BIN-File*/
-                        taper_grad(waveconv_rho,taper_coeff,srcpos,nsrc,recpos,ntr_glob,6);
-                    }
-                    if(GRAD_FILTER==1 && !ACOUSTIC) {
-                        smooth(waveconv_u,2,1,Vs_avg,F_LOW_PASS);
-                    }
-                    if(GRAD_FILTER==1 && !ACOUSTIC) {
-                        smooth(waveconv_rho,3,1,Vs_avg,F_LOW_PASS);
-                    } else if(GRAD_FILTER==1 && ACOUSTIC) {
-                        smooth(waveconv_rho,3,1,Vp_avg,F_LOW_PASS);
+                        if(GRAD_FILTER==1 && !ACOUSTIC) {
+                            smooth(waveconv_rho,3,1,Vs_avg,F_LOW_PASS);
+                        } else if(GRAD_FILTER==1 && ACOUSTIC) {
+                            smooth(waveconv_rho,3,1,Vp_avg,F_LOW_PASS);
+                        }
+                        if(WOLFE_CONDITION) {
+                            for (j=1; j<=NY; j=j+IDY) {
+                                for (i=1; i<=NX; i=i+IDX) {
+                                    if(WAVETYPE!=2) {
+                                        waveconv_old[j][i]=waveconv[j][i];
+                                        ppinp1[j][i] = ppi[j][i];
+                                    }
+                                    if(!ACOUSTIC) {
+                                        waveconv_u_old[j][i] = waveconv_u[j][i];
+                                        punp1[j][i] =pu[j][i];
+                                    }
+                                    waveconv_rho_old[j][i] = waveconv_rho[j][i];
+                                    prhonp1[j][i] = prho[j][i];
+                                }
+                            }
+                        }
+                        //L-BFGS
+                        lbfgs(waveconv_u, waveconv_rho, waveconv,Vs_avg,rho_avg,Vp_avg, rho_LBFGS, s_LBFGS, y_LBFGS, N_LBFGS,LBFGS_NPAR, iter,&LBFGS_iter_start);
                     }
                     if(WOLFE_CONDITION) {
                         for (j=1; j<=NY; j=j+IDY) {
                             for (i=1; i<=NX; i=i+IDX) {
-                                if(WAVETYPE!=2) {
-                                    waveconv_old[j][i]=waveconv[j][i];
-                                    ppinp1[j][i] = ppi[j][i];
-                                }
-                                if(!ACOUSTIC) {
-                                    waveconv_u_old[j][i] = waveconv_u[j][i];
-                                    punp1[j][i] =pu[j][i];
-                                }
-                                waveconv_rho_old[j][i] = waveconv_rho[j][i];
-                                prhonp1[j][i] = prho[j][i];
+                                if(WAVETYPE!=2) waveconv_up[j][i]=waveconv[j][i];
+                                if(!ACOUSTIC) waveconv_u_up[j][i] = waveconv_u[j][i];
+                                waveconv_rho_up[j][i] = waveconv_rho[j][i];
                             }
                         }
                     }
-                    //L-BFGS
-                    lbfgs(waveconv_u, waveconv_rho, waveconv,Vs_avg,rho_avg,Vp_avg, rho_LBFGS, s_LBFGS, y_LBFGS, N_LBFGS,LBFGS_NPAR, iter,&LBFGS_iter_start);
+                    FWI_run=0;
+                    steplength_search=1;
+                    gradient_optimization=0;
+                    countstep=0;
                 }
-                if(WOLFE_CONDITION) {
-                    for (j=1; j<=NY; j=j+IDY) {
-                        for (i=1; i<=NX; i=i+IDX) {
-                            if(WAVETYPE!=2) waveconv_up[j][i]=waveconv[j][i];
-                            if(!ACOUSTIC) waveconv_u_up[j][i] = waveconv_u[j][i];
-                            waveconv_rho_up[j][i] = waveconv_rho[j][i];
+                /*-----------------------------------------------------*/
+                /*   Wolfe condition: Check and step length search     */
+                /*-----------------------------------------------------*/
+                if(steplength_search==1 && (GRAD_METHOD==2 && iter>LBFGS_iter_start) && FORWARD_ONLY==0 && WOLFE_CONDITION) {
+                    if(countstep>WOLFE_NUM_TEST) {
+                        if(wolfe_found_lower_L2) {
+                            fprintf(FP,"\n After %d simulations no step length could be found which reduces the misfit and satisfy the wolfe condition.",countstep);
+                            fprintf(FP,"\n However, a step length which reduces the mifit could be found and will be used.");
+                            fprintf(FP,"\n L2_new=%f and L2_old=%f with step length=%f.",L2_SL_FS,L2_SL_old,alpha_SL_FS);
+                            alpha_SL=alpha_SL_FS;
+                            L2_SL_new=L2_SL_FS;
+                            use_wolfe_failsafe=1;
+                            break;
+                        } else {
+                            fprintf(FP,"\n After %d simulations no step length could be found which reduces the misfit and satisfy the wolfe condition.",countstep);
+                            fprintf(FP,"\n Will continue without model update.");
+                            wolfe_SLS_failed=1;
+                            break;
                         }
                     }
-                }
-                FWI_run=0;
-                steplength_search=1;
-                gradient_optimization=0;
-                countstep=0;
-            }
-            /*-----------------------------------------------------*/
-            /*   Wolfe condition: Check and step length search     */
-            /*-----------------------------------------------------*/
-            if(steplength_search==1 && (GRAD_METHOD==2 && iter>LBFGS_iter_start) && FORWARD_ONLY==0 && WOLFE_CONDITION) {
-                if(countstep>WOLFE_NUM_TEST) {
-                    if(wolfe_found_lower_L2) {
-                        fprintf(FP,"\n After %d simulations no step length could be found which reduces the misfit and satisfy the wolfe condition.",countstep);
-                        fprintf(FP,"\n However, a step length which reduces the mifit could be found and will be used.");
-                        fprintf(FP,"\n L2_new=%f and L2_old=%f with step length=%f.",L2_SL_FS,L2_SL_old,alpha_SL_FS);
-                        alpha_SL=alpha_SL_FS;
-                        L2_SL_new=L2_SL_FS;
-                        use_wolfe_failsafe=1;
-                        break;
-                    } else {
-                        fprintf(FP,"\n After %d simulations no step length could be found which reduces the misfit and satisfy the wolfe condition.",countstep);
-                        fprintf(FP,"\n Will continue without model update.");
-                        wolfe_SLS_failed=1;
-                        break;
-                    }
-                }
-                /* Initialisation of calculation of gradient and misfit with first step lenght */
-                if(countstep==0) {
-                    /* Init test step lengths */
-                    alpha_SL=1;
-                    alpha_SL_min=0;
-                    alpha_SL_max=0;
-                    if(iter>2 && WOLFE_TRY_OLD_STEPLENGTH) {
-                        alpha_SL=alpha_SL_old;
-                    }
-                    /* Calculate update */
-                    calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,
-                                         iter,1,FORWARD_ONLY,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,
-                                         N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
-                    FWI_run=1;
-                }
-                /* Check if current step length satisfy wolfe condition, if not call linesearch for new step length */
-                if(countstep>0) {
-                    wolfe_status=check_wolfe(alpha_SL, L2_SL_old, L2_SL_new, waveconv_u_old, waveconv_u, 
-                                             waveconv_u_up,waveconv_rho_old, waveconv_rho, waveconv_rho_up,
-                                             waveconv_old, waveconv, waveconv_up, c1_SL, c2_SL,LBFGS_NPAR);
-                    if(wolfe_status==0) {
-                        /* Current step length satisfy wolfe condition, abort step length search */
-                        steplength_search=0;
-                        break;
-                    } else {
-                        fprintf(FP,"\n FD-Simulation %d out of max. %d",countstep,WOLFE_NUM_TEST);
-                        fprintf(FP,"\n Old L2=%f; New L2=%f",L2_SL_old,L2_SL_new);
-                        fprintf(FP, "\n Min. steplength=%1.3f; max. steplength=%1.3f;\n Used steplength=%1.3f",alpha_SL_min,alpha_SL_max,alpha_SL);
-
-                        /* Failsafe, if a step length is found which reduce the misfit, save this one */
-                        if((countstep==1 && L2_SL_new<L2_SL_old)||(countstep>2 && L2_SL_new<L2_SL_FS)) {
-                            wolfe_found_lower_L2=1;
-                            alpha_SL_FS=alpha_SL;
-                            L2_SL_FS=L2_SL_new;
+                    /* Initialisation of calculation of gradient and misfit with first step lenght */
+                    if(countstep==0) {
+                        /* Init test step lengths */
+                        alpha_SL=1;
+                        alpha_SL_min=0;
+                        alpha_SL_max=0;
+                        if(iter>2 && WOLFE_TRY_OLD_STEPLENGTH) {
+                            alpha_SL=alpha_SL_old;
                         }
-                        /* Current step length do not satisfy wolfe condition, try new step length */
-                        wolfe_linesearch(wolfe_status, &alpha_SL_min, &alpha_SL_max, &alpha_SL);
+                        /* Calculate update */
                         calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,
-                                             iter,1,FORWARD_ONLY,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,
-                                             N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
-                        fprintf(FP,"; New steplength=%1.3f",alpha_SL);
+                                iter,1,FORWARD_ONLY,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,
+                                N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
                         FWI_run=1;
                     }
-                }
-            } else {
-                steplength_search=0;
-            }
-            countstep++;
-            if(FORWARD_ONLY!=0) {
-                break;
-            }
-        }
-        if(wolfe_SLS_failed) {
-            if (TIME_FILT==0) {
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t  %f\n",0.0,iter,
-                                    wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,GAMMA);
-            } else {
-                if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f \n",0.0,iter,
-                                    wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS,GAMMA);
-            }
-            if(WAVETYPE==3 && MYID==0) {
-                fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
-            }
-            /* No update is done here, however model fils are written to disk for easy post processing */
-            alpha_SL=0.0;
-            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,
-                                 FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,
-                                 LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
-            alpha_SL_old=1;
-            /* If minimum number of iterations would be enforced, L-BFGS is likely to crash */
-            min_iter_help=0;
-        }
-        /*-----------------------------------------------------*/
-        /*       Wolfe condition: Model update                 */
-        /*-----------------------------------------------------*/
-        if((GRAD_METHOD==2 && iter>LBFGS_iter_start) && FORWARD_ONLY==0 && WOLFE_CONDITION && !wolfe_SLS_failed) {
-            /* save old step length for next iteration as first guess */
-            if(WOLFE_TRY_OLD_STEPLENGTH) { 
-                alpha_SL_old=alpha_SL;
-            }
-            /* Not sure if this is needed */
-            for (j=1; j<=NY; j=j+IDY) {
-                for (i=1; i<=NX; i=i+IDX) {
-                    prho[j][i]=prhonp1[j][i];
-                    if(WAVETYPE!=2) {
-                        ppi[j][i]=ppinp1[j][i];
-                    }
-                    if(!ACOUSTIC) {
-                        pu[j][i]=punp1[j][i];
-                    }
-                }
-            }
-            /* do the final model update */
-            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,
-                                 FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,
-                                 LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
-            L2_hist[iter]=L2t[4];
-
-            /* write L2 log file */
-            float diff=0.0;
-            diff=fabs((L2_hist[iter-2]-L2_hist[iter])/L2_hist[iter-2]);
-            if(TIME_FILT==0) {
-                if(MYID==0) {
-                    fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \n",alpha_SL,iter,
-                            wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,GAMMA);
-                }
-            } else {
-                if(MYID==0) {
-                    fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f\n",alpha_SL,iter,
-                            wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS,GAMMA);
-                }
-            }
-            if(WAVETYPE==3 && MYID==0) {
-                fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
-            }
-            /* initiate variables for next iteration */
-            if(use_wolfe_failsafe==1) {
-                L2_hist[iter]=L2_SL_new;
-                FWI_run=1;
-                gradient_optimization=1;
-                steplength_search=0;
-                wolfe_SLS_failed=1;
-                alpha_SL_old=1;
-            } else {
-                FWI_run=0;
-                gradient_optimization=1;
-                L2_SL_old=L2_SL_new;
-            }
-            /* Reset */
-            wolfe_found_lower_L2=0;
-            use_wolfe_failsafe=0;
-        } else {
-            FWI_run=1;
-            gradient_optimization=1;
-        }
-        opteps_vp=0.0;
-        opteps_vs=0.0;
-        opteps_rho=0.0;
-
-        /* ============================================================================================================================*/
-        /* =============================================== Step length estimation =====================================================*/
-        /* ============================================================================================================================*/
-
-        if((FORWARD_ONLY==0)  && (!WOLFE_CONDITION || (WOLFE_CONDITION && GRAD_METHOD==2 && iter==LBFGS_iter_start))) {
-            fprintf(FP,"\n=================================================================================================\n");
-            fprintf(FP,"\n *********************** Starting step length estimation at iteration %i ************************\n",iter);
-            fprintf(FP,"\n=================================================================================================\n\n");
-
-            step1=0;
-            step2=0;
-
-            /* start with first guess for step length alpha */
-            eps_scale=EPS_SCALE; /* maximum model change = 1% of the maximum model value */
-
-            countstep=0; /* count number of forward calculations */
-
-            itests=2;
-            iteste=2;
-
-            if(GRAD_METHOD==2&&(iter>LBFGS_iter_start)&&LBFGS_STEP_LENGTH) {
-                itests=1;
-                iteste=1;
-                eps_scale=0.1;
-            }
-
-            /* set min_iter_help to initial global value of MIN_ITER */
-            if(iter==1) {
-                min_iter_help=MIN_ITER;
-            }
-
-            /* ------------------------------------------------------------------------------*/
-            /* ----------- Beginn Search three step lengths for parabolic search  -----------*/
-            /* ------------------------------------------------------------------------------*/
-            while((step2!=1)||(step1!=1)) {
-
-                /* --------------------- */
-                /* calculate 3 L2 values */
-                /* --------------------- */
-                for (itest=itests; itest<=iteste; itest++) {
-
-                    /* calculate change in the material parameters */
-                    calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,
-                                         FORWARD_ONLY,eps_scale,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,
-                                         N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
-                    /* For the calculation of the material parameters beteween gridpoints
-                       the have to be averaged. For this, values lying at 0 and NX+1,
-                       for example, are required on the local grid. These are now copied from the
-                       neighbouring grids */
-                    if(!ACOUSTIC) {
-                        // no differentiation of elastic and viscoelastic modelling because the viscoelastic parameters did not change during the forward modelling
-                        matcopy_elastic(prhonp1, ppinp1, punp1);	
-                    } else {
-                        matcopy_acoustic(prhonp1, ppinp1);
-                    }
-
-                    MPI_Barrier(MPI_COMM_WORLD);
-
-                    if(!ACOUSTIC) {
-                        av_mue(punp1,puipjp,prhonp1);
-                    }
-                    av_rho(prhonp1,prip,prjp);
-
-                    /* Preparing memory variables for update_s (viscoelastic) */
-                    if (L) {
-                        if(!ACOUSTIC) {
-                            prepare_update_s(etajm,etaip,peta,fipjp,punp1,puipjp,ppinp1,prhonp1,ptaus,ptaup,ptausipjp,
-                                             f,g, bip,bjm,cip,cjm,dip,d,e);
+                    /* Check if current step length satisfy wolfe condition, if not call linesearch for new step length */
+                    if(countstep>0) {
+                        wolfe_status=check_wolfe(alpha_SL, L2_SL_old, L2_SL_new, waveconv_u_old, waveconv_u, 
+                                waveconv_u_up,waveconv_rho_old, waveconv_rho, waveconv_rho_up,
+                                waveconv_old, waveconv, waveconv_up, c1_SL, c2_SL,LBFGS_NPAR);
+                        if(wolfe_status==0) {
+                            /* Current step length satisfy wolfe condition, abort step length search */
+                            steplength_search=0;
+                            break;
                         } else {
-                            prepare_update_p(etajm,peta,ppinp1,prhonp1,ptaup,g,bjm,cjm,e);
-                        }
-                    }
+                            fprintf(FP,"\n FD-Simulation %d out of max. %d",countstep,WOLFE_NUM_TEST);
+                            fprintf(FP,"\n Old L2=%f; New L2=%f",L2_SL_old,L2_SL_new);
+                            fprintf(FP, "\n Min. steplength=%1.3f; max. steplength=%1.3f;\n Used steplength=%1.3f",alpha_SL_min,alpha_SL_max,alpha_SL);
 
-                    /* initialization of L2 calculation */
-                    L2=0.0;
-                    L2_SH=0.0;
-
-                    alphanom = 0.0;
-                    alphadenom = 0.0;
-
-                    exchange_par();
-
-                    if (RUN_MULTIPLE_SHOTS) nshots=nsrc;
-                    else nshots=1;
-
-                    /* ==============================================================================================*/
-                    /* ==================================== start of loop over shots (test forward) =================*/
-                    /* ==============================================================================================*/
-                    for (ishot=TESTSHOT_START; ishot<=TESTSHOT_END; ishot=ishot+TESTSHOT_INCR) {
-                        /* step length estimation uses not all aviable shots */
-                        fprintf(FP,"\n=================================================================================================\n");
-                        fprintf(FP,"\n *****  Starting simulation (test-forward model) no. %d for shot %d of %d (rel. step length %.5f) \n",
-                                itest,ishot,nshots,eps_scale);
-                        fprintf(FP,"\n=================================================================================================\n\n");
-
-                        if (SEISMO && READREC==2) {
-                            if (ntr>0) {
-                                dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
-                                                 sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
-                                                 sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
+                            /* Failsafe, if a step length is found which reduce the misfit, save this one */
+                            if((countstep==1 && L2_SL_new<L2_SL_old)||(countstep>2 && L2_SL_new<L2_SL_FS)) {
+                                wolfe_found_lower_L2=1;
+                                alpha_SL_FS=alpha_SL;
+                                L2_SL_FS=L2_SL_new;
                             }
-                            free_imatrix(recpos,1,3,1,ntr_glob);
-                            recpos=receiver(&ntr, srcpos, ishot);
-                            recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
-                            ntr_glob=ntr;
-                            ntr=ntr_loc;
-
-                            if (ntr>0) {
-                                alloc_sections(ntr,ns,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
-                                               &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
-                                               &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
-                            }
+                            /* Current step length do not satisfy wolfe condition, try new step length */
+                            wolfe_linesearch(wolfe_status, &alpha_SL_min, &alpha_SL_max, &alpha_SL);
+                            calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,
+                                    iter,1,FORWARD_ONLY,alpha_SL,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,
+                                    N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                            fprintf(FP,"; New steplength=%1.3f",alpha_SL);
+                            FWI_run=1;
                         }
-                        for (nt=1; nt<=8; nt++) {
-                            srcpos1[nt][1]=srcpos[nt][ishot];
-                        }
-                        /*-----------------------------------*/
-                        /* determine source position on grid */
-                        /*-----------------------------------*/
-                        if (RUN_MULTIPLE_SHOTS) {
-                            /* find this single source positions on subdomains */
-                            if (nsrc_loc>0) free_matrix(srcpos_loc,1,8,1,1);
-                            srcpos_loc=splitsrc(srcpos1,&nsrc_loc, 1);
-                        } else {
-                            /* Distribute multiple source positions on subdomains */
-                            srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
-                        }
-                        /*-------------------*/
-                        /* calculate wavelet */
-                        /*-------------------*/
-                        /* calculate wavelet for each source point P SV */
-                        if(WAVETYPE==1||WAVETYPE==3) {
-                            signals=NULL;
-                            signals=wavelet(srcpos_loc,nsrc_loc,ishot,0,0);
-                        }
-                        /* calculate wavelet for each source point SH */
-                        if(WAVETYPE==2||WAVETYPE==3) {
-                            signals_SH=NULL;
-                            signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1,0);
-                        }
-                        /*------------------------------------------------------------------------------*/
-                        /*----------- Start of Time Domain Filtering -----------------------------------*/
-                        /*------------------------------------------------------------------------------*/
-                        /*time domain filtering of the source signal */
-                        if(WAVETYPE==1||WAVETYPE==3) {
-                            if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)) {
-                                timedomain_filt(signals,F_LOW_PASS,ORDER,nsrc_loc,ns,1);
-                            }
-                        }
-                        /*time domain filtering of the source signal */
-                        if(WAVETYPE==2||WAVETYPE==3) {
-                            if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)) {
-                                timedomain_filt(signals_SH,F_LOW_PASS,ORDER,nsrc_loc,ns,1);
-                            }
-
-                        }
-                        /*------------------------------------------------------------------------------*/
-                        /*----------- End of Time Domain Filtering -------------------------------------*/
-                        /*------------------------------------------------------------------------------*/
-                        /* initialize wavefield with zero */
-                        if (L) {
-                            if(!ACOUSTIC) {
-                                zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,
-                                                 uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,
-                                                 psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,
-                                                 psi_vxxs,pr,pp,pq,pt,po);
-                            } else {
-                                zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, 
-                                                   psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, 
-                                                   psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
-                            }
-                        } else {
-                            if(!ACOUSTIC) {
-                                zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,
-                                            pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,
-                                            psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
-                            } else {
-                                zero_fdveps_ac(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,psp,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,
-                                               psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
-                            }
-                        }
-                        lsnap=iround(TSNAP1/DT);
-                        lsamp=NDT;
-                        nsnap=0;
-                        /*-------------------------------------------------------------------------------*/
-                        /*----------------------  loop over timesteps (forward model) step length-------*/
-                        /*-------------------------------------------------------------------------------*/
-                        if((!VERBOSE)&&(MYID==0)) {
-                            fprintf(FP,"\n ****************************************\n ");
-                        }
-                        for (nt=1; nt<=NT; nt++) {
-                            // Ratio to give output to stout
-                            infoout = !(nt%nt_out);
-                            if((!VERBOSE)&&(MYID==0)) {
-                                if(!(nt%(NT/40))) {
-                                    fprintf(FP,"*");
-                                }
-                            }
-                            /* Check if simulation is still stable P and SV */
-                            if (WAVETYPE==1 || WAVETYPE==3) {
-                                if (isnan(pvy[NY/2][NX/2])) {
-                                    fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                    declare_error(" Simulation is unstable !");
-                                }
-                            }
-                            /* Check if simulation is still stable SH */
-                            if (WAVETYPE==2 || WAVETYPE==3) {
-                                if (isnan(pvz[NY/2][NX/2])) {
-                                    fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
-                                    declare_error(" Simulation is unstable !");
-                                }
-                            }
-                            if (MYID==0) {
-                                if (infoout)  {
-                                    fprintf(FP,"\n Computing timestep %d of %d \n",nt,NT);
-                                }
-                                time3=MPI_Wtime();
-                            }
-                            /* update of particle velocities */
-                            if(!ACOUSTIC) {
-                                if (WAVETYPE==1 || WAVETYPE==3) {
-                                    update_v_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, uttx, utty,
-                                                 psxx, psyy, psxy, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,
-                                                 absorb_coeff,hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, 
-                                                 b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
-                                                 psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
-                                }
-                                if (WAVETYPE==2 || WAVETYPE==3) {
-                                    update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, srcpos_loc, 
-                                                    signals, signals_SH, nsrc_loc, absorb_coeff,hc,infoout,0, K_x, 
-                                                    a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
-                                                    K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
-                                }
-                            } else {
-                                update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, psp, 
-                                                      prip, prjp, srcpos_loc,signals,signals,nsrc_loc,absorb_coeff,
-                                                      hc,infoout,0, K_x_half, a_x_half, b_x_half, K_y_half, 
-                                                      a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
-                            }
-                            if (MYID==0) {
-                                time4=MPI_Wtime();
-                                time_av_v_update+=(time4-time3);
-                                if (infoout)  fprintf(FP," particle velocity exchange between PEs ...");
-                            }
-                            /* exchange of particle velocities between PEs */
-                            exchange_v(pvx, pvy,pvz, bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, 
-                                       bufferbot_to_top, req_send, req_rec,wavetype_start);
-                            if (MYID==0) {
-                                time5=MPI_Wtime();
-                                time_av_v_exchange+=(time5-time4);
-                                if (infoout)  fprintf(FP," finished (real time: %4.2f s).\n",time5-time4);
-                            }
-                            if (L) {   /* viscoelastic */
-                                if (WAVETYPE==1 || WAVETYPE==3) {
-                                    if(!ACOUSTIC) {
-                                        update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, 
-                                                          ppinp1, punp1, puipjp, prhonp1, hc, infoout, pr, pp, pq, 
-                                                          fipjp, f, g, bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, 
-                                                          K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, 
-                                                          a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-                                    } else {
-                                        update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppinp1, prhonp1, hc, infoout,
-                                                pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
-                                                K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
-                                                psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-                                    }
-                                }
-                                if (WAVETYPE==2 || WAVETYPE==3) {
-                                    update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, cip, cjm, d, 
-                                                         dip,fipjp, f, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, 
-                                                         b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
-                                }
-                            } else {   /* elastic */
-                                if(!ACOUSTIC) {
-                                    if (WAVETYPE==1 || WAVETYPE==3) {
-                                        update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppinp1, 
-                                                             punp1, puipjp, absorb_coeff, prhonp1, hc, infoout, K_x, a_x, b_x, 
-                                                             K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, 
-                                                             b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-                                    }
-                                    if (WAVETYPE==2 || WAVETYPE==3) {
-                                        update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, 
-                                                                K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
-                                                                K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,
-                                                                psi_vzx, psi_vzy,puipjp,punp1,prhonp1);
-                                    }
-                                } else /* acoustic */
-                                    update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppinp1, absorb_coeff, prhonp1, hc, 
-                                                 infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y,
-                                                 K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
-                            }
-                            if (MYID==0) {
-                                time6=MPI_Wtime();
-                                time_av_s_update+=(time6-time5);
-                                if (infoout)  {
-                                    fprintf(FP," stress exchange between PEs ...");
-                                }
-                            }
-                            /* explosive source */
-                            if ((SOURCE_TYPE==1))
-                                psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
-                            /* Applying free surface condition */
-                            if ((FREE_SURF) && (POS[2]==0)) {
-                                if (!ACOUSTIC) {
-                                    if (L) {
-                                        /* viscoelastic */
-                                        surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppinp1, punp1, 
-                                                    prhonp1, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, 
-                                                    psi_vxxs, ux, uy,uxy,uyz,psxz,uxz);
-                                    } else {
-                                        /* elastic */
-                                        surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppinp1, punp1, prhonp1, 
-                                                            hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
-                                    }
-                                } else {
-                                    /* viscoelastic and elastic ACOUSTIC */
-                                    surface_acoustic_PML(1, psp);
-                                }
-                            }
-                            /* stress exchange between PEs */
-                            if(!ACOUSTIC) {
-                                exchange_s(psxx,psyy,psxy,psxz,psyz,bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, 
-                                           bufferbot_to_top, req_send, req_rec,wavetype_start);
-                            } else {
-                                exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
-                            }
-                            if(MYID==0) {
-                                time7=MPI_Wtime();
-                                time_av_s_exchange+=(time7-time6);
-                                if (infoout) {
-                                    fprintf(FP," finished (real time: %4.2f s).\n",time7-time6);
-                                }
-                            }
-                            /* store amplitudes at receivers in section-arrays */
-                            if (SEISMO) {
-                                seismo_ssg(nt, ntr, recpos_loc, sectionvx, sectionvy,sectionvz, sectionp, sectioncurl, 
-                                           sectiondiv, pvx, pvy,pvz, psxx, psyy, psp, ppinp1, punp1, hc);
-                                /*lsamp+=NDT;*/
-                            }
-                            if (MYID==0) {
-                                time8=MPI_Wtime();
-                                time_av_timestep+=(time8-time3);
-                                if (infoout) {
-                                    fprintf(FP," total real time for timestep %d : %4.2f s.\n",nt,time8-time3);
-                                }
-                            }
-                        }
-                        /*-------------------------------------------------------------------------------*/
-                        /*------------------ end loop over timesteps (forward model) step length  -------*/
-                        /*-------------------------------------------------------------------------------*/
-                        if(MYID==0 && VERBOSE) {
-                            fprintf(FP,"\n\n");
-                            printf("Calculate residuals between test forward model m - mu * dm and actual model m \n");
-                            printf("----------------------------------------------------------------------------- \n");
-                        }
-                        /*-----------------------------------*/
-                        /*------- Calculate residuals -------*/
-                        /*-----------------------------------*/
-                        if(ntr > 0) {
-                            if(WAVETYPE==1 || WAVETYPE==3) {
-                                /* --------------------------------- */
-                                /* read seismic data from SU file vx */
-                                /* --------------------------------- */
-                                if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==3)) { /* if ADJOINT_TYPE */
-                                    inseis(fprec,ishot,sectionread,ntr_glob,ns,1,iter);
-                                    if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
-                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
-                                    }
-                                    h=1;
-                                    for(i=1; i<=ntr; i++) {
-                                        for(j=1; j<=ns; j++) {
-                                            sectionvxdata[h][j]=sectionread[recpos_loc[3][i]][j];
-                                        }
-                                        h++;
-                                    }
-                                    L2=calc_res(sectionvxdata,sectionvx,sectionvxdiff,sectionvxdiffold,ntr,ns,LNORM,
-                                                L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
-                                }
-                                /* --------------------------------- */
-                                /* read seismic data from SU file vy */
-                                /* --------------------------------- */
-                                if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==2)) { /* if ADJOINT_TYPE */
-                                    inseis(fprec,ishot,sectionread,ntr_glob,ns,2,iter);
-                                    if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
-                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
-                                    }
-                                    h=1;
-                                    for(i=1; i<=ntr; i++) {
-                                        for(j=1; j<=ns; j++) {
-                                            sectionvydata[h][j]=sectionread[recpos_loc[3][i]][j];
-                                        }
-                                        h++;
-                                    }
-                                    L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,ns,LNORM,
-                                                L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
-                                }
-                                /* --------------------------------- */
-                                /* read seismic data from SU file p */
-                                /* --------------------------------- */
-                                if(ADJOINT_TYPE==4) { /* if ADJOINT_TYPE */
-                                    inseis(fprec,ishot,sectionread,ntr_glob,ns,9,iter);
-                                    if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
-                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
-                                    }
-                                    h=1;
-                                    for(i=1; i<=ntr; i++) {
-                                        for(j=1; j<=ns; j++) {
-                                            sectionpdata[h][j]=sectionread[recpos_loc[3][i]][j];
-                                        }
-                                        h++;
-                                    }
-                                    L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,ns,LNORM,
-                                                L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
-                                }
-                            }
-                            /* --------------------------------- */
-                            /* read seismic data from SU file vz */
-                            /* --------------------------------- */
-                            if(WAVETYPE==2 || WAVETYPE==3) {
-                                inseis(fprec,ishot,sectionread,ntr_glob,ns,10,iter);
-                                if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
-                                    timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,ns,1);
-                                }
-                                h=1;
-                                for(i=1; i<=ntr; i++) {
-                                    for(j=1; j<=ns; j++) {
-                                        sectionvzdata[h][j]=sectionread[recpos_loc[3][i]][j];
-                                    }
-                                    h++;
-                                }
-                                L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,ns,LNORM,
-                                               L2_SH,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
-                            }
-                        }
-                    }
-                    /* ==============================================================================================*/
-                    /* ==================================== end of loop over shots (test forward) ===================*/
-                    /* ==============================================================================================*/
-                    epst1[itest]=eps_scale;
-                    epst1[1] = 0.0;
-                    if(WAVETYPE==1||WAVETYPE==3) {
-                        L2sum=0.0;
-                        MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    }
-                    if(WAVETYPE==2||WAVETYPE==3) {
-                        L2sum_SH=0.0;
-                        MPI_Allreduce(&L2_SH,&L2sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
-                    }
-                    switch (LNORM) {
-                        case 2:
-                            L2t[itest]=0.0;
-                            if(JOINT_EQUAL_WEIGHTING) {
-                                L2t[itest]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
-                                L2t[itest]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
-                                break;
-                            }
-                            if(WAVETYPE==1||WAVETYPE==3) {
-                                L2t[itest]+=L2sum/energy_sum;
-                            }
-                            if(WAVETYPE==2||WAVETYPE==3) {
-                                L2t[itest]+=L2sum_SH/energy_sum_SH;
-                            }
-                            break;
-                        case 7:
-                            if (TRKILL) {
-                                if(ADJOINT_TYPE==1) {	/* x and y component are used in the inversion */
-                                    L2t[itest]=2.0*(1.0+(L2sum/((float)((NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots)*2.0))));
-                                    if (MYID==0) {
-                                        printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
-                                    }
-                                } else {
-                                    L2t[itest]=2.0*(1.0+(L2sum/((float)(NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots))));
-                                    if (MYID==0) {
-                                        printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
-                                        printf("ntr_glob=%d\n",ntr_glob);
-                                        printf("NO_OF_TESTSHOTS=%d\n",NO_OF_TESTSHOTS);
-                                    }
-                                }
-                            } else {
-                                if(ADJOINT_TYPE==1) {	/* x and y component are used in the inversion */
-                                    L2t[itest]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob*2.0)));
-                                } else {
-                                    L2t[itest]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob)));
-                                }
-                            }
-                            break;
-                        case 8:
-                            L2t[itest]=L2sum/energy_sum;
-                            break;
-                        default:
-                            L2t[itest]=L2sum;
-                            break;
-                    }
-                }
-                /* --------------------- */
-                /*    end of L2 test     */
-                /* --------------------- */
-                if(GRAD_METHOD==2&&(iter>LBFGS_iter_start)&&LBFGS_STEP_LENGTH) {
-                    if(itests==3) {
-                        epst1[3]=eps_scale;
-                        break;
-                    }
-                    if(itests==2) {
-                        epst1[2]=eps_scale;
-                        itests=3;
-                        iteste=3;
-                        eps_scale=1;
-                    }
-                    if(itests==1) {
-                        epst1[1]=eps_scale;
-                        itests=2;
-                        iteste=2;
-                        eps_scale=0.6;
                     }
                 } else {
-                    /* step1 search L2t[2] < L2t[1]  */
-                    /* step2 search L2t[2] < L2t[3]  */
-                    /* -> parabolic fit              */
-
-                    /* Did not find a step size which reduces the misfit function */
-                    /* Reduce step length                                         */
-                    if((step1==0)&&(L2t[1]<=L2t[2])) {
-                        eps_scale = eps_scale/scalefac;
-                        countstep++;
-                    }
-                    /* Found a step size with L2t[2] < L2t[3]*/
-                    /* -> now parabolic fit                  */
-                    if((step1==1)&&(L2t[2]<L2t[3])) {
-                        epst1[3]=eps_scale;
-                        step2=1;
-                    }
-                    /* Could not find a step size with L2t[2] < L2t[3]*/
-                    /* increase step length to find  a larger misfit function than L2t[2]*/
-                    if((step1==1)&&(L2t[2]>=L2t[3])) {
-                        epst1[3]=eps_scale;
-                        eps_scale = eps_scale + (eps_scale/scalefac);
-                        countstep++;
-                    }
-                    /* found a step size which reduces the misfit function */
-                    /* -> next step2                                       */
-                    if((step1==0)&&(L2t[1]>L2t[2])) {
-                        epst1[2]=eps_scale;
-                        step1=1;
-                        iteste=3;
-                        itests=3;
-                        countstep=0;
-                        /* find a second step length with a larger misfit function than L2t[2]*/
-                        eps_scale = eps_scale + (eps_scale/scalefac);
-                    }
-                    step3=0;
-
-                    if((step1==0)&&(countstep>stepmax)) {
-                        if(MYID==0) {
-                            printf(" Steplength estimation failed!\n\n");
-                        }
-                        step3=1;
-                        break;
-                    }
-                    if((step1==1)&&(countstep>stepmax)) {
-                        if(MYID==0) {
-                            printf("Could not find a proper 3rd step length which brackets the minimum\n");
-                        }
-                        step1=1;
-                        step2=1;
-                    }
+                    steplength_search=0;
                 }
-                if((MYID==0)) {
-                    fprintf(FP,"\n=================================================================================================\n");
-                    printf("Step length estimation status at iteration %i\n",iter);
-                    if(VERBOSE) {
-                        printf("iteste = %d \t itests = %d \t step1 = %d \t step2 = %d \t eps_scale = %e \t countstep = %d \t ", 
-                                iteste, itests, step1, step2, eps_scale, countstep);
-                        printf("stepmax= %d \t scalefac = %e \t MYID = %d \t L2t[1] = %e \t L2t[2] = %e \t L2t[3] = %e \n",
-                                stepmax, scalefac, MYID, L2t[1]);
-                    }
-                    if((!VERBOSE)) {
-                        printf("FD-Simulation %d of %d\n",countstep+1,stepmax+2);
-                    }
-                    if((!VERBOSE)) {
-                        printf("L2-Norm[1] = %e\n",L2t[1]);
-                    }
-                    if((!VERBOSE)) {
-                        printf("L2-Norm[2] = %e\n",L2t[2]);
-                    }
-                    if((!VERBOSE)) {
-                        printf("L2-Norm[3] = %e\n",L2t[3]);
-                    }
-                    if((VERBOSE)) {
-                        printf("iteste = %d \t itests = %d \t step1 = %d \t step2 = %d \t eps_scale = %e \n",iteste,itests,step1,step2,eps_scale);
-                    }
+                countstep++;
+                if(FORWARD_ONLY!=0) {
+                    break;
                 }
             }
-            /* ------------------------------------------------------------------------------*/
-            /* ----------- End Search three step lengths for parabolic search  -----------*/
-            /* ------------------------------------------------------------------------------*/
-            if(GRAD_METHOD==2&&(iter>LBFGS_iter_start)&&LBFGS_STEP_LENGTH) {
-                if(L2t[1]>L2t[2] && L2t[3]>L2t[2]) {
-                    step1=1;
-                }
-                if(L2t[1]>L2t[2] && L2t[2]>L2t[3]) {
-                    step1=1;
-                }
-                if(L2t[1]<L2t[2] && L2t[2]<L2t[3]) {
-                    step1=1;
-                }
-                if(L2t[1]>L2t[2] && L2t[2]>L2t[3]) {
-                    step1=1;
-                }
-            }
-            if(step1==1) { /* only find an optimal step length if step1==1 */
-                /* calculate optimal step length epsilon for Vp and Vs*/
-                if(MYID==0) {
-                    printf("======================================================================================= \n");
-                    printf("calculate optimal step length epsilon for Vp, Vs and density (step1 == %d, step3 == %d) \n",step1,step3);
-                    printf("======================================================================================= \n");
-                }
-                opteps_vp=calc_opt_step(L2t,waveconv,gradg,epst1,1,C_vp);
-                eps_scale = opteps_vp;
-            } else {
-                if (iter < min_iter_help) {
-                    eps_scale=EPS_SCALE;
-                    opteps_vp=EPS_SCALE;
-                } else {
-                    eps_scale=0.0;
-                    opteps_vp=0.0;
-                }
-                if(GRAD_METHOD==2&&(iter>LBFGS_iter_start)&&LBFGS_STEP_LENGTH) {
-                    eps_scale=0.05;
-                    opteps_vp=eps_scale;
-                    if(MYID==0) printf("\n\n=========================================");
-                    if(MYID==0) printf("\n L-BFGS step length search failed");
-                    if(MYID==0) printf("\n eps_scale is set to %f",eps_scale);
-                    if(MYID==0) printf("\n=========================================\n\n");
-                }
-                if(MYID==0) {
-                    printf("================================================================================== \n");
-                    printf("using EPS_SCALE for the step length (step1 == %d, step3 == %d, EPS_SCALE == %4.2f) \n",step1,step3,EPS_SCALE);
-                    printf("================================================================================== \n");
-                }
-            }
-            if(MYID==0) fprintf(FP,"\n=================================================================================================\n");
-            if(MYID==0) {
-                printf("Step length search final status:\n");
-            }
-            if(MYID==0) {
-                printf("MYID = %d \t opteps_vp = %e \t opteps_vs = %e \t opteps_rho = %e \n",MYID,opteps_vp,opteps_vs,opteps_rho);
-                if(VERBOSE) printf("MYID = %d \t L2t[1] = %e \t L2t[2] = %e \t L2t[3] = %e \t Final-L2= %e \n",MYID,L2t[1],L2t[2],L2t[3],L2t[4]);
-
-                if(MYID==0&&(!VERBOSE)) {
-                    printf("L2-Norm[1] = %e\n",L2t[1]);
-                }
-                if(MYID==0&&(!VERBOSE)) {
-                    printf("L2-Norm[2] = %e\n",L2t[2]);
-                }
-                if(MYID==0&&(!VERBOSE)) {
-                    printf("L2-Norm[3] = %e\n",L2t[3]);
-                }
-                if(MYID==0&&(!VERBOSE)) {
-                    printf("L2-Norm[4] = %e (final L2 of all shots)\n",L2t[4]);
-                }
-                printf("MYID = %d \t epst1[1] = %e \t epst1[2] = %e \t epst1[3] = %e \n",MYID,epst1[1],epst1[2],epst1[3]);
+            if(wolfe_SLS_failed) {
                 if (TIME_FILT==0) {
-                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],GAMMA);
+                    if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t  %f\n",0.0,iter,
+                            wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,GAMMA);
                 } else {
-                    fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f \t %f \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS,GAMMA);
+                    if(MYID==0) fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f \n",0.0,iter,
+                            wolfe_sum_FWI,0.0,countstep-1,L2_SL_old,L2_SL_old,F_LOW_PASS,GAMMA);
                 }
                 if(WAVETYPE==3 && MYID==0) {
                     fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
                 }
+                /* No update is done here, however model fils are written to disk for easy post processing */
+                alpha_SL=0.0;
+                calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,
+                        FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,
+                        LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                alpha_SL_old=1;
+                /* If minimum number of iterations would be enforced, L-BFGS is likely to crash */
+                min_iter_help=0;
             }
+            /*-----------------------------------------------------*/
+            /*       Wolfe condition: Model update                 */
+            /*-----------------------------------------------------*/
+            if((GRAD_METHOD==2 && iter>LBFGS_iter_start) && FORWARD_ONLY==0 && WOLFE_CONDITION && !wolfe_SLS_failed) {
+                /* save old step length for next iteration as first guess */
+                if(WOLFE_TRY_OLD_STEPLENGTH) { 
+                    alpha_SL_old=alpha_SL;
+                }
+                /* Not sure if this is needed */
+                for (j=1; j<=NY; j=j+IDY) {
+                    for (i=1; i<=NX; i=i+IDX) {
+                        prho[j][i]=prhonp1[j][i];
+                        if(WAVETYPE!=2) {
+                            ppi[j][i]=ppinp1[j][i];
+                        }
+                        if(!ACOUSTIC) {
+                            pu[j][i]=punp1[j][i];
+                        }
+                    }
+                }
+                /* do the final model update */
+                calc_mat_change_test(waveconv_up,waveconv_rho_up,waveconv_u_up,prhonp1,prho,ppinp1,ppi,punp1,pu,iter,1,
+                        FORWARD_ONLY,alpha_SL,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,N_LBFGS,
+                        LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                L2_hist[iter]=L2t[4];
 
-            /* saving history of final L2*/
-            L2_hist[iter]=L2t[4];
-            do_stf=0;
-
-
-            /* -----------------------------------------------------------------------*/
-            /* ----------- Do the actual update to the material parameters -----------*/
-            /* -----------------------------------------------------------------------*/
-            calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,
-                                 FORWARD_ONLY,eps_scale,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,
-                                 N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
-            fprintf(FP,"=================================================================================================\n");
-        } /* end of if(FORWARD_ONLY!=4) */
-
-        /* ------------------------------------*/
-        /* smoothing the models vp, vs and rho */
-        /* ------------------------------------*/
-        if (FORWARD_ONLY==0 && (opteps_vp>0.0 || WOLFE_CONDITION)) {
-            if(!ACOUSTIC) {
-                if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vs_avg,F_LOW_PASS);
-                if(MODEL_FILTER)smooth(pu,5,2,Vs_avg,F_LOW_PASS);
-                if(MODEL_FILTER)smooth(prho,6,2,Vs_avg,F_LOW_PASS);
+                /* write L2 log file */
+                float diff=0.0;
+                diff=fabs((L2_hist[iter-2]-L2_hist[iter])/L2_hist[iter-2]);
+                if(TIME_FILT==0) {
+                    if(MYID==0) {
+                        fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \n",alpha_SL,iter,
+                                wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,GAMMA);
+                    }
+                } else {
+                    if(MYID==0) {
+                        fprintf(FPL2,"%e \t %d \t %d \t %f \t 0 \t %d \t %e \t %e \t %f \t %f\n",alpha_SL,iter,
+                                wolfe_sum_FWI,diff,countstep-1,L2_SL_old,L2_SL_new,F_LOW_PASS,GAMMA);
+                    }
+                }
+                if(WAVETYPE==3 && MYID==0) {
+                    fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                }
+                /* initiate variables for next iteration */
+                if(use_wolfe_failsafe==1) {
+                    L2_hist[iter]=L2_SL_new;
+                    FWI_run=1;
+                    gradient_optimization=1;
+                    steplength_search=0;
+                    wolfe_SLS_failed=1;
+                    alpha_SL_old=1;
+                } else {
+                    FWI_run=0;
+                    gradient_optimization=1;
+                    L2_SL_old=L2_SL_new;
+                }
+                /* Reset */
+                wolfe_found_lower_L2=0;
+                use_wolfe_failsafe=0;
             } else {
-                if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vp_avg,F_LOW_PASS);
-                if(MODEL_FILTER)smooth(prho,6,2,Vp_avg,F_LOW_PASS);
+                FWI_run=1;
+                gradient_optimization=1;
             }
-        }
-        if(FORWARD_ONLY!=1) {
-            if(MYID==0) {
-                fclose(FPL2);
-            }
-            if(WAVETYPE==3 && MYID==0) {
-                fclose(FPL2_JOINT);
-            }
-        }
-        if(iter==nfstart) {
-            nfstart = nfstart + nf;
-        }
-        if(iter==nfstart_jac) {
-            nfstart_jac = nfstart_jac + nf_jac;
-        }
-        if (MYID==0&&VERBOSE) {
-            fprintf(FP,"\n **Info from main (written by PE %d): \n",MYID);
-            fprintf(FP," CPU time of program per PE: %li seconds.\n",clock()/CLOCKS_PER_SEC);
-            time8=MPI_Wtime();
-            fprintf(FP," Total real time of program: %4.2f seconds.\n",time8-time1);
-            time_av_v_update=time_av_v_update/(double)NT;
-            time_av_s_update=time_av_s_update/(double)NT;
-            time_av_v_exchange=time_av_v_exchange/(double)NT;
-            time_av_s_exchange=time_av_s_exchange/(double)NT;
-            time_av_timestep=time_av_timestep/(double)NT;
-            fprintf(FP," Average times for \n");
-            fprintf(FP," velocity update:  \t %5.3f seconds  \n",time_av_v_update);
-            fprintf(FP," stress update:  \t %5.3f seconds  \n",time_av_s_update);
-            fprintf(FP," velocity exchange:  \t %5.3f seconds  \n",time_av_v_exchange);
-            fprintf(FP," stress exchange:  \t %5.3f seconds  \n",time_av_s_exchange);
-            fprintf(FP," timestep:  \t %5.3f seconds  \n",time_av_timestep);
-        }
-        /* ----------------------------------------------*/
-        /* ----------- Check abort criteriums -----------*/
-        /* ----------------------------------------------*/
-        if (iter>min_iter_help) {
-            float diff=0.0, pro=PRO;
-            /* calculating differnce of the actual L2 and before two iterations, dividing with L2_hist[iter-2] provide changing in procent*/
-            diff=fabs((L2_hist[iter-2]-L2_hist[iter])/L2_hist[iter-2]);
-            /* abort criterion: if diff is smaller than pro (1% ?? is this reasonable?) than the inversion abort or switch to another frequency range*/
+            opteps_vp=0.0;
+            opteps_vs=0.0;
+            opteps_rho=0.0;
 
-            /* ------------------------------------------- */
-            /*  Check when NO workflow and TIME_FILT==0    */
-            /* ------------------------------------------- */
-            if((diff<=pro)&&(TIME_FILT==0)&&USE_WORKFLOW==0) {
-                if(MYID==0) {
-                    printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
+            /* ============================================================================================================================*/
+            /* =============================================== Step length estimation =====================================================*/
+            /* ============================================================================================================================*/
+
+            if((FORWARD_ONLY==0)  && (!WOLFE_CONDITION || (WOLFE_CONDITION && GRAD_METHOD==2 && iter==LBFGS_iter_start))) {
+                fprintf(FP,"\n=================================================================================================\n");
+                fprintf(FP,"\n *********************** Starting step length estimation at iteration %i ************************\n",iter);
+                fprintf(FP,"\n=================================================================================================\n\n");
+
+                step1=0;
+                step2=0;
+
+                /* start with first guess for step length alpha */
+                eps_scale=EPS_SCALE; /* maximum model change = 1% of the maximum model value */
+
+                countstep=0; /* count number of forward calculations */
+
+                itests=2;
+                iteste=2;
+
+                if(GRAD_METHOD==2&&(iter>LBFGS_iter_start)&&LBFGS_STEP_LENGTH) {
+                    itests=1;
+                    iteste=1;
+                    eps_scale=0.1;
                 }
-                break;
-            }
-            /* abort criterion: did not found a step length which decreases the misfit*/
-            if((step3==1||wolfe_SLS_failed)&&(TIME_FILT==0&&USE_WORKFLOW==0)) {
-                if(MYID==0) {
-                    printf("\n Did not find a step length which decreases the misfit.\n");
+
+                /* set min_iter_help to initial global value of MIN_ITER */
+                if(iter==1) {
+                    min_iter_help=MIN_ITER;
                 }
-                step3=0;
-                break;
-            }
-            /* ------------------------------------------- */
-            /*       Check when Workflow is used           */
-            /* ------------------------------------------- */
-            if(USE_WORKFLOW && ( diff<=pro || wolfe_SLS_failed || step3==1 )) {
-                if(workflow_lines==WORKFLOW_STAGE) {
-                    fprintf(FP,"\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
-                    fprintf(FP,"\n No new line in workflow file");
-                    break;
+
+                /* ------------------------------------------------------------------------------*/
+                /* ----------- Beginn Search three step lengths for parabolic search  -----------*/
+                /* ------------------------------------------------------------------------------*/
+                while((step2!=1)||(step1!=1)) {
+
+                    /* --------------------- */
+                    /* calculate 3 L2 values */
+                    /* --------------------- */
+                    for (itest=itests; itest<=iteste; itest++) {
+
+                        /* calculate change in the material parameters */
+                        calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,
+                                FORWARD_ONLY,eps_scale,1,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,
+                                N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                        /* For the calculation of the material parameters beteween gridpoints
+                           the have to be averaged. For this, values lying at 0 and NX+1,
+                           for example, are required on the local grid. These are now copied from the
+                           neighbouring grids */
+                        if(!ACOUSTIC) {
+                            // no differentiation of elastic and viscoelastic modelling because the viscoelastic parameters did not change during the forward modelling
+                            matcopy_elastic(prhonp1, ppinp1, punp1);	
+                        } else {
+                            matcopy_acoustic(prhonp1, ppinp1);
+                        }
+
+                        MPI_Barrier(MPI_COMM_WORLD);
+
+                        if(!ACOUSTIC) {
+                            av_mue(punp1,puipjp,prhonp1);
+                        }
+                        av_rho(prhonp1,prip,prjp);
+
+                        /* Preparing memory variables for update_s (viscoelastic) */
+                        if (L) {
+                            if(!ACOUSTIC) {
+                                prepare_update_s(etajm,etaip,peta,fipjp,punp1,puipjp,ppinp1,prhonp1,ptaus,ptaup,ptausipjp,
+                                        f,g, bip,bjm,cip,cjm,dip,d,e);
+                            } else {
+                                prepare_update_p(etajm,peta,ppinp1,prhonp1,ptaup,g,bjm,cjm,e);
+                            }
+                        }
+
+                        /* initialization of L2 calculation */
+                        L2=0.0;
+                        L2_SH=0.0;
+
+                        alphanom = 0.0;
+                        alphadenom = 0.0;
+
+                        exchange_par();
+
+                        if (RUN_MULTIPLE_SHOTS) nshots=nsrc;
+                        else nshots=1;
+
+                        /* ==============================================================================================*/
+                        /* ==================================== start of loop over shots (test forward) =================*/
+                        /* ==============================================================================================*/
+                        for (ishot=TESTSHOT_START; ishot<=TESTSHOT_END; ishot=ishot+TESTSHOT_INCR) {
+                            /* step length estimation uses not all aviable shots */
+                            fprintf(FP,"\n=================================================================================================\n");
+                            fprintf(FP,"\n *****  Starting simulation (test-forward model) no. %d for shot %d of %d (rel. step length %.5f) \n",
+                                    itest,ishot,nshots,eps_scale);
+                            fprintf(FP,"\n=================================================================================================\n\n");
+
+                            if (SEISMO && READREC==2) {
+                                if (ntr>0) {
+                                    dealloc_sections(ntr,num_samples,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+                                            sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+                                            sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
+                                }
+                                free_imatrix(recpos,1,3,1,ntr_glob);
+                                recpos=receiver(&ntr, srcpos, ishot);
+                                recpos_loc = splitrec(recpos,&ntr_loc, ntr, recswitch);
+                                ntr_glob=ntr;
+                                ntr=ntr_loc;
+
+                                if (ntr>0) {
+                                    alloc_sections(ntr,num_samples,&sectionvx,&sectionvy,&sectionvz,&sectionp,&sectionpnp1,&sectionpn,&sectioncurl,&sectiondiv,
+                                            &sectionpdata,&sectionpdiff,&sectionpdiffold,&sectionvxdata,&sectionvxdiff,&sectionvxdiffold,&sectionvydata,
+                                            &sectionvydiff,&sectionvydiffold,&sectionvzdata,&sectionvzdiff,&sectionvzdiffold);
+                                }
+                            }
+                            for (nt=1; nt<=8; nt++) {
+                                srcpos1[nt][1]=srcpos[nt][ishot];
+                            }
+                            /*-----------------------------------*/
+                            /* determine source position on grid */
+                            /*-----------------------------------*/
+                            if (RUN_MULTIPLE_SHOTS) {
+                                /* find this single source positions on subdomains */
+                                if (nsrc_loc>0) free_matrix(srcpos_loc,1,8,1,1);
+                                srcpos_loc=splitsrc(srcpos1,&nsrc_loc, 1);
+                            } else {
+                                /* Distribute multiple source positions on subdomains */
+                                srcpos_loc = splitsrc(srcpos,&nsrc_loc, nsrc);
+                            }
+                            /*-------------------*/
+                            /* calculate wavelet */
+                            /*-------------------*/
+                            /* calculate wavelet for each source point P SV */
+                            if(WAVETYPE==1||WAVETYPE==3) {
+                                signals=NULL;
+                                signals=wavelet(srcpos_loc,nsrc_loc,ishot,0,0);
+                            }
+                            /* calculate wavelet for each source point SH */
+                            if(WAVETYPE==2||WAVETYPE==3) {
+                                signals_SH=NULL;
+                                signals_SH=wavelet(srcpos_loc,nsrc_loc,ishot,1,0);
+                            }
+                            /*------------------------------------------------------------------------------*/
+                            /*----------- Start of Time Domain Filtering -----------------------------------*/
+                            /*------------------------------------------------------------------------------*/
+                            /*time domain filtering of the source signal */
+                            if(WAVETYPE==1||WAVETYPE==3) {
+                                if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)) {
+                                    timedomain_filt(signals,F_LOW_PASS,ORDER,nsrc_loc,num_samples,1);
+                                }
+                            }
+                            /*time domain filtering of the source signal */
+                            if(WAVETYPE==2||WAVETYPE==3) {
+                                if(((TIME_FILT==1) || (TIME_FILT==2)) && (INV_STF==0)) {
+                                    timedomain_filt(signals_SH,F_LOW_PASS,ORDER,nsrc_loc,num_samples,1);
+                                }
+
+                            }
+                            /*------------------------------------------------------------------------------*/
+                            /*----------- End of Time Domain Filtering -------------------------------------*/
+                            /*------------------------------------------------------------------------------*/
+                            /* initialize wavefield with zero */
+                            if (L) {
+                                if(!ACOUSTIC) {
+                                    zero_fdveps_visc(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,
+                                            uxy,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,
+                                            psi_vzx,psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,
+                                            psi_vxxs,pr,pp,pq,pt,po);
+                                } else {
+                                    zero_fdveps_viscac(-nd+1, NY+nd, -nd+1, NX+nd, pvx, pvy, psp, pvxp1, pvyp1, 
+                                            psi_sxx_x, psi_sxy_x, psi_vxx, psi_vyx, psi_syy_y, 
+                                            psi_sxy_y, psi_vyy, psi_vxy, psi_vxxs, pp);
+                                }
+                            } else {
+                                if(!ACOUSTIC) {
+                                    zero_fdveps(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,pvz,psxx,psyy,psxy,psxz,psyz,ux,uy,uxy,
+                                            pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,psi_sxz_x,psi_vxx,psi_vyx,psi_vzx,
+                                            psi_syy_y,psi_sxy_y,psi_syz_y,psi_vyy,psi_vxy,psi_vzy,psi_vxxs);
+                                } else {
+                                    zero_fdveps_ac(-nd+1,NY+nd,-nd+1,NX+nd,pvx,pvy,psp,pvxp1,pvyp1,psi_sxx_x,psi_sxy_x,
+                                            psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
+                                }
+                            }
+                            lsnap=iround(TSNAP1/DT);
+                            lsamp=NDT;
+                            nsnap=0;
+                            /*-------------------------------------------------------------------------------*/
+                            /*----------------------  loop over timesteps (forward model) step length-------*/
+                            /*-------------------------------------------------------------------------------*/
+                            if((!VERBOSE)&&(MYID==0)) {
+                                fprintf(FP,"\n ****************************************\n ");
+                            }
+                            for (nt=1; nt<=NT; nt++) {
+                                // Ratio to give output to stout
+                                infoout = !(nt%nt_out);
+                                if((!VERBOSE)&&(MYID==0)) {
+                                    if(!(nt%(NT/40))) {
+                                        fprintf(FP,"*");
+                                    }
+                                }
+                                /* Check if simulation is still stable P and SV */
+                                if (WAVETYPE==1 || WAVETYPE==3) {
+                                    if (isnan(pvy[NY/2][NX/2])) {
+                                        fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
+                                        declare_error(" Simulation is unstable !");
+                                    }
+                                }
+                                /* Check if simulation is still stable SH */
+                                if (WAVETYPE==2 || WAVETYPE==3) {
+                                    if (isnan(pvz[NY/2][NX/2])) {
+                                        fprintf(FP,"\n Time step: %d; pvy: %f \n",nt,pvy[NY/2][NX/2]);
+                                        declare_error(" Simulation is unstable !");
+                                    }
+                                }
+                                if (MYID==0) {
+                                    if (infoout)  {
+                                        fprintf(FP,"\n Computing timestep %d of %d \n",nt,NT);
+                                    }
+                                    time3=MPI_Wtime();
+                                }
+                                /* update of particle velocities */
+                                if(!ACOUSTIC) {
+                                    if (WAVETYPE==1 || WAVETYPE==3) {
+                                        update_v_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, uttx, utty,
+                                                psxx, psyy, psxy, prip, prjp, srcpos_loc,signals,signals,nsrc_loc,
+                                                absorb_coeff,hc,infoout,0, K_x, a_x, b_x, K_x_half, a_x_half, 
+                                                b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
+                                                psi_sxx_x, psi_syy_y, psi_sxy_y, psi_sxy_x);
+                                    }
+                                    if (WAVETYPE==2 || WAVETYPE==3) {
+                                        update_v_PML_SH(1, NX, 1, NY, nt, pvz, pvzp1, pvzm1, psxz, psyz,prjp, srcpos_loc, 
+                                                signals, signals_SH, nsrc_loc, absorb_coeff,hc,infoout,0, K_x, 
+                                                a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, 
+                                                K_y_half, a_y_half, b_y_half, psi_sxz_x, psi_syz_y);
+                                    }
+                                } else {
+                                    update_v_acoustic_PML(1, NX, 1, NY, nt, pvx, pvxp1, pvxm1, pvy, pvyp1, pvym1, psp, 
+                                            prip, prjp, srcpos_loc,signals,signals,nsrc_loc,absorb_coeff,
+                                            hc,infoout,0, K_x_half, a_x_half, b_x_half, K_y_half, 
+                                            a_y_half, b_y_half, psi_sxx_x, psi_syy_y);
+                                }
+                                if (MYID==0) {
+                                    time4=MPI_Wtime();
+                                    time_av_v_update+=(time4-time3);
+                                    if (infoout)  fprintf(FP," particle velocity exchange between PEs ...");
+                                }
+                                /* exchange of particle velocities between PEs */
+                                exchange_v(pvx, pvy,pvz, bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, 
+                                        bufferbot_to_top, req_send, req_rec,wavetype_start);
+                                if (MYID==0) {
+                                    time5=MPI_Wtime();
+                                    time_av_v_exchange+=(time5-time4);
+                                    if (infoout)  fprintf(FP," finished (real time: %4.2f s).\n",time5-time4);
+                                }
+                                if (L) {   /* viscoelastic */
+                                    if (WAVETYPE==1 || WAVETYPE==3) {
+                                        if(!ACOUSTIC) {
+                                            update_s_visc_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, 
+                                                    ppinp1, punp1, puipjp, prhonp1, hc, infoout, pr, pp, pq, 
+                                                    fipjp, f, g, bip, bjm, cip, cjm, d, e, dip, K_x, a_x, b_x, 
+                                                    K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, 
+                                                    a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        } else {
+                                            update_p_visc_PML(1, NX, 1, NY, pvx, pvy, psp, ppinp1, prhonp1, hc, infoout,
+                                                    pp, g, bjm, cjm, e, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
+                                                    K_y, a_y, b_y, K_y_half, a_y_half, b_y_half, 
+                                                    psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        }
+                                    }
+                                    if (WAVETYPE==2 || WAVETYPE==3) {
+                                        update_s_visc_PML_SH(1, NX, 1, NY, pvz, psxz, psyz, pt, po, bip, bjm, cip, cjm, d, 
+                                                dip,fipjp, f, hc,infoout, K_x, a_x, b_x, K_x_half, a_x_half, 
+                                                b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,psi_vzx, psi_vzy);
+                                    }
+                                } else {   /* elastic */
+                                    if(!ACOUSTIC) {
+                                        if (WAVETYPE==1 || WAVETYPE==3) {
+                                            update_s_elastic_PML(1, NX, 1, NY, pvx, pvy, ux, uy, uxy, uyx, psxx, psyy, psxy, ppinp1, 
+                                                    punp1, puipjp, absorb_coeff, prhonp1, hc, infoout, K_x, a_x, b_x, 
+                                                    K_x_half, a_x_half, b_x_half, K_y, a_y, b_y, K_y_half, a_y_half, 
+                                                    b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                        }
+                                        if (WAVETYPE==2 || WAVETYPE==3) {
+                                            update_s_elastic_PML_SH(1, NX, 1, NY, pvz,psxz,psyz,uxz,uyz,hc,infoout, 
+                                                    K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, 
+                                                    K_y, a_y, b_y, K_y_half, a_y_half, b_y_half,
+                                                    psi_vzx, psi_vzy,puipjp,punp1,prhonp1);
+                                        }
+                                    } else /* acoustic */
+                                        update_p_PML(1, NX, 1, NY, pvx, pvy, psp, u, ppinp1, absorb_coeff, prhonp1, hc, 
+                                                infoout, K_x, a_x, b_x, K_x_half, a_x_half, b_x_half, K_y, a_y, b_y,
+                                                K_y_half, a_y_half, b_y_half, psi_vxx, psi_vyy, psi_vxy, psi_vyx);
+                                }
+                                if (MYID==0) {
+                                    time6=MPI_Wtime();
+                                    time_av_s_update+=(time6-time5);
+                                    if (infoout)  {
+                                        fprintf(FP," stress exchange between PEs ...");
+                                    }
+                                }
+                                /* explosive source */
+                                if ((SOURCE_TYPE==1))
+                                    psource(nt,psxx,psyy,psp,srcpos_loc,signals,nsrc_loc,0);
+                                /* Applying free surface condition */
+                                if ((FREE_SURF) && (POS[2]==0)) {
+                                    if (!ACOUSTIC) {
+                                        if (L) {
+                                            /* viscoelastic */
+                                            surface_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, pp, pq, ppinp1, punp1, 
+                                                    prhonp1, ptaup, ptaus, etajm, peta, hc, K_x, a_x, b_x, 
+                                                    psi_vxxs, ux, uy,uxy,uyz,psxz,uxz);
+                                        } else {
+                                            /* elastic */
+                                            surface_elastic_PML(1, pvx, pvy, psxx, psyy, psxy,psyz, ppinp1, punp1, prhonp1, 
+                                                    hc, K_x, a_x, b_x, psi_vxxs, ux, uy, uxy,uyz,psxz,uxz);
+                                        }
+                                    } else {
+                                        /* viscoelastic and elastic ACOUSTIC */
+                                        surface_acoustic_PML(1, psp);
+                                    }
+                                }
+                                /* stress exchange between PEs */
+                                if(!ACOUSTIC) {
+                                    exchange_s(psxx,psyy,psxy,psxz,psyz,bufferlef_to_rig, bufferrig_to_lef, buffertop_to_bot, 
+                                            bufferbot_to_top, req_send, req_rec,wavetype_start);
+                                } else {
+                                    exchange_p(psp,bufferlef_to_rig, bufferrig_to_lef,buffertop_to_bot, bufferbot_to_top,req_send, req_rec);
+                                }
+                                if(MYID==0) {
+                                    time7=MPI_Wtime();
+                                    time_av_s_exchange+=(time7-time6);
+                                    if (infoout) {
+                                        fprintf(FP," finished (real time: %4.2f s).\n",time7-time6);
+                                    }
+                                }
+                                /* store amplitudes at receivers in section-arrays */
+                                if (SEISMO) {
+                                    seismo_ssg(nt, ntr, recpos_loc, sectionvx, sectionvy,sectionvz, sectionp, sectioncurl, 
+                                            sectiondiv, pvx, pvy,pvz, psxx, psyy, psp, ppinp1, punp1, hc);
+                                    /*lsamp+=NDT;*/
+                                }
+                                if (MYID==0) {
+                                    time8=MPI_Wtime();
+                                    time_av_timestep+=(time8-time3);
+                                    if (infoout) {
+                                        fprintf(FP," total real time for timestep %d : %4.2f s.\n",nt,time8-time3);
+                                    }
+                                }
+                            }
+                            /*-------------------------------------------------------------------------------*/
+                            /*------------------ end loop over timesteps (forward model) step length  -------*/
+                            /*-------------------------------------------------------------------------------*/
+                            if(MYID==0 && VERBOSE) {
+                                fprintf(FP,"\n\n");
+                                printf("Calculate residuals between test forward model m - mu * dm and actual model m \n");
+                                printf("----------------------------------------------------------------------------- \n");
+                            }
+                            /*-----------------------------------*/
+                            /*------- Calculate residuals -------*/
+                            /*-----------------------------------*/
+                            if(ntr > 0) {
+                                if(WAVETYPE==1 || WAVETYPE==3) {
+                                    /* --------------------------------- */
+                                    /* read seismic data from SU file vx */
+                                    /* --------------------------------- */
+                                    if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==3)) { /* if ADJOINT_TYPE */
+                                        inseis(fprec,ishot,sectionread,ntr_glob,num_samples,1,iter);
+                                        if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
+                                        }
+                                        h=1;
+                                        for(i=1; i<=ntr; i++) {
+                                            for(j=1; j<=num_samples; j++) {
+                                                sectionvxdata[h][j]=sectionread[recpos_loc[3][i]][j];
+                                            }
+                                            h++;
+                                        }
+                                        L2=calc_res(sectionvxdata,sectionvx,sectionvxdiff,sectionvxdiffold,ntr,num_samples,LNORM,
+                                                L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
+                                    }
+                                    /* --------------------------------- */
+                                    /* read seismic data from SU file vy */
+                                    /* --------------------------------- */
+                                    if((ADJOINT_TYPE==1)||(ADJOINT_TYPE==2)) { /* if ADJOINT_TYPE */
+                                        inseis(fprec,ishot,sectionread,ntr_glob,num_samples,2,iter);
+                                        if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
+                                        }
+                                        h=1;
+                                        for(i=1; i<=ntr; i++) {
+                                            for(j=1; j<=num_samples; j++) {
+                                                sectionvydata[h][j]=sectionread[recpos_loc[3][i]][j];
+                                            }
+                                            h++;
+                                        }
+                                        L2=calc_res(sectionvydata,sectionvy,sectionvydiff,sectionvydiffold,ntr,num_samples,LNORM,
+                                                L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
+                                    }
+                                    /* --------------------------------- */
+                                    /* read seismic data from SU file p */
+                                    /* --------------------------------- */
+                                    if(ADJOINT_TYPE==4) { /* if ADJOINT_TYPE */
+                                        inseis(fprec,ishot,sectionread,ntr_glob,num_samples,9,iter);
+                                        if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
+                                            timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
+                                        }
+                                        h=1;
+                                        for(i=1; i<=ntr; i++) {
+                                            for(j=1; j<=num_samples; j++) {
+                                                sectionpdata[h][j]=sectionread[recpos_loc[3][i]][j];
+                                            }
+                                            h++;
+                                        }
+                                        L2=calc_res(sectionpdata,sectionp,sectionpdiff,sectionpdiffold,ntr,num_samples,LNORM,
+                                                L2,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
+                                    }
+                                }
+                                /* --------------------------------- */
+                                /* read seismic data from SU file vz */
+                                /* --------------------------------- */
+                                if(WAVETYPE==2 || WAVETYPE==3) {
+                                    inseis(fprec,ishot,sectionread,ntr_glob,num_samples,10,iter);
+                                    if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
+                                        timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
+                                    }
+                                    h=1;
+                                    for(i=1; i<=ntr; i++) {
+                                        for(j=1; j<=num_samples; j++) {
+                                            sectionvzdata[h][j]=sectionread[recpos_loc[3][i]][j];
+                                        }
+                                        h++;
+                                    }
+                                    L2_SH=calc_res(sectionvzdata,sectionvz,sectionvzdiff,sectionvzdiffold,ntr,num_samples,LNORM,
+                                            L2_SH,0,1,1,ntr_glob,recpos_loc,nsrc_glob,ishot,iter,srcpos,recpos);
+                                }
+                            }
+                        }
+                        /* ==============================================================================================*/
+                        /* ==================================== end of loop over shots (test forward) ===================*/
+                        /* ==============================================================================================*/
+                        epst1[itest]=eps_scale;
+                        epst1[1] = 0.0;
+                        if(WAVETYPE==1||WAVETYPE==3) {
+                            L2sum=0.0;
+                            MPI_Allreduce(&L2,&L2sum,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        }
+                        if(WAVETYPE==2||WAVETYPE==3) {
+                            L2sum_SH=0.0;
+                            MPI_Allreduce(&L2_SH,&L2sum_SH,1,MPI_FLOAT,MPI_SUM,MPI_COMM_WORLD);
+                        }
+                        switch (LNORM) {
+                            case 2:
+                                L2t[itest]=0.0;
+                                if(JOINT_EQUAL_WEIGHTING) {
+                                    L2t[itest]+=(L2sum/energy_sum)/JOINT_EQUAL_PSV;
+                                    L2t[itest]+=(L2sum_SH/energy_sum_SH)/JOINT_EQUAL_SH;
+                                    break;
+                                }
+                                if(WAVETYPE==1||WAVETYPE==3) {
+                                    L2t[itest]+=L2sum/energy_sum;
+                                }
+                                if(WAVETYPE==2||WAVETYPE==3) {
+                                    L2t[itest]+=L2sum_SH/energy_sum_SH;
+                                }
+                                break;
+                            case 7:
+                                if (TRKILL) {
+                                    if(ADJOINT_TYPE==1) {	/* x and y component are used in the inversion */
+                                        L2t[itest]=2.0*(1.0+(L2sum/((float)((NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots)*2.0))));
+                                        if (MYID==0) {
+                                            printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
+                                        }
+                                    } else {
+                                        L2t[itest]=2.0*(1.0+(L2sum/((float)(NO_OF_TESTSHOTS*ntr_glob-sum_killed_traces_testshots))));
+                                        if (MYID==0) {
+                                            printf("sum_killed_traces_testshots=%d\n",sum_killed_traces_testshots);
+                                            printf("ntr_glob=%d\n",ntr_glob);
+                                            printf("NO_OF_TESTSHOTS=%d\n",NO_OF_TESTSHOTS);
+                                        }
+                                    }
+                                } else {
+                                    if(ADJOINT_TYPE==1) {	/* x and y component are used in the inversion */
+                                        L2t[itest]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob*2.0)));
+                                    } else {
+                                        L2t[itest]=2.0*(1.0+(L2sum/((float)NO_OF_TESTSHOTS*(float)ntr_glob)));
+                                    }
+                                }
+                                break;
+                            case 8:
+                                L2t[itest]=L2sum/energy_sum;
+                                break;
+                            default:
+                                L2t[itest]=L2sum;
+                                break;
+                        }
+                    }
+                    /* --------------------- */
+                    /*    end of L2 test     */
+                    /* --------------------- */
+                    if(GRAD_METHOD==2&&(iter>LBFGS_iter_start)&&LBFGS_STEP_LENGTH) {
+                        if(itests==3) {
+                            epst1[3]=eps_scale;
+                            break;
+                        }
+                        if(itests==2) {
+                            epst1[2]=eps_scale;
+                            itests=3;
+                            iteste=3;
+                            eps_scale=1;
+                        }
+                        if(itests==1) {
+                            epst1[1]=eps_scale;
+                            itests=2;
+                            iteste=2;
+                            eps_scale=0.6;
+                        }
+                    } else {
+                        /* step1 search L2t[2] < L2t[1]  */
+                        /* step2 search L2t[2] < L2t[3]  */
+                        /* -> parabolic fit              */
+
+                        /* Did not find a step size which reduces the misfit function */
+                        /* Reduce step length                                         */
+                        if((step1==0)&&(L2t[1]<=L2t[2])) {
+                            eps_scale = eps_scale/scalefac;
+                            countstep++;
+                        }
+                        /* Found a step size with L2t[2] < L2t[3]*/
+                        /* -> now parabolic fit                  */
+                        if((step1==1)&&(L2t[2]<L2t[3])) {
+                            epst1[3]=eps_scale;
+                            step2=1;
+                        }
+                        /* Could not find a step size with L2t[2] < L2t[3]*/
+                        /* increase step length to find  a larger misfit function than L2t[2]*/
+                        if((step1==1)&&(L2t[2]>=L2t[3])) {
+                            epst1[3]=eps_scale;
+                            eps_scale = eps_scale + (eps_scale/scalefac);
+                            countstep++;
+                        }
+                        /* found a step size which reduces the misfit function */
+                        /* -> next step2                                       */
+                        if((step1==0)&&(L2t[1]>L2t[2])) {
+                            epst1[2]=eps_scale;
+                            step1=1;
+                            iteste=3;
+                            itests=3;
+                            countstep=0;
+                            /* find a second step length with a larger misfit function than L2t[2]*/
+                            eps_scale = eps_scale + (eps_scale/scalefac);
+                        }
+                        step3=0;
+
+                        if((step1==0)&&(countstep>stepmax)) {
+                            if(MYID==0) {
+                                printf(" Steplength estimation failed!\n\n");
+                            }
+                            step3=1;
+                            break;
+                        }
+                        if((step1==1)&&(countstep>stepmax)) {
+                            if(MYID==0) {
+                                printf("Could not find a proper 3rd step length which brackets the minimum\n");
+                            }
+                            step1=1;
+                            step2=1;
+                        }
+                    }
+                    if((MYID==0)) {
+                        fprintf(FP,"\n=================================================================================================\n");
+                        printf("Step length estimation status at iteration %i\n",iter);
+                        if(VERBOSE) {
+                            printf("iteste = %d \t itests = %d \t step1 = %d \t step2 = %d \t eps_scale = %e \t countstep = %d \t ", 
+                                    iteste, itests, step1, step2, eps_scale, countstep);
+                            printf("stepmax= %d \t scalefac = %e \t MYID = %d \t L2t[1] = %e \t L2t[2] = %e \t L2t[3] = %e \n",
+                                    stepmax, scalefac, MYID, L2t[1]);
+                        }
+                        if((!VERBOSE)) {
+                            printf("FD-Simulation %d of %d\n",countstep+1,stepmax+2);
+                        }
+                        if((!VERBOSE)) {
+                            printf("L2-Norm[1] = %e\n",L2t[1]);
+                        }
+                        if((!VERBOSE)) {
+                            printf("L2-Norm[2] = %e\n",L2t[2]);
+                        }
+                        if((!VERBOSE)) {
+                            printf("L2-Norm[3] = %e\n",L2t[3]);
+                        }
+                        if((VERBOSE)) {
+                            printf("iteste = %d \t itests = %d \t step1 = %d \t step2 = %d \t eps_scale = %e \n",iteste,itests,step1,step2,eps_scale);
+                        }
+                    }
                 }
-                if(diff<=pro) fprintf(FP,"\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
-                if(wolfe_SLS_failed) fprintf(FP,"\n Wolfe step length search failed \n");
-                fprintf(FP,"\n Switching to next line in workflow");
-
-                WORKFLOW_STAGE++;
-                do_stf=1;
-                min_iter_help=0;
-                min_iter_help=iter+MIN_ITER;
-
-                /* Sync WORKFLOW_STAGE on all PEs */
-                buf1=WORKFLOW_STAGE;
-                buf2=0;
-                MPI_Allreduce(&buf1,&buf2, 1,MPI_INT,MPI_MAX,MPI_COMM_WORLD);
-                WORKFLOW_STAGE=buf2;
-
-                alpha_SL_old=1;
-
-                /* Restart L-BFGS at next iteration */
-                LBFGS_iter_start=iter+1;
-
-                /* Restart conjugate gradient at next iteration */
-                PCG_iter_start=iter+1;
-
-                wolfe_SLS_failed=0;
-
-                step3=0;
-                JOINT_EQUAL_new_max=1;
-            }
-            /* ------------------------------------------------- */
-            /* Check when Workflow is NOT used and TIME_FILT==1  */
-            /* ------------------------------------------------- */
-            if( (TIME_FILT==1) && (!USE_WORKFLOW) && ( (diff<=pro) || (step3==1) || wolfe_SLS_failed ) ) {
+                /* ------------------------------------------------------------------------------*/
+                /* ----------- End Search three step lengths for parabolic search  -----------*/
+                /* ------------------------------------------------------------------------------*/
+                if(GRAD_METHOD==2&&(iter>LBFGS_iter_start)&&LBFGS_STEP_LENGTH) {
+                    if(L2t[1]>L2t[2] && L2t[3]>L2t[2]) {
+                        step1=1;
+                    }
+                    if(L2t[1]>L2t[2] && L2t[2]>L2t[3]) {
+                        step1=1;
+                    }
+                    if(L2t[1]<L2t[2] && L2t[2]<L2t[3]) {
+                        step1=1;
+                    }
+                    if(L2t[1]>L2t[2] && L2t[2]>L2t[3]) {
+                        step1=1;
+                    }
+                }
+                if(step1==1) { /* only find an optimal step length if step1==1 */
+                    /* calculate optimal step length epsilon for Vp and Vs*/
+                    if(MYID==0) {
+                        printf("======================================================================================= \n");
+                        printf("calculate optimal step length epsilon for Vp, Vs and density (step1 == %d, step3 == %d) \n",step1,step3);
+                        printf("======================================================================================= \n");
+                    }
+                    opteps_vp=calc_opt_step(L2t,waveconv,gradg,epst1,1,C_vp);
+                    eps_scale = opteps_vp;
+                } else {
+                    if (iter < min_iter_help) {
+                        eps_scale=EPS_SCALE;
+                        opteps_vp=EPS_SCALE;
+                    } else {
+                        eps_scale=0.0;
+                        opteps_vp=0.0;
+                    }
+                    if(GRAD_METHOD==2&&(iter>LBFGS_iter_start)&&LBFGS_STEP_LENGTH) {
+                        eps_scale=0.05;
+                        opteps_vp=eps_scale;
+                        if(MYID==0) printf("\n\n=========================================");
+                        if(MYID==0) printf("\n L-BFGS step length search failed");
+                        if(MYID==0) printf("\n eps_scale is set to %f",eps_scale);
+                        if(MYID==0) printf("\n=========================================\n\n");
+                    }
+                    if(MYID==0) {
+                        printf("================================================================================== \n");
+                        printf("using EPS_SCALE for the step length (step1 == %d, step3 == %d, EPS_SCALE == %4.2f) \n",step1,step3,EPS_SCALE);
+                        printf("================================================================================== \n");
+                    }
+                }
+                if(MYID==0) fprintf(FP,"\n=================================================================================================\n");
                 if(MYID==0) {
-                    if (diff<=pro) {
+                    printf("Step length search final status:\n");
+                }
+                if(MYID==0) {
+                    printf("MYID = %d \t opteps_vp = %e \t opteps_vs = %e \t opteps_rho = %e \n",MYID,opteps_vp,opteps_vs,opteps_rho);
+                    if(VERBOSE) printf("MYID = %d \t L2t[1] = %e \t L2t[2] = %e \t L2t[3] = %e \t Final-L2= %e \n",MYID,L2t[1],L2t[2],L2t[3],L2t[4]);
+
+                    if(MYID==0&&(!VERBOSE)) {
+                        printf("L2-Norm[1] = %e\n",L2t[1]);
+                    }
+                    if(MYID==0&&(!VERBOSE)) {
+                        printf("L2-Norm[2] = %e\n",L2t[2]);
+                    }
+                    if(MYID==0&&(!VERBOSE)) {
+                        printf("L2-Norm[3] = %e\n",L2t[3]);
+                    }
+                    if(MYID==0&&(!VERBOSE)) {
+                        printf("L2-Norm[4] = %e (final L2 of all shots)\n",L2t[4]);
+                    }
+                    printf("MYID = %d \t epst1[1] = %e \t epst1[2] = %e \t epst1[3] = %e \n",MYID,epst1[1],epst1[2],epst1[3]);
+                    if (TIME_FILT==0) {
+                        fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],GAMMA);
+                    } else {
+                        fprintf(FPL2,"%e \t %e \t %e \t %e \t %e \t %e \t %e \t %e \t %f \t %f \n",opteps_vp,epst1[1],epst1[2],epst1[3],L2t[1],L2t[2],L2t[3],L2t[4],F_LOW_PASS,GAMMA);
+                    }
+                    if(WAVETYPE==3 && MYID==0) {
+                        fprintf(FPL2_JOINT,"%d \t %f \t %f\n",iter,L2sum_all_shots/energy_sum_all_shots,L2sum_all_shots_SH/energy_sum_all_shots_SH);
+                    }
+                }
+
+                /* saving history of final L2*/
+                L2_hist[iter]=L2t[4];
+                do_stf=0;
+
+
+                /* -----------------------------------------------------------------------*/
+                /* ----------- Do the actual update to the material parameters -----------*/
+                /* -----------------------------------------------------------------------*/
+                calc_mat_change_test(waveconv,waveconv_rho,waveconv_u,prho,prhonp1,ppi,ppinp1,pu,punp1,iter,1,
+                        FORWARD_ONLY,eps_scale,0,nfstart,Vs0,Vp0,Rho0,wavetype_start,s_LBFGS,
+                        N_LBFGS,LBFGS_NPAR,Vs_avg,Vp_avg,rho_avg,LBFGS_iter_start);
+                fprintf(FP,"=================================================================================================\n");
+            } /* end of if(FORWARD_ONLY!=4) */
+
+            /* ------------------------------------*/
+            /* smoothing the models vp, vs and rho */
+            /* ------------------------------------*/
+            if (FORWARD_ONLY==0 && (opteps_vp>0.0 || WOLFE_CONDITION)) {
+                if(!ACOUSTIC) {
+                    if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vs_avg,F_LOW_PASS);
+                    if(MODEL_FILTER)smooth(pu,5,2,Vs_avg,F_LOW_PASS);
+                    if(MODEL_FILTER)smooth(prho,6,2,Vs_avg,F_LOW_PASS);
+                } else {
+                    if(WAVETYPE==1||WAVETYPE==3) if(MODEL_FILTER)smooth(ppi,4,2,Vp_avg,F_LOW_PASS);
+                    if(MODEL_FILTER)smooth(prho,6,2,Vp_avg,F_LOW_PASS);
+                }
+            }
+            if(FORWARD_ONLY!=1) {
+                if(MYID==0) {
+                    fclose(FPL2);
+                }
+                if(WAVETYPE==3 && MYID==0) {
+                    fclose(FPL2_JOINT);
+                }
+            }
+            if(iter==nfstart) {
+                nfstart = nfstart + nf;
+            }
+            if(iter==nfstart_jac) {
+                nfstart_jac = nfstart_jac + nf_jac;
+            }
+            if (MYID==0&&VERBOSE) {
+                fprintf(FP,"\n **Info from main (written by PE %d): \n",MYID);
+                fprintf(FP," CPU time of program per PE: %li seconds.\n",clock()/CLOCKS_PER_SEC);
+                time8=MPI_Wtime();
+                fprintf(FP," Total real time of program: %4.2f seconds.\n",time8-time1);
+                time_av_v_update=time_av_v_update/(double)NT;
+                time_av_s_update=time_av_s_update/(double)NT;
+                time_av_v_exchange=time_av_v_exchange/(double)NT;
+                time_av_s_exchange=time_av_s_exchange/(double)NT;
+                time_av_timestep=time_av_timestep/(double)NT;
+                fprintf(FP," Average times for \n");
+                fprintf(FP," velocity update:  \t %5.3f seconds  \n",time_av_v_update);
+                fprintf(FP," stress update:  \t %5.3f seconds  \n",time_av_s_update);
+                fprintf(FP," velocity exchange:  \t %5.3f seconds  \n",time_av_v_exchange);
+                fprintf(FP," stress exchange:  \t %5.3f seconds  \n",time_av_s_exchange);
+                fprintf(FP," timestep:  \t %5.3f seconds  \n",time_av_timestep);
+            }
+            /* ----------------------------------------------*/
+            /* ----------- Check abort criteriums -----------*/
+            /* ----------------------------------------------*/
+            if (iter>min_iter_help) {
+                float diff=0.0, pro=PRO;
+                /* calculating differnce of the actual L2 and before two iterations, dividing with L2_hist[iter-2] provide changing in procent*/
+                diff=fabs((L2_hist[iter-2]-L2_hist[iter])/L2_hist[iter-2]);
+                /* abort criterion: if diff is smaller than pro (1% ?? is this reasonable?) than the inversion abort or switch to another frequency range*/
+
+                /* ------------------------------------------- */
+                /*  Check when NO workflow and TIME_FILT==0    */
+                /* ------------------------------------------- */
+                if((diff<=pro)&&(TIME_FILT==0)&&USE_WORKFLOW==0) {
+                    if(MYID==0) {
                         printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
                     }
-                    if(step3==1) {
-                        printf("\n Did not find a step length which decreases the misfit.\n");
-                    }
-                }
-
-                F_LOW_PASS=F_LOW_PASS+F_LOW_PASS_INCR;
-                do_stf=1;
-                min_iter_help=0;
-                min_iter_help=iter+MIN_ITER;
-
-                if(F_LOW_PASS>F_LOW_PASS_END) {
-                    if(MYID==0) {
-                        printf("\n Reached the maximum frequency of %4.2f Hz \n",F_LOW_PASS);
-                    }
                     break;
                 }
-                if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",F_LOW_PASS);
-
-                /* Restart L-BFGS at next iteration */
-                LBFGS_iter_start=iter+1;
-
-                /* Restart conjugate gradient at next iteration */
-                PCG_iter_start=iter+1;
-
-                wolfe_SLS_failed=0;
-                alpha_SL_old=1;
-
-                step3=0;
-                JOINT_EQUAL_new_max=1;
-            }
-
-            /* ------------------------------------------------- */
-            /* Check when Workflow is NOT used and TIME_FILT==2  */
-            /* ------------------------------------------------- */
-            if( (TIME_FILT==2) && (!USE_WORKFLOW) && ( (diff<=pro) || (step3==1) || wolfe_SLS_failed ) ) {
-                if(MYID==0) {
-                    if (diff<=pro) {
-                        printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
-                    }
-                    if(step3==1) {
+                /* abort criterion: did not found a step length which decreases the misfit*/
+                if((step3==1||wolfe_SLS_failed)&&(TIME_FILT==0&&USE_WORKFLOW==0)) {
+                    if(MYID==0) {
                         printf("\n Did not find a step length which decreases the misfit.\n");
                     }
-                }
-
-                if(FREQ_NR==nfrq) {
-                    if(MYID==0) {
-                        printf("\n Finished at the maximum frequency of %4.2f Hz \n",F_LOW_PASS);
-                    }
+                    step3=0;
                     break;
                 }
+                /* ------------------------------------------- */
+                /*       Check when Workflow is used           */
+                /* ------------------------------------------- */
+                if(USE_WORKFLOW && ( diff<=pro || wolfe_SLS_failed || step3==1 )) {
+                    if(workflow_lines==WORKFLOW_STAGE) {
+                        fprintf(FP,"\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
+                        fprintf(FP,"\n No new line in workflow file");
+                        break;
+                    }
+                    if(diff<=pro) fprintf(FP,"\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
+                    if(wolfe_SLS_failed) fprintf(FP,"\n Wolfe step length search failed \n");
+                    fprintf(FP,"\n Switching to next line in workflow");
 
-                FREQ_NR=FREQ_NR+1;
-                F_LOW_PASS=F_LOW_PASS_EXT[FREQ_NR];
-                do_stf=1;
-                min_iter_help=0;
-                min_iter_help=iter+MIN_ITER;
-                if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",F_LOW_PASS);
+                    WORKFLOW_STAGE++;
+                    do_stf=1;
+                    min_iter_help=0;
+                    min_iter_help=iter+MIN_ITER;
 
-                /* Restart L-BFGS at next iteration */
-                LBFGS_iter_start=iter+1;
+                    /* Sync WORKFLOW_STAGE on all PEs */
+                    buf1=WORKFLOW_STAGE;
+                    buf2=0;
+                    MPI_Allreduce(&buf1,&buf2, 1,MPI_INT,MPI_MAX,MPI_COMM_WORLD);
+                    WORKFLOW_STAGE=buf2;
 
-                /* Restart conjungate gradient at next iteration */
-                PCG_iter_start=iter+1;
+                    alpha_SL_old=1;
 
-                wolfe_SLS_failed=0;
-                alpha_SL_old=1;
+                    /* Restart L-BFGS at next iteration */
+                    LBFGS_iter_start=iter+1;
 
-                step3=0;
-                JOINT_EQUAL_new_max=1;
+                    /* Restart conjugate gradient at next iteration */
+                    PCG_iter_start=iter+1;
+
+                    wolfe_SLS_failed=0;
+
+                    step3=0;
+                    JOINT_EQUAL_new_max=1;
+                }
+                /* ------------------------------------------------- */
+                /* Check when Workflow is NOT used and TIME_FILT==1  */
+                /* ------------------------------------------------- */
+                if( (TIME_FILT==1) && (!USE_WORKFLOW) && ( (diff<=pro) || (step3==1) || wolfe_SLS_failed ) ) {
+                    if(MYID==0) {
+                        if (diff<=pro) {
+                            printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
+                        }
+                        if(step3==1) {
+                            printf("\n Did not find a step length which decreases the misfit.\n");
+                        }
+                    }
+
+                    F_LOW_PASS=F_LOW_PASS+F_LOW_PASS_INCR;
+                    do_stf=1;
+                    min_iter_help=0;
+                    min_iter_help=iter+MIN_ITER;
+
+                    if(F_LOW_PASS>F_LOW_PASS_END) {
+                        if(MYID==0) {
+                            printf("\n Reached the maximum frequency of %4.2f Hz \n",F_LOW_PASS);
+                        }
+                        break;
+                    }
+                    if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",F_LOW_PASS);
+
+                    /* Restart L-BFGS at next iteration */
+                    LBFGS_iter_start=iter+1;
+
+                    /* Restart conjugate gradient at next iteration */
+                    PCG_iter_start=iter+1;
+
+                    wolfe_SLS_failed=0;
+                    alpha_SL_old=1;
+
+                    step3=0;
+                    JOINT_EQUAL_new_max=1;
+                }
+
+                /* ------------------------------------------------- */
+                /* Check when Workflow is NOT used and TIME_FILT==2  */
+                /* ------------------------------------------------- */
+                if( (TIME_FILT==2) && (!USE_WORKFLOW) && ( (diff<=pro) || (step3==1) || wolfe_SLS_failed ) ) {
+                    if(MYID==0) {
+                        if (diff<=pro) {
+                            printf("\n Reached the abort criterion of pro = %4.2f: diff = %4.2f \n",pro,diff);
+                        }
+                        if(step3==1) {
+                            printf("\n Did not find a step length which decreases the misfit.\n");
+                        }
+                    }
+
+                    if(FREQ_NR==nfrq) {
+                        if(MYID==0) {
+                            printf("\n Finished at the maximum frequency of %4.2f Hz \n",F_LOW_PASS);
+                        }
+                        break;
+                    }
+
+                    FREQ_NR=FREQ_NR+1;
+                    F_LOW_PASS=F_LOW_PASS_EXT[FREQ_NR];
+                    do_stf=1;
+                    min_iter_help=0;
+                    min_iter_help=iter+MIN_ITER;
+                    if(MYID==0) printf("\n Changing to corner frequency of %4.2f Hz \n",F_LOW_PASS);
+
+                    /* Restart L-BFGS at next iteration */
+                    LBFGS_iter_start=iter+1;
+
+                    /* Restart conjungate gradient at next iteration */
+                    PCG_iter_start=iter+1;
+
+                    wolfe_SLS_failed=0;
+                    alpha_SL_old=1;
+
+                    step3=0;
+                    JOINT_EQUAL_new_max=1;
+                }
             }
         }
-    }
-    /*------------------------------------------------------------------------------*/
-    /*----------- End fullwaveform iteration loop ----------------------------------*/
-    /*------------------------------------------------------------------------------*/
+        /*------------------------------------------------------------------------------*/
+        /*----------- End fullwaveform iteration loop ----------------------------------*/
+        /*------------------------------------------------------------------------------*/
 
-    /* ====================================== */
-    /* ====== deallocation of memory =========*/
-    /* ====================================== */
-    if (SEISMO) {
-        free_imatrix(recpos,1,3,1,ntr_glob);
-        free_ivector(recswitch,1,ntr_glob);
-    }
-
-    /* free memory for abort criterion */
-    free_vector(L2_hist,1,1000);
-
-    if(INV_STF) free_matrix(fulldata,1,ntr_glob,1,NT);
-
-    free_ivector(DTINV_help,1,NT);
-
-    if(!ACOUSTIC) {
-        if (WAVETYPE==1 || WAVETYPE==3) {
-            free_matrix(psxx,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(psxy,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(psyy,-nd+1,NY+nd,-nd+1,NX+nd);
+        /* ====================================== */
+        /* ====== deallocation of memory =========*/
+        /* ====================================== */
+        if (SEISMO) {
+            free_imatrix(recpos,1,3,1,ntr_glob);
+            free_ivector(recswitch,1,ntr_glob);
         }
-        if (WAVETYPE==2 || WAVETYPE==3) {
-            free_matrix(psyz,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(psxz,-nd+1,NY+nd,-nd+1,NX+nd);
-        }
-    } else {
-        free_matrix(psp,-nd+1,NY+nd,-nd+1,NX+nd);
-    }
-    if (WAVETYPE==1 || WAVETYPE==3) {
-        free_matrix(pvx,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(pvy,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(pvxp1,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(pvyp1,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(pvxm1,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(pvym1,-nd+1,NY+nd,-nd+1,NX+nd);
-    }
-    if (WAVETYPE==2 || WAVETYPE==3) {
-        free_matrix(pvz,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(pvzp1,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(pvzm1,-nd+1,NY+nd,-nd+1,NX+nd);
-    }
-    if(!ACOUSTIC) {
-        if (WAVETYPE==1 || WAVETYPE==3) {
-            free_matrix(ux,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(uy,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(uxy,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(uyx,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(uttx,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(utty,-nd+1,NY+nd,-nd+1,NX+nd);
-        }
-    }
-    free_matrix(Vp0,-nd+1,NY+nd,-nd+1,NX+nd);
-    if(!ACOUSTIC)
-        free_matrix(Vs0,-nd+1,NY+nd,-nd+1,NX+nd);
-    free_matrix(Rho0,-nd+1,NY+nd,-nd+1,NX+nd);
 
-    free_matrix(prho,-nd+1,NY+nd,-nd+1,NX+nd);
-    free_matrix(prhonp1,-nd+1,NY+nd,-nd+1,NX+nd);
-    free_matrix(prip,-nd+1,NY+nd,-nd+1,NX+nd);
-    free_matrix(prjp,-nd+1,NY+nd,-nd+1,NX+nd);
-    free_matrix(pripnp1,-nd+1,NY+nd,-nd+1,NX+nd);
-    free_matrix(prjpnp1,-nd+1,NY+nd,-nd+1,NX+nd);
-    free_matrix(ppi,-nd+1,NY+nd,-nd+1,NX+nd);
-    free_matrix(ppinp1,-nd+1,NY+nd,-nd+1,NX+nd);
-    if(!ACOUSTIC) {
-        free_matrix(pu,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(punp1,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(puipjp,-nd+1,NY+nd,-nd+1,NX+nd);
-    }
-    free_matrix(vpmat,-nd+1,NY+nd,-nd+1,NX+nd);
+        /* free memory for abort criterion */
+        free_vector(L2_hist,1,1000);
 
-    /* free memory for viscoelastic modeling variables */
-    if (L) {
-        free_f3tensor(pr,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
-        free_f3tensor(pp,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
-        free_f3tensor(pq,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
-        free_f3tensor(dip,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
-        free_f3tensor(d,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
-        free_f3tensor(e,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
-        free_matrix(ptaus,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(ptausipjp,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(ptaup,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(fipjp,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(f,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(g,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_vector(peta,1,L);
-        free_vector(etaip,1,L);
-        free_vector(etajm,1,L);
-        free_vector(bip,1,L);
-        free_vector(bjm,1,L);
-        free_vector(cip,1,L);
-        free_vector(cjm,1,L);
-    }
-    if(FORWARD_ONLY==0) {
-        free_matrix(waveconv,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_lam,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_shot,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconvtmp,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(wcpart,1,3,1,3);
-        free_matrix(wavejac,-nd+1,NY+nd,-nd+1,NX+nd);
+        if(INV_STF) free_matrix(fulldata,1,ntr_glob,1,NT);
+
+        free_ivector(DTINV_help,1,NT);
+
         if(!ACOUSTIC) {
-            free_f3tensor(forward_prop_x,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+            if (WAVETYPE==1 || WAVETYPE==3) {
+                free_matrix(psxx,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(psxy,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(psyy,-nd+1,NY+nd,-nd+1,NX+nd);
+            }
+            if (WAVETYPE==2 || WAVETYPE==3) {
+                free_matrix(psyz,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(psxz,-nd+1,NY+nd,-nd+1,NX+nd);
+            }
         } else {
-            free_f3tensor(forward_prop_p,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+            free_matrix(psp,-nd+1,NY+nd,-nd+1,NX+nd);
         }
-        free_matrix(gradg,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(gradp,-nd+1,NY+nd,-nd+1,NX+nd);
-
-        if(WAVETYPE==1 || WAVETYPE==3) {
-            free_f3tensor(forward_prop_rho_x,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-            free_f3tensor(forward_prop_rho_y,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-        }
-
-        free_matrix(gradg_rho,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(gradp_rho,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_rho,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_rho_s,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_rho_shot,-nd+1,NY+nd,-nd+1,NX+nd);
-
-        if(!ACOUSTIC) {
-            free_f3tensor(forward_prop_u,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-            free_matrix(gradg_u,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(gradp_u,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(waveconv_u,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(waveconv_mu,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(waveconv_u_shot,-nd+1,NY+nd,-nd+1,NX+nd);
-        }
-
-    }
-
-    if(FW>0) {
-        free_vector(d_x,1,2*FW);
-        free_vector(K_x,1,2*FW);
-        free_vector(alpha_prime_x,1,2*FW);
-        free_vector(a_x,1,2*FW);
-        free_vector(b_x,1,2*FW);
-
-        free_vector(d_x_half,1,2*FW);
-        free_vector(K_x_half,1,2*FW);
-        free_vector(alpha_prime_x_half,1,2*FW);
-        free_vector(a_x_half,1,2*FW);
-        free_vector(b_x_half,1,2*FW);
-
-        free_vector(d_y,1,2*FW);
-        free_vector(K_y,1,2*FW);
-        free_vector(alpha_prime_y,1,2*FW);
-        free_vector(a_y,1,2*FW);
-        free_vector(b_y,1,2*FW);
-
-        free_vector(d_y_half,1,2*FW);
-        free_vector(K_y_half,1,2*FW);
-        free_vector(alpha_prime_y_half,1,2*FW);
-        free_vector(a_y_half,1,2*FW);
-        free_vector(b_y_half,1,2*FW);
-        if (WAVETYPE==1||WAVETYPE==3) {
-            free_matrix(psi_sxx_x,1,NY,1,2*FW);
-            free_matrix(psi_syy_y,1,2*FW,1,NX);
-            free_matrix(psi_sxy_x,1,NY,1,2*FW);
-            free_matrix(psi_sxy_y,1,2*FW,1,NX);
-            free_matrix(psi_vxx,1,NY,1,2*FW);
-            free_matrix(psi_vxxs,1,NY,1,2*FW);
-            free_matrix(psi_vyy,1,2*FW,1,NX);
-            free_matrix(psi_vxy,1,2*FW,1,NX);
-            free_matrix(psi_vyx,1,NY,1,2*FW);
-        }
-        if (WAVETYPE==2||WAVETYPE==3) {
-            free_matrix(psi_sxz_x,1,NY,1,2*FW);
-            free_matrix(psi_syz_y,1,2*FW,1,NX);
-            free_matrix(psi_vzx,1,NY,1,2*FW);
-            free_matrix(psi_vzy,1,2*FW,1,NX);
-        }
-    }
-
-    free_matrix(taper_coeff,1,NY,1,NX);
-    free_matrix(bufferlef_to_rig,1,NY,1,fdo3);
-    free_matrix(bufferrig_to_lef,1,NY,1,fdo3);
-    free_matrix(buffertop_to_bot,1,NX,1,fdo3);
-    free_matrix(bufferbot_to_top,1,NX,1,fdo3);
-    switch (SEISMO) {
-        case 1 : /* particle velocities only */
-            if (WAVETYPE==1 || WAVETYPE==3) {
-                free_matrix(fulldata_vx,1,ntr_glob,1,NT);
-                free_matrix(fulldata_vy,1,ntr_glob,1,NT);
-            }
-            if (WAVETYPE==2 || WAVETYPE==3) {
-                free_matrix(fulldata_vz,1,ntr_glob,1,NT);
-            }
-            break;
-        case 2 : /* pressure only */
-            if (WAVETYPE==1 || WAVETYPE==3) {
-                free_matrix(fulldata_p,1,ntr_glob,1,NT);
-            }
-            break;
-        case 3 : /* curl and div only */
-            if (WAVETYPE==1 || WAVETYPE==3) {
-                free_matrix(fulldata_div,1,ntr_glob,1,NT);
-                free_matrix(fulldata_curl,1,ntr_glob,1,NT);
-            }
-            break;
-        case 4 : /* everything */
-            if (WAVETYPE==1 || WAVETYPE==3) {
-                free_matrix(fulldata_vx,1,ntr_glob,1,NT);
-                free_matrix(fulldata_vy,1,ntr_glob,1,NT);
-                free_matrix(fulldata_p,1,ntr_glob,1,NT);
-                free_matrix(fulldata_div,1,ntr_glob,1,NT);
-                free_matrix(fulldata_curl,1,ntr_glob,1,NT);
-            }
-            if (WAVETYPE==2 || WAVETYPE==3) {
-                free_matrix(fulldata_vz,1,ntr_glob,1,NT);
-            }
-            break;
-        case 5 : /* everything except curl and div */
-            if (WAVETYPE==1 || WAVETYPE==3) {
-                free_matrix(fulldata_vx,1,ntr_glob,1,NT);
-                free_matrix(fulldata_vy,1,ntr_glob,1,NT);
-                free_matrix(fulldata_p,1,ntr_glob,1,NT);
-            }
-            if (WAVETYPE==2 || WAVETYPE==3) {
-                free_matrix(fulldata_vz,1,ntr_glob,1,NT);
-            }
-            break;
-    }
-    if ((ntr>0) && (SEISMO)) {
-        dealloc_sections(ntr,ns,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
-                         sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
-                         sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
-    }
-    if((EPRECOND==1)||(EPRECOND==3)) {
-        if(WAVETYPE==1 || WAVETYPE==3) {
-            free_matrix(We_sum,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(Ws,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(Wr,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(We,-nd+1,NY+nd,-nd+1,NX+nd);
-        }
-        if(WAVETYPE==2 || WAVETYPE==3) {
-            free_matrix(We_sum_SH,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(Ws_SH,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(Wr_SH,-nd+1,NY+nd,-nd+1,NX+nd);
-            free_matrix(We_SH,-nd+1,NY+nd,-nd+1,NX+nd);
-        }
-    }
-    free_matrix(sectionread,1,ntr_glob,1,ns);
-
-    if((INV_STF==1)||(TIME_FILT==1) || (TIME_FILT==2)) {
-        /* free memory for inversion of source time function */
         if (WAVETYPE==1 || WAVETYPE==3) {
-            free_matrix(sectionvy_conv,1,ntr_glob,1,NT);
-            free_matrix(sectionvx_conv,1,ntr_glob,1,NT);
-            free_matrix(sectionp_conv,1,ntr_glob,1,NT);
-            free_matrix(sectionvy_obs,1,ntr_glob,1,NT);
-            free_matrix(sectionvx_obs,1,ntr_glob,1,NT);
-            free_matrix(sectionp_obs,1,ntr_glob,1,NT);
+            free_matrix(pvx,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(pvy,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(pvxp1,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(pvyp1,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(pvxm1,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(pvym1,-nd+1,NY+nd,-nd+1,NX+nd);
         }
         if (WAVETYPE==2 || WAVETYPE==3) {
-            free_matrix(sectionvz_conv,1,ntr_glob,1,NT);
-            free_matrix(sectionvz_obs,1,ntr_glob,1,NT);
+            free_matrix(pvz,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(pvzp1,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(pvzm1,-nd+1,NY+nd,-nd+1,NX+nd);
         }
-        free_vector(source_time_function,1,NT);
-    }
-    if(WOLFE_CONDITION) {
-        free_matrix(waveconv_old,-nd+1,NY+nd,-nd+1,NX+nd);
-        if(!ACOUSTIC) free_matrix(waveconv_u_old,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_rho_old,-nd+1,NY+nd,-nd+1,NX+nd);
-
-        free_matrix(waveconv_up,-nd+1,NY+nd,-nd+1,NX+nd);
-        if(!ACOUSTIC) free_matrix(waveconv_u_up,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_rho_up,-nd+1,NY+nd,-nd+1,NX+nd);
-    }
-    if((WAVETYPE==2 || WAVETYPE==3) && (FORWARD_ONLY==0)) {
-        free_f3tensor(forward_prop_rho_z,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-        free_f3tensor(forward_prop_z_xz,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-        free_f3tensor(forward_prop_z_yz,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
-        free_matrix(waveconv_rho_shot_z,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_u_shot_z,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_mu_z,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_rho_s_z,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_u_z,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(waveconv_rho_z,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(gradp_u_z,-nd+1,NY+nd,-nd+1,NX+nd);
-        free_matrix(gradp_rho_z,-nd+1,NY+nd,-nd+1,NX+nd);
-        if(L) {
-            free_f3tensor(pt,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
-            free_f3tensor(po,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+        if(!ACOUSTIC) {
+            if (WAVETYPE==1 || WAVETYPE==3) {
+                free_matrix(ux,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(uy,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(uxy,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(uyx,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(uttx,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(utty,-nd+1,NY+nd,-nd+1,NX+nd);
+            }
         }
-    }
-    /* free memory for source position definition */
-    free_matrix(srcpos1,1,8,1,1);
+        free_matrix(Vp0,-nd+1,NY+nd,-nd+1,NX+nd);
+        if(!ACOUSTIC)
+            free_matrix(Vs0,-nd+1,NY+nd,-nd+1,NX+nd);
+        free_matrix(Rho0,-nd+1,NY+nd,-nd+1,NX+nd);
 
-    free_vector(L2t,1,4);
-    free_vector(epst1,1,3);
-    free_vector(epst2,1,3);
-    free_vector(epst3,1,3);
-    free_vector(picked_times,1,ntr);
-
-    free_vector(hc,0,6);
-
-    /* free memory for global source positions */
-    free_matrix(srcpos,1,8,1,nsrc);
-
-
-
-    if(TIME_FILT==2) {
-        free_vector(F_LOW_PASS_EXT,1,nfrq);
-    }
-
-    if (nsrc_loc>0) {
-        free_matrix(signals,1,nsrc_loc,1,NT);
-        free_matrix(srcpos_loc,1,8,1,nsrc_loc);
-        free_matrix(srcpos_loc_back,1,6,1,nsrc_loc);
-    }
-
-    MPI_Barrier(MPI_COMM_WORLD);
-
-    if (MYID==0) {
-        if(VERBOSE) {
-            fprintf(FP,"\n **Info from main (written by PE %d): \n",MYID);
-            fprintf(FP," CPU time of program per PE: %li seconds.\n",clock()/CLOCKS_PER_SEC);
-            time8=MPI_Wtime();
-            fprintf(FP," Total real time of program: %4.2f seconds.\n",time8-time1);
-            time_av_v_update=time_av_v_update/(double)NT;
-            time_av_s_update=time_av_s_update/(double)NT;
-            time_av_v_exchange=time_av_v_exchange/(double)NT;
-            time_av_s_exchange=time_av_s_exchange/(double)NT;
-            time_av_timestep=time_av_timestep/(double)NT;
-            fprintf(FP," Average times for \n");
-            fprintf(FP," velocity update:  \t %5.3f seconds  \n",time_av_v_update);
-            fprintf(FP," stress update:  \t %5.3f seconds  \n",time_av_s_update);
-            fprintf(FP," velocity exchange:  \t %5.3f seconds  \n",time_av_v_exchange);
-            fprintf(FP," stress exchange:  \t %5.3f seconds  \n",time_av_s_exchange);
-            fprintf(FP," timestep:  \t %5.3f seconds  \n",time_av_timestep);
+        free_matrix(prho,-nd+1,NY+nd,-nd+1,NX+nd);
+        free_matrix(prhonp1,-nd+1,NY+nd,-nd+1,NX+nd);
+        free_matrix(prip,-nd+1,NY+nd,-nd+1,NX+nd);
+        free_matrix(prjp,-nd+1,NY+nd,-nd+1,NX+nd);
+        free_matrix(pripnp1,-nd+1,NY+nd,-nd+1,NX+nd);
+        free_matrix(prjpnp1,-nd+1,NY+nd,-nd+1,NX+nd);
+        free_matrix(ppi,-nd+1,NY+nd,-nd+1,NX+nd);
+        free_matrix(ppinp1,-nd+1,NY+nd,-nd+1,NX+nd);
+        if(!ACOUSTIC) {
+            free_matrix(pu,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(punp1,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(puipjp,-nd+1,NY+nd,-nd+1,NX+nd);
         }
-        time8=MPI_Wtime();
-        fprintf(FP," Total real time of program: %4.2f seconds.\n",time8-time1);
+        free_matrix(vpmat,-nd+1,NY+nd,-nd+1,NX+nd);
+
+        /* free memory for viscoelastic modeling variables */
+        if (L) {
+            free_f3tensor(pr,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+            free_f3tensor(pp,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+            free_f3tensor(pq,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+            free_f3tensor(dip,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+            free_f3tensor(d,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+            free_f3tensor(e,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+            free_matrix(ptaus,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(ptausipjp,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(ptaup,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(fipjp,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(f,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(g,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_vector(peta,1,L);
+            free_vector(etaip,1,L);
+            free_vector(etajm,1,L);
+            free_vector(bip,1,L);
+            free_vector(bjm,1,L);
+            free_vector(cip,1,L);
+            free_vector(cjm,1,L);
+        }
         if(FORWARD_ONLY==0) {
-            printf("\n Inversion finished after %d iterations. \n\n",iter);
-        } else {
-            printf("\n Forward calculation finished. \n\n");
+            free_matrix(waveconv,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_lam,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_shot,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconvtmp,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(wcpart,1,3,1,3);
+            free_matrix(wavejac,-nd+1,NY+nd,-nd+1,NX+nd);
+            if(!ACOUSTIC) {
+                free_f3tensor(forward_prop_x,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+            } else {
+                free_f3tensor(forward_prop_p,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+            }
+            free_matrix(gradg,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(gradp,-nd+1,NY+nd,-nd+1,NX+nd);
+
+            if(WAVETYPE==1 || WAVETYPE==3) {
+                free_f3tensor(forward_prop_rho_x,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+                free_f3tensor(forward_prop_rho_y,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+            }
+
+            free_matrix(gradg_rho,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(gradp_rho,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_rho,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_rho_s,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_rho_shot,-nd+1,NY+nd,-nd+1,NX+nd);
+
+            if(!ACOUSTIC) {
+                free_f3tensor(forward_prop_u,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+                free_matrix(gradg_u,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(gradp_u,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(waveconv_u,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(waveconv_mu,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(waveconv_u_shot,-nd+1,NY+nd,-nd+1,NX+nd);
+            }
+
         }
-    }
 
-    /* de-allocate buffer for messages */
-    MPI_Buffer_detach(buff_addr,&buffsize);
+        if(FW>0) {
+            free_vector(d_x,1,2*FW);
+            free_vector(K_x,1,2*FW);
+            free_vector(alpha_prime_x,1,2*FW);
+            free_vector(a_x,1,2*FW);
+            free_vector(b_x,1,2*FW);
 
-    fclose(FP);
+            free_vector(d_x_half,1,2*FW);
+            free_vector(K_x_half,1,2*FW);
+            free_vector(alpha_prime_x_half,1,2*FW);
+            free_vector(a_x_half,1,2*FW);
+            free_vector(b_x_half,1,2*FW);
 
-    MPI_Finalize();
-    return 0;
+            free_vector(d_y,1,2*FW);
+            free_vector(K_y,1,2*FW);
+            free_vector(alpha_prime_y,1,2*FW);
+            free_vector(a_y,1,2*FW);
+            free_vector(b_y,1,2*FW);
 
-}/*main*/
+            free_vector(d_y_half,1,2*FW);
+            free_vector(K_y_half,1,2*FW);
+            free_vector(alpha_prime_y_half,1,2*FW);
+            free_vector(a_y_half,1,2*FW);
+            free_vector(b_y_half,1,2*FW);
+            if (WAVETYPE==1||WAVETYPE==3) {
+                free_matrix(psi_sxx_x,1,NY,1,2*FW);
+                free_matrix(psi_syy_y,1,2*FW,1,NX);
+                free_matrix(psi_sxy_x,1,NY,1,2*FW);
+                free_matrix(psi_sxy_y,1,2*FW,1,NX);
+                free_matrix(psi_vxx,1,NY,1,2*FW);
+                free_matrix(psi_vxxs,1,NY,1,2*FW);
+                free_matrix(psi_vyy,1,2*FW,1,NX);
+                free_matrix(psi_vxy,1,2*FW,1,NX);
+                free_matrix(psi_vyx,1,NY,1,2*FW);
+            }
+            if (WAVETYPE==2||WAVETYPE==3) {
+                free_matrix(psi_sxz_x,1,NY,1,2*FW);
+                free_matrix(psi_syz_y,1,2*FW,1,NX);
+                free_matrix(psi_vzx,1,NY,1,2*FW);
+                free_matrix(psi_vzy,1,2*FW,1,NX);
+            }
+        }
+
+        free_matrix(taper_coeff,1,NY,1,NX);
+        free_matrix(bufferlef_to_rig,1,NY,1,fdo3);
+        free_matrix(bufferrig_to_lef,1,NY,1,fdo3);
+        free_matrix(buffertop_to_bot,1,NX,1,fdo3);
+        free_matrix(bufferbot_to_top,1,NX,1,fdo3);
+        switch (SEISMO) {
+            case 1 : /* particle velocities only */
+                if (WAVETYPE==1 || WAVETYPE==3) {
+                    free_matrix(fulldata_vx,1,ntr_glob,1,NT);
+                    free_matrix(fulldata_vy,1,ntr_glob,1,NT);
+                }
+                if (WAVETYPE==2 || WAVETYPE==3) {
+                    free_matrix(fulldata_vz,1,ntr_glob,1,NT);
+                }
+                break;
+            case 2 : /* pressure only */
+                if (WAVETYPE==1 || WAVETYPE==3) {
+                    free_matrix(fulldata_p,1,ntr_glob,1,NT);
+                }
+                break;
+            case 3 : /* curl and div only */
+                if (WAVETYPE==1 || WAVETYPE==3) {
+                    free_matrix(fulldata_div,1,ntr_glob,1,NT);
+                    free_matrix(fulldata_curl,1,ntr_glob,1,NT);
+                }
+                break;
+            case 4 : /* everything */
+                if (WAVETYPE==1 || WAVETYPE==3) {
+                    free_matrix(fulldata_vx,1,ntr_glob,1,NT);
+                    free_matrix(fulldata_vy,1,ntr_glob,1,NT);
+                    free_matrix(fulldata_p,1,ntr_glob,1,NT);
+                    free_matrix(fulldata_div,1,ntr_glob,1,NT);
+                    free_matrix(fulldata_curl,1,ntr_glob,1,NT);
+                }
+                if (WAVETYPE==2 || WAVETYPE==3) {
+                    free_matrix(fulldata_vz,1,ntr_glob,1,NT);
+                }
+                break;
+            case 5 : /* everything except curl and div */
+                if (WAVETYPE==1 || WAVETYPE==3) {
+                    free_matrix(fulldata_vx,1,ntr_glob,1,NT);
+                    free_matrix(fulldata_vy,1,ntr_glob,1,NT);
+                    free_matrix(fulldata_p,1,ntr_glob,1,NT);
+                }
+                if (WAVETYPE==2 || WAVETYPE==3) {
+                    free_matrix(fulldata_vz,1,ntr_glob,1,NT);
+                }
+                break;
+        }
+        if ((ntr>0) && (SEISMO)) {
+            dealloc_sections(ntr,num_samples,recpos_loc,sectionvx,sectionvy,sectionvz,sectionp,sectionpnp1,sectionpn,sectioncurl,sectiondiv,
+                    sectionpdata,sectionpdiff,sectionpdiffold,sectionvxdata,sectionvxdiff,sectionvxdiffold,sectionvydata,
+                    sectionvydiff,sectionvydiffold,sectionvzdata,sectionvzdiff,sectionvzdiffold);
+        }
+        if((EPRECOND==1)||(EPRECOND==3)) {
+            if(WAVETYPE==1 || WAVETYPE==3) {
+                free_matrix(We_sum,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(Ws,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(Wr,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(We,-nd+1,NY+nd,-nd+1,NX+nd);
+            }
+            if(WAVETYPE==2 || WAVETYPE==3) {
+                free_matrix(We_sum_SH,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(Ws_SH,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(Wr_SH,-nd+1,NY+nd,-nd+1,NX+nd);
+                free_matrix(We_SH,-nd+1,NY+nd,-nd+1,NX+nd);
+            }
+        }
+        free_matrix(sectionread,1,ntr_glob,1,num_samples);
+
+        if((INV_STF==1)||(TIME_FILT==1) || (TIME_FILT==2)) {
+            /* free memory for inversion of source time function */
+            if (WAVETYPE==1 || WAVETYPE==3) {
+                free_matrix(sectionvy_conv,1,ntr_glob,1,NT);
+                free_matrix(sectionvx_conv,1,ntr_glob,1,NT);
+                free_matrix(sectionp_conv,1,ntr_glob,1,NT);
+                free_matrix(sectionvy_obs,1,ntr_glob,1,NT);
+                free_matrix(sectionvx_obs,1,ntr_glob,1,NT);
+                free_matrix(sectionp_obs,1,ntr_glob,1,NT);
+            }
+            if (WAVETYPE==2 || WAVETYPE==3) {
+                free_matrix(sectionvz_conv,1,ntr_glob,1,NT);
+                free_matrix(sectionvz_obs,1,ntr_glob,1,NT);
+            }
+            free_vector(source_time_function,1,NT);
+        }
+        if(WOLFE_CONDITION) {
+            free_matrix(waveconv_old,-nd+1,NY+nd,-nd+1,NX+nd);
+            if(!ACOUSTIC) free_matrix(waveconv_u_old,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_rho_old,-nd+1,NY+nd,-nd+1,NX+nd);
+
+            free_matrix(waveconv_up,-nd+1,NY+nd,-nd+1,NX+nd);
+            if(!ACOUSTIC) free_matrix(waveconv_u_up,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_rho_up,-nd+1,NY+nd,-nd+1,NX+nd);
+        }
+        if((WAVETYPE==2 || WAVETYPE==3) && (FORWARD_ONLY==0)) {
+            free_f3tensor(forward_prop_rho_z,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+            free_f3tensor(forward_prop_z_xz,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+            free_f3tensor(forward_prop_z_yz,-nd+1,NY+nd,-nd+1,NX+nd,1,NT/DTINV);
+            free_matrix(waveconv_rho_shot_z,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_u_shot_z,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_mu_z,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_rho_s_z,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_u_z,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(waveconv_rho_z,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(gradp_u_z,-nd+1,NY+nd,-nd+1,NX+nd);
+            free_matrix(gradp_rho_z,-nd+1,NY+nd,-nd+1,NX+nd);
+            if(L) {
+                free_f3tensor(pt,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+                free_f3tensor(po,-nd+1,NY+nd,-nd+1,NX+nd,1,L);
+            }
+        }
+        /* free memory for source position definition */
+        free_matrix(srcpos1,1,8,1,1);
+
+        free_vector(L2t,1,4);
+        free_vector(epst1,1,3);
+        free_vector(epst2,1,3);
+        free_vector(epst3,1,3);
+        free_vector(picked_times,1,ntr);
+
+        free_vector(hc,0,6);
+
+        /* free memory for global source positions */
+        free_matrix(srcpos,1,8,1,nsrc);
+
+
+
+        if(TIME_FILT==2) {
+            free_vector(F_LOW_PASS_EXT,1,nfrq);
+        }
+
+        if (nsrc_loc>0) {
+            free_matrix(signals,1,nsrc_loc,1,NT);
+            free_matrix(srcpos_loc,1,8,1,nsrc_loc);
+            free_matrix(srcpos_loc_back,1,6,1,nsrc_loc);
+        }
+
+        MPI_Barrier(MPI_COMM_WORLD);
+
+        if (MYID==0) {
+            if(VERBOSE) {
+                fprintf(FP,"\n **Info from main (written by PE %d): \n",MYID);
+                fprintf(FP," CPU time of program per PE: %li seconds.\n",clock()/CLOCKS_PER_SEC);
+                time8=MPI_Wtime();
+                fprintf(FP," Total real time of program: %4.2f seconds.\n",time8-time1);
+                time_av_v_update=time_av_v_update/(double)NT;
+                time_av_s_update=time_av_s_update/(double)NT;
+                time_av_v_exchange=time_av_v_exchange/(double)NT;
+                time_av_s_exchange=time_av_s_exchange/(double)NT;
+                time_av_timestep=time_av_timestep/(double)NT;
+                fprintf(FP," Average times for \n");
+                fprintf(FP," velocity update:  \t %5.3f seconds  \n",time_av_v_update);
+                fprintf(FP," stress update:  \t %5.3f seconds  \n",time_av_s_update);
+                fprintf(FP," velocity exchange:  \t %5.3f seconds  \n",time_av_v_exchange);
+                fprintf(FP," stress exchange:  \t %5.3f seconds  \n",time_av_s_exchange);
+                fprintf(FP," timestep:  \t %5.3f seconds  \n",time_av_timestep);
+            }
+            time8=MPI_Wtime();
+            fprintf(FP," Total real time of program: %4.2f seconds.\n",time8-time1);
+            if(FORWARD_ONLY==0) {
+                printf("\n Inversion finished after %d iterations. \n\n",iter);
+            } else {
+                printf("\n Forward calculation finished. \n\n");
+            }
+        }
+
+        /* de-allocate buffer for messages */
+        MPI_Buffer_detach(buff_addr,&buffsize);
+
+        fclose(FP);
+
+        MPI_Finalize();
+        return 0;
+
+    }/*main*/

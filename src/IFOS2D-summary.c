@@ -3,7 +3,8 @@
 #include "cseife.h"
 #include "stfinv/stfinv.h"
 
-int main(int argc, char **argv)
+
+void init_vars
 {
     int ns, nseismograms=0, nt, nd, fdo3, j, i, iter, h, infoout, SHOTINC,  hin, hin1, do_stf=0;
     int NTDTINV, nxny, nxnyi, imat, imat1, imat2, IDXI, IDYI, hi, NTST, NTSTI;
@@ -696,120 +697,129 @@ int main(int argc, char **argv)
     if(WAVETYPE==2 || WAVETYPE==3) SOURCE_SHAPE_OLD_SH=SOURCE_SHAPE_SH;
     nt_out=10000;
     if(!VERBOSE) nt_out=1e5;
-    /*----------- start fullwaveform iteration loop --------------------------------*/
-    for(iter=1; iter<=ITERMAX; iter++) { /* fullwaveform iteration loop */
-        /*  While loop for Wolfe step length search            */
+}
+
+void start_fullwaveform_iteration_loop() {
+    for(iter=1; iter<=ITERMAX; iter++) {
+        // While loop for Wolfe step length search            
         while(FWI_run || steplength_search || gradient_optimization) {
-            /*              Calculate Misfit and gradient          */
+            // Calculate Misfit and gradient          
             if(FWI_run) {
-                    /*----------- Start of loop over shots -----------------------------------------*/
+                if(INVTYPE==2) {
+                    // Start of loop over shots 
                     for (ishot=1; ishot<=nshots; ishot+=SHOTINC) {
-                        /*----------- Start of inversion of source time function -----------------------*/
+                        // Start of inversion of source time function 
                         if(((INV_STF==1)&&( (iter==1) || (do_stf==1) )) && (gradient_optimization==1) ) {
-                            /* calculate wavelet */
-                            /*----------------------  start loop over timesteps ( STF ) --------------------*/
-                            /*--------------------  End  of loop over timesteps (   STF   ) ----------------*/
-                            /*----------- Start of inversion of source time function -----------------------*/
+                            // calculate wavelet */
+                            // loop over timesteps ( STF ) 
+                            // Inversion of source time function 
                         }
-                        /*----------- End of inversion of source time function -------------------------*/
-                        /* determine source position on grid */
-                        /*  Use STF wavelet  */
-                        /* calculate wavelet */
-                        /*----------- Start of Time Domain Filtering -----------------------------------*/
-                        /*----------- End of Time Domain Filtering -------------------------------------*/
-                        /*----------------------  start loop over timesteps (forward model) ------------*/
-                        /*--------------------  End  of loop over timesteps (forward model) ------------*/
-                        /*----------------------  start of inversion process ------------*/
+                        // determine source position on grid 
+                        // Use STF wavelet  
+                        // calculate wavelet 
+                        // Time Domain Filtering 
+                        // loop over timesteps (forward model) 
+                        // start of inversion process 
                         if(FORWARD_ONLY==0) {
-                            /*------- Calculate residuals -------*/
+                            // Calculate residuals 
                             if ((ntr > 0)) {
                                 if(WAVETYPE==1 || WAVETYPE==3) {
-                                    /* read seismic data from SU file vx */
-                                    /* read seismic data from SU file vy */
-                                    /* read seismic data from SU file p */
+                                    // read seismic data from SU file vx 
+                                    // read seismic data from SU file vy 
+                                    // read seismic data from SU file p 
                                 }
-                                /* read seismic data from SU file vz */
+                                // read seismic data from SU file vz 
                             }
-                            /* ------ start loop over shots at receiver positions (backward model) ------------ */
-                            for (irec=1; irec<=nshots1; irec+=RECINC) { 
-                                /* determine source position out of reciever position on grid */
-                                /* initialize wavefield with zero   */
-                                /*---------------------- Start loop over timesteps (backpropagation) -------------*/
-                                /*---------------------- End loop over timesteps (backpropagation) -------------*/
+                            // start loop over shots at receiver positions (backward model) 
+                            for (irec=1; irec<=nshots1; irec+=RECINC) { /* loop over shots at receiver positions */
+                                // Start loop over timesteps (backpropagation) 
+                                for (nt=1; nt<=NT; nt++) {
+                                    // Check if simulation is still stable SH 
+                                    // update of particle velocities 
+                                    // exchange of particle velocities between PEs 
+                                    // Applying free surface condition 
+                                    // Calculate convolution for every DTINV time step 
+                                }
                             }
-                            /* ------ end loop over shots at receiver positions (backward model) ------------ */
-                            /* calculate gradient direction pi */
-                            /* calculate gradient direction u PSV */
-                            /* calculate gradient direction u SH */
-                            /* calculate gradient direction rho PSV */
-                            /* calculate gradient direction rho SH*/
-                            /* calculate and apply energy preconditioning   */
-                            /* Apply taper SH  */
-                            /* Apply taper PSV */
-                            /* Summing up the gradient for all shots SH */
+                            // calculate gradient direction pi 
+                            // calculate gradient direction u PSV 
+                            // calculate gradient direction u SH 
+                            // calculate gradient direction rho PSV 
+                            // calculate gradient direction rho SH
+                            // calculate and apply energy preconditioning   
+                            // Apply taper SH  
+                            // Apply taper PSV 
+                            // Summing up the gradient for all shots PSV 
+                            // Summing up the gradient for all shots SH 
                         }
                     }
-                    /*----------- End of loop over shots -----------------------------------------*/
                 }
                 if(FORWARD_ONLY==0) {
-                    /*     Applying and output approx hessian    */
-                    /*  Set gradient to zero if no inversion     */
-                    /* calculate L2 norm of all CPUs */
+                    // Applying and output approx hessian  
+                    // Set gradient to zero if no inversion     
+                    // calculate L2 norm of all CPUs 
                 }
             }
-            /*     Gradient optimization with PCG or L-BFGS        */
+            // Gradient optimization with PCG or L-BFGS        
             if(gradient_optimization==1 && FORWARD_ONLY==0) {
-                /* ----------- Preconditioned Conjugate Gradient Method (PCG)  ----------*/
-                /* ----------- Beginn Joint Inversion PSV and SH  ----------*/
-                /* ----------- END Joint Inversion PSV and SH  -------------*/
-                /* ----------- Limited Memory - Broyden-Fletcher-Goldfarb-Shanno  ----------*/
-                if(GRAD_METHOD==2) {
-                    /*         TAPER       */
-                }
+                // Preconditioned Conjugate Gradient Method (PCG)  
+                // Beginn Joint Inversion PSV and SH 
             }
-            /*   Wolfe condition: Check and step length search     */
+            // Limited Memory - Broyden-Fletcher-Goldfarb-Shanno  
+            if(GRAD_METHOD==2) {
+                // TAPER       
+            }
+            //   Wolfe condition: Check and step length search     
         }
-        /*       Wolfe condition: Model update                 */
-        /* =============================================== Step length estimation =====================================================*/
+
+        // Wolfe condition: Model update
+        
+        // Step length estimation:
         if((FORWARD_ONLY==0)  && (!WOLFE_CONDITION || (WOLFE_CONDITION && GRAD_METHOD==2 && iter==LBFGS_iter_start))) {
-            /* ----------- Beginn Search three step lengths for parabolic search  -----------*/
+            // Beginn Search three step lengths for parabolic search 
             while((step2!=1)||(step1!=1)) {
-                /* calculate 3 L2 values */
+                // calculate 3 L2 values 
                 for (itest=itests; itest<=iteste; itest++) {
-                    /* ==================================== start of loop over shots (test forward) =================*/
+                    // start of loop over shots (test forward) 
                     for (ishot=TESTSHOT_START; ishot<=TESTSHOT_END; ishot=ishot+TESTSHOT_INCR) {
-                        /* determine source position on grid */
-                        /* calculate wavelet */
-                        /*----------- Start of Time Domain Filtering -----------------------------------*/
-                        /*----------- End of Time Domain Filtering -------------------------------------*/
-                        /*----------------------  loop over timesteps (forward model) step length-------*/
-                        /*------------------ end loop over timesteps (forward model) step length  -------*/
-                        /*------- Calculate residuals -------*/
+                        // determine source position on grid 
+                        // calculate wavelet 
+                        // Start of Time Domain Filtering 
+                        // End of Time Domain Filtering 
+                        // loop over timesteps (forward model) step length
+                        // end loop over timesteps (forward model) step length  
+                        // Calculate residuals
                         if(ntr > 0) {
                             if(WAVETYPE==1 || WAVETYPE==3) {
-                                /* read seismic data from SU file vx */
-                                /* read seismic data from SU file vy */
-                                /* read seismic data from SU file p */
+                                // read seismic data from SU file vx
+                                // read seismic data from SU file vy 
+                                // read seismic data from SU file p 
                             }
-                            /* read seismic data from SU file vz */
+                            // read seismic data from SU file vz 
                         }
                     }
-                    /* ==================================== end of loop over shots (test forward) ===================*/
+                    // end of loop over shots (test forward) 
                 }
-                /*    end of L2 test     */
+                // end of L2 test     
             }
-            /* ----------- End Search three step lengths for parabolic search  -----------*/
-        } /* end of if(FORWARD_ONLY!=4) */
-        /* smoothing the models vp, vs and rho */
-        /* ----------- Check abort criteriums -----------*/
+            // End Search three step lengths for parabolic search  
+        } // end of if(FORWARD_ONLY!=4) 
+
+        // smoothing the models vp, vs and rho 
+        // Check abort criteriums 
         if (iter>min_iter_help) {
-            /*  Check when NO workflow and TIME_FILT==0    */
-            /*       Check when Workflow is used           */
-            /* Check when Workflow is NOT used and TIME_FILT==1  */
-            /* Check when Workflow is NOT used and TIME_FILT==2  */
+            // Check when NO workflow and TIME_FILT==0    
+            // Check when Workflow is used          
+            // Check when Workflow is NOT used and TIME_FILT==1  
+            // Check when Workflow is NOT used and TIME_FILT==2 
         }
     }
-    /*----------- End fullwaveform iteration loop ----------------------------------*/
-    /* ====== deallocation of memory =========*/
+}
+
+int main(int argc, char **argv)
+{
+    init_vars();
+    start_fullwaveform_iteration_loop();
+    free_memory();
     return 0;
 }
