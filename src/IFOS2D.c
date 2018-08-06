@@ -49,8 +49,7 @@ int get_num_seismograms(int seismo_id) {
 
 int main(int argc, char **argv)
 {
-    int h, infoout, SHOTINC,  hin, hin1, do_stf=0;
-    int NTDTINV, nxny, nxnyi, imat, imat1, imat2, IDXI, IDYI, hi, NTST, NTSTI;
+    int IDXI, IDYI, hi, NTST, NTSTI;
     int lsnap, nsnap=0, lsamp=0, buffsize,  swstestshot, snapseis, snapseis1;
     int ntr=0, ntr_loc=0, ntr_glob=0, nsrc=0, nsrc_loc=0, nsrc_glob=0, ishot, irec, nshots=0, nshots1, Lcount, itest, itestshot;
 
@@ -301,7 +300,7 @@ int main(int argc, char **argv)
     /* use only every DTINV time sample for the inversion */
     /*DTINV=15;*/
     DTINV_help=ivector(1,NT);
-    NTDTINV=ceil((float)NT/(float)DTINV);		/* round towards next higher integer value */
+    int NTDTINV=ceil((float)NT/(float)DTINV);		/* round towards next higher integer value */
 
     /* save every IDXI and IDYI spatial point during the forward modelling */
     IDXI=1;
@@ -530,7 +529,7 @@ int main(int argc, char **argv)
     }
 
     NTST=20;
-    nxnyi=(NX/IDXI)*(NY/IDYI);
+    int nxnyi=(NX/IDXI)*(NY/IDYI);
 
     /* Parameters for step length calculations */
     stepmax = STEPMAX; /* number of maximum misfit calculations/steplength 2/3*/
@@ -823,7 +822,7 @@ int main(int argc, char **argv)
 
     MPI_Barrier(MPI_COMM_WORLD);
 
-    SHOTINC=1;
+    int SHOTINC=1;
     RECINC=1;
 
     switch(TIME_FILT) {
@@ -847,6 +846,7 @@ int main(int argc, char **argv)
     /*----------- start fullwaveform iteration loop --------------------------------*/
     /*------------------------------------------------------------------------------*/
 
+    int do_stf=0;
     int iter;
     for(iter=1; iter<=ITERMAX; iter++) { /* fullwaveform iteration loop */
         // At each iteration the workflow is applied
@@ -1182,16 +1182,13 @@ int main(int argc, char **argv)
                             lsamp=NDT;
                             nsnap=0;
 
-                            hin=1;
-                            hin1=1;
+                            //int hin=1;
+                            //int hin1=1;
 
-                            imat=1;
-                            imat1=1;
-                            imat2=1;
                             hi=1;
 
                             for(int nt=1; nt<=NT; nt++) {
-                                infoout = !(nt%nt_out);
+                                int infoout = !(nt%nt_out);
                                 if((!VERBOSE)&&(MYID==0)) {
                                     if(!(nt%(NT/40))) {
                                         fprintf(FP,"*");
@@ -1655,11 +1652,8 @@ int main(int argc, char **argv)
                         lsnap=iround(TSNAP1/DT);
                         lsamp=NDT;
                         nsnap=0;
-                        hin=1;
-                        hin1=1;
-                        imat=1;
-                        imat1=1;
-                        imat2=1;
+                        int hin=1;
+                        int hin1=1;
                         hi=1;
 
                         if((!VERBOSE)&&(MYID==0)) {
@@ -1670,7 +1664,7 @@ int main(int argc, char **argv)
                         /*------------------------------------------------------------------------------*/
                         for (int nt=1; nt<=NT; nt++) {
                             // Ratio to give output to stout
-                            infoout = !(nt%nt_out);
+                            int infoout = !(nt%nt_out);
                             if((!VERBOSE)&&(MYID==0)) {
                                 if(!(nt%(NT/40))) {
                                     fprintf(FP,"*");
@@ -2005,7 +1999,7 @@ int main(int argc, char **argv)
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
                                             timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
-                                        h=1;
+                                        int h=1;
                                         for(int i=1; i<=ntr; i++) {
                                             for(int j=1; j<=num_samples; j++) {
                                                 sectionvxdata[h][j]=sectionread[recpos_loc[3][i]][j];
@@ -2033,7 +2027,7 @@ int main(int argc, char **argv)
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
                                             timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
-                                        h=1;
+                                        int h=1;
                                         for(int i=1; i<=ntr; i++) {
                                             for(int j=1; j<=num_samples; j++) {
                                                 sectionvydata[h][j]=sectionread[recpos_loc[3][i]][j];
@@ -2062,7 +2056,7 @@ int main(int argc, char **argv)
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
                                             timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
-                                        h=1;
+                                        int h=1;
                                         for(int i=1; i<=ntr; i++) {
                                             for(int j=1; j<=num_samples; j++) {
                                                 sectionpdata[h][j]=sectionread[recpos_loc[3][i]][j];
@@ -2090,7 +2084,7 @@ int main(int argc, char **argv)
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
                                         timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                     }
-                                    h=1;
+                                    int h=1;
                                     for(int i=1; i<=ntr; i++) {
                                         for(int j=1; j<=num_samples; j++) {
                                             sectionvzdata[h][j]=sectionread[recpos_loc[3][i]][j];
@@ -2189,7 +2183,6 @@ int main(int argc, char **argv)
                             nshots1=1;
                             for (irec=1; irec<=nshots1; irec+=RECINC) { /* loop over shots at receiver positions */
                                 hin=1;
-                                hin1=1;
                                 if(MYID==0) {
                                     printf("\n==================================================================================\n");
                                     printf("\n MYID=%d *****  Starting simulation (backward model) for shot %d of %d  ********** \n",MYID,irec,nshots1);
@@ -2244,7 +2237,7 @@ int main(int argc, char **argv)
 
                                 for (int nt=1; nt<=NT; nt++) {
                                     // Ratio to give output to stout
-                                    infoout = !(nt%nt_out);
+                                    int infoout = !(nt%nt_out);
 
                                     if((!VERBOSE)&&(MYID==0)) 
                                         if(!(nt%(NT/40))) 
@@ -2396,12 +2389,10 @@ int main(int argc, char **argv)
                                             fprintf(FP," finished (real time: %4.2f s).\n",time7-time6);
                                         }
                                     }
-                                    /*if(nt==hin1){*/
                                     /*-------------------------------------------------*/
                                     /* Calculate convolution for every DTINV time step */
                                     /*-------------------------------------------------*/
                                     if(DTINV_help[NT-nt+1]==1) {
-                                        imat=((nxnyi*(NTDTINV)) - hin*nxnyi)+1;
                                         if((FORWARD_ONLY==0)) {
                                             for (int j=1; j<=NY; j=j+IDYI) {
                                                 for(int i=1; i<=NX; i=i+IDXI) {
@@ -3409,7 +3400,7 @@ int main(int argc, char **argv)
                             }
                             for (int nt=1; nt<=NT; nt++) {
                                 // Ratio to give output to stout
-                                infoout = !(nt%nt_out);
+                                int infoout = !(nt%nt_out);
                                 if((!VERBOSE)&&(MYID==0)) {
                                     if(!(nt%(NT/40))) {
                                         fprintf(FP,"*");
@@ -3585,7 +3576,7 @@ int main(int argc, char **argv)
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
                                             timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
-                                        h=1;
+                                        int h=1;
                                         for(int i=1; i<=ntr; i++) {
                                             for(int j=1; j<=num_samples; j++) {
                                                 sectionvxdata[h][j]=sectionread[recpos_loc[3][i]][j];
@@ -3603,7 +3594,7 @@ int main(int argc, char **argv)
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
                                             timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
-                                        h=1;
+                                        int h=1;
                                         for(int i=1; i<=ntr; i++) {
                                             for(int j=1; j<=num_samples; j++) {
                                                 sectionvydata[h][j]=sectionread[recpos_loc[3][i]][j];
@@ -3621,7 +3612,7 @@ int main(int argc, char **argv)
                                         if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
                                             timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                         }
-                                        h=1;
+                                        int h=1;
                                         for(int i=1; i<=ntr; i++) {
                                             for(int j=1; j<=num_samples; j++) {
                                                 sectionpdata[h][j]=sectionread[recpos_loc[3][i]][j];
@@ -3640,7 +3631,7 @@ int main(int argc, char **argv)
                                     if ((TIME_FILT==1 )|| (TIME_FILT==2)) {
                                         timedomain_filt(sectionread,F_LOW_PASS,ORDER,ntr_glob,num_samples,1);
                                     }
-                                    h=1;
+                                    int h=1;
                                     for(int i=1; i<=ntr; i++) {
                                         for(int j=1; j<=num_samples; j++) {
                                             sectionvzdata[h][j]=sectionread[recpos_loc[3][i]][j];
