@@ -49,8 +49,6 @@ int get_num_seismograms(int seismo_id) {
 
 int main(int argc, char **argv)
 {
-    int IDXI, IDYI, hi, NTST, NTSTI;
-    int lsnap, nsnap=0, lsamp=0, buffsize,  swstestshot, snapseis, snapseis1;
     int ntr=0, ntr_loc=0, ntr_glob=0, nsrc=0, nsrc_loc=0, nsrc_glob=0, ishot, irec, nshots=0, nshots1, Lcount, itest, itestshot;
 
     float muss, lamss;
@@ -303,8 +301,8 @@ int main(int argc, char **argv)
     int NTDTINV=ceil((float)NT/(float)DTINV);		/* round towards next higher integer value */
 
     /* save every IDXI and IDYI spatial point during the forward modelling */
-    IDXI=1;
-    IDYI=1;
+    int IDXI=1;
+    int IDYI=1;
 
     /*allocate memory for dynamic, static and buffer arrays */
     fac1=(NX+FDORDER)*(NY+FDORDER);
@@ -342,7 +340,7 @@ int main(int argc, char **argv)
     memfwtdata=6.0*ntr*num_samples*fac2;
 
     membuffer=2.0*fdo3*(NY+NX)*fac2;
-    buffsize=2.0*2.0*fdo3*(NX+NY)*sizeof(MPI_FLOAT);
+    int buffsize=2.0*2.0*fdo3*(NX+NY)*sizeof(MPI_FLOAT);
     memtotal=memdyn+memmodel+memseismograms+memfwt+memfwt1+memfwtdata+membuffer+(buffsize*pow(2.0,-20.0));
 
     if (MYID==0 && WAVETYPE == 1) {
@@ -528,7 +526,6 @@ int main(int argc, char **argv)
         cjm =  vector(1,L);
     }
 
-    NTST=20;
     int nxnyi=(NX/IDXI)*(NY/IDYI);
 
     /* Parameters for step length calculations */
@@ -1066,7 +1063,7 @@ int main(int argc, char **argv)
                     }
                 }
                 itestshot=TESTSHOT_START;
-                swstestshot=0;
+                int swstestshot=0;
 
                 if(INVTYPE==2) {
                     if(RUN_MULTIPLE_SHOTS) {
@@ -1178,14 +1175,8 @@ int main(int argc, char **argv)
                             /*----------------------  start loop over timesteps ( STF ) --------------------*/
                             /*------------------------------------------------------------------------------*/
 
-                            lsnap=iround(TSNAP1/DT);
-                            lsamp=NDT;
-                            nsnap=0;
 
-                            //int hin=1;
-                            //int hin1=1;
-
-                            hi=1;
+                            int hi=1;
 
                             for(int nt=1; nt<=NT; nt++) {
                                 int infoout = !(nt%nt_out);
@@ -1649,12 +1640,12 @@ int main(int argc, char **argv)
                                 }
                             }
                         }
-                        lsnap=iround(TSNAP1/DT);
-                        lsamp=NDT;
-                        nsnap=0;
+                        int lsnap=iround(TSNAP1/DT);
+                        int lsamp=NDT;
+                        int nsnap=0;
                         int hin=1;
                         int hin1=1;
-                        hi=1;
+                        int hi=1;
 
                         if((!VERBOSE)&&(MYID==0)) {
                             fprintf(FP,"\n ****************************************\n ");
@@ -3389,9 +3380,6 @@ int main(int argc, char **argv)
                                             psi_vxx,psi_vyx,psi_syy_y,psi_sxy_y,psi_vyy,psi_vxy,psi_vxxs);
                                 }
                             }
-                            lsnap=iround(TSNAP1/DT);
-                            lsamp=NDT;
-                            nsnap=0;
                             /*-------------------------------------------------------------------------------*/
                             /*----------------------  loop over timesteps (forward model) step length-------*/
                             /*-------------------------------------------------------------------------------*/
