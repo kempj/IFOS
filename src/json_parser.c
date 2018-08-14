@@ -306,8 +306,7 @@ int get_int_from_objectlist(char string_in[STRING_SIZE2], int number_readobject,
             checkifstringfound=2;
         }
         
-    }
-    else {
+    } else {
         checkifstringfound=1;
     }
     return checkifstringfound;

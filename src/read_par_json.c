@@ -424,17 +424,15 @@ void read_par_json(FILE *fp, char *fileinp)
         /*=================================
          section inversion parameters
          =================================*/
-        if (get_int_from_objectlist("PARAMETERIZATION",number_readobjects,&PARAMETERIZATION,varname_list,
-                                    value_list))
+        if (get_int_from_objectlist("PARAMETERIZATION",number_readobjects,&PARAMETERIZATION,varname_list, value_list)) {
             declare_error("Variable PARAMETERIZATION could not be retrieved from the json input file!");
-        else if(ACOUSTIC) {
+        } else if(ACOUSTIC) {
             PARAMETERIZATION=1;
             fprintf(fp,"For acoustic modelling only PARAMETERIZATION=%d possible.\n",PARAMETERIZATION);
         }
-        if (get_int_from_objectlist("FORWARD_ONLY",number_readobjects,&FORWARD_ONLY,varname_list,
-                                    value_list))
+        if (get_int_from_objectlist("FORWARD_ONLY",number_readobjects,&FORWARD_ONLY,varname_list,value_list)) {
             declare_error("Variable FORWARD_ONLY could not be retrieved from the json input file!");
-        else {
+        } else {
             if (FORWARD_ONLY==0) {  /* FWI is calculated */
                 /* Overwrite IDX/IDY option from forward modeling (used for snapshots), interpolation for FWI not yet implemented*/
                 IDX=1;

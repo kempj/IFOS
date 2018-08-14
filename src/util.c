@@ -196,10 +196,12 @@ float **matrix(int mrl, int mrh, int mcl, int mch){
     ma[mrl] += SHIFT_IND;
     ma[mrl] -= mcl;
     
-    for (k=mrl+1;k<=mrh;k++) ma[k]=ma[k-1]+mcol;
+    for (k=mrl+1;k<=mrh;k++) 
+        ma[k] = ma[k-1]+mcol;
     
     for (k=mrl;k<=mrh;k++)
-        for (l=mcl;l<=mch;l++) ma[k][l]=0.0;
+        for (l=mcl;l<=mch;l++) 
+            ma[k][l]=0.0;
     
     return ma;
 }

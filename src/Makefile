@@ -21,7 +21,8 @@ EXEC= ../bin
 # Use icc whenever possible, this will be much faster than gcc
 CC=mpicc
 LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
-CFLAGS=-O3
+#CFLAGS=-O3
+CFLAGS=-O1 -g
 SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
 IFLAGS=-I./../contrib/libcseife -I./../contrib/header -I.
 
