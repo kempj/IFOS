@@ -19,6 +19,7 @@
 "Source" : "comment",
 			"SOURCE_SHAPE" : "4",
 			"SOURCE_SHAPE values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;Gaussian_deriv=5;Spike=6" : "comment",
+
 			"SIGNAL_FILE" : "./ormsby.dat",
 			
 			"SOURCE_TYPE" : "3",
@@ -32,6 +33,9 @@
 
 "Acoustic Computation" : "comment",
 			"ACOUSTIC" : "0",
+
+
+
 
 "Model" : "comment",
 			"READMOD" : "0",
@@ -53,6 +57,9 @@
 			"READREC" : "1",
 			"REC_FILE" : "./receiver/rec_toy_example.dat",
 			"REFRECX, REFRECY" : "0.0 , 0.0",
+
+
+
 
 "Seismograms" : "comment",
 			"NDT" : "15",

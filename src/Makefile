@@ -22,7 +22,7 @@ EXEC= ../bin
 CC=mpicc
 LFLAGS=-lm -lcseife -lstfinv -laff -lfourierxx -lfftw3 -lstdc++
 #CFLAGS=-O3
-CFLAGS=-O1 -g
+CFLAGS=-O3 -g
 SFLAGS=-L./../contrib/libcseife -L./../contrib/bin
 IFLAGS=-I./../contrib/libcseife -I./../contrib/header -I.
 

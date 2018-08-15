@@ -24,9 +24,18 @@
 			
 			"SOURCE_TYPE" : "3",
 			"SOURCE_TYPE values (point_source): explosive=1;force_in_x=2;force_in_y=3;rotated_force=4" : "comment",
+
+
+
 			
 			"SOURCE_FILE" : "./source/sources.dat",
 			"RUN_MULTIPLE_SHOTS" : "1",
+
+
+
+
+
+
 
 "Model" : "comment",
 			"READMOD" : "0",
@@ -53,12 +62,22 @@
 			"NGEOPH" : "80",
 
 "Seismograms" : "comment",
+
 			"SEIS_FORMAT" : "1",
 			"SEIS_FILE" : "su/IFOS",
+
+
+
+
+
+
+
+
 
 "General inversion parameters" : "comment",
 			"PARAMETERIZATION" : "1",
 			"FORWARD_ONLY" : "10",
+
 
 "Verbose mode" : "comment",
 			"VERBOSE" : "0"
