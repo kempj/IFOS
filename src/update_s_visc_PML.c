@@ -24,7 +24,7 @@
  *  ----------------------------------------------------------------------*/
 
 #include "fd.h"
-
+// updating stress in viscous Perfectly Matched Layer(s)
 void update_s_visc_PML(int nx1, int nx2, int ny1, int ny2,
         float **  vx, float **   vy, float **  ux, float **   uy, float **  uxy, float **   uyx, float **   sxx, float **   syy,
         float **   sxy, float ** pi, float ** u, float ** uipjp, float **rho, float *hc, int infoout,
