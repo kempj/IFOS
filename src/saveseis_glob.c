@@ -137,15 +137,15 @@ void saveseis_glob(FILE *fp, float **sectionvx, float **sectionvy,float **sectio
             sprintf(vxf,"%s_vx.su.shot%d",SEIS_FILE,ishot);
             sprintf(vyf,"%s_vy.su.shot%d",SEIS_FILE,ishot);
         //}
-        if(ADJOINT_TYPE==2) {
+        //if(ADJOINT_TYPE==2) {
             sprintf(vyf,"%s_vy.su.shot%d",SEIS_FILE,ishot);
-        }
-        if(ADJOINT_TYPE==3) {
+        //}
+        //if(ADJOINT_TYPE==3) {
             sprintf(vxf,"%s_vx.su.shot%d",SEIS_FILE,ishot);
-        }
-        if(WAVETYPE==2 || WAVETYPE==3) {
+        //}
+        //if(WAVETYPE==2 || WAVETYPE==3) {
             sprintf(vzf,"%s_vz.su.shot%d",SEIS_FILE,ishot);
-        }
+        //}
         sprintf(pf,"%s_p.su.shot%d",SEIS_FILE,ishot);
         sprintf(divf,"%s_div.su.shot%d",SEIS_FILE,ishot);
         sprintf(curlf,"%s_curl.su.shot%d",SEIS_FILE,ishot);
