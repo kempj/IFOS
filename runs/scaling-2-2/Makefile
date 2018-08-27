@@ -1,17 +1,25 @@
+
+
 default: IFOS_INV
 
-.phony: IFOS_FW
+PHONY: IFOS_FW
 IFOS_FW:
-	$(MAKE) -C ../../src/ IFOS2D EXEC="../bin/tmp" MODEL_AC=../genmod/toy_example_ac_true.c
-	mv ../../bin/tmp/IFOS2D IFOS_FW
+	$(MAKE) -C ../../src/ IFOS2D EXEC="../runs/scaling-2-2" MODEL_AC=../genmod/toy_example_ac_true.c
+	mv IFOS2D IFOS_FW
 
-.phony: IFOS_INV
 IFOS_INV: IFOS_FW
-	$(MAKE) -C ../../src/ IFOS2D EXEC="../bin/tmp" MODEL_AC=../genmod/toy_example_ac_start.c
-	mv ../../bin/tmp/IFOS2D IFOS_INV
+	$(MAKE) -C ../../src/ IFOS2D EXEC="../runs/scaling-2-2" MODEL_AC=../genmod/toy_example_ac_start.c
+	mv IFOS2D IFOS_INV
 
-clean: 
+.PHONY: clean
+clean: clean_local clean_src
+
+.PHONY: clean_local
+clean_local:
 	rm -rf IFOS_FW
 	rm -rf IFOS_INV
+
+.PHONY: clean_src
+clean_src:
 	rm -rf ../../bin/tmp/IFOS2D
 	$(MAKE) -C ../../src clean
