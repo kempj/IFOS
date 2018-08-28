@@ -19,7 +19,7 @@
 "Source" : "comment",
 			"SOURCE_SHAPE" : "1",
 			"SOURCE_SHAPE values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;Gaussian_deriv=5;Spike=6" : "comment",
-			"SIGNAL_FILE" : "./ormsby.dat",
+			"SIGNAL_FILE" : "../../par/ormsby.dat",
 			
 			"SOURCE_TYPE" : "1",
 			"SOURCE_TYPE values (point_source): explosive=1;force_in_x=2;force_in_y=3;rotated_force=4" : "comment",
@@ -27,7 +27,7 @@
 			"SRCREC" : "1",
 			"SRCREC values : read source positions from SOURCE_FILE=1, PLANE_WAVE=2" : "comment",
 			
-			"SOURCE_FILE" : "./source/src_toy_example_ac.dat",
+			"SOURCE_FILE" : "../../par/source/src_toy_example_ac.dat",
 			"RUN_MULTIPLE_SHOTS" : "1",
 
 "Acoustic Computation" : "comment",
@@ -35,7 +35,7 @@
 
 "Model" : "comment",
 			"READMOD" : "0",
-			"MFILE" : "model/mod_toy_example_ac_true",
+			"MFILE" : "FW_model/mod_toy_example_ac_true",
 
 "Free Surface" : "comment",
 			"FREE_SURF" : "1",
@@ -51,13 +51,13 @@
 "Receiver" : "comment",
 			"SEISMO" : "5",
 			"READREC" : "1",
-			"REC_FILE" : "./receiver/rec_toy_example_ac.dat",
+			"REC_FILE" : "../../par/receiver/rec_toy_example_ac.dat",
 			"REFRECX, REFRECY" : "0.0 , 0.0",
 
 "Seismograms" : "comment",
 			"NDT" : "1",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE" : "su/measured_data/toy_example_ac",
+			"SEIS_FILE" : "FW_seis/toy_example_ac",
 
 "Q-approximation" : "comment",
 			"L" : "0",
@@ -74,7 +74,7 @@
 			"IDX" : "1",
 			"IDY" : "1",
 			"SNAP_FORMAT" : "3",
-			"SNAP_FILE" : "./snap/waveform_toy_example_ac",
+			"SNAP_FILE" : "../../par/snap/waveform_toy_example_ac",
 
 "General inversion parameters" : "comment",
 			"ITERMAX" : "1",

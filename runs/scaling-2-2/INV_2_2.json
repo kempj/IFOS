@@ -1,6 +1,6 @@
 {
 "Domain Decomposition" : "comment",
-			"NPROCX" : "4",
+			"NPROCX" : "2",
 			"NPROCY" : "2",
 
 "FD order" : "comment",
@@ -19,7 +19,7 @@
 "Source" : "comment",
 			"SOURCE_SHAPE" : "1",
 			"SOURCE_SHAPE values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;Gaussian_deriv=5;Spike=6" : "comment",
-			"SIGNAL_FILE" : "./STF/inverted_wavelet.seis",
+			"SIGNAL_FILE" : "../../par/STF/inverted_wavelet.seis",
 			
 			"SOURCE_TYPE" : "1",
 			"SOURCE_TYPE values (point_source): explosive=1;force_in_x=2;force_in_y=3;rotated_force=4" : "comment",
@@ -27,7 +27,7 @@
 			"SRCREC" : "1",
 			"SRCREC values : read source positions from SOURCE_FILE=1, PLANE_WAVE=2" : "comment",
 			
-			"SOURCE_FILE" : "./source/src_toy_example_ac.dat",
+			"SOURCE_FILE" : "../../par/source/src_toy_example_ac.dat",
 			"RUN_MULTIPLE_SHOTS" : "1",
 
 "Acoustic Computation" : "comment",
@@ -51,13 +51,13 @@
 "Receiver" : "comment",
 			"SEISMO" : "5",
 			"READREC" : "1",
-			"REC_FILE" : "./receiver/rec_toy_example_ac.dat",
+			"REC_FILE" : "../../par/receiver/rec_toy_example_ac.dat",
 			"REFRECX, REFRECY" : "0.0 , 0.0",
 
 "Seismograms" : "comment",
 			"NDT" : "1",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE" : "su/toy_example/toy_example_ac",
+			"SEIS_FILE" : "../../par/su/toy_example/toy_example_ac",
 
 "Q-approximation" : "comment",
 			"L" : "0",
@@ -69,7 +69,7 @@
 
 "General inversion parameters" : "comment",
 			"ITERMAX" : "400",
-			"DATA_DIR" : "su/measured_data/toy_example_ac",
+			"DATA_DIR" : "FW_seis/toy_example_ac",
 			"PARAMETERIZATION" : "1",
 			"FORWARD_ONLY" : "0",
 			"ADJOINT_TYPE" : "4",
@@ -80,7 +80,7 @@
 			"INV_VP_ITER" : "1",
 
 "Output of inverted models" : "comment",
-			"INV_MODELFILE" : "model/toy_example/mod_toy_example_ac",
+			"INV_MODELFILE" : "INV_model/mod_toy_example_ac",
 			"nfstart" : "1",
 			"nf" : "1",
 
@@ -91,7 +91,7 @@
 
 "Workflow" : "comment",
 			"USE_WORKFLOW" : "0",
-			"FILE_WORKFLOW" : "workflow.txt",
+			"FILE_WORKFLOW" : "../../par/workflow.txt",
 
 "Approx. Hessian" : "comment",
 			"EPRECOND" : "3",
@@ -132,7 +132,7 @@
 			"N_STF_START" : "1",
 			"TAPER_STF" : "1",
 			"TRKILL_STF" : "0",
-			"TRKILL_FILE_STF" : "./trace_kill/trace_kill",
+			"TRKILL_FILE_STF" : "../../par/trace_kill/trace_kill",
 
 "Frequency filtering during inversion" : "comment",
 			"TIME_FILT" : "0",
@@ -148,12 +148,12 @@
 
 "Trace killing" : "comment",
 			"TRKILL" : "0",
-			"TRKILL_FILE" : "./trace_kill/trace_kill",
+			"TRKILL_FILE" : "../../par/trace_kill/trace_kill",
 
 "Time windowing" : "comment",
 			"TIMEWIN" : "0",
 			"TW_IND" : "1",
-			"PICKS_FILE" : "./picked_times/PickedTimes",
+			"PICKS_FILE" : "../../par/picked_times/PickedTimes",
 			"TWLENGTH_PLUS" : "4.0",
 			"TWLENGTH_MINUS" : "0.01",
 			"GAMMA" : "100000",
