@@ -1,0 +1,183 @@
+{
+"Domain Decomposition" : "comment",
+			"NPROCX" : "1",
+			"NPROCY" : "12",
+
+"FD order" : "comment",
+			"FDORDER" : "2",
+			"MAXRELERROR" : "0",
+
+"2-D Grid" : "comment",
+			"NX" : "256",
+			"NY" : "256",
+			"DH" : "10.0",
+
+"Time Stepping" : "comment",
+			"TIME" : "6.0",
+			"DT" : "1.0e-03",
+
+"Source" : "comment",
+			"SOURCE_SHAPE" : "1",
+			"SOURCE_SHAPE values: ricker=1;fumue=2;from_SIGNAL_FILE=3;SIN**3=4;Gaussian_deriv=5;Spike=6" : "comment",
+			"SIGNAL_FILE" : "../../par/STF/inverted_wavelet.seis",
+			
+			"SOURCE_TYPE" : "1",
+			"SOURCE_TYPE values (point_source): explosive=1;force_in_x=2;force_in_y=3;rotated_force=4" : "comment",
+			
+			"SRCREC" : "1",
+			"SRCREC values : read source positions from SOURCE_FILE=1, PLANE_WAVE=2" : "comment",
+			
+			"SOURCE_FILE" : "../../par/source/src_toy_example_ac.dat",
+			"RUN_MULTIPLE_SHOTS" : "1",
+
+"Acoustic Computation" : "comment",
+			"ACOUSTIC" : "1",
+
+"Model" : "comment",
+			"READMOD" : "0",
+			"MFILE" : "model_true/mod_toy_example_ac_it_0",
+
+"Free Surface" : "comment",
+			"FREE_SURF" : "1",
+
+"PML Boundary" : "comment",
+			"FW" : "30",
+			"VPPML" : "2100.0",
+			"FPML" : "8.0",
+			"BOUNDARY" : "0",
+			"npower" : "4.0",
+			"k_max_PML" : "8.0",
+
+"Receiver" : "comment",
+			"SEISMO" : "5",
+			"READREC" : "1",
+			"REC_FILE" : "../../par/receiver/rec_toy_example_ac.dat",
+			"REFRECX, REFRECY" : "0.0 , 0.0",
+
+"Seismograms" : "comment",
+			"NDT" : "1",
+			"SEIS_FORMAT" : "1",
+			"SEIS_FILE" : "seis_INV/toy_example_ac",
+
+"Q-approximation" : "comment",
+			"L" : "0",
+			"FL1" : "0.5211", 
+			"FL2" : "7.6660",
+			"FL3" : "72.6774",
+			"TAU" : "0.0966",
+
+
+"General inversion parameters" : "comment",
+			"ITERMAX" : "400",
+			"DATA_DIR" : "seis_FW/toy_example_ac",
+			"PARAMETERIZATION" : "1",
+			"FORWARD_ONLY" : "0",
+			"ADJOINT_TYPE" : "4",
+			"MISFIT_LOG_FILE" : "LOG_toy_example_ac.dat",
+
+"Inversion for parameter starting from iteration" : "comment",
+			"INV_RHO_ITER" : "400",
+			"INV_VP_ITER" : "1",
+
+"Output of inverted models" : "comment",
+			"INV_MODELFILE" : "INV_model/mod_toy_example_ac",
+			"nfstart" : "1",
+			"nf" : "1",
+
+"Output of gradients" : "comment",
+			"JACOBIAN" : "jacobian/jac_toy_example_ac",
+			"nfstart_jac" : "1",
+			"nf_jac" : "1",
+
+"Workflow" : "comment",
+			"USE_WORKFLOW" : "0",
+			"FILE_WORKFLOW" : "../../par/workflow.txt",
+
+"Approx. Hessian" : "comment",
+			"EPRECOND" : "3",
+			"EPSILON_WE" : "0.005",
+			"EPRECOND_ITER" : "0",
+			"EPRECOND_PER_SHOT" : "0",
+
+"Gradient-Method" : "comment",
+			"GRAD_METHOD" : "2",
+			"LBFGS_STEP_LENGTH" : "1",
+			"N_LBFGS" : "10",
+
+"Wolfe Condition" : "comment",
+			"WOLFE_CONDITION" : "1",
+			"WOLFE_NUM_TEST" : "5",
+			"WOLFE_TRY_OLD_STEPLENGTH" : "1",
+			"WOLFE_C1_SL" : "0.0",
+
+"Step length estimation" : "comment", 
+			"EPS_SCALE" : "0.01",
+			"STEPMAX" : "4",
+			"SCALEFAC" : "5.0",
+			"TESTSHOT_START , TESTSHOT_END , TESTSHOT_INCR" : "1 , 5 , 2",
+
+"Misfit Definition" : "comment",
+			"LNORM" : "2",
+			"LNORM values: L1 norm=1, L2 norm=2, Cauchy=3, SECH=4, Global correlation=5, L2 norm with time windowing=6" : "comment",
+			"NORMALIZE" : "0",
+			"DTINV" : "1",
+
+"Termination of the programmme" : "comment",
+			"PRO" : "0.01",
+
+"Definition of inversion for source time function" : "comment",
+			"INV_STF" : "0",
+			"PARA" : "fdlsq:tshift=0.0",
+			"N_STF" : "10",
+			"N_STF_START" : "1",
+			"TAPER_STF" : "1",
+			"TRKILL_STF" : "0",
+			"TRKILL_FILE_STF" : "../../par/trace_kill/trace_kill",
+
+"Frequency filtering during inversion" : "comment",
+			"TIME_FILT" : "0",
+			"F_HIGH_PASS" : "1",
+			"F_LOW_PASS_START" : "10.0",
+			"F_LOW_PASS_END" : "70.0",
+			"F_LOW_PASS_INCR" : "10.0",
+			"ORDER" : "4",
+			"ZERO_PHASE" : "1",    
+
+"Minimum number of iteration per frequency" : "comment",
+			"MIN_ITER" : "0",
+
+"Trace killing" : "comment",
+			"TRKILL" : "0",
+			"TRKILL_FILE" : "../../par/trace_kill/trace_kill",
+
+"Time windowing" : "comment",
+			"TIMEWIN" : "0",
+			"TW_IND" : "1",
+			"PICKS_FILE" : "../../par/picked_times/PickedTimes",
+			"TWLENGTH_PLUS" : "4.0",
+			"TWLENGTH_MINUS" : "0.01",
+			"GAMMA" : "100000",
+
+"Definition of gradient taper geometry" : "comment",
+			"SWS_TAPER_CIRCULAR_PER_SHOT" : "0",
+			"SRTSHAPE" : "1",
+			"SRTRADIUS" : "3.0",
+			"FILTSIZE" : "1",
+			"SWS_TAPER_FILE" : "1",
+			"TAPER_FILE_NAME" : "taper_te_ac",
+
+"Upper and lower limits for model parameters" : "comment",
+			"VPUPPERLIM" : "5000",
+			"VPLOWERLIM" : "0",
+			"VSUPPERLIM" : "5000",
+			"VSLOWERLIM" : "0",
+			"RHOUPPERLIM" : "5000",
+			"RHOLOWERLIM" : "0",
+
+"Definition of smoothing the models vp and vs" : "comment",
+			"MODEL_FILTER" : "0",
+			"FILT_SIZE" : "3",
+
+"Verbose mode" : "comment",
+			"VERBOSE" : "0"
+}
