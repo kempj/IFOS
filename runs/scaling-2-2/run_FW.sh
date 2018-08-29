@@ -12,7 +12,7 @@
 #rm su/measured_data/toy_example*
 
 # starting IFOS for forward modeling
-mpirun -np 4 nice -19 ./IFOS_FW ./FW_2_2.json
+mpirun -np 4 ./IFOS_FW ./FW_2_2.json
 
 
 

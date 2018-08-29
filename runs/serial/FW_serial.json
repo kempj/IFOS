@@ -8,8 +8,8 @@
 			"MAXRELERROR" : "0",
 
 "2-D Grid" : "comment",
-			"NX" : "128",
-			"NY" : "128",
+			"NX" : "256",
+			"NY" : "256",
 			"DH" : "10.0",
 
 "Time Stepping" : "comment",

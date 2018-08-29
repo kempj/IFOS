@@ -7,7 +7,7 @@
 #rm su/measured_data/toy_example*
 
 # starting Inversion, assuming FW has already been run.
-mpirun -np 4 nice -19 ./IFOS_INV ./INV_2_2.json
+mpirun -np 4 ./IFOS_INV ./INV_2_2.json
 
 
 #rm jacobian/toy_example/*toy_example*.*.*.*

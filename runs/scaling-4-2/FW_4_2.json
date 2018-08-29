@@ -1,15 +1,15 @@
 {
 "Domain Decomposition" : "comment",
-			"NPROCX" : "1",
-			"NPROCY" : "1",
+			"NPROCX" : "4",
+			"NPROCY" : "2",
 
 "FD order" : "comment",
 			"FDORDER" : "2",
 			"MAXRELERROR" : "0",
 
 "2-D Grid" : "comment",
-			"NX" : "128",
-			"NY" : "128",
+			"NX" : "256",
+			"NY" : "256",
 			"DH" : "10.0",
 
 "Time Stepping" : "comment",

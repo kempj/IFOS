@@ -23,3 +23,11 @@ clean_local:
 clean_src:
 	rm -rf ../../bin/tmp/IFOS2D
 	$(MAKE) -C ../../src clean
+
+.PHONY: clean_data
+clean_data:
+	rm -rf FW_model/*
+	rm -rf INV_model/*
+	rm -rf seis_FW/*
+	rm -rf seis_INV/*
+	rm -rf jacobian/*
