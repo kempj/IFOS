@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # starting IFOS for forward modeling
-mpirun -np 32 ./IFOS_FW ./FW_8_4.json
+mpirun -np 64 ./IFOS_FW ./FW_8_8.json
 
 
 

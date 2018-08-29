@@ -4,11 +4,11 @@ default: IFOS_INV
 
 PHONY: IFOS_FW
 IFOS_FW:
-	$(MAKE) -C ../../src/ IFOS2D EXEC="../runs/scaling-8-4" MODEL_AC=../genmod/toy_example_ac_true.c
+	$(MAKE) -C ../../src/ IFOS2D EXEC="../runs/scaling-8-8" MODEL_AC=../genmod/toy_example_ac_true.c
 	mv IFOS2D IFOS_FW
 
 IFOS_INV: IFOS_FW
-	$(MAKE) -C ../../src/ IFOS2D EXEC="../runs/scaling-8-4" MODEL_AC=../genmod/toy_example_ac_start.c
+	$(MAKE) -C ../../src/ IFOS2D EXEC="../runs/scaling-8-8" MODEL_AC=../genmod/toy_example_ac_start.c
 	mv IFOS2D IFOS_INV
 
 .PHONY: clean
@@ -31,3 +31,4 @@ clean_data:
 	rm -rf seis_FW/*
 	rm -rf seis_INV/*
 	rm -rf jacobian/*
+	rm -rf taper_te_ac*
