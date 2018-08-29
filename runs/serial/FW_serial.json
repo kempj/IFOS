@@ -57,7 +57,7 @@
 "Seismograms" : "comment",
 			"NDT" : "1",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE" : "FW_seis/toy_example_ac",
+			"SEIS_FILE" : "seis_FW/toy_example_ac",
 
 "Q-approximation" : "comment",
 			"L" : "0",

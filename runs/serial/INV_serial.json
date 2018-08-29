@@ -57,7 +57,7 @@
 "Seismograms" : "comment",
 			"NDT" : "1",
 			"SEIS_FORMAT" : "1",
-			"SEIS_FILE" : "../../par/su/toy_example/toy_example_ac",
+			"SEIS_FILE" : "seis_INV/toy_example_ac",
 
 "Q-approximation" : "comment",
 			"L" : "0",
@@ -69,7 +69,7 @@
 
 "General inversion parameters" : "comment",
 			"ITERMAX" : "400",
-			"DATA_DIR" : "FW_seis/toy_example_ac",
+			"DATA_DIR" : "seis_FW/toy_example_ac",
 			"PARAMETERIZATION" : "1",
 			"FORWARD_ONLY" : "0",
 			"ADJOINT_TYPE" : "4",
@@ -85,7 +85,7 @@
 			"nf" : "1",
 
 "Output of gradients" : "comment",
-			"JACOBIAN" : "jacobian/toy_example/jac_toy_example_ac",
+			"JACOBIAN" : "jacobian/jac_toy_example_ac",
 			"nfstart_jac" : "1",
 			"nf_jac" : "1",
 
